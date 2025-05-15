@@ -1,0 +1,1938 @@
+/* Adopted general styles from original files */
+body {
+    font-family: "Tajawal", Arial, sans-serif;
+    background-color: #f7f9fc;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    direction: rtl;
+    text-align: right;
+    overflow-y: auto; /* Allow scrolling on the body for landing page */
+}
+.rtl {
+    direction: rtl;
+    text-align: right;
+    font-family: "Tajawal", sans-serif;
+}
+
+.ltr {
+    direction: ltr;
+    text-align: left;
+    font-family: "Roboto", sans-serif; /* تأكد من تحميل الخطوط */
+}
+ /* Ensure Bootstrap RTL is applied correctly within components that inherit direction */
+ .container, .row, .col-md-6, .col-md-12, .d-flex, .mb-4, .mb-3, .mt-3, .me-2, .ms-auto {
+     direction: inherit;
+     text-align: inherit;
+ }
+
+/* Adopted Navbar style from original files */
+ .navbar {
+     background-color: #ffffff;
+     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+     padding: 1rem 0;
+ }
+
+ .navbar-brand {
+     font-size: 1.5rem;
+     font-weight: bold;
+     color: #333 !important;
+ }
+ .navbar-nav .nav-link {
+     color: #555 !important;
+     margin-left: 15px; /* Adjust margin for RTL */
+     margin-right: 0;
+ }
+  body[dir="ltr"] .navbar-nav .nav-link {
+      margin-left: 0;
+      margin-right: 15px; /* Adjust margin for LTR */
+  }
+ .navbar-nav .nav-link:hover {
+     color: #007bff !important;
+ }
+
+.dropdown-menu {
+     right: 0; /* Position dropdown on the right for RTL */
+     left: auto;
+     text-align: right; /* Align text right for RTL */
+     border: none;
+     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+ body[dir="ltr"] .dropdown-menu {
+     right: auto; /* Position dropdown on the left for LTR */
+     left: 0;
+     text-align: left; /* Align text left for LTR */
+ }
+
+ .dropdown-item {
+     text-align: inherit; /* Inherit text alignment */
+     padding: 0.5rem 1rem;
+ }
+ .dropdown-item:hover {
+     background-color: #f8f9fa;
+     color: #007bff;
+ }
+
+
+/* New Landing Page Styles */
+.site-header {
+    position: relative;
+    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--white);
+    overflow: hidden;
+    margin-bottom: 40px;
+    box-shadow: 0 4px 8px var(--shadow-light);
+}
+
+.header-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('header-background.jpeg?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTQw4d8MHwxfHNlYXJjaHwyfHxmdXJuaXNoZWQlMjBhbGFwYXJ0bWVudCUyMGludGVyaW9yfGVufDB8fHx8MTcwNTU3MTEwMHww&ixlib=rb-4.0.3&q=80&w=1080');
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.5);
+    z-index: 1;
+}
+
+.header-content {
+    position: relative;
+    z-index: 2;
+    padding: 0 20px;
+    opacity: 1;
+    transform: translateY(0);
+    display: flex; /* استخدام فليكس بوكس لترتيب الأزرار */
+    flex-direction: column; /* ترتيب العناصر عمودياً في حال وجود أكثر من زر */
+    align-items: center; /* توسيط العناصر */
+    justify-content: center;
+    gap: 15px; /* مسافة بين الأزرار */
+}
+
+.site-header h1 {
+    font-size: 3.5em;
+    margin-bottom: 20px;
+    color: white;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.6);
+    font-weight: 700;
+    width: 100%; /* تأكد أن العنوان يأخذ العرض الكامل المتاح */
+}
+
+.site-header p.lead {
+    font-size: 1.5em;
+    margin-bottom: 30px;
+    color: white;
+    
+}
+
+.site-header .subtitle {
+    font-size: 1.5em;
+    margin-bottom: 30px;
+    color: #eee;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    font-weight: 400;
+    width: 100%; /* تأكد أن العنوان الفرعي يأخذ العرض الكامل المتاح */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .site-header {
+        height: 300px;
+    }
+    .site-header h1 {
+      font-size: 1.8em;
+    }
+    .site-header .subtitle {
+      font-size: 1em;
+    }
+     .cta-button {
+       padding: 8px 15px;
+       font-size: 0.9em;
+     }
+     .header-content {
+        gap: 10px; /* مسافة أقل بين الأزرار في الشاشات الصغيرة */
+     }
+
+     .site-header p.lead {
+        font-size: 1.2em;
+    }
+}
+
+
+/* --- Modal Styles --- */
+/* General overlay style for all modals, hidden by default */
+.overlay-popup {
+     display: none; /* Hidden by default */
+     position: fixed;
+     inset: 0;
+     background-color: rgba(0, 0, 0, 0.7);
+     justify-content: center;
+     align-items: center;
+     z-index: 9999;
+     padding: 20px;
+     overflow-y: auto; /* Allow modal content to scroll */
+ }
+
+ /* Rules to display each specific modal when it has the active class */
+ #cv-builder-modal.active,
+ #cv-preview-modal.active, /* NEW: Rule for the CV preview modal */
+ #payment-modal.active, /* Rule for the main payment modal */
+ #qr-payment-popup.active /* Rule for the QR/manual payment modal */
+ {
+     display: flex; /* Show the modal */
+ }
+
+
+ .popup-box {
+     position: relative;
+     background-color: #fff;
+     padding: 30px;
+     border-radius: 10px;
+     max-width: 95%; /* Adjusted max-width for better responsiveness */
+     width: 900px; /* Set a fixed width */
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+     animation: popupFade 0.4s ease;
+     box-sizing: border-box;
+     margin: 20px auto; /* Center the modal */
+     max-height: calc(100vh - 40px);
+     display: flex;
+     flex-direction: column;
+     overflow-y: hidden; /* Hide overflow of popup-box itself, modal-content-container will scroll */
+ }
+
+  /* NEW: Style for potentially larger preview modal box */
+  #cv-preview-modal .popup-box.large-popup-box {
+      width: 1000px; /* Example larger width */
+      max-width: 95%;
+  }
+
+
+ @keyframes popupFade {
+     from {
+         transform: translateY(50px);
+         opacity: 0;
+     }
+     to {
+         transform: translateY(0);
+         opacity: 1;
+     }
+ }
+ .popup-close {
+     position: absolute;
+     top: 10px;
+     left: 10px; /* Position close button on the left for RTL */
+     font-size: 1.5rem;
+     cursor: pointer;
+     border: none;
+     background: transparent;
+     color: #000;
+     padding: 5px;
+     z-index: 10;
+ }
+  body[dir="ltr"] .popup-close {
+      left: auto; /* Position close button on the right for LTR */
+      right: 10px;
+  }
+ .popup-close:hover {
+     color: red;
+ }
+
+/* Container for the modal content steps */
+.modal-content-container {
+    flex-grow: 1;
+    overflow-y: auto; /* Allow internal scrolling for steps */
+    padding-right: 15px; /* Add padding for scrollbar in RTL */
+    margin-bottom: 20px;
+    box-sizing: border-box;
+}
+body[dir="ltr"] .modal-content-container {
+    padding-right: 0;
+    padding-left: 15px; /* Add padding for scrollbar in LTR */
+}
+
+
+/* Styles for the two steps within the CV Builder Modal */
+/* These rules hide the steps by default */
+#cv-builder-modal #data-entry-step,
+#cv-builder-modal #template-selection-step {
+    display: none; /* Hidden by default, managed by JS active class */
+    padding-right: 15px; /* Ensure content doesn't get hidden by scrollbar in RTL */
+    box-sizing: border-box;
+}
+body[dir="ltr"] #cv-builder-modal #data-entry-step,
+body[dir="ltr"] #cv-builder-modal #template-selection-step {
+     padding-right: 0;
+     padding-left: 15px; /* Ensure content doesn't get hidden by scrollbar in LTR */
+ }
+
+/* Ensure the active step inside the CV Builder Modal is displayed */
+/* This rule makes the active step visible */
+#cv-builder-modal #data-entry-step.active,
+#cv-builder-modal #template-selection-step.active {
+    display: block;
+}
+
+
+/* --- Existing CV Builder Form Styles (Keep these) --- */
+/* These styles apply inside the data entry step */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="file"],
+textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+    direction: inherit; /* Inherit direction from parent */
+    text-align: inherit; /* Inherit text alignment from parent */
+}
+
+textarea {
+    resize: vertical;
+}
+
+ /* Style for the "Add" buttons */
+ .form-group .btn {
+     margin-bottom: 10px;
+     margin-left: 5px; /* Adjust margin for RTL */
+     margin-right: 0;
+ }
+  body[dir="ltr"] .form-group .btn {
+      margin-left: 0;
+      margin-right: 5px; /* Adjust margin for LTR */
+  }
+
+
+ .remove-field {
+     position: absolute;
+     top: 8px;
+     left: 8px; /* Position remove button on the left for RTL */
+     background: none;
+     border: none;
+     color: #dc3545;
+     font-size: 1.2em;
+     cursor: pointer;
+     z-index: 1;
+     padding: 5px;
+ }
+ body[dir="ltr"] .remove-field {
+     left: auto; /* Position remove button on the right for LTR */
+     right: 8px;
+ }
+
+ .remove-field:hover {
+     color: #c82333;
+ }
+
+
+.experience-entry,
+.education-entry,
+.skill-entry,
+.language-entry,
+.reference-entry {
+    border: 1px dashed #ccc;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    position: relative;
+}
+
+ .experience-entry textarea {
+     margin-bottom: 0;
+ }
+
+
+button {
+
+}
+/* button:hover {
+    background-color: #0056b3;
+} */
+ .btn-outline-primary {
+     color: #0d6efd;
+     border-color: #0d6efd;
+     background-color: transparent;
+}
+
+ .btn-outline-primary:hover {
+     color: #fff;
+     background-color: #0d6efd;
+     border-color: #0d6efd;
+ }
+ .btn-outline-danger {
+     color: #dc3545;
+     border-color: #dc3545;
+     background-color: transparent;
+ }
+ .btn-outline-danger:hover {
+     color: #fff;
+     background-color: #dc3545;
+     border-color: #dc3545;
+ }
+
+
+.progress-container {
+    margin: 1rem 0;
+    height: 15px;
+    background: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #0d6efd;
+    border-radius: 10px;
+    transition: width 0.3s ease, background-color 0.3s ease;
+    color: #fff;
+    text-align: center;
+    line-height: 15px;
+    font-size: 0.7em;
+}
+
+/* Adopted language toggle style from original files */
+.language-toggle {
+
+    z-index: 1000;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 0.9em;
+    user-select: none;
+    transition: background-color 0.3s ease;
+    margin-right: 10px; /* Adjust margin for RTL */
+}
+ body[dir="ltr"] .language-toggle {
+     margin-right: 0;
+     margin-left: 10px; /* Adjust margin for LTR */
+ }
+
+.language-toggle:hover {
+    background-color: rgba(240, 240, 240, 0.9);
+}
+
+
+/* --- Template Preview Styles (Keep these) --- */
+/* These styles apply inside the template selection step */
+.template-preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.template-category {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.template-category h3 {
+    font-size: 1.4em;
+    color: #333;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #0d6efd;
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+.template-previews {
+     display: flex;
+     flex-wrap: wrap;
+     justify-content: center;
+     gap: 15px;
+}
+
+
+.template-preview {
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: all 0.3s ease;
+    width: 150px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.template-preview:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+.selected-template {
+    border-color: #0d6efd !important;
+     box-shadow: 0 3px 10px rgba(13,110,253,0.4);
+}
+
+/* --- CV Container and General CV Element Styles --- */
+/* These styles define the look *inside* the CV preview area */
+/* This section is now inside #cv-preview-modal */
+#cv-preview-area {
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #fff;
+    margin-top: 20px;
+    overflow-y: auto; /* Allow scrolling for the preview area */
+    max-height: 600px; /* Set a max height for the preview area */
+}
+
+#cv-container {
+    width: 210mm; /* عرض A4 */
+    min-height: 297mm; /* ارتفاع A4 - **مهم جداً للتمدد** */
+    display: flex;
+    flex-direction: column; /* لتكديس أقسامه الفرعية عمودياً (الرأس، المحتوى، التذييل) */
+    justify-content: space-between; /* يدفع الرأس للأعلى والتذييل للأسفل، ويجعل المحتوى يتمدد */
+    box-sizing: border-box;
+    margin: 0 auto;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: white;
+    color: #212529;
+    overflow: hidden; /* Keep this as your JS function controls it to visible for capture */
+    position: relative;
+
+    /* --- NEW STYLES FOR STRETCHING / FILLING PAGE --- */
+    width: 210mm; /* A4 width */
+    min-height: 297mm; /* A4 height - CRUCIAL for stretching */
+    display: flex;
+    flex-direction: column; /* Stack header, main-layout, footer vertically */
+    justify-content: space-between; /* Distributes header/footer, main content expands */
+    /* --- END NEW STYLES --- */
+}
+
+/* Ensure RTL/LTR applies correctly to generated CV content */
+/* NEW: أنماط لـ .cv-content التي يتم إنشاؤها بواسطة JavaScript */
+/* هذا العنصر هو حلقة الوصل الرئيسية للتمديد */
+.cv-content {
+    flex-grow: 1; /* **يجعل .cv-content يتمدد عمودياً لملء المساحة المتاحة من #cv-container** */
+    display: flex; /* يجعله حاوية مرنة لأطفاله (الرأس/التخطيط ثنائي الأعمدة) */
+    flex-direction: column; /* يكاد أن يكون دائماً عمودياً في هذا السياق */
+    box-sizing: border-box;
+    /* يمكن إضافة أي padding أو margin هنا إذا كنت تريد هوامش داخلية للمحتوى الرئيسي */
+    padding: 0; /* مثال: 30px padding على الجانبين، 0 أعلى/أسفل */
+}
+/* Removed explicit text-align here to rely on parent's inherited direction/text-align */
+
+
+.cv-header {
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+    box-sizing: border-box; /* Ensure padding is included in dimensions */
+    flex-shrink: 0; /* Prevent header from shrinking */
+    padding: 10px;
+}
+.cv-header.centered {
+     justify-content: center;
+     flex-direction: column;
+     text-align: center; /* Explicitly center for centered header */
+}
+ .cv-header.two-col-main {
+      border-bottom: 2px solid;
+      padding-bottom: 15px;
+      margin-bottom: 25px;
+      box-sizing: border-box; /* Ensure padding is included in dimensions */
+      /* Rely on parent .cv-main-content for text alignment */
+ }
+/* Professional Layout Header (Top Bar) */
+.cv-header.professional-layout {
+     display: block; /* This overrides the flex above, making it simpler for this layout type */
+     border-bottom: none;
+     padding-bottom: 0;
+     margin-bottom: 0;
+     background-color: #007bff;
+     color: #f8f9fa;
+     padding: 20px 30px;
+     text-align: center; /* Explicitly center for professional header */
+     box-sizing: border-box;
+     flex-shrink: 0; /* Prevent header from shrinking */
+}
+.cv-header.professional-layout .cv-name { color: #f8f9fa; }
+.cv-header.professional-layout .cv-title { color: #ced4da; }
+.cv-header.professional-layout .cv-contact-info { border-top: 1px solid #495057; padding-top: 10px; margin-top: 10px; text-align: center;}
+ .cv-header.professional-layout .cv-contact-item { justify-content: center; margin-bottom: 5px; }
+.cv-header.professional-layout .cv-contact-item i { color: #adb5bd; margin-left: 8px; margin-right: 0;}
+ body[dir="ltr"] .cv-header.professional-layout .cv-contact-item i { margin-left: 0; margin-right: 8px;}
+
+
+.cv-profile-pic {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    margin-left: 20px; /* Adjust margin for RTL */
+    flex-shrink: 0;
+}
+ body[dir="ltr"] .cv-profile-pic {
+     margin-left: 0;
+     margin-right: 20px; /* Adjust margin for LTR */
+ }
+
+ .cv-header.centered .cv-profile-pic,
+ .cv-header.professional-layout .cv-profile-pic {
+     margin: 0 auto 15px auto;
+ }
+
+
+.cv-name {
+    font-size: 2.5em;
+    margin: 10px 18px;
+    color: #212529;
+}
+.cv-title {
+    font-size: 1.3em;
+    margin: 10px 30px;
+    color: #007bff;
+}
+.cv-contact-info {
+    margin-top: 15px;
+     /* Rely on parent for text alignment */
+}
+.cv-contact-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    word-break: break-word;
+}
+.cv-contact-item i {
+    margin-left: 8px; /* Adjust margin for RTL */
+    color: #007bff;
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+}
+ body[dir="ltr"] .cv-contact-item i {
+     margin-left: 0;
+     margin-right: 8px; /* Adjust margin for LTR */
+ }
+
+ .cv-contact-item p {
+     margin: 0;
+     word-break: break-word;
+     white-space: normal;
+ }
+
+.cv-section {
+    margin-bottom: 25px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-sizing: border-box; /* Ensure padding is included in dimensions */
+     /* Rely on parent for text alignment */
+}
+ .cv-section.no-padding { padding: 0; background-color: transparent; }
+ .cv-section.no-margin { margin-bottom: 0; }
+
+
+.cv-section-title {
+    font-size: 1.2em;
+    font-weight: 600;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid;
+    color: #007bff;
+     /* Rely on parent or specific sidebar style for text alignment */
+}
+ .cv-sidebar .cv-section-title { text-align: center; }
+
+
+.cv-experience-item,
+.cv-education-item {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #dee2e6;
+    box-sizing: border-box; /* Ensure padding is included in dimensions */
+}
+ .cv-experience-item:last-child,
+ .cv-education-item:last-child { border-bottom: none; padding-bottom: 0; }
+.cv-job-title,
+.cv-degree {
+    font-size: 1.05em;
+    font-weight: bold;
+    margin: 0 0 5px 0;
+     word-break: break-word;
+     white-space: normal;
+}
+.cv-company,
+.cv-institution {
+    color: #6c757d;
+    margin-bottom: 5px;
+    font-size: 0.95em;
+     word-break: break-word;
+     white-space: normal;
+}
+ .cv-duration {
+      color: #666;
+      font-size: 0.9em;
+      display: inline-block;
+      margin-right: 10px; /* Adjust margin for RTL */
+       word-break: break-word;
+      white-space: normal;
+ }
+  body[dir="ltr"] .cv-duration {
+      margin-right: 0;
+      margin-left: 10px; /* Adjust margin for LTR */
+  }
+
+ .cv-experience-item p,
+ .cv-education-item p {
+     word-break: break-word;
+     white-space: normal;
+ }
+
+
+.cv-skill-list {
+    column-count: 2;
+    column-gap: 20px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+ .cv-skill-list.single-column { column-count: 1; }
+ .cv-skill-list li {
+     break-inside: avoid-column;
+     margin-bottom: 8px;
+     word-break: break-word;
+     white-space: normal;
+ }
+
+.cv-skill-item {
+    display: inline-block;
+    background-color: #e9ecef;
+    padding: 5px 10px;
+    border-radius: 15px;
+    margin-bottom: 8px;
+    margin-left: 5px; /* Adjust margin for RTL */
+    font-size: 0.9em;
+    color: #212529;
+      word-break: break-word;
+      white: normal;
+}
+ body[dir="ltr"] .cv-skill-item {
+     margin-left: 0;
+     margin-right: 5px; /* Adjust margin for LTR */
+ }
+
+ .cv-language-list {
+     list-style: disc;
+     padding-right: 20px; /* Adjust padding for RTL */
+     margin: 0;
+ }
+ body[dir="ltr"] .cv-language-list {
+     padding-right: 0;
+     padding-left: 20px; /* Adjust padding for LTR */
+ }
+
+ .cv-language-list li {
+     margin-bottom: 5px;
+       word-break: break-word;
+      white-space: normal;
+ }
+
+ .cv-references-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+ }
+ .cv-reference-item {
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed #ccc;
+       word-break: break-word;
+      white-space: normal;
+ }
+  .cv-reference-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .cv-reference-item h4 {
+       margin: 0 0 5px 0;
+       font-size: 1em;
+       word-break: break-word;
+      white-space: normal;
+  }
+   .cv-reference-item p {
+       margin: 2px 0;
+        font-size: 0.9em;
+         color: #555;
+          word-break: break-word;
+         white-space: normal;
+   }
+
+ /* Ensure objective text wraps */
+ .cv-section#objective p {
+      word-break: break-word;
+      white-space: normal;
+ }
+ .cv-two-column-layout,
+ .cv-professional-layout {
+     flex-grow: 1; /* **تجعل هذه التخطيطات تمتد لملء المساحة المتبقية في .cv-content** */
+     /* ... (بقية الأنماط الموجودة) ... */
+     overflow: hidden; /* منع المحتوى من التجاوز بشكل غير مرغوب فيه */
+     position: relative; /* مهم إذا كان لديك أي عناصر ذات تحديد موضع مطلق بالداخل */
+ }
+ .cv-end-marker {
+    /* **مهم جداً:** هذه المسافة هي التي ستدفع نهاية الصفحة إلى الأسفل */
+    /* قم بتجربة هذه القيمة (بالـ mm أو px) لترى ما يناسبك بناءً على ارتفاع المحتوى المتبقي */
+    margin-top: 1000mm; /* مثال: 10 سنتيمترات من المساحة الفارغة قبل كلمة النهاية */
+
+    text-align: center; /* لتوسيط كلمة النهاية */
+    font-size: 1.2em; /* حجم الخط لكلمة النهاية */
+    font-weight: bold;
+    padding: 10mm 0; /* هامش داخلي حول كلمة النهاية */
+    color: #55555500; /* لون خفيف لكلمة النهاية (يمكن تغييره) */
+
+    /* لجعل الخلفية تمتد مع عنصر النهاية */
+    background-color: inherit; /* يرث لون الخلفية من العنصر الأب (القسم الجانبي/الرئيسي) */
+
+    /* لضمان عدم تقسيم هذا العنصر عبر الصفحات */
+    page-break-inside: avoid;
+}
+
+ .cv-sidebar,
+ .cv-main-content {
+     display: flex;
+     flex-direction: column; /* لتكديس الأقسام داخل العمود عمودياً */
+     justify-content: flex-start; /* لجعل المحتوى يبدأ من الأعلى */
+     box-sizing: border-box;
+     /* ... (بقية الأنماط الموجودة) ... */
+     overflow: hidden; /* منع تجاوز المحتوى */
+     position: relative;
+     /* Rely on parent for text alignment */
+ }
+
+
+ /* 5. .filler: الـ div الذي سيقوم بالامتداد الفعلي */
+ .filler {
+     flex-grow: 1; /* **هذا الـ div الفارغ سيتمدد لملء كل المساحة المتبقية في والديه المرن** */
+     min-height: 1px; /* لضمان أن html2canvas تراه كعنصر ذي ارتفاع */
+     /* لجعل المحتوى غير مرئي ولكن قابل للرسم بواسطة html2canvas */
+     /* استخدم لون الخلفية المطابق للوالد لدمج الـ filler معه بصرياً */
+     font-size: 1pt; /* حجم خط صغير جداً لضمان أنه لا يستهلك مساحة كبيرة */
+     line-height: 1; /* سطر واحد */
+     overflow: hidden; /* لإخفاء أي محتوى إذا كان كبيراً */
+     page-break-inside: avoid; /* لتجنب تقسيم هذا الـ filler عبر الصفحات (مهم للكتل الكبيرة) */
+ }
+
+
+
+/* --- Two-Column Layouts (Standard Category) --- */
+.cv-two-column-layout {
+     display: flex;
+     padding: 0; /* Padding will be handled by inner sections */
+     border: none; /* Border will be handled by inner sections */
+     box-shadow: none;
+     overflow: hidden;
+     flex-grow: 1; /* NEW: Makes this layout fill vertical space within #cv-container */
+     gap: 30px;
+}
+.cv-two-column-layout[dir="rtl"] { flex-direction: row; }
+.cv-two-column-layout[dir="ltr"] { flex-direction: row-reverse; }
+
+
+ .cv-sidebar {
+     width: 300px;
+     background-color: #e9ecef; /* This background will stretch */
+     color: #212529;
+     padding: 30px;
+     flex-shrink: 0;
+     box-sizing: border-box;
+     overflow-y: auto; /* Allow scrolling content if too much */
+     text-align: center; /* Explicitly center for sidebar in standard layout */
+     transition: width 0.5s ease;
+
+     /* NEW: Make sidebar content stack vertically and allow filler to expand */
+     display: flex;
+     flex-direction: column;
+     justify-content: flex-start; /* Content starts from top */
+ }
+/* Removed specific RTL/LTR text-align for sidebar to rely on explicit centering above */
+
+
+ .cv-main-content {
+     flex-grow: 1; /* Main content fills remaining horizontal space */
+     padding: 30px;
+     background-color: #fff; /* This background will stretch */
+     overflow-x: hidden;
+     box-sizing: border-box;
+      transition: padding 0.5s ease;
+
+     /* NEW: Make main content stack vertically and allow filler to expand */
+     display: flex;
+     flex-direction: column;
+     justify-content: flex-start;
+     /* Rely on parent for text alignment */
+ }
+/* Removed specific RTL/LTR text-align for main-content to rely on parent */
+
+
+ .cv-sidebar .cv-profile-pic { margin: 0 auto 20px auto; display: block; }
+ .cv-sidebar .cv-section { background-color: transparent; padding: 0; margin-bottom: 20px; }
+ .cv-sidebar .cv-section-title { border-bottom: 1px solid #dee2e6; color: #6c757d; font-size: 1.1em; padding-bottom: 10px; margin-bottom: 15px; }
+  .cv-sidebar .cv-contact-info { margin-top: 0; padding-top: 20px; border-top: 1px solid #dee2e6; }
+  .cv-sidebar .cv-contact-item { justify-content: flex-start; margin-bottom: 10px;}
+  .cv-sidebar .cv-contact-item i { color: #6c757d; margin-left: 10px; margin-right: 0;}
+  body[dir="ltr"] .cv-sidebar .cv-contact-item i { margin-left: 0; margin-right: 10px;}
+
+
+ .cv-sidebar .cv-skill-list,
+ .cv-sidebar .cv-language-list,
+ .cv-sidebar .cv-references-list {
+      list-style: none;
+      padding: 0;
+ }
+  .cv-sidebar .cv-skill-list li,
+  .cv-sidebar .cv-language-list li {
+      margin-bottom: 5px;
+  }
+ .cv-sidebar .cv-skill-item {
+      background-color: #6c757d;
+      color: #f8f9fa;
+      margin-left: 0;
+      margin-right: 0;
+      display: block;
+      text-align: center; /* Explicitly center skill items in sidebar */
+ }
+
+
+ .cv-main-content .cv-header.two-col-main {
+     border-bottom: 2px solid #007bff;
+     padding-bottom: 15px;
+     margin-bottom: 25px;
+     display: block;
+     box-sizing: border-box; /* Ensure padding is included in dimensions */
+     flex-shrink: 0; /* Prevent header from shrinking */
+     /* Rely on parent .cv-main-content for text alignment */
+ }
+ .cv-main-content .cv-name { color: #212529; font-size: 2.2em;}
+ .cv-main-content .cv-title { color: #007bff; font-size: 1.3em; }
+ .cv-main-content .cv-section { background-color: #fff; padding: 15px;}
+ .cv-main-content .cv-section-title { border-color: #007bff; color: #007bff; } /* Border for main content sections */
+ .cv-main-content .cv-experience-item, .cv-main-content .cv-education-item { border-bottom-color: #dee2e6; }
+
+
+/* --- Professional Layout (Header + Sidebar + Main) --- */
+ .cv-professional-layout {
+     display: grid;
+     grid-template-columns: 300px 1fr;
+     grid-template-rows: auto 1fr; /* Header is auto height, main content expands */
+     grid-template-areas:
+         "header header"
+         "sidebar main";
+     overflow: hidden;
+     flex-grow: 1; /* NEW: Makes this layout fill vertical space within #cv-container */
+ }
+ .cv-professional-layout[dir="rtl"] {
+     grid-template-areas:
+         "header header"
+         "sidebar main";
+ }
+ .cv-professional-layout[dir="ltr"] {
+      grid-template-columns: 1fr 300px;
+      grid-template-areas:
+         "header header"
+         "main sidebar";
+ }
+
+
+ .cv-professional-layout .cv-header.professional-layout {
+     grid-area: header;
+     box-sizing: border-box; /* Ensure padding is included in dimensions */
+ }
+
+ .cv-professional-layout .cv-sidebar {
+     grid-area: sidebar;
+     background-color: #343a40; /* This background will stretch */
+     color: #f8f9fa;
+     padding: 30px;
+     flex-shrink: 0;
+     box-sizing: border-box;
+     overflow-y: auto;
+     text-align: center; /* Explicitly center for sidebar in professional layout */
+
+     /* NEW: Make sidebar content stack vertically and allow filler to expand */
+     display: flex;
+     flex-direction: column;
+     justify-content: flex-start;
+ }
+/* Removed specific RTL/LTR text-align for sidebar to rely on explicit centering above */
+
+
+ .cv-professional-layout .cv-main-content {
+     grid-area: main;
+     background-color: #fff; /* This background will stretch */
+     padding: 30px;
+     overflow-x: hidden;
+     box-sizing: border-box;
+
+     /* NEW: Make main content stack vertically and allow filler to expand */
+     display: flex;
+     flex-direction: column;
+     justify-content: flex-start;
+     /* Rely on parent for text alignment */
+ }
+/* Removed specific RTL/LTR text-align for main-content to rely on parent */
+
+
+ .cv-professional-layout .cv-sidebar .cv-profile-pic { border-color: #f8f9fa; margin: 0 auto 20px auto; }
+ .cv-professional-layout .cv-sidebar .cv-section-title { color: #f8f9fa; border-bottom-color: #6c757d; }
+ .cv-professional-layout .cv-sidebar .cv-contact-item i { color: #adb5bd; }
+ .cv-professional-layout .cv-sidebar .cv-skill-item { background-color: #495057; color: #fff; }
+  .template9 .cv-professional-layout .cv-sidebar .cv-language-list { list-style: none; padding: 0;}
+
+
+ .cv-professional-layout .cv-main-content { background-color: #fff; color: #333; padding: 30px;}
+ .cv-professional-layout .cv-main-content .cv-section-title { color: #007bff; border-color: #007bff; } /* Border for main content sections */
+ .cv-professional-layout .cv-main-content .cv-experience-item,
+ .cv-professional-layout .cv-main-content .cv-education-item { border-bottom-color: #dee2e6; }
+
+/* --- NEW: Specific Template Styles for Color/Font Variations --- */
+/* هذه الأنماط تبقى كما هي لتخصيص شكل كل قالب */
+
+/* Normal Layout Specific Template Styles */
+.normal-layout.template1 .cv-header { background-color: #007bff; color: #fff; border-bottom-color: #007bff; }
+.normal-layout.template1 .cv-name { color: #fff; font-family: 'Roboto', sans-serif; }
+.normal-layout.template1 .cv-title { color: #cce5ff; font-family: 'Roboto', sans-serif; }
+.normal-layout.template1 .cv-contact-item i { color: #cce5ff; }
+.normal-layout.template1 .cv-section-title { color: #007bff; border-bottom-color: #007bff; font-family: 'Roboto', sans-serif; }
+.normal-layout.template1 .cv-profile-pic { border-color: #fff; }
+.normal-layout.template1 #cv-container { font-family: 'Roboto', sans-serif; }
+
+.normal-layout.template2 .cv-header { background-color: #f8f9fa; color: #343a40; border-bottom-color: #adb5bd; }
+.normal-layout.template2 .cv-name { color: #212529; font-family: 'Lato', sans-serif; }
+.normal-layout.template2 .cv-title { color: #6c757d; font-family: 'Lato', sans-serif; }
+.normal-layout.template2 .cv-contact-item i { color: #6c757d; }
+.normal-layout.template2 .cv-section-title { color: #495057; border-bottom-color: #495057; font-family: 'Lato', sans-serif; }
+.normal-layout.template2 .cv-profile-pic { border-color: #6c757d; }
+.normal-layout.template2 #cv-container { font-family: 'Lato', sans-serif; }
+
+.normal-layout.template3 .cv-header { background-color: #d4edda; color: #28a745; border-bottom-color: #28a745; }
+.normal-layout.template3 .cv-name { color: #28a745; font-family: 'Open Sans', sans-serif; }
+.normal-layout.template3 .cv-title { color: #6f9c7f; font-family: 'Open Sans', sans-serif; }
+.normal-layout.template3 .cv-contact-item i { color: #28a745; }
+.normal-layout.template3 .cv-section-title { color: #28a745; border-bottom-color: #28a745; font-family: 'Open Sans', sans-serif; }
+.normal-layout.template3 .cv-profile-pic { border-color: #28a745; }
+.normal-layout.template3 #cv-container { font-family: 'Open Sans', sans-serif; }
+
+.normal-layout.template4 .cv-header { background-color: #343a40; color: #f8f9fa; border-bottom-color: #dc3545; }
+.normal-layout.template4 .cv-name { color: #fff; font-family: 'Montserrat', sans-serif; }
+.normal-layout.template4 .cv-title { color: #f8f9fa; font-family: 'Montserrat', sans-serif; }
+.normal-layout.template4 .cv-contact-item i { color: #dc3545; }
+.normal-layout.template4 .cv-section-title { color: #dc3545; border-bottom-color: #dc3545; font-family: 'Montserrat', sans-serif; }
+.normal-layout.template4 .cv-profile-pic { border-color: #dc3545; }
+.normal-layout.template4 #cv-container { font-family: 'Montserrat', sans-serif; }
+
+.normal-layout.template5 .cv-header { background-color: #ffffff; color: #495057; border-bottom-color: #495057; }
+.normal-layout.template5 .cv-name { font-family: 'Georgia', serif; color: #212529; }
+.normal-layout.template5 .cv-title { font-family: 'Georgia', serif; color: #495057; }
+.normal-layout.template5 .cv-contact-item i { color: #495057; }
+.normal-layout.template5 .cv-section-title { font-family: 'Georgia', serif; color: #495057; border-bottom-color: #495057; }
+.normal-layout.template5 .cv-profile-pic { border-color: #495057; }
+.normal-layout.template5 #cv-container { font-family: 'Times New Roman', serif; }
+
+.normal-layout.template6 .cv-header { background-color: #e0e9f3; color: #5c677d; border-bottom-color: #98b3d4; }
+.normal-layout.template6 .cv-name { color: #3f485e; font-family: 'Quicksand', sans-serif; }
+.normal-layout.template6 .cv-title { color: #5c677d; font-family: 'Quicksand', sans-serif; }
+.normal-layout.template6 .cv-contact-item i { color: #5c677d; }
+.normal-layout.template6 .cv-section-title { color: #5c677d; border-bottom-color: #98b3d4; font-family: 'Quicksand', sans-serif; }
+.normal-layout.template6 .cv-profile-pic { border-color: #5c677d; }
+.normal-layout.template6 #cv-container { font-family: 'Quicksand', sans-serif; }
+
+.normal-layout.template7 .cv-header { background-color: #f8f9fa; color: #212529; border-bottom-color: #ccc; }
+.normal-layout.template7 .cv-name { font-weight: normal; font-family: 'Helvetica Neue', Arial, sans-serif; }
+.normal-layout.template7 .cv-title { font-weight: normal; font-family: 'Helvetica Neue', Arial, sans-serif; }
+.normal-layout.template7 .cv-contact-item i { color: #212529; }
+.normal-layout.template7 .cv-section-title { color: #212529; border-bottom-color: #eee; font-family: 'Helvetica Neue', Arial, sans-serif; }
+.normal-layout.template7 .cv-profile-pic { border-color: #212529; }
+.normal-layout.template7 #cv-container { font-family: 'Helvetica Neue', Arial, sans-serif; }
+
+.normal-layout.template8 .cv-header { background-color: #fcf4e8; color: #7f4f24; border-bottom-color: #7f4f24; }
+.normal-layout.template8 .cv-name { color: #7f4f24; font-family: 'Noto Serif', serif; }
+.normal-layout.template8 .cv-title { color: #a27b5c; font-family: 'Noto Serif', serif; }
+.normal-layout.template8 .cv-contact-item i { color: #7f4f24; }
+.normal-layout.template8 .cv-section-title { color: #7f4f24; border-bottom-color: #7f4f24; font-family: 'Noto Serif', serif; }
+.normal-layout.template8 .cv-profile-pic { border-color: #7f4f24; }
+.normal-layout.template8 #cv-container { font-family: 'Noto Serif', serif; }
+
+.normal-layout.template9 .cv-header { background-color: #f8d7da; color: #dc3545; border-bottom-color: #dc3545; }
+.normal-layout.template9 .cv-name { color: #dc3545; font-weight: bold; font-family: 'Ubuntu', sans-serif; }
+.normal-layout.template9 .cv-title { color: #c82333; font-family: 'Ubuntu', sans-serif; }
+.normal-layout.template9 .cv-contact-item i { color: #dc3545; }
+.normal-layout.template9 .cv-section-title { color: #dc3545; border-bottom-color: #dc3545; font-family: 'Ubuntu', sans-serif; }
+.normal-layout.template9 .cv-profile-pic { border-color: #dc3545; }
+.normal-layout.template9 #cv-container { font-family: 'Ubuntu', sans-serif; }
+
+.normal-layout.template10 .cv-header { background-color: #e6e6fa; color: #6a0dad; border-bottom-color: #6a0dad; }
+.normal-layout.template10 .cv-name { color: #6a0dad; font-family: 'Playfair Display', serif; }
+.normal-layout.template10 .cv-title { color: #8a2be2; font-family: 'Playfair Display', serif; }
+.normal-layout.template10 .cv-contact-item i { color: #6a0dad; }
+.normal-layout.template10 .cv-section-title { color: #6a0dad; border-bottom-color: #6a0dad; font-family: 'Playfair Display', serif; }
+.normal-layout.template10 .cv-profile-pic { border-color: #6a0dad; }
+.normal-layout.template10 #cv-container { font-family: 'Playfair Display', serif; }
+
+
+/* Standard Layout Specific Template Styles */
+.standard-layout.template1 .cv-sidebar { background-color: #343a40; color: #f8f9fa; font-family: 'Open Sans', sans-serif; }
+.standard-layout.template1 .cv-sidebar .cv-section-title { color: #f8f9fa; border-bottom-color: #6c757d; }
+.standard-layout.template1 .cv-sidebar .cv-contact-item i { color: #adb5bd; }
+.standard-layout.template1 .cv-sidebar .cv-skill-item { background-color: #6c757d; color: #fff; }
+.standard-layout.template1 .cv-main-content .cv-header.two-col-main { border-bottom-color: #007bff; }
+.standard-layout.template1 .cv-main-content .cv-name { color: #212529; font-family: 'Open Sans', sans-serif; }
+.standard-layout.template1 .cv-main-content .cv-title { color: #007bff; font-family: 'Open Sans', sans-serif; }
+.standard-layout.template1 .cv-main-content .cv-section-title { color: #007bff; border-color: #007bff; font-family: 'Open Sans', sans-serif; }
+.standard-layout.template1 .cv-profile-pic { border-color: #f8f9fa; }
+.standard-layout.template1 #cv-container { font-family: 'Open Sans', sans-serif; }
+
+.standard-layout.template2 .cv-sidebar { background-color: #e9ecef; color: #212529; font-family: 'Roboto', sans-serif; }
+.standard-layout.template2 .cv-sidebar .cv-section-title { color: #495057; border-bottom-color: #ced4da; }
+.standard-layout.template2 .cv-sidebar .cv-contact-item i { color: #6c757d; }
+.standard-layout.template2 .cv-sidebar .cv-skill-item { background-color: #ced4da; color: #212529; }
+.standard-layout.template2 .cv-main-content .cv-header.two-col-main { border-bottom-color: #495057; }
+.standard-layout.template2 .cv-main-content .cv-name { color: #212529; font-family: 'Roboto', sans-serif; }
+.standard-layout.template2 .cv-main-content .cv-title { color: #495057; font-family: 'Roboto', sans-serif; }
+.standard-layout.template2 .cv-main-content .cv-section-title { color: #495057; border-color: #495057; font-family: 'Roboto', sans-serif; }
+.standard-layout.template2 .cv-profile-pic { border-color: #212529; }
+.standard-layout.template2 #cv-container { font-family: 'Roboto', sans-serif; }
+
+.standard-layout.template3 .cv-sidebar { background-color: #007bff; color: #fff; font-family: 'Lato', sans-serif; }
+.standard-layout.template3 .cv-sidebar .cv-section-title { color: #fff; border-bottom-color: #cce5ff; }
+.standard-layout.template3 .cv-sidebar .cv-contact-item i { color: #cce5ff; }
+.standard-layout.template3 .cv-sidebar .cv-skill-item { background-color: #0056b3; color: #fff; }
+.standard-layout.template3 .cv-main-content .cv-header.two-col-main { border-bottom-color: #007bff; }
+.standard-layout.template3 .cv-main-content .cv-name { color: #212529; font-family: 'Lato', sans-serif; }
+.standard-layout.template3 .cv-main-content .cv-title { color: #007bff; font-family: 'Lato', sans-serif; }
+.standard-layout.template3 .cv-main-content .cv-section-title { color: #007bff; border-color: #007bff; font-family: 'Lato', sans-serif; }
+.standard-layout.template3 .cv-profile-pic { border-color: #fff; }
+.standard-layout.template3 #cv-container { font-family: 'Lato', sans-serif; }
+
+.standard-layout.template4 .cv-sidebar { background-color: #28a745; color: #fff; font-family: 'Ubuntu', sans-serif; }
+.standard-layout.template4 .cv-sidebar .cv-section-title { color: #fff; border-bottom-color: #d4edda; }
+.standard-layout.template4 .cv-sidebar .cv-contact-item i { color: #d4edda; }
+.standard-layout.template4 .cv-sidebar .cv-skill-item { background-color: #1e7e34; color: #fff; }
+.standard-layout.template4 .cv-main-content .cv-header.two-col-main { border-bottom-color: #28a745; }
+.standard-layout.template4 .cv-main-content .cv-name { color: #212529; font-family: 'Ubuntu', sans-serif; }
+.standard-layout.template4 .cv-main-content .cv-title { color: #28a745; font-family: 'Ubuntu', sans-serif; }
+.standard-layout.template4 .cv-main-content .cv-section-title { color: #28a745; border-color: #28a745; font-family: 'Ubuntu', sans-serif; }
+.standard-layout.template4 .cv-profile-pic { border-color: #fff; }
+.standard-layout.template4 #cv-container { font-family: 'Ubuntu', sans-serif; }
+
+.standard-layout.template5 .cv-sidebar { background-color: #f8f9fa; color: #212529; border-right: 5px solid #007bff; font-family: 'Montserrat', sans-serif; }
+.standard-layout.template5[dir="ltr"] .cv-sidebar { border-right: none; border-left: 5px solid #007bff; }
+.standard-layout.template5 .cv-sidebar .cv-section-title { color: #007bff; border-bottom-color: #007bff; }
+.standard-layout.template5 .cv-sidebar .cv-contact-item i { color: #007bff; }
+.standard-layout.template5 .cv-sidebar .cv-skill-item { background-color: #e0e9f3; color: #007bff; }
+.standard-layout.template5 .cv-main-content .cv-header.two-col-main { border-bottom-color: #007bff; }
+.standard-layout.template5 .cv-main-content .cv-name { color: #212529; font-family: 'Montserrat', sans-serif; }
+.standard-layout.template5 .cv-main-content .cv-title { color: #007bff; font-family: 'Montserrat', sans-serif; }
+.standard-layout.template5 .cv-main-content .cv-section-title { color: #007bff; border-color: #007bff; font-family: 'Montserrat', sans-serif; }
+.standard-layout.template5 .cv-profile-pic { border-color: #007bff; }
+.standard-layout.template5 #cv-container { font-family: 'Montserrat', sans-serif; }
+
+
+.standard-layout.template6 .cv-sidebar { width: 200px; background-color: #dee2e6; color: #333; font-family: 'Arial Narrow', Arial, sans-serif; }
+.standard-layout.template6 .cv-sidebar .cv-section-title { color: #555; border-bottom-color: #ccc; }
+.standard-layout.template6 .cv-sidebar .cv-contact-item i { color: #555; }
+.standard-layout.template6 .cv-sidebar .cv-skill-item { background-color: #ccc; color: #333; }
+.standard-layout.template6 .cv-main-content .cv-header.two-col-main { border-bottom-color: #555; }
+.standard-layout.template6 .cv-main-content .cv-name { color: #212529; font-family: 'Arial Narrow', Arial, sans-serif; }
+.standard-layout.template6 .cv-main-content .cv-title { color: #555; font-family: 'Arial Narrow', Arial, sans-serif; }
+.standard-layout.template6 .cv-main-content .cv-section-title { color: #555; border-color: #555; font-family: 'Arial Narrow', Arial, sans-serif; }
+.standard-layout.template6 .cv-profile-pic { border-color: #333; }
+.standard-layout.template6 #cv-container { font-family: 'Arial Narrow', Arial, sans-serif; }
+
+.standard-layout.template7 .cv-sidebar { background-color: #17a2b8; color: #fff; font-family: 'Segoe UI', sans-serif; }
+.standard-layout.template7 .cv-sidebar .cv-section-title { color: #fff; border-bottom-color: #d1ecf1; }
+.standard-layout.template7 .cv-sidebar .cv-contact-item i { color: #d1ecf1; }
+.standard-layout.template7 .cv-sidebar .cv-skill-item { background-color: #138496; color: #fff; }
+.standard-layout.template7 .cv-main-content .cv-header.two-col-main { border-bottom-color: #17a2b8; }
+.standard-layout.template7 .cv-main-content .cv-name { color: #212529; font-family: 'Segoe UI', sans-serif; }
+.standard-layout.template7 .cv-main-content .cv-title { color: #17a2b8; font-family: 'Segoe UI', sans-serif; }
+.standard-layout.template7 .cv-main-content .cv-section-title { color: #17a2b8; border-color: #17a2b8; font-family: 'Segoe UI', sans-serif; }
+.standard-layout.template7 .cv-profile-pic { border-color: #fff; }
+.standard-layout.template7 #cv-container { font-family: 'Segoe UI', sans-serif; }
+
+.standard-layout.template8 .cv-sidebar { background-color: #6c757d; color: #f8f9fa; font-family: 'Verdana', sans-serif; }
+.standard-layout.template8 .cv-sidebar .cv-section-title { color: #f8f9fa; border-bottom-color: #adb5bd; }
+.standard-layout.template8 .cv-sidebar .cv-contact-item i { color: #ced4da; }
+.standard-layout.template8 .cv-sidebar .cv-skill-item { background-color: #495057; color: #fff; }
+.standard-layout.template8 .cv-main-content .cv-header.two-col-main { border-bottom-color: #6c757d; }
+.standard-layout.template8 .cv-main-content .cv-name { color: #212529; font-family: 'Verdana', sans-serif; }
+.standard-layout.template8 .cv-main-content .cv-title { color: #6c757d; font-family: 'Verdana', sans-serif; }
+.standard-layout.template8 .cv-main-content .cv-section-title { color: #6c757d; border-color: #6c757d; font-family: 'Verdana', sans-serif; }
+.standard-layout.template8 .cv-profile-pic { border-color: #f8f9fa; }
+.standard-layout.template8 #cv-container { font-family: 'Verdana', sans-serif; }
+
+.standard-layout.template9 .cv-sidebar { background-color: #cce5ff; color: #004085; font-family: 'Calibri', sans-serif; }
+.standard-layout.template9 .cv-sidebar .cv-section-title { color: #004085; border-bottom-color: #a2cbfd; }
+.standard-layout.template9 .cv-sidebar .cv-contact-item i { color: #004085; }
+.standard-layout.template9 .cv-sidebar .cv-skill-item { background-color: #a2cbfd; color: #004085; }
+.standard-layout.template9 .cv-main-content .cv-header.two-col-main { border-bottom-color: #007bff; }
+.standard-layout.template9 .cv-main-content .cv-name { color: #212529; font-family: 'Calibri', sans-serif; }
+.standard-layout.template9 .cv-main-content .cv-title { color: #007bff; font-family: 'Calibri', sans-serif; }
+.standard-layout.template9 .cv-main-content .cv-section-title { color: #007bff; border-color: #007bff; font-family: 'Calibri', sans-serif; }
+.standard-layout.template9 .cv-profile-pic { border-color: #004085; }
+.standard-layout.template9 #cv-container { font-family: 'Calibri', sans-serif; }
+
+.standard-layout.template10 .cv-sidebar { background-color: #f0f0f0; color: #555; font-family: 'PT Sans', sans-serif; }
+.standard-layout.template10 .cv-sidebar .cv-section-title { color: #777; border-bottom-color: #ddd; }
+.standard-layout.template10 .cv-sidebar .cv-contact-item i { color: #777; }
+.standard-layout.template10 .cv-sidebar .cv-skill-item { background-color: #ddd; color: #555; }
+.standard-layout.template10 .cv-main-content .cv-header.two-col-main { border-bottom-color: #777; }
+.standard-layout.template10 .cv-main-content .cv-name { color: #212529; font-family: 'PT Sans', sans-serif; }
+.standard-layout.template10 .cv-main-content .cv-title { color: #777; font-family: 'PT Sans', sans-serif; }
+.standard-layout.template10 .cv-main-content .cv-section-title { color: #777; border-color: #777; font-family: 'PT Sans', sans-serif; }
+.standard-layout.template10 .cv-profile-pic { border-color: #555; }
+.standard-layout.template10 #cv-container { font-family: 'PT Sans', sans-serif; }
+
+
+/* Professional Layout Specific Template Styles */
+.professional-layout.template1 .cv-header.professional-layout { background-color: #007bff; color: #fff; }
+.professional-layout.template1 .cv-header.professional-layout .cv-name { color: #fff; font-family: 'Open Sans', sans-serif; }
+.professional-layout.template1 .cv-header.professional-layout .cv-title { color: #cce5ff; font-family: 'Open Sans', sans-serif; }
+.professional-layout.template1 .cv-header.professional-layout .cv-contact-item i { color: #cce5ff; }
+.professional-layout.template1 .cv-header.professional-layout .cv-contact-info { border-top-color: #0056b3; }
+.professional-layout.template1 .cv-sidebar { background-color: #007bff; color: #fff; font-family: 'Open Sans', sans-serif; }
+.professional-layout.template1 .cv-sidebar .cv-profile-pic { border-color: #fff; }
+.professional-layout.template1 .cv-sidebar .cv-section-title { color: #fff; border-bottom-color: #cce5ff; }
+.professional-layout.template1 .cv-sidebar .cv-contact-item i { color: #cce5ff; }
+.professional-layout.template1 .cv-sidebar .cv-skill-item { background-color: #0056b3; color: #fff; }
+.professional-layout.template1 .cv-main-content .cv-section-title { color: #007bff; border-color: #007bff; font-family: 'Open Sans', sans-serif; }
+.professional-layout.template1 #cv-container { font-family: 'Open Sans', sans-serif; }
+
+.professional-layout.template2 .cv-header.professional-layout { background-color: #343a40; color: #f8f9fa; }
+.professional-layout.template2 .cv-header.professional-layout .cv-name { color: #fff; font-family: 'Roboto', sans-serif; }
+.professional-layout.template2 .cv-header.professional-layout .cv-title { color: #ced4da; font-family: 'Roboto', sans-serif; }
+.professional-layout.template2 .cv-header.professional-layout .cv-contact-item i { color: #adb5bd; }
+.professional-layout.template2 .cv-header.professional-layout .cv-contact-info { border-top-color: #495057; }
+.professional-layout.template2 .cv-sidebar { background-color: #343a40; color: #f8f9fa; font-family: 'Roboto', sans-serif; }
+.professional-layout.template2 .cv-sidebar .cv-profile-pic { border-color: #fff; }
+.professional-layout.template2 .cv-sidebar .cv-section-title { color: #f8f9fa; border-bottom-color: #6c757d; }
+.professional-layout.template2 .cv-sidebar .cv-contact-item i { color: #adb5bd; }
+.professional-layout.template2 .cv-sidebar .cv-skill-item { background-color: #495057; color: #fff; }
+.professional-layout.template2 .cv-main-content .cv-section-title { color: #212529; border-color: #212529; font-family: 'Roboto', sans-serif; }
+.professional-layout.template2 #cv-container { font-family: 'Roboto', sans-serif; }
+
+.professional-layout.template3 .cv-header.professional-layout { background-color: #28a745; color: #fff; }
+.professional-layout.template3 .cv-header.professional-layout .cv-name { color: #fff; font-family: 'Lato', sans-serif; }
+.professional-layout.template3 .cv-header.professional-layout .cv-title { color: #d4edda; font-family: 'Lato', sans-serif; }
+.professional-layout.template3 .cv-header.professional-layout .cv-contact-item i { color: #d4edda; }
+.professional-layout.template3 .cv-header.professional-layout .cv-contact-info { border-top-color: #1e7e34; }
+.professional-layout.template3 .cv-sidebar { background-color: #e9ecef; color: #212529; font-family: 'Lato', sans-serif; }
+.professional-layout.template3 .cv-sidebar .cv-profile-pic { border-color: #28a745; }
+.professional-layout.template3 .cv-sidebar .cv-section-title { color: #28a745; border-bottom-color: #d4edda; }
+.professional-layout.template3 .cv-sidebar .cv-contact-item i { color: #28a745; }
+.professional-layout.template3 .cv-sidebar .cv-skill-item { background-color: #d4edda; color: #28a745; }
+.professional-layout.template3 .cv-main-content .cv-section-title { color: #28a745; border-color: #28a745; font-family: 'Lato', sans-serif; }
+.professional-layout.template3 #cv-container { font-family: 'Lato', sans-serif; }
+
+.professional-layout.template4 .cv-header.professional-layout { background-color: #f8f9fa; color: #dc3545; }
+.professional-layout.template4 .cv-header.professional-layout .cv-name { color: #dc3545; font-family: 'Ubuntu', sans-serif; }
+.professional-layout.template4 .cv-header.professional-layout .cv-title { color: #c82333; font-family: 'Ubuntu', sans-serif; }
+.professional-layout.template4 .cv-header.professional-layout .cv-contact-item i { color: #dc3545; }
+.professional-layout.template4 .cv-header.professional-layout .cv-contact-info { border-top-color: #dc3545; }
+.professional-layout.template4 .cv-sidebar { background-color: #dc3545; color: #fff; font-family: 'Ubuntu', sans-serif; }
+.professional-layout.template4 .cv-sidebar .cv-profile-pic { border-color: #fff; }
+.professional-layout.template4 .cv-sidebar .cv-section-title { color: #fff; border-bottom-color: #f8d7da; }
+.professional-layout.template4 .cv-sidebar .cv-contact-item i { color: #f8d7da; }
+.professional-layout.template4 .cv-sidebar .cv-skill-item { background-color: #c82333; color: #fff; }
+.professional-layout.template4 .cv-main-content .cv-section-title { color: #dc3545; border-color: #dc3545; font-family: 'Ubuntu', sans-serif; }
+.professional-layout.template4 #cv-container { font-family: 'Ubuntu', sans-serif; }
+
+.professional-layout.template5 .cv-header.professional-layout { background-color: #6f42c1; color: #fff; }
+.professional-layout.template5 .cv-header.professional-layout .cv-name { color: #fff; font-family: 'Montserrat', sans-serif; }
+.professional-layout.template5 .cv-header.professional-layout .cv-title { color: #e6e6fa; font-family: 'Montserrat', sans-serif; }
+.professional-layout.template5 .cv-header.professional-layout .cv-contact-item i { color: #e6e6fa; }
+.professional-layout.template5 .cv-header.professional-layout .cv-contact-info { border-top-color: #563d7c; }
+.professional-layout.template5 .cv-sidebar { background-color: #e6e6fa; color: #495057; font-family: 'Montserrat', sans-serif; }
+.professional-layout.template5 .cv-sidebar .cv-profile-pic { border-color: #6f42c1; }
+.professional-layout.template5 .cv-sidebar .cv-section-title { color: #6f42c1; border-bottom-color: #d6c8eb; }
+.professional-layout.template5 .cv-sidebar .cv-contact-item i { color: #6f42c1; }
+.professional-layout.template5 .cv-sidebar .cv-skill-item { background-color: #d6c8eb; color: #6f42c1; }
+.professional-layout.template5 .cv-main-content .cv-section-title { color: #6f42c1; border-color: #6f42c1; font-family: 'Montserrat', sans-serif; }
+.professional-layout.template5 #cv-container { font-family: 'Montserrat', sans-serif; }
+
+.professional-layout.template6 .cv-header.professional-layout { background-color: #ffc107; color: #212529; }
+.professional-layout.template6 .cv-header.professional-layout .cv-name { color: #212529; font-family: 'Arial', sans-serif; }
+.professional-layout.template6 .cv-header.professional-layout .cv-title { color: #664d03; font-family: 'Arial', sans-serif; }
+.professional-layout.template6 .cv-header.professional-layout .cv-contact-item i { color: #664d03; }
+.professional-layout.template6 .cv-header.professional-layout .cv-contact-info { border-top-color: #d39e00; }
+.professional-layout.template6 .cv-sidebar { background-color: #f8f9fa; color: #212529; font-family: 'Arial', sans-serif; }
+.professional-layout.template6 .cv-sidebar .cv-profile-pic { border-color: #ffc107; }
+.professional-layout.template6 .cv-sidebar .cv-section-title { color: #ffc107; border-bottom-color: #ffeeba; }
+.professional-layout.template6 .cv-sidebar .cv-contact-item i { color: #ffc107; }
+.professional-layout.template6 .cv-sidebar .cv-skill-item { background-color: #ffeeba; color: #ffc107; }
+.professional-layout.template6 .cv-main-content .cv-section-title { color: #ffc107; border-color: #ffc107; font-family: 'Arial', sans-serif; }
+.professional-layout.template6 #cv-container { font-family: 'Arial', sans-serif; }
+
+.professional-layout.template7 .cv-header.professional-layout { background-color: #0056b3; color: #fff; }
+.professional-layout.template7 .cv-header.professional-layout .cv-name { color: #fff; font-family: 'Arial Black', sans-serif; }
+.professional-layout.template7 .cv-header.professional-layout .cv-title { color: #cce5ff; font-family: 'Arial Black', sans-serif; }
+.professional-layout.template7 .cv-header.professional-layout .cv-contact-item i { color: #cce5ff; }
+.professional-layout.template7 .cv-header.professional-layout .cv-contact-info { border-top-color: #004085; }
+.professional-layout.template7 .cv-sidebar { background-color: #f8f9fa; color: #212529; font-family: 'Arial', sans-serif; }
+.professional-layout.template7 .cv-sidebar .cv-profile-pic { border-color: #0056b3; }
+.professional-layout.template7 .cv-sidebar .cv-section-title { color: #0056b3; border-bottom-color: #cce5ff; }
+.professional-layout.template7 .cv-sidebar .cv-contact-item i { color: #0056b3; }
+.professional-layout.template7 .cv-sidebar .cv-skill-item { background-color: #cce5ff; color: #0056b3; }
+.professional-layout.template7 .cv-main-content .cv-section-title { color: #0056b3; border-color: #0056b3; font-family: 'Arial', sans-serif; }
+.professional-layout.template7 #cv-container { font-family: 'Arial', sans-serif; }
+
+.professional-layout.template8 .cv-header.professional-layout { background-color: #f8f9fa; color: #343a40; }
+.professional-layout.template8 .cv-header.professional-layout .cv-name { color: #212529; font-family: 'Segoe UI', sans-serif; }
+.professional-layout.template8 .cv-header.professional-layout .cv-title { color: #6c757d; font-family: 'Segoe UI', sans-serif; }
+.professional-layout.template8 .cv-header.professional-layout .cv-contact-item i { color: #6c757d; }
+.professional-layout.template8 .cv-header.professional-layout .cv-contact-info { border-top-color: #e9ecef; }
+.professional-layout.template8 .cv-sidebar { background-color: #343a40; color: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
+.professional-layout.template8 .cv-sidebar .cv-profile-pic { border-color: #fff; }
+.professional-layout.template8 .cv-sidebar .cv-section-title { color: #f8f9fa; border-bottom-color: #6c757d; }
+.professional-layout.template8 .cv-sidebar .cv-contact-item i { color: #adb5bd; }
+.professional-layout.template8 .cv-sidebar .cv-skill-item { background-color: #495057; color: #fff; }
+.professional-layout.template8 .cv-main-content .cv-section-title { color: #343a40; border-color: #343a40; font-family: 'Segoe UI', sans-serif; }
+.professional-layout.template8 #cv-container { font-family: 'Segoe UI', sans-serif; }
+
+.professional-layout.template9 .cv-header.professional-layout { background: linear-gradient(to right, #007bff, #0056b3); color: #fff; }
+.professional-layout.template9 .cv-header.professional-layout .cv-name { color: #fff; font-family: 'Helvetica', sans-serif; }
+.professional-layout.template9 .cv-header.professional-layout .cv-title { color: #cce5ff; font-family: 'Helvetica', sans-serif; }
+.professional-layout.template9 .cv-header.professional-layout .cv-contact-item i { color: #cce5ff; }
+.professional-layout.template9 .cv-header.professional-layout .cv-contact-info { border-top-color: #0056b3; }
+.professional-layout.template9 .cv-sidebar { background-color: #007bff; color: #fff; font-family: 'Helvetica', sans-serif; }
+.professional-layout.template9 .cv-sidebar .cv-profile-pic { border-color: #fff; }
+.professional-layout.template9 .cv-sidebar .cv-section-title { color: #fff; border-bottom-color: #cce5ff; }
+.professional-layout.template9 .cv-sidebar .cv-contact-item i { color: #cce5ff; }
+.professional-layout.template9 .cv-sidebar .cv-skill-item { background-color: #0056b3; color: #fff; }
+.professional-layout.template9 .cv-main-content .cv-section-title { color: #007bff; border-color: #007bff; font-family: 'Helvetica', sans-serif; }
+.professional-layout.template9 #cv-container { font-family: 'Helvetica', sans-serif; }
+
+.professional-layout.template10 .cv-header.professional-layout { background-color: #555; color: #fff; }
+.professional-layout.template10 .cv-header.professional-layout .cv-name { color: #fff; font-family: 'Arial', sans-serif; }
+.professional-layout.template10 .cv-header.professional-layout .cv-title { color: #ccc; font-family: 'Arial', sans-serif; }
+.professional-layout.template10 .cv-header.professional-layout .cv-contact-item i { color: #ccc; }
+.professional-layout.template10 .cv-header.professional-layout .cv-contact-info { border-top-color: #777; }
+.professional-layout.template10 .cv-sidebar { background-color: #f0f0f0; color: #333; font-family: 'Arial', sans-serif; }
+.professional-layout.template10 .cv-sidebar .cv-profile-pic { border-color: #555; }
+.professional-layout.template10 .cv-sidebar .cv-section-title { color: #555; border-bottom-color: #ccc; }
+.professional-layout.template10 .cv-sidebar .cv-contact-item i { color: #555; }
+.professional-layout.template10 .cv-sidebar .cv-skill-item { background-color: #ccc; color: #333; }
+.professional-layout.template10 .cv-main-content .cv-section-title { color: #555; border-color: #555; font-family: 'Arial', sans-serif; }
+.professional-layout.template10 #cv-container { font-family: 'Arial', sans-serif; }
+
+
+/* Styles for printing only modal content */
+ @media print {
+    /* Hide everything that's not the CV builder modal or payment modals */
+    body > *:not(#cv-builder-modal):not(#cv-preview-modal):not(#payment-modal):not(#qr-payment-popup) { /* Added cv-preview-modal */
+        display: none !important;
+    }
+
+     /* Ensure the specific modal being printed is visible */
+    #cv-builder-modal, /* If printing builder modal content */
+    #cv-preview-modal, /* If printing preview modal content */
+    #payment-modal, /* If printing payment modal content */
+    #qr-payment-popup /* If printing QR modal content */
+     {
+        position: static !important; /* Remove fixed positioning */
+        display: block !important; /* Force display */
+        background-color: transparent !important; /* Remove background overlay */
+        overflow: visible !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+     }
+
+    /* Ensure the active step within the builder modal is visible for printing */
+    #cv-builder-modal #data-entry-step,
+    #cv-builder-modal #template-selection-step {
+        display: block !important;
+        overflow: visible !important;
+        padding: 0 !important;
+    }
+
+    /* Hide modal specific elements like close button and navigation/payment buttons */
+    .overlay-popup .popup-close, /* Generic close button */
+    #cv-builder-modal .d-flex.justify-content-between.mt-4, /* Back/Download buttons in builder */
+    #cv-builder-modal .d-flex.justify-content-center.mt-3, /* Next button in builder */
+    #cv-preview-modal .d-flex.justify-content-center.mt-4, /* Download/Print button in preview */
+    #payment-modal .popup-box > *, /* Hide all payment modal content except close button */
+    #qr-payment-popup .popup-inner > * /* Hide all QR modal content except close button */
+    {
+        display: none !important;
+    }
+     /* Only show close button for modals if needed for context in print - usually not needed */
+     .overlay-popup .popup-close { display: none !important; }
+
+
+    /* Ensure the modal content container is visible and its content is visible */
+     #cv-builder-modal .modal-content-container,
+     #cv-preview-modal .modal-content-container /* Also for the preview modal */
+      {
+        overflow-y: visible !important;
+        padding-right: 0 !important;
+        padding-left: 0 !important;
+        margin-bottom: 0 !important;
+     }
+
+
+    /* Make the #cv-container (the actual CV preview area with generated CV) visible and printable */
+    /* This is now inside #cv-preview-modal */
+    #cv-preview-area {
+        display: block !important; /* Make the preview area visible */
+        border: none !important;
+        padding: 0 !important;
+        margin-top: 0 !important;
+        background-color: transparent !important;
+        overflow: visible !important; /* Allow the CV content inside to dictate height */
+        max-height: none !important; /* Remove max height for printing */
+    }
+
+    /* Ensure the CV content inside the preview area is displayed correctly for print */
+    #cv-container {
+        display: flex !important; /* Maintain flex/grid layout for columns */
+        width: 210mm !important;
+        min-height: 297mm !important;
+        margin: 0 auto !important;
+        box-shadow: none !important;
+        overflow: visible !important;
+        page-break-after: always; /* Ensure each CV instance is on a new page if printing multiple */
+    }
+
+    /* Adjustments for multi-column layouts during print */
+    .cv-two-column-layout,
+    .cv-professional-layout {
+        display: flex !important; /* Force flex for print to manage columns */
+        flex-direction: row !important; /* Maintain columns side-by-side */
+        page-break-inside: avoid; /* Avoid breaking the layout across pages */
+        gap: 30px !important; /* Restore gap for columns */
+    }
+
+    .cv-professional-layout[dir="ltr"] {
+         flex-direction: row-reverse !important; /* Correct column order for LTR */
+    }
+
+    .cv-sidebar,
+    .cv-main-content {
+        overflow: visible !important; /* Ensure all content in columns is visible */
+        page-break-inside: avoid; /* Avoid breaking content within columns */
+        padding: 0 !important; /* Remove padding inside sidebar/main for print, let inner sections handle it */
+    }
+
+    .cv-sidebar {
+         width: 300px !important; /* Maintain sidebar width */
+         flex-shrink: 0 !important;
+         background-color: transparent !important; /* Remove sidebar background color for cleaner print */
+    }
+    .cv-main-content {
+        flex-grow: 1 !important;
+         background-color: transparent !important; /* Remove main content background color */
+    }
+
+
+    /* Restore padding within sections inside sidebar/main */
+     .cv-sidebar .cv-section,
+     .cv-main-content .cv-section {
+         padding: 15px !important;
+         background-color: #f8f9fa !important; /* Restore section background */
+     }
+      .cv-sidebar .cv-section.no-padding,
+      .cv-main-content .cv-section.no-padding {
+          padding: 0 !important;
+          background-color: transparent !important;
+      }
+
+
+    /* Restore text alignment for print */
+     .cv-content,
+     .cv-sidebar,
+     .cv-main-content,
+     .cv-section {
+         text-align: inherit !important; /* Inherit the direction's default alignment */
+     }
+     .cv-header.centered,
+     .cv-header.professional-layout,
+     .cv-sidebar .cv-section-title,
+     .cv-sidebar .cv-skill-item {
+         text-align: center !important; /* Maintain explicit centering where intended */
+     }
+      .cv-contact-item {
+          justify-content: inherit !important; /* Allow contact items to align with parent */
+      }
+      .cv-sidebar .cv-contact-item {
+          justify-content: center !important; /* Explicitly center contact items in sidebar */
+      }
+
+
+    /* Adjustments for specific template styles during print */
+    .standard-layout.template5 .cv-sidebar { border-right: none !important; border-left: none !important; } /* Remove border */
+
+
+    /* Hide payment modals if they are triggered or visible during print attempt */
+    #payment-modal {
+        display: none !important;
+    }
+    #qr-payment-popup {
+        display: none !important;
+    }
+ }
+
+/* Payment Modal Styles */
+/* These styles handle the general payment modal and QR/manual payment popup */
+/* Note: They use the same overlay-popup base class */
+#payment-modal .popup-box { /* Main payment modal style */
+  text-align: center;
+  padding: 20px;
+}
+
+/* ****** NEW: قاعدة لحاوية المحتوى القابل للتمرير (حقول النموذج) ****** */
+.qr-payment-inputs-scroll {
+    flex-grow: 1; /* السماح لهذه الحاوية بالنمو وملء المساحة العمودية المتاحة */
+    overflow-y: auto; /* جعل المحتوى بداخل هذه الحاوية قابلاً للتمرير */
+    /* يمكن إضافة هامش سفلي هنا إذا أردت مسافة بين آخر حقل في النموذج والزر */
+    margin-bottom: 20px; /* مثال على هامش سفلي */
+    /* لا تحدد ارتفاعاً ثابتاً أو أقصى ارتفاع هنا، flex-grow هو ما يتحكم في ارتفاعها */
+     box-sizing: border-box; /* تأكد من احتساب الهامش الداخلي ضمن الأبعاد */
+     /* المحاذاة النصية للحقول ستعتمد على قواعد أخرى أو توريث الاتجاه */
+}
+
+
+
+#paypal-button-container {
+    /* ... خصائص حاوية PayPal الحالية ... */
+     /* تأكد أن margin-bottom يوفر مسافة مناسبة بينها وبين العنصر الذي يليها */
+     margin-bottom: 20px; /* مثال على هامش سفلي */
+}
+
+#submit-payment-proof {
+    /* ... خصائص زر الإرسال الحالية ... */
+    /* هذا الزر سيكون ثابتاً في الأسفل لأن الأب flex ونموه يتم في qr-payment-inputs-scroll */
+    /* تأكد أن margin-bottom يوفر مسافة بينه وبين عنصر النتيجة */
+    margin-bottom: 10px; /* مثال على هامش سفلي */
+    /* كلاس w-100 من Bootstrap سيجعله يملأ عرض الأب */
+}
+
+#qr-payment-result {
+    /* ... خصائص div النتيجة الحالية ... */
+     /* تأكد أن margin-top يوفر مسافة مناسبة فوقه */
+    margin-top: 10px; /* مثال على هامش علوي - موجود بالفعل كـ inline style لكن جيد ملاحظته */
+}
+
+
+/* قاعدة إظهار النافذة باستخدام active تبقى كما هي */
+#qr-payment-popup.active {
+    display: flex;
+}
+
+/* قواعد الاستجابة @media (max-width: 768px) */
+@media (max-width: 768px) {
+    #qr-payment-popup .popup-inner {
+        /* ... تعديلات الحجم والاستجابة ... */
+        display: flex; /* يجب أن يكون flex أيضاً في الشاشات الصغيرة */
+        flex-direction: column;
+        max-height: 90vh; /* أو قيمة أخرى تناسب الشاشات الصغيرة */
+        overflow-y: hidden;
+    }
+
+    /* تعديل حاوية التمرير في الشاشات الصغيرة */
+     .qr-payment-inputs-scroll {
+          flex-grow: 1;
+          overflow-y: auto;
+          margin-bottom: 20px; /* أو قيمة أخرى */
+     }
+
+}
+
+#qr-payment-popup .popup-inner {
+    padding: 30px; /* الهامش الداخلي يبقى لتوفير مسافة حول كل المحتوى */
+    border-radius: 8px;
+    width: 550px;
+    max-width: 90vw;
+    /* position: relative; */ /* قد لا نحتاجها هنا إذا لم يكن هناك تحديد موضع مطلق لأطفالها المباشرين */
+    text-align: center; /* لتوسيط صورة QR وحاوية PayPal والزر الثابت */
+    background: white;
+  
+    /* ****** تطبيق Flexbox (اتجاه عمودي) وتحديد أقصى ارتفاع ****** */
+    display: flex;
+    flex-direction: column; /* ترتيب الأطفال عمودياً */
+    max-height: 90vh; /* أقصى ارتفاع للصندوق ككل */
+    /* إزالة overflow-y من هنا، سيتم تطبيقه على حاوية المحتوى القابلة للتمرير */
+    overflow-y: hidden; /* منع صندوق popup-inner نفسه من التمرير */
+    /* ****** نهاية تطبيق Flexbox ****** */
+  }
+
+/* Style for QR image */
+#qr-payment-image {
+    max-width: 200px;
+    margin-bottom: 15px;
+    display: none; /* Default hidden */
+}
+
+/* Style for PayPal button container */
+#paypal-button-container {
+    margin-top: 20px;
+    width: 100%;
+}
+
+/* Style for manual payment form */
+#manual-payment-form {
+    margin-top: 20px;
+    display: none; /* Default hidden */
+    text-align: initial; /* Left align text for RTL, right for LTR */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .popup-box {
+        max-width: 95%;
+        padding: 20px;
+    }
+
+     #cv-preview-modal .popup-box.large-popup-box {
+         width: 95%; /* Adjust for small screens */
+         max-width: 95%;
+     }
+
+    #qr-payment-popup .popup-inner {
+        width: 95%;
+        max-width: 95%;
+        padding: 20px;
+    }
+
+    /* Adjustments for CV layout within the modal on smaller screens */
+    #cv-preview-area {
+        padding: 10px;
+    }
+
+    #cv-container {
+         width: 100%; /* Allow CV container to take full width in modal */
+         min-height: auto; /* Allow height to adjust based on content */
+    }
+
+    .cv-two-column-layout,
+    .cv-professional-layout {
+        flex-direction: column !important; /* Stack columns vertically on smaller screens */
+        grid-template-columns: 1fr !important; /* Single column grid */
+        grid-template-rows: auto auto 1fr !important; /* Adjust rows for stacked layout */
+        grid-template-areas:
+            "header"
+            "sidebar"
+            "main" !important; /* Reorder areas for stacking */
+        gap: 0; /* Remove gap when stacked */
+    }
+
+    .cv-sidebar {
+        width: 100% !important; /* Full width for sidebar when stacked */
+        padding: 20px !important; /* Adjust sidebar padding */
+        text-align: inherit !important; /* Allow sidebar text to align with parent direction */
+    }
+
+    .cv-main-content {
+        padding: 20px !important; /* Adjust main content padding */
+         text-align: inherit !important; /* Allow main content text to align with parent direction */
+    }
+
+     .cv-header.professional-layout {
+        padding: 20px !important; /* Adjust header padding */
+     }
+
+     .cv-sidebar .cv-section-title {
+         text-align: inherit !important; /* Align sidebar titles with the rest of the content */
+     }
+
+     .cv-sidebar .cv-contact-item {
+         justify-content: inherit !important; /* Allow contact items to align */
+     }
+
+     .cv-sidebar .cv-skill-item {
+         display: inline-block !important; /* Back to inline-block for skills in stacked layout */
+         margin-left: 5px !important; /* Add margin between skills */
+         margin-right: 0 !important; /* Reset right margin */
+         text-align: inherit !important; /* Allow skill item text to align */
+     }
+      body[dir="ltr"] .cv-sidebar .cv-skill-item {
+           margin-left: 0 !important; /* Reset left margin */
+           margin-right: 5px !important; /* Add margin between skills */
+       }
+
+    .cv-skill-list {
+        column-count: 1 !important; /* Single column for skills on small screens */
+    }
+
+     /* Adjustments for print styles on smaller screens */
+     @media print {
+         .cv-two-column-layout,
+         .cv-professional-layout {
+             flex-direction: column !important; /* Force stacking for print on small screens */
+             grid-template-columns: 1fr !important;
+             grid-template-areas:
+                 "header"
+                 "sidebar"
+                 "main" !important;
+             gap: 0 !important;
+         }
+         .cv-sidebar { width: 100% !important; padding: 0 !important; }
+         .cv-main-content { padding: 0 !important; }
+
+          /* Restore padding within sections inside stacked sidebar/main */
+          .cv-sidebar .cv-section,
+          .cv-main-content .cv-section {
+              padding: 15px !important;
+              background-color: #f8f9fa !important;
+          }
+           .cv-sidebar .cv-section.no-padding,
+           .cv-main-content .cv-section.no-padding {
+               padding: 0 !important;
+               background-color: transparent !important;
+           }
+
+         .cv-sidebar .cv-section-title,
+         .cv-sidebar .cv-skill-item {
+             text-align: inherit !important; /* Align sidebar content left/right for print */
+         }
+          .cv-sidebar .cv-contact-item {
+              justify-content: inherit !important; /* Allow contact items to align */
+          }
+     }
+}
+
+/* Section: Why Resail CV Builder */
+#why-resail {
+    background-color: #fff; /* خلفية بيضاء للقسم */
+}
+
+.feature-card {
+    text-align: center;
+    padding: 30px;
+    border-radius: 8px;
+    height: 100%; /* لجعل الكروت بنفس الارتفاع في الـ grid */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: #f8f9fa; /* لون خلفية الكرت */
+}
+
+.feature-card:hover {
+    transform: translateY(-10px); /* رفع الكرت عند المرور بالفأرة */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.feature-icon {
+    width: 60px; /* حجم الأيقونات/الصور المصغرة */
+    height: 60px;
+    object-fit: contain; /* للحفاظ على نسبة الأبعاد */
+}
+
+.feature-card h3 {
+    font-size: 1.3em;
+    color: #007bff; /* لون عنوان الميزة */
+    margin-bottom: 10px;
+}
+
+.feature-card p {
+    font-size: 1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+/* Responsive adjustments for the grid */
+@media (max-width: 768px) {
+    #why-resail .row-cols-md-2 {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* عمودين في الشاشات المتوسطة والصغيرة إذا المساحة تسمح */
+    }
+}
+
+@media (max-width: 576px) {
+     #why-resail .row-cols-1 {
+        grid-template-columns: 1fr; /* عمود واحد في الشاشات الصغيرة جداً */
+    }
+     .feature-card {
+         padding: 20px; /* تقليل الهامش الداخلي في الشاشات الصغيرة */
+     }
+}
+
+/* Section: Testimonials */
+#testimonials {
+    /* الخلفية تم تحديدها في HTML باستخدام كلاس bg-light */
+}
+
+.testimonial-card {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    height: 100%; /* لجعل الكروت بنفس الارتفاع */
+}
+
+.testimonial-card p.lead {
+    font-size: 1.1em;
+    font-style: italic;
+    color: #444;
+}
+
+.testimonial-card p.font-weight-bold {
+    color: #007bff; /* لون اسم العميل */
+    margin-bottom: 0;
+    font-weight: 700; /* Bootstrap class equivalent for bold */
+}
+
+/* Section: CV Count */
+#cv-count {
+    background-color: #f7f9fc; /* نفس لون خلفية الجسم أو لون مختلف قليلاً */
+}
+
+#cv-count h2 {
+   color: #333;
+}
+
+#cv-count .display-4 {
+    font-size: 3.5rem; /* حجم أكبر للعدد */
+    font-weight: 700; /* خط عريض */
+    color: #007bff !important; /* اللون الأساسي */
+    margin-bottom: 10px;
+}
+
+#cv-count .lead {
+    color: #555;
+}
+
+/* Section: FAQ */
+#faq {
+    background-color: #fff; /* خلفية بيضاء */
+}
+
+#faq h2 {
+    color: #333;
+}
+
+.faq-item h4 {
+    font-size: 1.2em;
+    color: #007bff; /* لون السؤال */
+    margin-bottom: 8px;
+}
+
+.faq-item p {
+    font-size: 1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+/* Footer */
+footer {
+    /* الخلفية واللون تم تحديدهما في HTML باستخدام كلاسات Bootstrap */
+     font-size: 0.9em;
+}
+
+footer p {
+    margin-bottom: 0;
+}
+
+/* إذا أضفت روابط في الفوتر */
+/*
+.footer-links a {
+    color: #ccc;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+*/
+/* إضافة نمط لحاوية النصوص داخل الرأس العادي */
+.cv-header-text {
+    flex-grow: 1; /* يسمح لها بالنمو لملء المساحة المتاحة */
+    /* محاذاة النص هنا ستتبع بشكل أساسي اتجاه الأب (.cv-header) */
+    text-align: inherit; /* يرث المحاذاة */
+    margin: 25px;
+    display: flex;
+    flex-direction: row; /* ترتيب الاسم والمسمى ومعلومات التواصل عمودياً */
+    justify-content: center; /* توسيط العناصر عمودياً داخل هذه الحاوية */
+}
+
+/* تعديل هامش الصورة الشخصية داخل الرأس (عندما يكون الرأس flex وليس عموديًا وموسّطًا) */
+.cv-header:not(.centered) .cv-profile-pic {
+    /* استخدم margin-left في RTL لإضافة مسافة على يسار الصورة (بينها وبين النص) */
+    margin-left: 20px;
+    margin-right: 0; /* تأكد من عدم وجود هامش يمين يتعارض */
+}
+/* في اتجاه LTR، عكس الهامش */
+body[dir="ltr"] .cv-header:not(.centered) .cv-profile-pic {
+    margin-left: 0; /* تأكد من عدم وجود هامش يسار يتعارض */
+    margin-right: 20px; /* استخدم margin-right في LTR لإضافة مسافة على يمين الصورة */
+}
+
+/* تأكد من أن أنماط الرأس الموسّط (القالب 3) لا تزال تعمل بشكل صحيح وتتجاوز الأنماط أعلاه إذا لزم الأمر */
+.cv-header.centered {
+    flex-direction: column; /* يبقى عمودياً */
+    justify-content: center; /* يبقى موسّطاً */
+    align-items: center; /* توسيط العناصر أفقياً عندما تكون عمودية */
+    text-align: center; /* توسيط النص */
+}
+.cv-header.centered .cv-profile-pic {
+    /* إعادة ضبط الهوامش للصورة في الرأس الموسّط ليكون موسّطاً بالكامل */
+    margin: 0 auto 15px auto; /* توسيط أفقي وإضافة هامش سفلي */
+}
+.cv-header.centered .cv-header-text {
+    text-align: center; /* توسيط النص داخل حاوية النصوص في الرأس الموسّط */
+    align-items: center; /* توسيط العناصر المرنة داخل حاوية النصوص (مثل عناصر بيانات التواصل إذا كانت مرنة) */
+}
+/* تعديل محاذاة عناصر بيانات التواصل في الرأس الموسّط */
+.cv-header.centered .cv-header-text .cv-contact-item {
+     justify-content: center; /* توسيط المحتوى داخل عنصر بيانات التواصل */
+      /* يمكنك إضافة هامش سفلي بين عناصر بيانات التواصل هنا إذا أصبحت مكدسة عمودياً */
+      margin-bottom: 5px;
+}
+
+
+/* تأكد من أن باقي أقسام السيرة الذاتية (غير الرأس) تحافظ على محاذاة النص الطبيعية بناءً على الاتجاه العام */
+/* هذه الأنماط قد تكون موجودة بالفعل، ولكن من الجيد التأكد */
+.cv-main-content .cv-section,
+.cv-main-content .cv-experience-item,
+.cv-main-content .cv-education-item,
+.cv-main-content .cv-skill-list li,
+.cv-main-content .cv-language-list li,
+.cv-main-content .cv-reference-item {
+    text-align: inherit; /* يرث المحاذاة من الأب (cv-main-content أو cv-content) */
+}
+
+/* تأكد أيضاً من محاذاة محتوى العمود الجانبي إذا كانت هناك أنماط سابقة تفرض محاذاة مختلفة */
+/* بناءً على الكود المقدم، العمود الجانبي غالباً ما يكون موسّطاً، تأكد من الحفاظ على هذا إذا كان مطلوباً */
+.cv-sidebar .cv-section,
+.cv-sidebar .cv-section-title,
+.cv-sidebar .cv-contact-item,
+.cv-sidebar .cv-skill-list li,
+.cv-sidebar .cv-language-list li,
+.cv-sidebar .cv-reference-item,
+.cv-sidebar .cv-skill-item {
+     text-align: center; /* غالباً العمود الجانبي يحتاج توسيطاً */
+}
+/* تعديل موضع علامات القائمة في العمود الجانبي إذا كان موسّطاً */
+.cv-sidebar .cv-language-list {
+    list-style: disc;
+    padding-right: 0;
+    padding-left: 0;
+}
+.cv-sidebar .cv-language-list li {
+    list-style-position: inside; /* جعل العلامة داخل النص عند التوسيط */
+    text-align: center; /* النص نفسه موسّط */
+}
