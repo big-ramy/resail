@@ -77,7 +77,8 @@ const translations = {
         "payment-error-general": "An error occurred during PayPal payment. Please try again.",
         "Apply Discount": "Apply Discount",
         "Enter discount code (if any)": "Enter discount code (if any)",
-        "End of CV": "End of CV"
+        "End of CV": "End of CV",
+        "contact-link": "Contact Us"
     },
     ar: {
         'brand-name': 'رسائل',
@@ -158,6 +159,7 @@ const translations = {
         "Apply Discount": "تطبيق الخصم",
         "Enter discount code (if any)": "أدخل كود الخصم (إن وجد)",
         "End of CV": "النهاية", // أضف هذا السطر
+        "contact-link": "اتصل بنا"
     }
 };
 
@@ -2506,3 +2508,89 @@ function populateWithTestData() {
 
 
 
+// دالة جديدة لتنزيل السيرة الذاتية كصورة (PNG)
+async function downloadCVImage() {
+    const cvContainer = document.getElementById('cv-container');
+    if (!cvContainer) {
+        alert(currentLang === 'ar' ? 'لم يتم العثور على حاوية السيرة الذاتية.' : 'CV container not found.');
+        return;
+    }
+
+    // حفظ الأنماط الأصلية لتجنب التأثير على العرض المرئي قبل الالتقاط
+    const originalStyles = {
+        width: cvContainer.style.width,
+        height: cvContainer.style.height,
+        overflow: cvContainer.style.overflow,
+        backgroundColor: cvContainer.style.backgroundColor,
+        position: cvContainer.style.position,
+        top: cvContainer.style.top,
+        left: cvContainer.style.left,
+        zIndex: cvContainer.style.zIndex,
+        transform: cvContainer.style.transform,
+        display: cvContainer.style.display,
+        maxHeight: cvContainer.style.maxHeight,
+        overflowY: cvContainer.style.overflowY,
+        padding: cvContainer.style.padding,
+        margin: cvContainer.style.margin,
+    };
+    const originalScrollTop = cvContainer.scrollTop; // حفظ موضع التمرير
+
+    // تطبيق الأنماط المؤقتة لجعل المحتوى مرئيًا وقابلًا للالتقاط بالكامل
+    cvContainer.style.width = '800px'; // يمكن تعديل هذا العرض للحصول على جودة أفضل
+    cvContainer.style.height = 'auto';
+    cvContainer.style.maxHeight = 'none';
+    cvContainer.style.overflow = 'visible';
+    cvContainer.style.overflowY = 'visible';
+    cvContainer.style.backgroundColor = 'white'; // خلفية بيضاء للصورة
+    cvContainer.style.position = 'absolute'; // إخفاءه عن تدفق الصفحة الرئيسية
+    cvContainer.style.top = '0';
+    cvContainer.style.left = '0';
+    cvContainer.style.zIndex = '-1'; // وضعه في الخلف لعدم إخفاء محتوى الصفحة
+    cvContainer.style.display = 'block'; // التأكد من عرضه
+    cvContainer.style.padding = '30px'; // إضافة هامش داخلي للصورة
+
+    // إخفاء أزرار الحذف التي قد تظهر في المعاينة
+    const removeButtons = cvContainer.querySelectorAll('.remove-field');
+    removeButtons.forEach(btn => btn.style.display = 'none');
+
+    // انتظر قليلاً للتأكد من تطبيق الأنماط وتحميل الصور (اختياري ولكنه يحسن النتائج)
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    try {
+        // استخدام html2canvas لالتقاط محتوى الـ div كـ Canvas
+        const canvas = await html2canvas(cvContainer, {
+             scale: 2, // زيادة الدقة (اختياري، يمكن تعديله)
+             useCORS: true, // محاولة استخدام CORS للصور من مصادر خارجية
+             backgroundColor: 'white', // تحديد الخلفية
+             scrollX: 0, // بدء الالتقاط من أعلى اليسار
+             scrollY: 0,
+             windowWidth: cvContainer.scrollWidth, // التقاط كامل العرض
+             windowHeight: cvContainer.scrollHeight // التقاط كامل الارتفاع
+        });
+
+        // تحويل الـ Canvas إلى Data URL بصيغة PNG
+        const imgData = canvas.toDataURL('image/png');
+
+        // إنشاء رابط تنزيل وهمي
+        const link = document.createElement('a');
+        link.href = imgData;
+        link.download = 'CV_Image.png'; // اسم الملف الذي سيتم تنزيله
+
+        // محاكاة النقر على الرابط لبدء التنزيل
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+    } catch (error) {
+        console.error("Error generating or downloading CV image:", error);
+        alert(translations[currentLang]['Error generating PNG for CV.'] || 'حدث خطأ أثناء إنشاء صورة السيرة الذاتية.');
+    } finally {
+        // استعادة الأنماط الأصلية وعرض أزرار الحذف
+        Object.keys(originalStyles).forEach(key => {
+            cvContainer.style[key] = originalStyles[key];
+        });
+         cvContainer.scrollTop = originalScrollTop; // استعادة موضع التمرير
+
+        removeButtons.forEach(btn => btn.style.display = '');
+    }
+}
