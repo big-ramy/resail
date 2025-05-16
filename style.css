@@ -1725,9 +1725,9 @@ button {
     padding: 30px;
     border-radius: 8px;
     height: 100%; /* لجعل الكروت بنفس الارتفاع في الـ grid */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    background-color: #f8f9fa; /* لون خلفية الكرت */
+    background-color: #f8f9fa00; /* لون خلفية الكرت */
 }
 
 .feature-card:hover {
@@ -1736,15 +1736,18 @@ button {
 }
 
 .feature-icon {
-    width: 60px; /* حجم الأيقونات/الصور المصغرة */
-    height: 60px;
+    width: 200px; /* حجم الأيقونات/الصور المصغرة */
+    height: 200px;
     object-fit: contain; /* للحفاظ على نسبة الأبعاد */
+    border-radius: 15px;
+    filter: drop-shadow(-10px 10px 10px rgba(0, 0, 0, 0.5));
 }
 
 .feature-card h3 {
     font-size: 1.3em;
     color: #007bff; /* لون عنوان الميزة */
     margin-bottom: 10px;
+    text-shadow: -10px 10px 10px rgba(0, 0, 0, 0.5);
 }
 
 .feature-card p {
