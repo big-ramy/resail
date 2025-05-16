@@ -779,7 +779,7 @@ function loadPayPalSDK(lang) {
     const locale = (lang === "ar") ? "ar_SA" : "en_US";
     // رابط تحميل PayPal SDK. استبدل YOUR_PAYPAL_CLIENT_ID بمعرف العميل الخاص بك.
     // (لاحظ أن Client ID في الكود المقدم يبدو كـ Sandbox ID، تأكد من استبداله بمعرف الإنتاج الخاص بك عند النشر)
-    script.src = `https://www.paypal.com/sdk/js?client-id=AeeAWTTUiIffxzut4SPuKKn-qzkmdellWi0LKjKWVSWKBXdQ_NwpONrQDLalv-oYLDdUc_yuw1Yrk_gc&currency=USD&locale=${locale}`;
+    script.src = `https://www.paypal.com/sdk/js?client-id=Abhv3wUuFjO_XRoXoxJ0g3AyrUE3yExMtqp3TLUrK0N82SrBpxRk-kde3jyS-XmAeLEnbJiRds4w7aEr&currency=USD&locale=${locale}`;
     // إضافة مستمع حدث عند تحميل السكربت
     script.onload = function() {
         // إعادة رسم زر باي بال بعد تحميل السكربت إذا كانت نافذة الدفع QR/Manual مفتوحة حالياً
