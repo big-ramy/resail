@@ -1020,7 +1020,7 @@ function openQrPaymentPopup(method, finalPrice, templateCategory) {
     // إظهار العناصر المناسبة بناءً على طريقة الدفع المختارة
     if (method.toLowerCase() === "stc pay") {
         if(qrPaymentImage) {
-            qrPaymentImage.src = "stcpay-qr.png"; // مسار صورة QR لـ STC Pay
+            qrPaymentImage.src = "QRstcpay.png"; // مسار صورة QR لـ STC Pay
             qrPaymentImage.alt = "STC Pay QR Code";
             qrPaymentImage.style.display = "block"; // إظهار الصورة
             document.getElementById("submit-payment-proof").style.display = "block";
@@ -1028,7 +1028,7 @@ function openQrPaymentPopup(method, finalPrice, templateCategory) {
         if(manualPaymentForm) manualPaymentForm.style.display = "block"; // إظهار نموذج الدفع اليدوي لحالة QR
     } else if (method.toLowerCase() === "rajhi") {
         if(qrPaymentImage) {
-            qrPaymentImage.src = "alrajhi-qr.png"; // مسار صورة QR لمصرف الراجحي
+            qrPaymentImage.src = "QRalrajhi.png"; // مسار صورة QR لمصرف الراجحي
             qrPaymentImage.alt = "Al Rajhi QR Code";
             qrPaymentImage.style.display = "block"; // إظهار الصورة
             document.getElementById("submit-payment-proof").style.display = "block";
