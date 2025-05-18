@@ -523,17 +523,31 @@ function outsideClickCvBuilderModal(e) {
 
 // دالة لإظهار قسم إدخال البيانات وإخفاء قسم اختيار القالب (داخل نفس النافذة الرئيسية)
 function showDataEntryStep() {
-    if (dataEntryStep && templateSelectionStep && cvBuilderModal) {
-        dataEntryStep.classList.add('active'); // إظهار قسم إدخال البيانات
-        templateSelectionStep.classList.remove('active'); // إخفاء قسم اختيار القالب
+    // الحصول على مراجع للأزرار وشريط التقدم داخل النافذة المنبثقة
+   const nextButton = document.querySelector('#cv-builder-modal .d-flex.justify-content-center.mt-3 button[onclick="showTemplateSelectionStep()"]');
+   const backButton = document.querySelector('#cv-builder-modal .d-flex.justify-content-center.mt-3 button[onclick="showDataEntryStep()"]');
+   const progressBarFormGroup = document.querySelector('#cv-builder-modal .form-group:has(.progress-container)');
 
-        const modalContentContainer = cvBuilderModal.querySelector('.modal-content-container');
-        if(modalContentContainer) {
-            modalContentContainer.scrollTop = 0; // تمرير المحتوى للأعلى
-        }
-        // استدعاء تحديث اللغة بعد تغيير القسم وإظهاره
-        updateModalContentLanguage();
-    }
+
+   if (dataEntryStep && templateSelectionStep && cvBuilderModal) {
+       dataEntryStep.classList.add('active'); // إظهار قسم إدخال البيانات
+       templateSelectionStep.classList.remove('active'); // إخفاء قسم اختيار القالب
+
+       // **التعديل هنا:** إخفاء زر العودة، وإظهار زر التالي وشريط التقدم
+       if (backButton) backButton.style.display = 'none';
+       if (nextButton) nextButton.style.display = ''; // استخدم '' لإعادة القيمة الافتراضية
+       if (progressBarFormGroup) progressBarFormGroup.style.display = ''; // استخدم '' لإعادة القيمة الافتراضية
+
+
+       const modalContentContainer = cvBuilderModal.querySelector('.modal-content-container');
+       if(modalContentContainer) {
+           modalContentContainer.scrollTop = 0; // تمرير المحتوى للأعلى
+       }
+       // لا حاجة لإعادة إنشاء الـ CV هنا، ولكن نحتاج لتحديث شريط التقدم
+       updateProgress(); // تحديث شريط التقدم عند العودة لخطوة البيانات
+       // استدعاء تحديث اللغة بعد تغيير القسم وإظهاره
+       updateModalContentLanguage();
+   }
 }
 // دالة لإظهار قسم اختيار القالب وإخفاء قسم إدخال البيانات (داخل نفس النافذة الرئيسية)
 function showTemplateSelectionStep() {
@@ -541,6 +555,12 @@ function showTemplateSelectionStep() {
    const name = document.getElementById('name-input');
    const title = document.getElementById('title-input');
    const email = document.getElementById('email-input');
+
+    // الحصول على مراجع للأزرار وشريط التقدم داخل النافذة المنبثقة
+    const nextButton = document.querySelector('#cv-builder-modal .d-flex.justify-content-center.mt-3 button[onclick="showTemplateSelectionStep()"]');
+    const backButton = document.querySelector('#cv-builder-modal .d-flex.justify-content-center.mt-3 button[onclick="showDataEntryStep()"]');
+    const progressBarFormGroup = document.querySelector('#cv-builder-modal .form-group:has(.progress-container)');
+
 
    const nameValue = name ? name.value.trim() : '';
    const titleValue = title ? title.value.trim() : '';
@@ -557,6 +577,12 @@ function showTemplateSelectionStep() {
        dataEntryStep.classList.remove('active'); // إخفاء قسم إدخال البيانات
        templateSelectionStep.classList.add('active'); // إظهار قسم اختيار القالب
 
+       // **التعديل هنا:** إخفاء زر التالي وشريط التقدم، وإظهار زر العودة
+       if (nextButton) nextButton.style.display = 'none';
+       if (progressBarFormGroup) progressBarFormGroup.style.display = 'none';
+       if (backButton) backButton.style.display = ''; // استخدم '' لإعادة القيمة الافتراضية (block أو flex حسب CSS)
+
+
        const modalContentContainer = cvBuilderModal.querySelector('.modal-content-container');
        if(modalContentContainer) {
            modalContentContainer.scrollTop = 0; // تمرير المحتوى للأعلى
@@ -567,6 +593,7 @@ function showTemplateSelectionStep() {
        updateModalContentLanguage();
    }
 }
+
 
 
 
@@ -626,6 +653,7 @@ function openPaymentForCV() {
     if (selectedTemplateCategory === 'normal') price = 10;
     else if (selectedTemplateCategory === 'standard') price = 15;
     else if (selectedTemplateCategory === 'professional') price = 25;
+    else if (selectedTemplateCategory === 'ast') price = 20; // تم إضافة هذا السطر لتحديد سعر قوالب AST
 
     selectedPriceToPay = price; // حفظ السعر للدفع
     selectedTemplateCategory = selectedTemplateCategory; // حفظ فئة القالب
@@ -807,6 +835,7 @@ function openPaymentForCV() {
     if (selectedTemplateCategory === 'normal') price = 10;
     else if (selectedTemplateCategory === 'standard') price = 15;
     else if (selectedTemplateCategory === 'professional') price = 25;
+    else if (selectedTemplateCategory === 'ast') price = 20; // تم إضافة هذا السطر لتحديد سعر قوالب AST
 
     selectedPriceToPay = price; // حفظ السعر الذي سيتم عرضه ودفعه
     // selectedTemplateCategory تم بالفعل تحديثه في دالة selectTemplate، لا حاجة لإعادة تعيينه هنا
@@ -1118,155 +1147,167 @@ function outsideClickQrPayment(e) {
 
 // ** دالة captureCVasPDF المعدلة (مع تنزيل صورة Canvas للتشخيص وتأكيد صيغة PNG) **
 async function captureCVasPDF(cvContainer, downloadPdf = false) {
-        if (!cvContainer) {
-            throw new Error("CV container not found!");
-        }
-    
-        // حفظ الأنماط الأصلية
-        const originalStyles = {
-            width: cvContainer.style.width,
-            height: cvContainer.style.height,
-            overflow: cvContainer.style.overflow,
-            backgroundColor: cvContainer.style.backgroundColor,
-            position: cvContainer.style.position,
-            top: cvContainer.style.top,
-            left: cvContainer.style.left,
-            zIndex: cvContainer.style.zIndex,
-            transform: cvContainer.style.transform,
-            display: cvContainer.style.display,
-            maxHeight: cvContainer.style.maxHeight,
-            overflowY: cvContainer.style.overflowY,
-            padding: cvContainer.style.padding,
-            margin: cvContainer.style.margin,
-        };
-        const originalScrollTop = cvContainer.scrollTop;
-    
-        // تطبيق الأنماط المؤقتة
-        cvContainer.style.width = '800px';
-        cvContainer.style.height = 'auto';
-        cvContainer.style.maxHeight = 'none';
-        cvContainer.style.overflow = 'visible';
-        cvContainer.style.overflowY = 'visible';
-        cvContainer.style.backgroundColor = 'white';
-        cvContainer.style.position = 'absolute';
-        cvContainer.style.top = '0';
-        cvContainer.style.left = '0';
-        cvContainer.style.zIndex = '9999';
-        cvContainer.style.display = 'block';
-    
-        const removeButtons = cvContainer.querySelectorAll('.remove-field');
-        removeButtons.forEach(btn => btn.style.display = 'none');
-    
-        // انتظر تحميل الصور
-        const images = cvContainer.querySelectorAll('img');
-        await Promise.all(
-            Array.from(images).map(img => {
-                if (!img.complete) {
-                    return new Promise(resolve => {
-                        img.onload = resolve;
-                        img.onerror = resolve;
-                    });
-                }
-                return Promise.resolve();
-            })
-        );
-    
-        await new Promise(resolve => setTimeout(resolve, 500));
-    
-        let pdfBase64 = null;
-    
-        try {
-            // 📸 التقاط Canvas باستخدام html2canvas
-            const canvas = await html2canvas(cvContainer, {
-                scale: 2,
-                useCORS: true,
-                backgroundColor: 'white',
-                scrollX: 0,
-                scrollY: 0,
-                windowWidth: cvContainer.scrollWidth,
-                windowHeight: cvContainer.scrollHeight
-            });
-    
-            // 🖼️ تحويل Canvas إلى صورة
-            const imgData = canvas.toDataURL('image/jpeg', 0.98);
-    
-            // ✅ إنشاء PDF باستخدام jsPDF فقط
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4'
-            });
-    
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = 210; // عرض A4 بالملم
-            const imgWidth = imgProps.width;
-            const imgHeight = imgProps.height;
-    
-            const ratio = imgHeight / imgWidth;
-            const pageHeight = pdf.internal.pageSize.getHeight();
-    
-            let position = 0;
-            let remainingHeight = imgHeight;
-    
-            const maxPages = 4; // **NEW: تحديد الحد الأقصى لعدد الصفحات بـ 6**
-    
-            while (remainingHeight > 0) {
-                 // **NEW: إيقاف الحلقة إذا وصلنا إلى الحد الأقصى للصفحات (6)**
-                if (pdf.internal.getNumberOfPages() >= maxPages) {
-                     console.log(`Reached maximum number of pages (${maxPages}). Stopping PDF generation.`);
-                     break; // الخروج من الحلقة
-                }
-    
-                const pageImgHeight = Math.min(pageHeight, remainingHeight);
-                const pageRatio = pageImgHeight / imgHeight;
-    
-                pdf.addImage(
-                    imgData,
-                    'JPEG',
-                    0,
-                    -position,
-                    pdfWidth,
-                    ratio * pdfWidth,
-                    null,
-                    'FAST'
-                );
-    
-                remainingHeight -= pageHeight;
-                position += pageHeight;
-    
-                 // **NEW: إضافة صفحة جديدة فقط إذا كان هناك المزيد من المحتوى المتبقي ولم نصل للحد الأقصى (ناقص واحد)**
-                if (remainingHeight > 0 && pdf.internal.getNumberOfPages() < maxPages) {
-                    pdf.addPage();
-                }
+            if (!cvContainer) {
+                throw new Error("CV container not found!");
             }
     
-            // 💾 تنزيل PDF إذا طلب المستخدم
-            if (downloadPdf) {
-                pdf.save('CV.pdf');
+            // حفظ الأنماط الأصلية
+            const originalStyles = {
+                width: cvContainer.style.width,
+                height: cvContainer.style.height,
+                overflow: cvContainer.style.overflow,
+                backgroundColor: cvContainer.style.backgroundColor,
+                position: cvContainer.style.position,
+                top: cvContainer.style.top,
+                left: cvContainer.style.left,
+                zIndex: cvContainer.style.zIndex,
+                transform: cvContainer.style.transform,
+                display: cvContainer.style.display,
+                maxHeight: cvContainer.style.maxHeight,
+                overflowY: cvContainer.style.overflowY,
+                padding: cvContainer.style.padding, // Added to save/restore padding
+                margin: cvContainer.style.margin,   // Added to save/restore margin
+            };
+            const originalScrollTop = cvContainer.scrollTop;
+    
+            // تطبيق الأنماط المؤقتة لجعل العنصر خارج الشاشة وغير مرئي
+            cvContainer.style.width = '800px'; // عرض ثابت للالتقاط
+            cvContainer.style.height = 'auto'; // ارتفاع تلقائي ليشمل كل المحتوى
+            cvContainer.style.maxHeight = 'none'; // إزالة أي حد أقصى للارتفاع
+            cvContainer.style.overflow = 'visible'; // عرض كل المحتوى المخفي
+            cvContainer.style.overflowY = 'visible'; // عرض كل المحتوى المخفي رأسياً
+            cvContainer.style.backgroundColor = 'white'; // خلفية بيضاء واضحة
+            cvContainer.style.position = 'absolute'; // إزالة العنصر من تدفق المستند العادي
+            cvContainer.style.top = '0'; // يمكن إبقاؤها 0 أو وضعها سالبة
+            cvContainer.style.left = '-9999px'; // **التعديل الرئيسي: نقل العنصر خارج الشاشة لليسار**
+            cvContainer.style.zIndex = '-1'; // **التعديل الرئيسي: وضعه خلف جميع العناصر الأخرى**
+            cvContainer.style.display = 'block'; // التأكد من عرضه لـ html2canvas
+    
+            const removeButtons = cvContainer.querySelectorAll('.remove-field');
+            removeButtons.forEach(btn => btn.style.display = 'none'); // إخفاء أزرار الحذف
+    
+            // انتظر تحميل الصور
+            const images = cvContainer.querySelectorAll('img');
+            await Promise.all(
+                Array.from(images).map(img => {
+                    if (!img.complete) {
+                        return new Promise(resolve => {
+                            img.onload = resolve;
+                            img.onerror = resolve;
+                        });
+                    }
+                    return Promise.resolve();
+                })
+            );
+    
+            // انتظر قليلاً للتأكد من تطبيق الأنماط بالكامل (يمكن تعديل المدة حسب الحاجة)
+            await new Promise(resolve => setTimeout(resolve, 100)); // تم تقليل المدة قليلاً للاستجابة أسرع
+    
+            let pdfBase64 = null;
+    
+            try {
+                // 📸 التقاط Canvas باستخدام html2canvas
+                const canvas = await html2canvas(cvContainer, {
+                    scale: 2, // زيادة الدقة
+                    useCORS: true, // محاولة استخدام CORS للصور
+                    backgroundColor: 'white', // تحديد الخلفية
+                    scrollX: 0, // منع التمرير الأفقي للعنصر المصدر
+                    scrollY: 0, // منع التمرير الرأسي للعنصر المصدر
+                    // تحديد أبعاد النافذة التي يرى منها html2canvas العنصر (مهم لالتقاط كامل المحتوى)
+                    windowWidth: cvContainer.scrollWidth, // استخدم عرض المحتوى الكامل
+                    windowHeight: cvContainer.scrollHeight // استخدم ارتفاع المحتوى الكامل
+                });
+    
+                // 🖼️ تحويل Canvas إلى صورة (JPEG غالباً أفضل من PNG في PDF من حيث الحجم)
+                const imgData = canvas.toDataURL('image/jpeg', 0.98);
+    
+                // ✅ إنشاء PDF باستخدام jsPDF فقط
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+    
+                const imgProps = pdf.getImageProperties(imgData);
+                const pdfWidth = 210; // عرض A4 بالملم
+                const imgHeight = imgProps.height;
+                const imgWidth = imgProps.width;
+                 // نسبة أبعاد الصورة الأصلية
+                const ratio = imgHeight / imgWidth;
+    
+                 // حساب ارتفاع الصورة في PDF بناءً على عرض PDF
+                 const imgHeightInPdf = ratio * pdfWidth;
+    
+                const pageHeight = pdf.internal.pageSize.getHeight(); // ارتفاع صفحة A4 بالملم
+    
+                let position = 0; // الموضع الحالي في ارتفاع الصورة الكلي الذي تم إضافته إلى PDF
+                let remainingHeight = imgHeightInPdf; // الارتفاع المتبقي من الصورة لإضافته إلى PDF (بوحدات mm)
+    
+                const maxPages = 6; // تحديد الحد الأقصى لعدد الصفحات (يمكن تعديله)
+    
+                while (remainingHeight > 0) {
+                    // إيقاف الحلقة إذا وصلنا إلى الحد الأقصى للصفحات
+                    if (pdf.internal.getNumberOfPages() >= maxPages) {
+                         console.log(`Reached maximum number of pages (${maxPages}). Stopping PDF generation.`);
+                         break;
+                    }
+    
+                    // حساب الارتفاع الحالي للصفحة الواحدة
+                    const heightToAdd = Math.min(pageHeight, remainingHeight);
+    
+                    // إضافة جزء من الصورة يمثل ارتفاع الصفحة الحالي
+                    pdf.addImage(
+                        imgData,
+                        'JPEG', // صيغة الصورة
+                        0, // الإحداثي X للركن الأيسر العلوي للصورة في الصفحة (0 يعني يسار الصفحة)
+                        -position, // الإحداثي Y، نستخدم -position لأنه يتم "تحريك" الصورة للأعلى بمقدار ما تم إضافته في الصفحات السابقة
+                        pdfWidth, // عرض الصورة في PDF (مطابق لعرض الصفحة)
+                        imgHeightInPdf, // ارتفاع الصورة في PDF (الارتفاع الكلي، لكن jsPDF يعرض الجزء المرئي فقط)
+                        null, // alias (اختياري)
+                        'FAST' // re-sample method (اختياري)
+                    );
+    
+                    // تحديث الارتفاع المتبقي
+                    remainingHeight -= heightToAdd;
+                    // تحديث موضع الجزء التالي من الصورة
+                    position += heightToAdd;
+    
+    
+                     // إضافة صفحة جديدة فقط إذا كان هناك المزيد من المحتوى المتبقي ولم نصل للحد الأقصى للصفحات
+                    if (remainingHeight > 0 && pdf.internal.getNumberOfPages() < maxPages) {
+                        pdf.addPage();
+                    }
+                }
+    
+                // 💾 تنزيل PDF إذا طلب المستخدم
+                if (downloadPdf) {
+                    pdf.save('CV.pdf');
+                }
+    
+                // 🔁 تحويل PDF إلى Base64
+                pdfBase64 = pdf.output('datauristring').split(',')[1];
+    
+                console.log(`Generated PDF Base64 length on frontend: ${pdfBase64 ? pdfBase64.length : 0}`); // Log length, check if base64 is null
+    
+                return pdfBase64;
+    
+            } catch (error) {
+                console.error("Error during PDF generation in captureCVasPDF:", error);
+                // يمكنك هنا إضافة تنبيه للمستخدم إذا فشل الالتقاط بشكل حرج
+                // alert(currentLang === 'ar' ? 'حدث خطأ أثناء إنشاء ملف السيرة الذاتية.' : 'Error generating CV file.');
+                throw error; // أعد رمي الخطأ ليتم التعامل معه في الدوال التي تستدعي هذه الدالة (مثل PayPal أو الدفع اليدوي)
+            } finally {
+                // 🧹 استعادة الأنماط الأصلية بغض النظر عما إذا حدث خطأ
+                Object.keys(originalStyles).forEach(key => {
+                    cvContainer.style[key] = originalStyles[key];
+                });
+                cvContainer.scrollTop = originalScrollTop; // استعادة موضع التمرير
+    
+                // إعادة عرض أزرار الحذف
+                removeButtons.forEach(btn => btn.style.display = '');
             }
-    
-            // 🔁 تحويل PDF إلى Base64
-            pdfBase64 = pdf.output('datauristring').split(',')[1];
-    
-            console.log(`Generated PDF Base64 length on frontend: ${pdfBase64.length}`);
-    
-            return pdfBase64;
-    
-        } catch (error) {
-            console.error("Error during PDF generation in captureCVasPDF:", error);
-            throw error;
-        } finally {
-            // 🧹 استعادة الأنماط الأصلية
-            Object.keys(originalStyles).forEach(key => {
-                cvContainer.style[key] = originalStyles[key];
-            });
-            cvContainer.scrollTop = originalScrollTop;
-    
-            // إعادة عرض أزرار الحذف
-            removeButtons.forEach(btn => btn.style.display = '');
         }
-    }
 
 // ** تعديل دالة renderPayPalButton بنفس المنطق **
 function renderPayPalButton(finalPrice, templateCategory) {
@@ -1833,17 +1874,15 @@ function createEndMarker() {
 
 
 /************************************************
- * دالة ملء النموذج ببيانات تجريبية (للاختبار)
- * يتم استدعاؤها عند فتح النافذة الرئيسية
- ***********************************************/
-// دالة لملء حقول النموذج ببيانات تجريبية (لغرض الاختبار والتطوير السريع)
-
-/************************************************
  * دالة إنشاء / تحديث محتوى السيرة الذاتية (generateCV)
  * تم تعديلها لحساب المتغيرات filled... بداخلها
+ * وتم تعديلها لإظهار نماذج AST
  ***********************************************/
-// دالة إنشاء / تحديث محتوى السيرة الذاتية
-// تم تعديلها لوضع صورة البروفايل قبل الاسم في النماذج العادية
+// دالة إنشاء / تحديث محتوى السيرة الذاتية (generateCV)
+// هذه الدالة تقوم بقراءة بيانات المدخلات، تحديد القالب المختار،
+// وبناء هيكل HTML للسيرة الذاتية داخل العنصر #cv-container،
+// وتطبيق الكلاسات المناسبة من ملف CSS لتطبيق التنسيق البصري.
+// كما تتعامل مع اتجاه النص (يمين لليسار للعربية، يسار لليمين للإنجليزية).
 function generateCV() {
     // الحصول على العناصر التي تحتوي على بيانات المدخلات
     const nameInput = document.getElementById('name-input');
@@ -1864,10 +1903,10 @@ function generateCV() {
     const isArabic = currentLang === 'ar';
     const direction = isArabic ? 'rtl' : 'ltr';
     // محاذاة النص الافتراضية ستعتمد على الاتجاه، وسيتم تطبيقها عبر CSS بشكل أساسي
-    // const textAlign = isArabic ? 'right' : 'left'; // لم نعد نستخدمها مباشرة هنا بشكل كبير
 
     // حفظ الكلاسات الحالية لحاوية السيرة الذاتية (القالب والتخطيط) ومسح المحتوى السابق
     cvContainer.innerHTML = ''; // مسح المحتوى السابق بالكامل
+    // تطبيق كلاسات التخطيط والقالب المختارين على الحاوية الرئيسية
     cvContainer.className = `${selectedTemplateCategory}-layout template${selectedTemplate}`;
     // تعيين الاتجاه على الحاوية الرئيسية، مما سيؤثر على أطفالها ما لم يتم تجاوزه
     cvContainer.dir = direction;
@@ -1889,31 +1928,8 @@ function generateCV() {
     const referenceEntries = Array.from(document.querySelectorAll('#references-input .reference-entry'));
 
 
-    // حساب المتغيرات filled... (تستخدمها دالة updateProgress)
-    const filledExperience = experienceEntries.filter(entry =>
-        entry.querySelector('.experience-title').value.trim() ||
-        entry.querySelector('.experience-company').value.trim() ||
-        entry.querySelector('.experience-duration').value.trim() ||
-        entry.querySelector('.experience-description').value.trim()
-    );
-
-    const filledEducation = educationEntries.filter(entry =>
-        entry.querySelector('.education-degree').value.trim() ||
-        entry.querySelector('.education-institution').value.trim() ||
-        entry.querySelector('.education-duration').value.trim()
-    );
-
-    const filledSkills = skillInputs.filter(input => input.value.trim());
-
-    const filledLanguages = languageInputs.filter(input => input.value.trim());
-
-    const filledReferences = referenceEntries.filter(entry =>
-        entry.querySelector('.reference-name').value.trim() ||
-        entry.querySelector('.reference-position').value.trim() ||
-        entry.querySelector('.reference-phone').value.trim() ||
-        entry.querySelector('.reference-email').value.trim()
-    );
-    // نهاية حساب المتغيرات filled...
+    // حساب المتغيرات filled... (تستخدمها دالة updateProgress) - تم نقل هذا الجزء إلى دالة updateProgress
+    // للحفاظ على generateCV مركزة على بناء الهيكل فقط.
 
 
     // إنشاء عنصر الصورة الشخصية إذا كانت موجودة
@@ -1923,7 +1939,7 @@ function generateCV() {
         profilePicElement.className = 'cv-profile-pic';
         profilePicElement.alt = 'Profile Picture'; // نص بديل للصورة
         profilePicElement.src = profilePicDataUrl; // مصدر الصورة (Base64)
-        // الهوامش والترتيب سيتم التعامل معها في هيكل الرأس
+        // الهوامش والترتيب سيتم التعامل معها في هيكل الرأس بواسطة CSS
     }
 
     // إنشاء قسم معلومات الاتصال إذا كانت هناك أي بيانات اتصال مدخلة
@@ -1935,18 +1951,21 @@ function generateCV() {
         if (email) {
             const item = document.createElement('div');
             item.className = 'cv-contact-item'; // كلاس عنصر التواصل الفردي
+            // استخدام وسم <p> للنص لضمان وضوح النصوص الطويلة
             item.innerHTML = `<i class="fas fa-envelope"></i><p>${email}</p>`;
             contactInfoDiv.appendChild(item);
         }
         if (phone) {
             const item = document.createElement('div');
             item.className = 'cv-contact-item';
+             // استخدام وسم <p> للنص لضمان وضوح النصوص الطويلة
             item.innerHTML = `<i class="fas fa-phone"></i><p>${phone}</p>`;
             contactInfoDiv.appendChild(item);
         }
         if (website) {
             const item = document.createElement('div');
             item.className = 'cv-contact-item';
+             // استخدام وسم <p> للنص لضمان وضوح النصوص الطويلة
             item.innerHTML = `<i class="fas fa-globe"></i><p>${website}</p>`;
             contactInfoDiv.appendChild(item);
         }
@@ -1959,118 +1978,161 @@ function generateCV() {
         objectiveSection.className = 'cv-section'; // كلاس القسم العام
         objectiveSection.id = 'objective'; // ID فريد للقسم
         // إضافة عنوان القسم ومحتواه (يتم جلب العنوان من كائن الترجمات)
+        // استخدام وسم <p> للنص لضمان وضوح النصوص الطويلة
         objectiveSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Career Objective']}</h3><p>${objective}</p>`;
     }
 
-    // إنشاء قسم الخبرة العملية إذا كانت هناك بيانات مدخلة (باستخدام filledExperience)
+    // إنشاء قسم الخبرة العملية إذا كانت هناك بيانات مدخلة (بالاعتماد على وجود حقول غير فارغة)
     let experienceSection = null;
-    if (filledExperience.length > 0) {
+    // التحقق من وجود أي حقل خبرة به بيانات قبل إنشاء القسم
+    const hasFilledExperience = experienceEntries.some(entry => {
+        const inputs = entry.querySelectorAll('input, textarea');
+        return Array.from(inputs).some(input => input.value.trim());
+    });
+    if (hasFilledExperience) {
         experienceSection = document.createElement('div');
         experienceSection.className = 'cv-section';
         experienceSection.id = 'experience';
         experienceSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Work Experience']}</h3><div id="experience-list"></div>`;
         const experienceList = experienceSection.querySelector('#experience-list');
 
-        // إضافة كل حقل خبرة كعنصر منفصل داخل قائمة الخبرات
-        filledExperience.forEach(entry => {
+        // إضافة كل حقل خبرة كعنصر منفصل داخل قائمة الخبرات (فقط إذا كان به بيانات)
+        experienceEntries.forEach(entry => {
             const itemTitle = entry.querySelector('.experience-title').value.trim();
             const itemCompany = entry.querySelector('.experience-company').value.trim();
             const itemDuration = entry.querySelector('.experience-duration').value.trim();
             const itemDescription = entry.querySelector('.experience-description').value.trim();
 
-            const item = document.createElement('div');
-            item.className = 'cv-experience-item'; // كلاس عنصر الخبرة الفردي
-            // بناء هيكل عنصر الخبرة مع بياناته (يتم استخدام نصوص بديلة إذا كانت بعض الحقول فارغة)
-            item.innerHTML = `
-                <h4 class="cv-job-title">${itemTitle || translations[currentLang]['No Title']}</h4>
-                ${(itemCompany || itemDuration) ? `<h5 class="cv-company">${itemCompany}${(itemCompany && itemDuration) ? ' - ' : ''}${itemDuration}</h5>` : ''}
-                ${itemDescription ? `<p>${itemDescription}</p>` : ''}
-            `;
-            experienceList.appendChild(item); // إضافة العنصر إلى قائمة الخبرات
+             // إنشاء عنصر الخبرة فقط إذا كان أي من حقوله به بيانات
+            if (itemTitle || itemCompany || itemDuration || itemDescription) {
+                const item = document.createElement('div');
+                item.className = 'cv-experience-item'; // كلاس عنصر الخبرة الفردي
+                // بناء هيكل عنصر الخبرة مع بياناته (يتم استخدام نصوص بديلة إذا كانت بعض الحقول فارغة)
+                // استخدام وسم <p> للنص لضمان وضوح النصوص الطويلة
+                item.innerHTML = `
+                    <h4 class="cv-job-title">${itemTitle || translations[currentLang]['No Title']}</h4>
+                    ${(itemCompany || itemDuration) ? `<h5 class="cv-company">${itemCompany}${(itemCompany && itemDuration) ? ' - ' : ''}${itemDuration}</h5>` : ''}
+                    ${itemDescription ? `<p>${itemDescription}</p>` : ''}
+                `;
+                experienceList.appendChild(item); // إضافة العنصر إلى قائمة الخبرات
+            }
         });
     }
 
-    // إنشاء قسم التعليم إذا كانت هناك بيانات مدخلة (باستخدام filledEducation)
+    // إنشاء قسم التعليم إذا كانت هناك بيانات مدخلة (بالاعتماد على وجود حقول غير فارغة)
     let educationSection = null;
-    if (filledEducation.length > 0) { // استخدام filledEducation التي تم حسابها سابقاً
+     // التحقق من وجود أي حقل تعليم به بيانات قبل إنشاء القسم
+    const hasFilledEducation = educationEntries.some(entry => {
+        const inputs = entry.querySelectorAll('input');
+        return Array.from(inputs).some(input => input.value.trim());
+    });
+    if (hasFilledEducation) {
         educationSection = document.createElement('div');
         educationSection.className = 'cv-section';
         educationSection.id = 'education';
         educationSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Education']}</h3><div id="education-list"></div>`;
         const educationList = educationSection.querySelector('#education-list');
 
-        filledEducation.forEach(entry => {
+        // إضافة كل حقل تعليم كعنصر منفصل داخل قائمة التعليم (فقط إذا كان به بيانات)
+        educationEntries.forEach(entry => {
             const itemDegree = entry.querySelector('.education-degree').value.trim();
             const itemInstitution = entry.querySelector('.education-institution').value.trim();
             const itemDuration = entry.querySelector('.education-duration').value.trim();
 
-            const item = document.createElement('div');
-            item.className = 'cv-education-item';
-            item.innerHTML = `
-                <h4 class="cv-degree">${itemDegree || translations[currentLang]['No Degree']}</h4>
-                ${(itemInstitution || itemDuration) ? `<h5 class="cv-institution">${itemInstitution}${(itemInstitution && itemDuration) ? ' - ' : ''}${itemDuration}</h5>` : ''}
-            `;
-            educationList.appendChild(item);
+             // إنشاء عنصر التعليم فقط إذا كان أي من حقوله به بيانات
+            if (itemDegree || itemInstitution || itemDuration) {
+                const item = document.createElement('div');
+                item.className = 'cv-education-item';
+                // استخدام وسم <p> للنص لضمان وضوح النصوص الطويلة
+                item.innerHTML = `
+                    <h4 class="cv-degree">${itemDegree || translations[currentLang]['No Degree']}</h4>
+                    ${(itemInstitution || itemDuration) ? `<h5 class="cv-institution">${itemInstitution}${(itemInstitution && itemDuration) ? ' - ' : ''}${itemDuration}</h5>` : ''}
+                `;
+                educationList.appendChild(item);
+            }
         });
     }
 
-    // إنشاء قسم المهارات إذا كانت هناك بيانات مدخلة (باستخدام filledSkills)
+    // إنشاء قسم المهارات إذا كانت هناك بيانات مدخلة (بالاعتماد على وجود حقول غير فارغة)
     let skillsSection = null;
-    if (filledSkills.length > 0) { // استخدام filledSkills التي تم حسابها سابقاً
+     // التحقق من وجود أي حقل مهارة به بيانات قبل إنشاء القسم
+    const hasFilledSkills = skillInputs.some(input => input.value.trim());
+    if (hasFilledSkills) {
         skillsSection = document.createElement('div');
         skillsSection.className = 'cv-section';
         skillsSection.id = 'skills';
         skillsSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Skills']}</h3><ul class="cv-skill-list"></ul>`;
         const skillsList = skillsSection.querySelector('.cv-skill-list');
 
-        filledSkills.forEach(input => {
-            const li = document.createElement('li');
-             li.className = 'cv-skill-item'; // إضافة الكلاس للتنسيق
-            li.textContent = input.value.trim();
-            skillsList.appendChild(li);
+        // إضافة كل مهارة كعنصر قائمة (فقط إذا كان الحقل غير فارغ)
+        skillInputs.forEach(input => {
+            if (input.value.trim()) {
+                const li = document.createElement('li');
+                 li.className = 'cv-skill-item'; // إضافة الكلاس للتنسيق
+                // استخدام textContent بدلاً من innerHTML لتجنب مشاكل الأمان مع المدخلات
+                li.textContent = input.value.trim();
+                skillsList.appendChild(li);
+            }
         });
     }
 
-    // إنشاء قسم اللغات إذا كانت هناك بيانات مدخلة (باستخدام filledLanguages)
+    // إنشاء قسم اللغات إذا كانت هناك بيانات مدخلة (بالاعتماد على وجود حقول غير فارغة)
     let languagesSection = null;
-    if (filledLanguages.length > 0) { // استخدام filledLanguages التي تم حسابها سابقاً
+     // التحقق من وجود أي حقل لغة به بيانات قبل إنشاء القسم
+    const hasFilledLanguages = languageInputs.some(input => input.value.trim());
+    if (hasFilledLanguages) {
         languagesSection = document.createElement('div');
         languagesSection.className = 'cv-section';
         languagesSection.id = 'languages';
         languagesSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Languages']}</h3><ul class="cv-language-list"></ul>`;
         const languagesList = languagesSection.querySelector('.cv-language-list');
 
-        filledLanguages.forEach(input => {
-            const li = document.createElement('li');
-            li.textContent = input.value.trim();
-            languagesList.appendChild(li);
+        // إضافة كل لغة كعنصر قائمة (فقط إذا كان الحقل غير فارغ)
+        languageInputs.forEach(input => {
+            if (input.value.trim()) {
+                const li = document.createElement('li');
+                // استخدام textContent بدلاً من innerHTML لتجنب مشاكل الأمان مع المدخلات
+                li.textContent = input.value.trim();
+                languagesList.appendChild(li);
+            }
         });
     }
 
-    // إنشاء قسم المراجع إذا كانت هناك بيانات مدخلة (باستخدام filledReferences)
+    // إنشاء قسم المراجع إذا كانت هناك بيانات مدخلة (بالاعتماد على وجود حقول غير فارغة)
     let referencesSection = null;
-    if (filledReferences.length > 0) { // استخدام filledReferences التي تم حسابها سابقاً
+     // التحقق من وجود أي حقل مرجع به بيانات قبل إنشاء القسم
+    const hasFilledReferences = referenceEntries.some(entry => {
+        const inputs = entry.querySelectorAll('input');
+        return Array.from(inputs).some(input => input.value.trim());
+    });
+    if (hasFilledReferences) {
         referencesSection = document.createElement('div');
         referencesSection.className = 'cv-section';
         referencesSection.id = 'references';
         referencesSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['References']}</h3><div id="references-list"></div>`;
         const referencesList = referencesSection.querySelector('#references-list');
 
-        filledReferences.forEach(entry => {
+        // إضافة كل حقل مرجع كعنصر منفصل داخل قائمة المراجع (فقط إذا كان به بيانات)
+        referenceEntries.forEach(entry => {
             const refName = entry.querySelector('.reference-name').value.trim();
             const refPosition = entry.querySelector('.reference-position').value.trim();
             const refPhone = entry.querySelector('.reference-phone').value.trim();
             const refEmail = entry.querySelector('.reference-email').value.trim();
 
-            const item = document.createElement('div');
-            item.className = 'cv-reference-item'; // كلاس عنصر المرجع الفردي
-            item.innerHTML = `
-                <h4>${refName || translations[currentLang]['No Name']}</h4>
-                ${refPosition ? `<p>${refPosition}</p>` : ''}
-                ${refPhone ? `<p>${refPhone}</p>` : ''}
-                ${refEmail ? `<p>${refEmail}</p>` : ''}
-            `;
-            referencesList.appendChild(item);
+             // إنشاء عنصر المرجع فقط إذا كان أي من حقوله به بيانات
+            if (refName || refPosition || refPhone || refEmail) {
+                const item = document.createElement('div');
+                item.className = 'cv-reference-item'; // كلاس عنصر المرجع الفردي
+                // بناء هيكل عنصر المرجع مع بياناته (يتم استخدام نصوص بديلة إذا كانت بعض الحقول فارغة)
+                // استخدام وسم <p> للنص لضمان وضوح النصوص الطويلة
+                item.innerHTML = `
+                    <h4>${refName || translations[currentLang]['No Name']}</h4>
+                    ${refPosition ? `<p>${refPosition}</p>` : ''}
+                    ${refPhone ? `<p>${refPhone}</p>` : ''}
+                    ${refEmail ? `<p>${refEmail}</p>` : ''}
+                `;
+                referencesList.appendChild(item);
+            }
         });
     }
 
@@ -2082,7 +2144,7 @@ function generateCV() {
     cvContent.dir = direction;
     // محاذاة النص سيتم تطبيقها بواسطة CSS بناءً على الاتجاه وكلاسات التخطيط
 
-    // بناء الهيكل حسب فئة القالب (Normal, Standard, Professional)
+    // بناء الهيكل حسب فئة القالب (Normal, Standard, Professional, AST)
     if (selectedTemplateCategory === 'normal') {
         // القوالب العادية (عرض كامل)
         const header = document.createElement('div');
@@ -2116,7 +2178,7 @@ function generateCV() {
 
         cvContent.appendChild(header); // إضافة الرأس إلى محتوى الـ CV
 
-        // إضافة الأقسام الرئيسية الأخرى بالترتيب الطبيعي
+        // إضافة الأقسام الرئيسية الأخرى بالترتيب الطبيعي (فقط إذا كانت موجودة)
         if (objectiveSection) cvContent.appendChild(objectiveSection);
         if (experienceSection) cvContent.appendChild(experienceSection);
         if (educationSection) cvContent.appendChild(educationSection);
@@ -2129,11 +2191,10 @@ function generateCV() {
 
     } else if (selectedTemplateCategory === 'standard' || selectedTemplateCategory === 'professional') {
         // القوالب ذات الأعمدة (Standard, Professional)
-        // هذا الجزء يبقى كما كان يتعامل مع الصورة في العمود الجانبي
         const layout = document.createElement('div');
         // تحديد كلاس التخطيط (Standard أو Professional)
         layout.className = selectedTemplateCategory === 'standard' ? 'cv-two-column-layout' : 'cv-professional-layout';
-        // الاتجاه سيتم تعيينه بواسطة CSS لهذا الكلاس بناءً على dir="rtl/ltr"
+        layout.dir = direction; // تطبيق الاتجاه على حاوية التخطيط
 
         const sidebarDiv = document.createElement('div'); // العمود الجانبي
         sidebarDiv.className = 'cv-sidebar';
@@ -2148,8 +2209,7 @@ function generateCV() {
             header.innerHTML = `<h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2>`;
             if (contactInfoDiv) header.appendChild(contactInfoDiv); // معلومات الاتصال في الرأس الاحترافي
             cvContent.appendChild(header); // إضافة الرأس إلى محتوى الـ CV (قبل الأعمدة)
-        } else { // Standard Layout Header
-             // القوالب العادية ذات العمودين لها رأس داخل العمود الرئيسي
+        } else { // Standard Layout Header (داخل العمود الرئيسي)
              const header = document.createElement('div');
              header.className = 'cv-header two-col-main'; // كلاس الرأس في العمود الرئيسي
              header.innerHTML = `<h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2>`;
@@ -2160,11 +2220,11 @@ function generateCV() {
 
         // إضافة العناصر إلى العمود الجانبي إذا كانت تحتوي على بيانات
         if (profilePicElement) sidebarDiv.appendChild(profilePicElement); // الصورة الشخصية في العمود الجانبي
-         // معلومات الاتصال قد تكون في الرأس أو العمود الجانبي حسب القالب المحدد في CSS
-        if (selectedTemplateCategory === 'professional' && contactInfoDiv) {
-             // إذا أردت نقل معلومات التواصل للعمود الجانبي في Professional، يمكنك إضافتها هنا بدلاً من الرأس
-             // sidebarDiv.appendChild(contactInfoDiv);
-        }
+         // معلومات الاتصال قد تكون في العمود الجانبي في قوالب Standard معينة
+        // if (selectedTemplateCategory === 'standard' && contactInfoDiv) {
+        //      // إذا أردت نقل معلومات التواصل للعمود الجانبي في Standard، يمكنك إضافتها هنا
+        //      sidebarDiv.appendChild(contactInfoDiv);
+        // }
 
 
         if (skillsSection) sidebarDiv.appendChild(skillsSection);
@@ -2188,15 +2248,59 @@ function generateCV() {
         layout.appendChild(mainContentDiv);
         cvContent.appendChild(layout); // إضافة هيكل التخطيط إلى محتوى الـ CV
 
+    } else if (selectedTemplateCategory === 'ast') { // ****** Handle AST Layout ******
+        const layout = document.createElement('div');
+        layout.className = 'ast-layout'; // Use ast-layout class
+        layout.dir = direction; // Apply direction to the layout container
+
+        const sidebarDiv = document.createElement('div'); // AST Sidebar
+        sidebarDiv.className = 'cv-sidebar';
+        const mainContentDiv = document.createElement('div'); // AST Main Content
+        mainContentDiv.className = 'cv-main-content';
+
+        // AST Layout Header (within main content, similar to Standard)
+        const header = document.createElement('div');
+        header.className = 'cv-header two-col-main';
+        header.innerHTML = `<h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2>`;
+        // Contact info placement in AST can be in header or sidebar based on CSS/design
+        if (contactInfoDiv) header.appendChild(contactInfoDiv); // Default to header in AST
+        mainContentDiv.appendChild(header); // Add header to main content
+
+
+        // Add elements to AST Sidebar (Profile Pic, Skills, Languages, References are commonly in sidebar for two-column)
+        if (profilePicElement) sidebarDiv.appendChild(profilePicElement);
+
+        // Contact info could optionally go here for AST sidebar templates
+        // if (contactInfoDiv) sidebarDiv.appendChild(contactInfoDiv);
+
+        if (skillsSection) sidebarDiv.appendChild(skillsSection);
+        if (languagesSection) sidebarDiv.appendChild(languagesSection);
+        if (referencesSection) sidebarDiv.appendChild(referencesSection);
+        // Add end marker to AST sidebar
+        sidebarDiv.appendChild(createEndMarker());
+
+
+        // Add elements to AST Main Content (Objective, Experience, Education)
+        if (objectiveSection) mainContentDiv.appendChild(objectiveSection);
+        if (experienceSection) mainContentDiv.appendChild(experienceSection);
+        if (educationSection) mainContentDiv.appendChild(educationSection);
+        // Add end marker to AST main content
+        mainContentDiv.appendChild(createEndMarker());
+
+        // Add AST sidebar and main content to the layout
+        layout.appendChild(sidebarDiv);
+        layout.appendChild(mainContentDiv);
+        cvContent.appendChild(layout); // Add AST layout to cvContent
     }
+
 
     // إضافة هيكل الـ CV المجمع إلى حاوية السيرة الذاتية في الصفحة
     cvStructure.appendChild(cvContent);
     cvContainer.appendChild(cvStructure);
 
-     // تطبيق الاتجاه ومحاذاة النص على جميع العناصر داخل حاوية الـ CV
-     // سنقوم بتعيين الاتجاه ومحاذاة النص الأساسية هنا، وستقوم أنماط CSS
-     // الخاصة بالقوالب والكلاسات (مثل centered, sidebar) بتجاوزها عند الضرورة.
+    // تطبيق الاتجاه ومحاذاة النص على جميع العناصر داخل حاوية الـ CV
+    // سنقوم بتعيين الاتجاه ومحاذاة النص الأساسية هنا، وستقوم أنماط CSS
+    // الخاصة بالقوالب والكلاسات (مثل centered, sidebar) بتجاوزها عند الضرورة.
     const allCVElements = cvContainer.querySelectorAll('*');
     allCVElements.forEach(element => {
         // تطبيق الاتجاه على جميع العناصر
@@ -2211,6 +2315,7 @@ function generateCV() {
          const isLayoutContainer = element.classList.contains('cv-header') ||
                                    element.classList.contains('cv-two-column-layout') ||
                                    element.classList.contains('cv-professional-layout') ||
+                                   element.classList.contains('ast-layout') || // Added ast-layout
                                    element.classList.contains('cv-sidebar') ||
                                    element.classList.contains('cv-main-content') ||
                                    element.classList.contains('cv-header-text') || // هذه الحاوية ستتبع أنماط CSS
@@ -2224,7 +2329,7 @@ function generateCV() {
 
         // معالجة خاصة لعناصر القائمة (<li>) لضمان وضع علامات القائمة بشكل صحيح
         if (element.tagName === 'LI') {
-             element.style.listStylePosition = isArabic ? 'inside' : 'outside';
+             element.style.listStylePosition = isArabic ? 'inside' : 'outside'; // Corrected property name
              // محاذاة نص عناصر القائمة ستتبع محاذاة العنصر الأب (مثل ul/ol أو القسم الذي يحتويها)
              // إذا كان الأب موسّطاً، سيتم تطبيق التوسيط عليه من CSS أو من أنماط إعادة المحاذاة في هذه الدالة.
         }
@@ -2253,7 +2358,7 @@ function generateCV() {
           // النص داخل هذه الحاوية سيتبع هذه المحاذاة ما لم يتم تجاوزه
       });
 
-     // تطبيق محاذاة النص على عناصر بيانات التواصل الفردية للتأكد
+     // Ensure contact items alignment is correct
      const contactItems = cvContainer.querySelectorAll('.cv-contact-item');
      contactItems.forEach(item => {
           // إذا لم يكن العنصر داخل رأس موسّط أو شريط جانبي (تم التعامل معهما أعلاه)
@@ -2263,7 +2368,7 @@ function generateCV() {
           }
      });
 
-    // Final pass for list item alignment to ensure it's correct after other alignments
+     // Final pass for list item alignment to ensure it's correct after other alignments
      const listItemsFinal = cvContainer.querySelectorAll('li');
      listItemsFinal.forEach(li => {
           // إذا كان العنصر داخل شريط جانبي أو رأس موسّط، اجبر التوسيط
@@ -2278,24 +2383,36 @@ function generateCV() {
 
 } // نهاية دالة generateCV
 
+// دالة مساعدة لإنشاء عنصر "نهاية السيرة الذاتية" في أسفل القالب عند الإنشاء
+// هذا العنصر يستخدم كعلامة لنهاية المحتوى المرئي في بعض القوالب
+function createEndMarker() {
+    const endMarkerDiv = document.createElement('div');
+    endMarkerDiv.className = 'cv-end-marker'; // الكلاس الذي أنشأناه في CSS
+    // تحديد نص النهاية بناءً على اللغة الحالية (تأكد من وجود "End of CV" في كائن translations)
+    endMarkerDiv.textContent = translations[currentLang]["End of CV"] || 'النهاية';
+
+    return endMarkerDiv; // إعادة العنصر الجديد
+}
+
+
 
 /************************************************
  * دالة تحديث شريط تقدم إكمال البيانات
  * تم تعديلها لاستخدام نفس منطق حساب filledSectionsCount الموجود في generateCV
  ***********************************************/
 function updateProgress() {
-    // الحصول على عناصر حقول المدخلات وشريط التقدم
+    const progressBar = document.getElementById('progressBar');
+    if (!progressBar) return;
+
+    // --- الحقول الأساسية ---
     const nameInput = document.getElementById('name-input');
     const titleInput = document.getElementById('title-input');
     const emailInput = document.getElementById('email-input');
     const phoneInput = document.getElementById('phone-input');
     const websiteInput = document.getElementById('website-input');
     const objectiveInput = document.getElementById('objective-input');
-    const progressBar = document.getElementById('progressBar');
+    const profilePicInput = document.getElementById('profile-pic-input');
 
-     if (!progressBar) return; // التأكد من وجود شريط التقدم
-
-    // حساب عدد الحقول الأساسية المكتملة
     let filledCoreFields = 0;
     if (nameInput && nameInput.value.trim()) filledCoreFields++;
     if (titleInput && titleInput.value.trim()) filledCoreFields++;
@@ -2303,77 +2420,65 @@ function updateProgress() {
     if (phoneInput && phoneInput.value.trim()) filledCoreFields++;
     if (websiteInput && websiteInput.value.trim()) filledCoreFields++;
     if (objectiveInput && objectiveInput.value.trim()) filledCoreFields++;
-    if (profilePicDataUrl) filledCoreFields++; // اعتبار وجود صورة شخصية كحقل مكتمل
+    // التحقق من وجود ملف في حقل الصورة
+    if (profilePicInput && profilePicInput.files && profilePicInput.files.length > 0) filledCoreFields++;
 
-    const totalCoreFields = 7; // العدد الإجمالي للحقول الأساسية
 
-    // حساب عدد الأقسام المتكررة المكتملة (قسم مكتمل يعني وجود حقل واحد على الأقل غير فارغ فيه)
+    const totalCoreFields = 7; // الاسم، المسمى الوظيفي، الايميل، الهاتف، الموقع، الهدف، الصورة
+
+    // تأكد من أن مجموع الأوزان 10
+    const coreFieldsWeight = 6;
+    const sectionsOverallWeight = 4;
+
+
+    // --- الأقسام المتكررة ---
+    const sections = ['experience', 'education', 'skills', 'languages', 'references'];
     let filledSectionsCount = 0;
-    const sections = ['experience', 'education', 'skills', 'languages', 'references']; // معرفات الأقسام المتكررة
+
     sections.forEach(sectionId => {
-        const entries = document.querySelectorAll(`#${sectionId}-input .${sectionId}-entry`);
-        // التحقق مما إذا كان أي حقل داخل هذا القسم غير فارغ
-        const hasFilledEntry = Array.from(entries).some(entry => {
-             if (sectionId === 'skills' || sectionId === 'languages') {
-                 // للمهارات واللغات، يكفي أن يكون حقل الإدخال غير فارغ
-                 const input = entry.querySelector(`.${sectionId}-item-input`);
-                 return input && input.value.trim();
-             } else if (sectionId === 'references') {
-                  // للمراجع، يكفي أن يكون أي من حقول الاسم أو المسمى أو الهاتف أو البريد غير فارغ
-                  const nameInput = entry.querySelector('.reference-name');
-                  const positionInput = entry.querySelector('.reference-position');
-                  const phoneInput = entry.querySelector('.reference-phone');
-                  const emailInput = entry.querySelector('.reference-email');
-                  return (nameInput && nameInput.value.trim()) ||
-                         (positionInput && positionInput.value.trim()) ||
-                         (phoneInput && phoneInput.value.trim()) ||
-                         (emailInput && emailInput.value.trim());
-             }
-             else { // الخبرة أو التعليم
-                 // للخبرة والتعليم، يكفي أن يكون أي من حقول الإدخال أو textarea بداخل الحقل غير فارغ
-                 const inputs = entry.querySelectorAll('input, textarea');
-                 return Array.from(inputs).some(input => input.value.trim());
-             }
-        });
-        if (hasFilledEntry) {
-            filledSectionsCount++;
+        const sectionContainer = document.getElementById(`${sectionId}-input`);
+        if (sectionContainer) {
+            // **التعديل هنا:** التحقق مما إذا كان أي حقل إدخال داخل حاوية القسم يحتوي على بيانات
+            const inputs = sectionContainer.querySelectorAll('input, textarea');
+            const hasFilledInput = Array.from(inputs).some(input => input.value.trim() !== '');
+
+            if (hasFilledInput) filledSectionsCount++;
         }
     });
 
-    const totalSections = sections.length; // 5 أقسام متكررة
+    const totalSections = sections.length; // الخبرة، التعليم، المهارات، اللغات، المراجع (5 أقسام)
 
-    // حساب نسبة التقدم الكلية بناءً على وزن الحقول الأساسية والأقسام
-    const coreFieldsWeight = 7; // وزن مخصص للحقول الأساسية
-    const sectionsOverallWeight = 5; // وزن مخصص للأقسام مجتمعة
 
-    let totalPossibleWeight = coreFieldsWeight + sectionsOverallWeight; // الوزن الكلي الممكن
-    let currentWeight = 0; // الوزن الحالي المكتمل
+    // --- حساب الوزن ---
+    let currentWeight = 0;
 
-    // إضافة وزن الحقول الأساسية المكتملة
-     if (nameInput && nameInput.value.trim()) currentWeight += 1;
-     if (titleInput && titleInput.value.trim()) currentWeight += 1;
-     if (emailInput && emailInput.value.trim()) currentWeight += 1;
-     if (phoneInput && phoneInput.value.trim()) currentWeight += 1;
-     if (websiteInput && websiteInput.value.trim()) currentWeight += 1;
-     if (objectiveInput && objectiveInput.value.trim()) currentWeight += 1;
-     if (profilePicDataUrl) currentWeight += 1;
+    // وزن الحقول الأساسية
+     if (totalCoreFields > 0) {
+        currentWeight += (filledCoreFields / totalCoreFields) * coreFieldsWeight;
+     }
 
-    // إضافة وزن نسبي للأقسام المكتملة
+
+    // وزن الأقسام
     if (totalSections > 0) {
         currentWeight += (filledSectionsCount / totalSections) * sectionsOverallWeight;
     }
 
-    // حساب النسبة المئوية للتقدم وتقريبها
-    const progress = Math.min(100, Math.round((currentWeight / totalPossibleWeight) * 100));
 
-    // تحديث عرض شريط التقدم والنص بداخله
-    progressBar.style.width = `${progress}%`;
-    progressBar.textContent = `${progress}%`; // عرض النسبة المئوية
+    // --- حساب النسبة المئوية ---
+    // يتم ضرب الوزن الإجمالي (الذي يصل إلى 10 كحد أقصى) في 10 للحصول على نسبة مئوية
+    const progress = Math.min(100, Math.round(currentWeight * 10)); // لأن الوزن الكلي = 6 + 4 = 10
 
-     // تغيير لون الشريط بناءً على التقدم (اختياري)
-    if (progress < 30) progressBar.style.backgroundColor = '#dc3545'; // أحمر
-    else if (progress < 70) progressBar.style.backgroundColor = '#ffc107'; // أصفر
-    else progressBar.style.backgroundColor = '#28a745'; // أخضر (أو لون أساسي)
+
+    // --- تحديث شريط التقدم ---
+    if (progressBar) {
+        progressBar.style.width = `${progress}%`;
+        progressBar.textContent = `${progress}%`;
+
+        // --- تغيير اللون ---
+        if (progress < 30) progressBar.style.backgroundColor = '#dc3545';
+        else if (progress < 70) progressBar.style.backgroundColor = '#ffc107';
+        else progressBar.style.backgroundColor = '#28a745';
+    }
 }
 
 
@@ -2536,10 +2641,12 @@ async function downloadCVImage() {
     const originalScrollTop = cvContainer.scrollTop; // حفظ موضع التمرير
 
     // تطبيق الأنماط المؤقتة لجعل المحتوى مرئيًا وقابلًا للالتقاط بالكامل
-    cvContainer.style.width = '800px'; // يمكن تعديل هذا العرض للحصول على جودة أفضل
-    cvContainer.style.height = 'auto';
-    cvContainer.style.maxHeight = 'none';
-    cvContainer.style.overflow = 'visible';
+    // نحدد العرض المراد التقاطه (800 بكسل) ونجعل الارتفاع تلقائيًا والتجاوز مرئيًا
+    // هذا يضمن أن html2canvas يمكنه الوصول إلى كامل المحتوى قبل تحديد منطقة الالتقاط
+    cvContainer.style.width = '800px';
+    cvContainer.style.height = 'auto'; // Allow element to take full height for layout
+    cvContainer.style.maxHeight = 'none'; // Remove max height constraint
+    cvContainer.style.overflow = 'visible'; // Ensure all content is rendered
     cvContainer.style.overflowY = 'visible';
     cvContainer.style.backgroundColor = 'white'; // خلفية بيضاء للصورة
     cvContainer.style.position = 'absolute'; // إخفاءه عن تدفق الصفحة الرئيسية
@@ -2547,7 +2654,8 @@ async function downloadCVImage() {
     cvContainer.style.left = '0';
     cvContainer.style.zIndex = '-1'; // وضعه في الخلف لعدم إخفاء محتوى الصفحة
     cvContainer.style.display = 'block'; // التأكد من عرضه
-    cvContainer.style.padding = '30px'; // إضافة هامش داخلي للصورة
+    cvContainer.style.padding = '30px'; // إضافة هامش داخلي للصورة (اختياري، سيتم تضمينه في الالتقاط)
+
 
     // إخفاء أزرار الحذف التي قد تظهر في المعاينة
     const removeButtons = cvContainer.querySelectorAll('.remove-field');
@@ -2559,13 +2667,15 @@ async function downloadCVImage() {
     try {
         // استخدام html2canvas لالتقاط محتوى الـ div كـ Canvas
         const canvas = await html2canvas(cvContainer, {
-             scale: 2, // زيادة الدقة (اختياري، يمكن تعديله)
-             useCORS: true, // محاولة استخدام CORS للصور من مصادر خارجية
-             backgroundColor: 'white', // تحديد الخلفية
-             scrollX: 0, // بدء الالتقاط من أعلى اليسار
-             scrollY: 0,
-             windowWidth: cvContainer.scrollWidth, // التقاط كامل العرض
-             windowHeight: cvContainer.scrollHeight // التقاط كامل الارتفاع
+            scale: 2, // زيادة الدقة (اختياري، يمكن تعديله)
+            useCORS: true, // محاولة استخدام CORS للصور من مصادر خارجية
+            backgroundColor: 'white', // تحديد الخلفية
+            x: 0, // بدء الالتقاط من الإحداثي X=0 بالنسبة للعنصر
+            y: 0, // بدء الالتقاط من الإحداثي Y=0 بالنسبة للعنصر
+            width: 800, // التقاط عرض قدره 800 بكسل
+            height: 800, // التقاط ارتفاع قدره 1800 بكسل
+            // تم إزالة windowWidth و windowHeight حيث نحدد منطقة التقاط ثابتة
+            // تم إزالة scrollX و scrollY حيث أن x و y تحدد نقطة البداية المطلقة داخل العنصر
         });
 
         // تحويل الـ Canvas إلى Data URL بصيغة PNG
