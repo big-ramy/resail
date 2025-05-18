@@ -14,16 +14,16 @@
     <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2024.1.301/styles/kendo.common.min.css">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
-     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
-     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
-     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
-     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
-     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&display=swap" rel="stylesheet">
-     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
-     <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
-</head>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
+    </head>
 <body>
 
     <nav class="navbar navbar-expand-lg navbar-light">
@@ -77,17 +77,17 @@
             </div>
         </div>
     </nav>
+
     <header class="site-header">
         <div class="header-background"></div>
         <div class="header-content">
             <h1 class="display-4" data-en="Professional CV Builder" data-ar="أنشئ سيرتك الذاتية الاحترافية بسهولة">أنشئ سيرتك الذاتية الاحترافية بسهولة</h1>
           <p class="lead" data-en="Create a professional CV that stands out and gets you hired." data-ar="ابرز مهاراتك وخبراتك بتصميم احترافي يلفت الانتباه ويفتح لك أبواب الفرص.">ابرز مهاراتك وخبراتك بتصميم احترافي يلفت الانتباه ويفتح لك أبواب الفرص.</p>
           <button class="btn btn-primary btn-lg mt-3" id="create-cv-button" data-en="Create Your CV Now" data-ar="ابدأ في إنشاء سيرتك الذاتية الآن">ابدأ في إنشاء سيرتك الذاتية الآن</button>
-
         </div>
-      </header>
+    </header>
 
-      <section id="why-resail" class="py-5">
+    <section id="why-resail" class="py-5">
         <div class="container">
             <h2 class="text-center mb-5" data-en="Why Resail CV Builder?" data-ar="لماذا نظام رسائل لإنشاء السيرة الذاتية؟">لماذا نظام رسائل لإنشاء السيرة الذاتية؟</h2>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
@@ -189,7 +189,6 @@
         </div>
     </section>
 
-      <!-- قسم التواصل (Contact) -->
     <section class="container my-5" id="contact">
         <h2 class="section-title" data-translate="Contact Us">تواصل معنا</h2>
         <p class="text-center" data-translate="For inquiries or support, please contact us via email: ramyheshamamer@gmail.com">
@@ -201,8 +200,7 @@
         <div class="popup-box">
             <button class="popup-close" onclick="closeCvBuilderModal()">×</button>
             <div class="modal-content-container">
-                <div id="data-entry-step">
-                    <h2 class="mb-4 text-center" data-en="Enter Your Information" data-ar="أدخل بياناتك">أدخل بياناتك</h2>
+                <div id="data-entry-step" class="active"> <h2 class="mb-4 text-center" data-en="Enter Your Information" data-ar="أدخل بياناتك">أدخل بياناتك</h2>
                     <div class="row">
                         <div class="col-md-6">
                              <div class="form-group">
@@ -230,12 +228,7 @@
                                 <input type="file"  id="profile-pic-input" accept="image/*" onchange="handleProfilePicChange(event); updateProgress()">
                                  <small class="form-text text-muted" data-en="Choose a picture to enhance the look of your CV in some templates." data-ar="اختر صورة لتحسين مظهر السيرة الذاتية في بعض النماذج.">اختر صورة لتحسين مظهر السيرة الذاتية في بعض النماذج.</small>
                             </div>
-                             <div class="form-group">
-                                <label data-en="Data Completion Progress" data-ar="نسبة إكمال البيانات">نسبة إكمال البيانات</label>
-                                <div class="progress-container">
-                                    <div class="progress-bar" id="progressBar"></div>
-                                </div>
-                            </div>
+
                         </div>
                         <div class="col-md-6">
                              <div class="form-group">
@@ -309,57 +302,84 @@
 
                 <div id="template-selection-step">
                     <h2 class="mb-4 text-center" data-en="Choose a CV Template and Preview" data-ar="اختر نموذجًا للسيرة الذاتية والمعاينة">اختر نموذجًا للسيرة الذاتية والمعاينة</h2>
-                     <div class="template-preview-container">
-                         <div class="template-category">
-                             <h3 data-en="Normal Templates (Full Width)" data-ar="نماذج عادية (عرض الصفحة)">نماذج عادية (عرض الصفحة)</h3>
-                             <div class="template-previews">
-                                 <img src="CV_Image.png" class="template-preview selected-template" onclick="selectTemplate(1, 'normal')" alt="Normal Template 1 Preview" data-template-category="normal" data-en-alt="Normal Template 1 Preview" data-ar-alt="معاينة النموذج العادي 1">
-                                 <img src="CV_Image (1).png" class="template-preview" onclick="selectTemplate(2, 'normal')" alt="Normal Template 2 Preview" data-template-category="normal" data-en-alt="Normal Template 2 Preview" data-ar-alt="معاينة النموذج العادي 2">
-                                 <img src="CV_Image (2).png" class="template-preview" onclick="selectTemplate(3, 'normal')" alt="Normal Template 3 Preview" data-template-category="normal" data-en-alt="Normal Template 3 Preview" data-ar-alt="معاينة النموذج العادي 3">
-                                 <img src="CV_Image (3).png" class="template-preview" onclick="selectTemplate(4, 'normal')" alt="Normal Template 4 Preview" data-template-category="normal" data-en-alt="Normal Template 4 Preview" data-ar-alt="معاينة النموذج العادي 4">
-                                 <img src="CV_Image (4).png" class="template-preview" onclick="selectTemplate(5, 'normal')" alt="Normal Template 5 Preview" data-template-category="normal" data-en-alt="Normal Template 5 Preview" data-ar-alt="معاينة النموذج العادي 5">
-                                 <img src="CV_Image (5).png" class="template-preview" onclick="selectTemplate(6, 'normal')" alt="Normal Template 6 Preview" data-template-category="normal" data-en-alt="Normal Template 6 Preview" data-ar-alt="معاينة النموذج العادي 6">
-                                 <img src="CV_Image (6).png" class="template-preview" onclick="selectTemplate(7, 'normal')" alt="Normal Template 7 Preview" data-template-category="normal" data-en-alt="Normal Template 7 Preview" data-ar-alt="معاينة النموذج العادي 7">
-                                 <img src="CV_Image (7).png" class="template-preview" onclick="selectTemplate(8, 'normal')" alt="Normal Template 8 Preview" data-template-category="normal" data-en-alt="Normal Template 8 Preview" data-ar-alt="معاينة النموذج العادي 8">
-                                 <img src="CV_Image (8).png" class="template-preview" onclick="selectTemplate(9, 'normal')" alt="Normal Template 9 Preview" data-template-category="normal" data-en-alt="Normal Template 9 Preview" data-ar-alt="معاينة النموذج العادي 9">
-                                 <img src="CV_Image (9).png" class="template-preview" onclick="selectTemplate(10, 'normal')" alt="Normal Template 10 Preview" data-template-category="normal" data-en-alt="Normal Template 10 Preview" data-ar-alt="معاينة النموذج العادي 10">
-                             </div>
-                         </div>
-                         <div class="template-category">
-                              <h3 data-en="Standard Templates (Sidebar)" data-ar="نماذج عادية (قسم جانبي ورئيسي)">نماذج عادية (قسم جانبي ورئيسي)</h3>
-                             <div class="template-previews">
-                                 <img src="CV_Image (10).png" class="template-preview" onclick="selectTemplate(1, 'standard')" alt="Standard Template 1 Preview" data-template-category="standard" data-en-alt="Standard Template 1 Preview" data-ar-alt="معاينة النموذج العادي 1 (شريط جانبي)">
-                                  <img src="CV_Image (11).png" class="template-preview" onclick="selectTemplate(2, 'standard')" alt="Standard Template 2 Preview" data-template-category="standard" data-en-alt="Standard Template 2 Preview" data-ar-alt="معاينة النموذج العادي 2 (شريط جانبي)">
-                                 <img src="CV_Image (12).png" class="template-preview" onclick="selectTemplate(3, 'standard')" alt="Standard Template 3 Preview" data-template-category="standard" data-en-alt="Standard Template 3 Preview" data-ar-alt="معاينة النموذج العادي 3 (شريط جانبي)">
-                                 <img src="CV_Image (13).png" class="template-preview" onclick="selectTemplate(4, 'standard')" alt="Standard Template 4 Preview" data-template-category="standard" data-en-alt="Standard Template 4 Preview" data-ar-alt="معاينة النموذج العادي 4 (شريط جانبي)">
-                                 <img src="CV_Image (14).png" class="template-preview" onclick="selectTemplate(5, 'standard')" alt="Standard Template 5 Preview" data-template-category="standard" data-en-alt="Standard Template 5 Preview" data-ar-alt="معاينة النموذج العادي 5 (شريط جانبي)">
-                                 <img src="CV_Image (15).png" class="template-preview" onclick="selectTemplate(6, 'standard')" alt="Standard Template 6 Preview" data-template-category="standard" data-en-alt="Standard Template 6 Preview" data-ar-alt="معاينة النموذج العادي 6 (شريط جانبي)">
-                                 <img src="CV_Image (16).png" class="template-preview" onclick="selectTemplate(7, 'standard')" alt="Standard Template 7 Preview" data-template-category="standard" data-en-alt="Standard Template 7 Preview" data-ar-alt="معاينة النموذج العادي 7 (شريط جانبي)">
-                                 <img src="CV_Image (17).png" class="template-preview" onclick="selectTemplate(8, 'standard')" alt="Standard Template 8 Preview" data-template-category="standard" data-en-alt="Standard Template 8 Preview" data-ar-alt="معاينة النموذج العادي 8 (شريط جانبي)">
-                                 <img src="CV_Image (18).png" class="template-preview" onclick="selectTemplate(9, 'standard')" alt="Standard Template 9 Preview" data-template-category="standard" data-en-alt="Standard Template 9 Preview" data-ar-alt="معاينة النموذج العادي 9 (شريط جانبي)">
-                                 <img src="CV_Image (19).png" class="template-preview" onclick="selectTemplate(10, 'standard')" alt="Standard Template 10 Preview" data-template-category="standard" data-en-alt="Standard Template 10 Preview" data-ar-alt="معاينة النموذج العادي 10 (شريط جانبي)">
-                             </div>
-                         </div>
-                         <div class="template-category">
-                              <h3 data-en="Professional Templates (Header + Sidebar)" data-ar="نماذج احترافية (رأس وجانبي ورئيسي)">نماذج احترافية (رأس وجانبي ورئيسي)</h3>
-                             <div class="template-previews">
-                                 <img src="CV_Image (20).png" class="template-preview" onclick="selectTemplate(1, 'professional')" alt="Professional Template 1 Preview" data-template-category="professional" data-en-alt="Professional Template 1 Preview" data-ar-alt="معاينة النموذج الاحترافي 1">
-                                 <img src="CV_Image (21).png" class="template-preview" onclick="selectTemplate(2, 'professional')" alt="Professional Template 2 Preview" data-template-category="professional" data-en-alt="Professional Template 2 Preview" data-ar-alt="معاينة النموذج الاحترافي 2">
-                                 <img src="CV_Image (22).png" class="template-preview" onclick="selectTemplate(3, 'professional')" alt="Professional Template 3 Preview" data-template-category="professional" data-en-alt="Professional Template 3 Preview" data-ar-alt="معاينة النموذج الاحترافي 3">
-                                 <img src="CV_Image (23).png" class="template-preview" onclick="selectTemplate(4, 'professional')" alt="Professional Template 4 Preview" data-template-category="professional" data-en-alt="Professional Template 4 Preview" data-ar-alt="معاينة النموذج الاحترافي 4">
-                                 <img src="CV_Image (24).png" class="template-preview" onclick="selectTemplate(5, 'professional')" alt="Professional Template 5 Preview" data-template-category="professional" data-en-alt="Professional Template 5 Preview" data-ar-alt="معاينة النموذج الاحترافي 5">
-                                 <img src="CV_Image (25).png" class="template-preview" onclick="selectTemplate(6, 'professional')" alt="Professional Template 6 Preview" data-template-category="professional" data-en-alt="Professional Template 6 Preview" data-ar-alt="معاينة النموذج الاحترافي 6">
-                                 <img src="CV_Image (26).png" class="template-preview" onclick="selectTemplate(7, 'professional')" alt="Professional Template 7 Preview" data-template-category="professional" data-en-alt="Professional Template 7 Preview" data-ar-alt="معاينة النموذج الاحترافي 7">
-                                 <img src="CV_Image (27).png" class="template-preview" onclick="selectTemplate(8, 'professional')" alt="Professional Template 8 Preview" data-template-category="professional" data-en-alt="Professional Template 8 Preview" data-ar-alt="معاينة النموذج الاحترافي 8">
-                                 <img src="CV_Image (28).png" class="template-preview" onclick="selectTemplate(9, 'professional')" alt="Professional Template 9 Preview" data-template-category="professional" data-en-alt="Professional Template 9 Preview" data-ar-alt="معاينة النموذج الاحترافي 9">
-                                 <img src="CV_Image (29).png" class="template-preview" onclick="selectTemplate(10, 'professional')" alt="Professional Template 10 Preview" data-template-category="professional" data-en-alt="Professional Template 10 Preview" data-ar-alt="معاينة النموذج الاحترافي 10">
-                             </div>
-                         </div>
+                    <div class="template-preview-container">
+                        <div class="template-category">
+                            <h3 data-en="Normal Templates (Full Width)" data-ar="نماذج عادية (عرض الصفحة)">نماذج عادية (عرض الصفحة)</h3>
+                            <div class="template-previews">
+                                <img src="CV_image.png" class="template-preview selected-template" onclick="selectTemplate(1, 'normal')" alt="Normal Template 1 Preview" data-template-category="normal" data-en-alt="Normal Template 1 Preview" data-ar-alt="معاينة النموذج العادي 1">
+                                <img src="CV_Image (1).png" class="template-preview" onclick="selectTemplate(2, 'normal')" alt="Normal Template 2 Preview" data-template-category="normal" data-en-alt="Normal Template 2 Preview" data-ar-alt="معاينة النموذج العادي 2">
+                                <img src="CV_Image (2).png" class="template-preview" onclick="selectTemplate(3, 'normal')" alt="Normal Template 3 Preview" data-template-category="normal" data-en-alt="Normal Template 3 Preview" data-ar-alt="معاينة النموذج العادي 3">
+                                <img src="CV_Image (3).png" class="template-preview" onclick="selectTemplate(4, 'normal')" alt="Normal Template 4 Preview" data-template-category="normal" data-en-alt="Normal Template 4 Preview" data-ar-alt="معاينة النموذج العادي 4">
+                                <img src="CV_Image (4).png" class="template-preview" onclick="selectTemplate(5, 'normal')" alt="Normal Template 5 Preview" data-template-category="normal" data-en-alt="Normal Template 5 Preview" data-ar-alt="معاينة النموذج العادي 5">
+                                <img src="CV_Image (5).png" class="template-preview" onclick="selectTemplate(6, 'normal')" alt="Normal Template 6 Preview" data-template-category="normal" data-en-alt="Normal Template 6 Preview" data-ar-alt="معاينة النموذج العادي 6">
+                                <img src="CV_Image (6).png" class="template-preview" onclick="selectTemplate(7, 'normal')" alt="Normal Template 7 Preview" data-template-category="normal" data-en-alt="Normal Template 7 Preview" data-ar-alt="معاينة النموذج العادي 7">
+                                <img src="CV_Image (7).png" class="template-preview" onclick="selectTemplate(8, 'normal')" alt="Normal Template 8 Preview" data-template-category="normal" data-en-alt="Normal Template 8 Preview" data-ar-alt="معاينة النموذج العادي 8">
+                                <img src="CV_Image (8).png" class="template-preview" onclick="selectTemplate(9, 'normal')" alt="Normal Template 9 Preview" data-template-category="normal" data-en-alt="Normal Template 9 Preview" data-ar-alt="معاينة النموذج العادي 9">
+                                <img src="CV_Image (9).png" class="template-preview" onclick="selectTemplate(10, 'normal')" alt="Normal Template 10 Preview" data-template-category="normal" data-en-alt="Normal Template 10 Preview" data-ar-alt="معاينة النموذج العادي 10">
+                                <img src="CV_Image (10).png" class="template-preview" onclick="selectTemplate(11, 'normal')" alt="Normal Template 11 Preview" data-template-category="normal" data-en-alt="Normal Template 11 Preview" data-ar-alt="معاينة النموذج العادي 11">
+                                <img src="CV_Image (11).png" class="template-preview" onclick="selectTemplate(12, 'normal')" alt="Normal Template 12 Preview" data-template-category="normal" data-en-alt="Normal Template 12 Preview" data-ar-alt="معاينة النموذج العادي 12">
+                            </div>
+                        </div>
+                        <div class="template-category">
+                            <h3 data-en="Standard Templates (Sidebar)" data-ar="نماذج عادية (قسم جانبي ورئيسي)">نماذج عادية (قسم جانبي ورئيسي)</h3>
+                            <div class="template-previews">
+                                <img src="CV_Image (12).png" class="template-preview" onclick="selectTemplate(1, 'standard')" alt="Standard Template 1 Preview" data-template-category="standard" data-en-alt="Standard Template 1 Preview" data-ar-alt="معاينة النموذج العادي 1 (شريط جانبي)">
+                                <img src="CV_Image (13).png" class="template-preview" onclick="selectTemplate(2, 'standard')" alt="Standard Template 2 Preview" data-template-category="standard" data-en-alt="Standard Template 2 Preview" data-ar-alt="معاينة النموذج العادي 2 (شريط جانبي)">
+                                <img src="CV_Image (14).png" class="template-preview" onclick="selectTemplate(3, 'standard')" alt="Standard Template 3 Preview" data-template-category="standard" data-en-alt="Standard Template 3 Preview" data-ar-alt="معاينة النموذج العادي 3 (شريط جانبي)">
+                                <img src="CV_Image (15).png" class="template-preview" onclick="selectTemplate(4, 'standard')" alt="Standard Template 4 Preview" data-template-category="standard" data-en-alt="Standard Template 4 Preview" data-ar-alt="معاينة النموذج العادي 4 (شريط جانبي)">
+                                <img src="CV_Image (16).png" class="template-preview" onclick="selectTemplate(5, 'standard')" alt="Standard Template 5 Preview" data-template-category="standard" data-en-alt="Standard Template 5 Preview" data-ar-alt="معاينة النموذج العادي 5 (شريط جانبي)">
+                                <img src="CV_Image (17).png" class="template-preview" onclick="selectTemplate(6, 'standard')" alt="Standard Template 6 Preview" data-template-category="standard" data-en-alt="Standard Template 6 Preview" data-ar-alt="معاينة النموذج العادي 6 (شريط جانبي)">
+                                <img src="CV_Image (18).png" class="template-preview" onclick="selectTemplate(7, 'standard')" alt="Standard Template 7 Preview" data-template-category="standard" data-en-alt="Standard Template 7 Preview" data-ar-alt="معاينة النموذج العادي 7 (شريط جانبي)">
+                                <img src="CV_Image (19).png" class="template-preview" onclick="selectTemplate(8, 'standard')" alt="Standard Template 8 Preview" data-template-category="standard" data-en-alt="Standard Template 8 Preview" data-ar-alt="معاينة النموذج العادي 8 (شريط جانبي)">
+                                <img src="CV_Image (20).png" class="template-preview" onclick="selectTemplate(9, 'standard')" alt="Standard Template 9 Preview" data-template-category="standard" data-en-alt="Standard Template 9 Preview" data-ar-alt="معاينة النموذج العادي 9 (شريط جانبي)">
+                                <img src="CV_Image (21).png" class="template-preview" onclick="selectTemplate(10, 'standard')" alt="Standard Template 10 Preview" data-template-category="standard" data-en-alt="Standard Template 10 Preview" data-ar-alt="معاينة النموذج العادي 10 (شريط جانبي)">
+                                <img src="CV_Image (22).png" class="template-preview" onclick="selectTemplate(11, 'standard')" alt="Standard Template 11 Preview" data-template-category="standard" data-en-alt="Standard Template 11 Preview" data-ar-alt="معاينة النموذج العادي 11 (شريط جانبي)">
+                                <img src="CV_Image (23).png" class="template-preview" onclick="selectTemplate(12, 'standard')" alt="Standard Template 12 Preview" data-template-category="standard" data-en-alt="Standard Template 12 Preview" data-ar-alt="معاينة النموذج العادي 12 (شريط جانبي)">
+                            </div>
+                        </div>
+                        <div class="template-category">
+                            <h3 data-en="Professional Templates (Header + Sidebar)" data-ar="نماذج احترافية (رأس وجانبي ورئيسي)">نماذج احترافية (رأس وجانبي ورئيسي)</h3>
+                            <div class="template-previews">
+                                <img src="CV_Image (24).png" class="template-preview" onclick="selectTemplate(1, 'professional')" alt="Professional Template 1 Preview" data-template-category="professional" data-en-alt="Professional Template 1 Preview" data-ar-alt="معاينة النموذج الاحترافي 1">
+                                <img src="CV_Image (25).png" class="template-preview" onclick="selectTemplate(2, 'professional')" alt="Professional Template 2 Preview" data-template-category="professional" data-en-alt="Professional Template 2 Preview" data-ar-alt="معاينة النموذج الاحترافي 2">
+                                <img src="CV_Image (26).png" class="template-preview" onclick="selectTemplate(3, 'professional')" alt="Professional Template 3 Preview" data-template-category="professional" data-en-alt="Professional Template 3 Preview" data-ar-alt="معاينة النموذج الاحترافي 3">
+                                <img src="CV_Image (27).png" class="template-preview" onclick="selectTemplate(4, 'professional')" alt="Professional Template 4 Preview" data-template-category="professional" data-en-alt="Professional Template 4 Preview" data-ar-alt="معاينة النموذج الاحترافي 4">
+                                <img src="CV_Image (28).png" class="template-preview" onclick="selectTemplate(5, 'professional')" alt="Professional Template 5 Preview" data-template-category="professional" data-en-alt="Professional Template 5 Preview" data-ar-alt="معاينة النموذج الاحترافي 5">
+                                <img src="CV_Image (29).png" class="template-preview" onclick="selectTemplate(6, 'professional')" alt="Professional Template 6 Preview" data-template-category="professional" data-en-alt="Professional Template 6 Preview" data-ar-alt="معاينة النموذج الاحترافي 6">
+                                <img src="CV_Image (30).png" class="template-preview" onclick="selectTemplate(7, 'professional')" alt="Professional Template 7 Preview" data-template-category="professional" data-en-alt="Professional Template 7 Preview" data-ar-alt="معاينة النموذج الاحترافي 7">
+                                <img src="CV_Image (31).png" class="template-preview" onclick="selectTemplate(8, 'professional')" alt="Professional Template 8 Preview" data-template-category="professional" data-en-alt="Professional Template 8 Preview" data-ar-alt="معاينة النموذج الاحترافي 8">
+                                <img src="CV_Image (32).png" class="template-preview" onclick="selectTemplate(9, 'professional')" alt="Professional Template 9 Preview" data-template-category="professional" data-en-alt="Professional Template 9 Preview" data-ar-alt="معاينة النموذج الاحترافي 9">
+                                <img src="CV_Image (33).png" class="template-preview" onclick="selectTemplate(10, 'professional')" alt="Professional Template 10 Preview" data-template-category="professional" data-en-alt="Professional Template 10 Preview" data-ar-alt="معاينة النموذج الاحترافي 10">
+                                <img src="CV_Image (34).png" class="template-preview" onclick="selectTemplate(11, 'professional')" alt="Professional Template 11 Preview" data-template-category="professional" data-en-alt="Professional Template 11 Preview" data-ar-alt="معاينة النموذج الاحترافي 11">
+                                <img src="CV_Image (35).png" class="template-preview" onclick="selectTemplate(12, 'professional')" alt="Professional Template 12 Preview" data-template-category="professional" data-en-alt="Professional Template 12 Preview" data-ar-alt="معاينة النموذج الاحترافي 12">
+                            </div>
+                        </div>
+                        <div class="template-category">
+                            <h3 data-en="AST Supported Templates" data-ar="نماذج داعمة لأنظمة AST">نماذج داعمة لأنظمة AST</h3>
+                            <div class="template-previews">
+                                <img src="CV_Image (36).png" class="template-preview" onclick="selectTemplate(1, 'ast')" alt="AST Template 1 Preview" data-template-category="ast" data-en-alt="AST Template 1 Preview" data-ar-alt="معاينة نموذج AST 1">
+                                <img src="CV_Image (37).png" class="template-preview" onclick="selectTemplate(2, 'ast')" alt="AST Template 2 Preview" data-template-category="ast" data-en-alt="AST Template 2 Preview" data-ar-alt="معاينة نموذج AST 2">
+                                <img src="CV_Image (38).png" class="template-preview" onclick="selectTemplate(3, 'ast')" alt="AST Template 3 Preview" data-template-category="ast" data-en-alt="AST Template 3 Preview" data-ar-alt="معاينة نموذج AST 3">
+                                <img src="CV_Image (39).png" class="template-preview" onclick="selectTemplate(4, 'ast')" alt="AST Template 4 Preview" data-template-category="ast" data-en-alt="AST Template 4 Preview" data-ar-alt="معاينة نموذج AST 4">
+                                <img src="CV_Image (40).png" class="template-preview" onclick="selectTemplate(5, 'ast')" alt="AST Template 5 Preview" data-template-category="ast" data-en-alt="AST Template 5 Preview" data-ar-alt="معاينة نموذج AST 5">
+                                <img src="CV_Image (41).png" class="template-preview" onclick="selectTemplate(6, 'ast')" alt="AST Template 6 Preview" data-template-category="ast" data-en-alt="AST Template 6 Preview" data-ar-alt="معاينة نموذج AST 6">
+                                <img src="CV_Image (42).png" class="template-preview" onclick="selectTemplate(7, 'ast')" alt="AST Template 7 Preview" data-template-category="ast" data-en-alt="AST Template 7 Preview" data-ar-alt="معاينة نموذج AST 7">
+                                <img src="CV_Image (43).png" class="template-preview" onclick="selectTemplate(8, 'ast')" alt="AST Template 8 Preview" data-template-category="ast" data-en-alt="AST Template 8 Preview" data-ar-alt="معاينة نموذج AST 8">
+                                <img src="CV_Image (44).png" class="template-preview" onclick="selectTemplate(9, 'ast')" alt="AST Template 9 Preview" data-template-category="ast" data-en-alt="AST Template 9 Preview" data-ar-alt="معاينة نموذج AST 9">
+                                <img src="CV_Image (45).png" class="template-preview" onclick="selectTemplate(10, 'ast')" alt="AST Template 10 Preview" data-template-category="ast" data-en-alt="AST Template 10 Preview" data-ar-alt="معاينة نموذج AST 10">
+                                <img src="CV_Image (46).png" class="template-preview" onclick="selectTemplate(11, 'ast')" alt="AST Template 11 Preview" data-template-category="ast" data-en-alt="AST Template 11 Preview" data-ar-alt="معاينة نموذج AST 11">
+                                <img src="CV_Image (47).png" class="template-preview" onclick="selectTemplate(12, 'ast')" alt="AST Template 12 Preview" data-template-category="ast" data-en-alt="AST Template 12 Preview" data-ar-alt="معاينة نموذج AST 12">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-                
+            <div class="form-group">
+                <label data-en="Data Completion Progress" data-ar="نسبة إكمال البيانات">نسبة إكمال البيانات</label>
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
             <div class="d-flex justify-content-center mt-3">
                 <button class="btn btn-secondary btn-lg" style="margin-left:30px;" onclick="showDataEntryStep()" data-en="Back" data-ar="عودة">عودة</button>
                 <button class="btn btn-primary btn-lg" onclick="showTemplateSelectionStep()" data-en="Next" data-ar="التالي">التالي</button>
@@ -368,19 +388,21 @@
     </div>
 
     <div id="cv-preview-modal" class="overlay-popup">
-         <div class="popup-box large-popup-box"> <button class="popup-close" onclick="closeCvPreviewModal()">×</button>
-                 <div id="cv-preview-area" class="mt-4">
-                     <div id="cv-container" class="template1" dir="rtl">
-                     </div>
+         <div class="popup-box large-popup-box">
+             <button class="popup-close" onclick="closeCvPreviewModal()">×</button>
+             <div id="cv-preview-area" class="mt-4">
+                 <div id="cv-container" class="template1" dir="rtl">
                  </div>
+             </div>
              <div class="d-flex justify-content-center mt-4">
                 <button class="btn btn-secondary btn-lg me-2" style="margin-left:30px;" onclick="backToTemplateSelection()" data-en="Back to Templates" data-ar="العودة للنماذج">العودة للنماذج</button>
-
                 <button class="btn btn-success btn-lg" onclick="openPaymentForCV()" data-en="Request Download / Print" data-ar="طلب تنزيل / طباعة">طلب تنزيل / طباعة</button>
-           </div>
+                <button class="btn btn-success btn-lg" onclick="downloadCVImage()" data-en="Request Download / Print" data-ar=" تنزيل / "> تنزيل / </button>
+
+                
+            </div>
          </div>
      </div>
-
 
     <div id="payment-modal" class="overlay-popup">
         <div class="popup-box">
@@ -389,14 +411,14 @@
     </div>
 
     <div id="qr-payment-popup" class="overlay-popup">
-        <div class="popup-inner"> <button class="popup-close" onclick="closeQrPaymentPopup()">×</button>
+        <div class="popup-inner">
+            <button class="popup-close" onclick="closeQrPaymentPopup()">×</button>
             <h3 data-translate="payment">الدفع</h3>
 
             <img id="qr-payment-image" src="" alt="QR Code" style="max-width: 200px; margin-bottom: 15px; display:none;" />
             <div class="qr-payment-inputs-scroll">
-            <div id="paypal-button-container" style="display: none;"></div></div>
+                <div id="paypal-button-container" style="display: none;"></div>
 
-            <div class="qr-payment-inputs-scroll">
                  <div id="manual-payment-form" style="display: none;">
                      <p data-translate="payment-note">بعد إتمام الدفع في تطبيق البنك، الرجاء تعبئة البيانات التالية:</p>
 
@@ -420,17 +442,15 @@
                  <span data-translate="submit">إرسال</span>
              </button>
             <div id="qr-payment-result" style="margin-top:10px; color:green;"></div>
-
-        </div> </div>
+        </div>
     </div>
-<!-- Button to trigger template preview download (يمكن إخفاؤه للمستخدمين العاديين) -->
 
     <footer class="bg-dark text-white py-4">
         <div class="container text-center">
             <p>&copy; 2023 <span data-translate="brand-name">رسائل</span>. All rights reserved.</p>
             </div>
     </footer>
-    <script src="https://kendo.cdn.telerik.com/2024.1.301/js/kendo.all.min.js"></script>
+
     <script src="script.js"></script>
 </body>
 </html>
