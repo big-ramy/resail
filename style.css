@@ -1002,7 +1002,7 @@ body[dir="ltr"] .cv-language-list li::before {
 
 .cv-two-column-layout[dir="ltr"],
 .ast-layout[dir="ltr"] {
-    flex-direction: row-reverse; /* Sidebar on the left in LTR */
+    flex-direction: row; /* Sidebar on the left in LTR */
 }
 
 /* Professional Layout uses Grid */
@@ -1023,10 +1023,21 @@ body[dir="ltr"] .cv-language-list li::before {
 }
 
 .cv-professional-layout[dir="ltr"] {
-    grid-template-columns: 1fr 300px; /* Main content fills rest, Sidebar width */
+    display: grid; /* جعل الحاوية الرئيسية شبكة Grid */
+    /* تحديد الأعمدة لـ LTR (العمود الجانبي على اليسار) */
+    grid-template-columns: 250px 1fr; /* 250px للشريط الجانبي، والباقي للمحتوى الرئيسي */
+    /* تحديد الصفوف والمناطق */
+    grid-template-rows: auto auto; /* صفان: الأول للرأس، الثاني للمحتوى والأعمدة */
     grid-template-areas:
-        "header header"
-        "main sidebar"; /* Sidebar on the left in LTR */
+        "header header" /* الرأس يمتد على كل الأعمدة في الصف الأول */
+        "sidebar main"; /* الشريط الجانبي على اليسار، المحتوى الرئيسي على اليمين */
+    
+    /* إضافة مسافة بين الصفوف (الرأس عن باقي المحتوى) */
+    row-gap: 20px; /* مثال: 20 بكسل مسافة رأسية بين الصفوف */
+    /* يمكنك أيضاً إضافة عمود (gap) بين الشريط الجانبي والمحتوى الرئيسي إذا لم يكن محددًا ضمنياً */
+    column-gap: 20px; /* مثال: 20 بكسل مسافة أفقية بين الأعمدة */
+
+    /* إزالة أي display: flex قد يكون موجود هنا لعدم التعارض */
 }
 
 
