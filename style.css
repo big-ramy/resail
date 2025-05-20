@@ -199,8 +199,18 @@ body[dir="ltr"] .dropdown-menu {
 
 /* Style for larger preview modal box */
 #cv-preview-modal .popup-box.large-popup-box {
-    width: 100%; /* Example larger width */
-    max-width: 100%;
+    width: 95vw; /* Fixed width for larger screens, but responsive */
+    max-width: 1200px; /* Limit max width */
+    height: calc(100vh - 40px); /* Fill most of the viewport height */
+    max-height: 95vh; /* Ensure it doesn't exceed 95% of viewport height */
+    margin: 20px auto; /* Center the modal box */
+    display: flex; /* Make it a flex container */
+    flex-direction: column; /* Stack content vertically */
+    overflow: hidden; /* Hide overflow of the box itself */
+    box-sizing: border-box;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Style for the inner box of the QR/manual payment popup */
@@ -508,22 +518,23 @@ body[dir="ltr"] .template-preview-container {
 #cv-preview-area {
     flex-grow: 1; /* Allows this area to take up available vertical space */
     overflow-y: auto; /* Allow scrolling for the preview area if CV exceeds height */
-    max-height: calc(100vh - 150px); /* Max height based on viewport, leaving space for buttons and header */
+    max-height: calc(100% - 70px); /* Adjust max height based on popup-box height, leaving space for buttons */
     display: flex; /* Use flexbox to center the CV container */
     justify-content: center; /* Center horizontally */
     align-items: flex-start; /* Align to the top */
-    padding: 15px; /* Add some padding around the preview */
+    padding: 10px; /* Add some padding around the preview */
     background-color: #f8f9fa; /* Light background for the preview area */
     border-radius: 8px;
-    margin-top: 20px;
+    margin-top: 10px;
     box-sizing: border-box;
 }
 
+
 /* --- Base CV Container Styles --- */
 #cv-container {
-    /* Maintain A4 aspect ratio but scale to fit */
-    width: 210mm; /* A4 width */
-    min-height: 297mm; /* A4 height - CRUCIAL for stretching */
+    /* Use a fixed A4 aspect ratio, but scale it dynamically */
+    width: 210mm; /* Base width for A4 aspect ratio */
+    min-height: 297mm; /* Base height for A4 aspect ratio */
     max-width: 100%; /* Ensure it doesn't exceed preview area width */
     height: auto; /* Allow height to adjust based on content and width */
     display: flex;
@@ -531,7 +542,7 @@ body[dir="ltr"] .template-preview-container {
     justify-content: space-between; /* Distributes header/footer, main content expands */
     box-sizing: border-box;
     margin: 0 auto; /* Center horizontally within #cv-preview-area */
-    padding: 0;
+    padding: 0; /* Padding will be handled by inner sections */
     border: none;
     box-shadow: none;
     font-family: 'Segoe UI', Arial, sans-serif; /* Default font */
@@ -539,7 +550,6 @@ body[dir="ltr"] .template-preview-container {
     color: #212529;
     overflow: hidden; /* Keep this as your JS function controls it to visible for capture */
     position: relative;
-    /* Direction and text-align will be set by JS based on language */
 }
 
 /* Watermark style */
@@ -2366,47 +2376,66 @@ body[dir="ltr"] .qr-payment-inputs-scroll {
 /* Responsive adjustments for modals */
 @media (max-width: 768px) {
     .popup-box {
-        max-width: 100%;
-        padding: 20px;
+        padding: 15px; /* Reduced padding */
+        max-width: 98vw; /* Max width almost full screen */
+        width: 100%; /* Full width */
+        height: calc(100vh - 20px); /* Almost full height */
+        margin: 10px auto; /* Small margin from edges */
     }
 
+    /* Specific adjustments for CV Builder Modal */
+    #cv-builder-modal .popup-box {
+        height: calc(100vh - 20px); /* Adjust height */
+        max-height: unset; /* Remove max height constraint */
+    }
+    
+
+    /* Specific adjustments for CV Preview Modal */
     #cv-preview-modal .popup-box.large-popup-box {
-        width: 100%; /* Adjust for small screens */
-        max-width: 100%;
-         height: calc(100vh - 20px); /* Allow almost full height */
-         margin: 10px; /* Adjust margin */
-         max-height: none; /* Remove max height limitation */
+        width: 98vw; /* Almost full width for preview modal */
+        max-width: 98vw;
+        height: calc(100vh - 20px); /* Adjust height */
+        max-height: unset; /* Remove max height constraint */
+        margin: 10px auto;
     }
 
+    /* Adjustments for QR/Payment Modal */
     #qr-payment-popup .popup-inner {
-        width: 100%;
-        max-width: 100%;
+        width: 95vw; /* Almost full width for payment modal */
+        max-width: 95vw;
         padding: 20px;
-        max-height: 100%; /* Adjust max height for small screens */
-         margin: 10px; /* Adjust margin */
+        max-height: calc(100vh - 20px); /* Adjust max height for small screens */
+        margin: 10px auto;
     }
 
     /* Adjustments for CV layout within the modal on smaller screens */
     #cv-preview-area {
-        padding: 10px;
-        max-height: calc(100vh - 150px); /* Adjust max height for small screens */
-         overflow-y: auto; /* Keep scrolling for very long CVs */
-         height: auto; /* Allow height to adjust */
-         flex-direction: column; /* Stack children vertically */
-         align-items: center; /* Center content */
-         justify-content: flex-start;
+        padding: 5px; /* Reduced padding around CV */
+        max-height: calc(100% - 70px); /* Adjust max height for small screens */
+        overflow-y: auto; /* Keep scrolling for very long CVs */
+        height: auto; /* Allow height to adjust */
+        flex-direction: column; /* Stack children vertically if needed, but CV content should handle its own stacking */
+        align-items: center; /* Center content */
+        justify-content: flex-start;
     }
 
     #cv-container {
-        width: 100%; /* Allow CV container to take full width in modal */
-        min-height: auto; /* Allow height to adjust based on content */
+        /* On small screens, scale the CV down to fit the width */
+        width: 95vw; /* Occupy 95% of viewport width */
+        max-width: 300px; /* Set a reasonable max width for readability if needed */
+        height: auto; /* Height adapts to content */
+        min-height: auto; /* No minimum height for A4 on small screens */
         margin: 0; /* Remove auto margin for better control */
-        padding: 10px; /* Add some padding */
+        padding: 10px; /* Add some internal padding */
+        /* Apply a scaling factor to reduce overall size */
+        transform: scale(0.6); /* Scale down the entire CV to fit. Adjust this value (e.g., 0.5 to 0.8) as needed */
+        transform-origin: top center; /* Scale from the top center */
     }
 
+    /* Override flex for two-column layouts to stack on small screens */
     .cv-two-column-layout,
     .cv-professional-layout,
-    .ast-layout { /* Added ast-layout */
+    .ast-layout {
         flex-direction: column !important; /* Stack columns vertically on smaller screens */
         grid-template-columns: 1fr !important; /* Single column grid */
         grid-template-rows: auto auto 1fr !important; /* Adjust rows for stacked layout */
@@ -2415,21 +2444,27 @@ body[dir="ltr"] .qr-payment-inputs-scroll {
             "sidebar"
             "main" !important; /* Reorder areas for stacking */
         gap: 0; /* Remove gap when stacked */
+        width: 100% !important; /* Ensure they take full width */
+        min-height: auto !important; /* Adjust height */
     }
 
     .cv-sidebar {
         width: 100% !important; /* Full width for sidebar when stacked */
-        padding: 20px !important; /* Adjust sidebar padding */
+        padding: 15px !important; /* Adjust sidebar padding */
         text-align: inherit !important; /* Allow sidebar text to align with parent direction */
+        border-right: none !important; /* Remove side border */
+        border-left: none !important; /* Remove side border */
+        border-bottom: 2px solid; /* Add bottom border when stacked */
     }
 
     .cv-main-content {
-        padding: 20px !important; /* Adjust main content padding */
+        width: 100% !important; /* Full width for main content when stacked */
+        padding: 15px !important; /* Adjust main content padding */
         text-align: inherit !important; /* Allow main content text to align with parent direction */
     }
 
     .cv-header.professional-layout {
-        padding: 20px !important; /* Adjust header padding */
+        padding: 15px !important; /* Adjust header padding */
     }
 
     .cv-sidebar .cv-section-title {
@@ -2456,50 +2491,6 @@ body[dir="ltr"] .qr-payment-inputs-scroll {
         column-count: 1 !important; /* Single column for skills on small screens */
     }
 
-    /* Adjustments for print styles on smaller screens */
-    @media print {
-        .cv-two-column-layout,
-        .cv-professional-layout,
-        .ast-layout { /* Added ast-layout */
-            flex-direction: column !important; /* Force stacking for print on small screens */
-            grid-template-columns: 1fr !important;
-            grid-template-areas:
-                "header"
-                "sidebar"
-                "main" !important;
-            gap: 0 !important;
-        }
-
-        .cv-sidebar {
-            width: 100% !important;
-            padding: 0 !important;
-        }
-
-        .cv-main-content {
-            padding: 0 !important;
-        }
-
-        /* Restore padding within sections inside stacked sidebar/main */
-        .cv-sidebar .cv-section,
-        .cv-main-content .cv-section {
-            padding: 15px !important;
-            background-color: #f8f9fa !important;
-        }
-
-        .cv-sidebar .cv-section.no-padding,
-        .cv-main-content .cv-section.no-padding {
-            padding: 0 !important;
-            background-color: transparent !important;
-        }
-
-        .cv-sidebar .cv-section-title {
-            text-align: inherit !important; /* Align sidebar titles with the rest of the content */
-        }
-
-        .cv-sidebar .cv-contact-item {
-            justify-content: inherit !important; /* Allow contact items to align */
-        }
-    }
 }
 
 
