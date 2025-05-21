@@ -1273,7 +1273,7 @@ async function generateAndDownloadPDF_html2pdf() {
 
     // فترة انتظار للسماح بالرسم (100 ملي ثانية كما جربت)
     console.log("Starting wait for CV rendering (visible capture)...");
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise(resolve => setTimeout(resolve, 1000));
     console.log("Wait finished. Attempting visible capture.");
 
     // **التعديل هنا: تسجيل أبعاد وموقع العنصر قبل الالتقاط**
@@ -1387,7 +1387,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         removeButtons.forEach(btn => btn.style.display = 'none');
 
         // الانتظار لضمان تحديث العرض
-        await new Promise(resolve => setTimeout(resolve, 200));
+        await new Promise(resolve => setTimeout(resolve, 2000));
 
         // --- خيارات html2pdf ---
         const options = {
@@ -1447,15 +1447,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     }
 }
 
-// --- دالة مساعدة لتحويل Blob إلى Base64 ---
-function blobToBase64(blob) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result.split(',')[1]);
-        reader.onerror = error => reject(error);
-        reader.readAsDataURL(blob);
-    });
-}
+
 
 // ** تعديل دالة renderPayPalButton بنفس المنطق **
 function renderPayPalButton(finalPrice, templateCategory) {
@@ -1602,7 +1594,6 @@ function fileToBase64(file) {
         reader.onerror = error => reject(error);
     });
 }
-
 // دالة للتحقق من صحة البريد الإلكتروني
 function validateEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
