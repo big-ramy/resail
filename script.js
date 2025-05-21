@@ -1231,7 +1231,7 @@ async function generateAndDownloadPDF_html2pdf() {
 
     // تطبيق الأنماط المؤقتة للسماح بالالتقاط المرئي كما نجح معك (بدون إخفاء كامل)
     // هذه الأنماط تترك العنصر في تدفق المستند الطبيعي ضمن حاويته
-    cvContainer.style.width = '750px'; // العرض 100% داخل الحاوية الأبوية (#cv-preview-area)
+    cvContainer.style.width = '730px'; // العرض 100% داخل الحاوية الأبوية (#cv-preview-area)
     cvContainer.style.height = 'auto'; // ارتفاع تلقائي ليشمل كل المحتوى
     cvContainer.style.maxHeight = 'none'; // إزالة أي حد أقصى للارتفاع
     cvContainer.style.overflow = 'visible'; // عرض كامل المحتوى
@@ -1301,9 +1301,15 @@ async function generateAndDownloadPDF_html2pdf() {
         };
         // بدء عملية التحويل والتنزيل
         console.log("Calling html2pdf().from().set().save()");
-        await html2pdf().from(cvContainer).set(options).save();
+        if (downloadDirectly) {
+            await html2pdf().from(cvContainer).set(options).save();
+            console.log('PDF generated and downloaded successfully using html2pdf.js');
+        }
 
-        console.log('PDF generated and downloaded successfully using html2pdf.js');
+                // تحويل PDF إلى Base64 وإعادته (هذا الجزء يجب أن يكون دائمًا)
+        const pdfDataUri = await html2pdf().from(cvContainer).set(options).outputPdf('datauristring');
+        const pdfBase64 = pdfDataUri.split(',')[1];
+        return pdfBase64; // تأكد أن الدالة ترجع Base64
 
     } catch (error) {
         console.error("Error during PDF generation using html2pdf.js:", error);
@@ -1512,15 +1518,12 @@ function renderPayPalButton(finalPrice, templateCategory) {
                 const payerName = details.payer.name.given_name + ' ' + details.payer.name.surname;
                 const pricePaid = finalPrice;
 
-                // جلب عناصر الـ DOM الخاصة بالمودال قبل إخفائها
                 const paymentModal = document.getElementById("payment-modal");
                 const qrPaymentPopup = document.getElementById("qr-payment-popup");
-                // cvPreviewModal يجب أن يظل مرئيًا لأنه يحتوي على الـ CV
 
-                let cvPdfFileBase64 = ""; 
-                let cvPdfFileNameForClient = ''; 
-                
-                // حفظ حالة عرض النوافذ المنبثقة وإخفائها مؤقتًا
+                let cvPdfFileBase64 = "";
+                let cvPdfFileNameForClient = `CV_${payerName.replace(/\s/g, '_') || 'Unnamed'}.pdf`;
+
                 let originalPaymentModalDisplay = null;
                 let originalQrPaymentPopupDisplay = null;
 
@@ -1534,22 +1537,20 @@ function renderPayPalButton(finalPrice, templateCategory) {
                         qrPaymentPopup.style.display = 'none';
                     }
 
-                    const cvContainer = document.getElementById('cv-container'); 
+                    const cvContainer = document.getElementById('cv-container');
                     if (!cvContainer) {
                         alert(currentLang === 'ar' ? 'لم يتم العثور على حاوية السيرة الذاتية لإنشاء صور PDF.' : 'CV container not found for PDF image generation.');
                         return;
                     }
                     
-                    // استدعاء دالة captureCVasPDF فقط، فهي تتولى معالجة أنماط cvContainer الداخلية.
-                    cvPdfFileNameForClient = `CV_${payerName.replace(/\s/g, '_') || 'Unnamed'}.pdf`; 
-                    cvPdfFileBase64 = await captureCVasPDF(cvContainer, false); // نمرر false لعدم التنزيل المباشر
+                    // **التعديل هنا:** استدعاء generateAndDownloadPDF_html2pdf مع false لمنع التنزيل المباشر
+                    cvPdfFileBase64 = await generateAndDownloadPDF_html2pdf(false); //
 
                 } catch (pdfError) {
                     console.error("Error generating full CV (PayPal catch block):", pdfError);
                     alert(currentLang === 'ar' ? 'حدث خطأ أثناء إنشاء السيرة الذاتية (باي بال).' : 'Error generating CV (PayPal).');
                     return;
-                } finally { 
-                    // استعادة حالة عرض النوافذ المنبثقة بغض النظر عن نجاح الالتقاط
+                } finally {
                     if (paymentModal && originalPaymentModalDisplay !== null) {
                         paymentModal.style.display = originalPaymentModalDisplay;
                     }
@@ -1671,15 +1672,13 @@ async function submitPaymentProof(event) {
         }
     }
 
-    let cvPdfFileBase64 = ""; 
-    let cvPdfFileNameForClient = ''; 
-    
-    // حفظ حالة عرض النوافذ المنبثقة وإخفائها مؤقتًا
+    let cvPdfFileBase64 = "";
+    let cvPdfFileNameForClient = `CV_${name.replace(/\s/g, '_') || 'Unnamed'}.pdf`;
+
     let originalPaymentModalDisplay = null;
     let originalQrPaymentPopupDisplay = null;
 
     try {
-        // إخفاء جميع النوافذ المنبثقة للدفع التي قد تتداخل مع الالتقاط
         if (paymentModal && paymentModal.style.display !== 'none') {
             originalPaymentModalDisplay = paymentModal.style.display;
             paymentModal.style.display = 'none';
@@ -1689,23 +1688,20 @@ async function submitPaymentProof(event) {
             qrPaymentPopup.style.display = 'none';
         }
 
-        const cvContainer = document.getElementById('cv-container'); 
+        const cvContainer = document.getElementById('cv-container');
         if (!cvContainer) {
             alert(currentLang === 'ar' ? 'لم يتم العثور على حاوية السيرة الذاتية لإنشاء صور PDF.' : 'CV container not found for PDF image generation.');
             return;
         }
 
-        // استدعاء دالة captureCVasPDF فقط، فهي تتولى معالجة أنماط cvContainer الداخلية.
-        cvPdfFileNameForClient = `CV_${name.replace(/\s/g, '_') || 'Unnamed'}.pdf`; 
-        cvPdfFileBase64 = await captureCVasPDF(cvContainer, false); // نمرر false لعدم التنزيل المباشر
-        
+        // **التعديل هنا:** استدعاء generateAndDownloadPDF_html2pdf مع false لمنع التنزيل المباشر
+        cvPdfFileBase64 = await generateAndDownloadPDF_html2pdf(false); //
 
     } catch (pdfError) {
         console.error("Error generating full CV (catch block):", pdfError);
         alert(currentLang === 'ar' ? 'حدث خطأ أثناء إنشاء السيرة الذاتية.' : 'Error generating CV.');
         return;
-    } finally { 
-        // استعادة حالة عرض النوافذ المنبثقة بغض النظر عن نجاح الالتقاط
+    } finally {
         if (paymentModal && originalPaymentModalDisplay !== null) {
             paymentModal.style.display = originalPaymentModalDisplay;
         }
