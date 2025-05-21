@@ -163,6 +163,21 @@ const translations = {
     }
 };
 
+
+function prepareCVForMobileDisplay() {
+    const cvContainer = document.getElementById('cv-container');
+    if (!cvContainer) return;
+
+    // ضمان عرض كامل بدون تقليص
+    cvContainer.style.width = '100%';
+    cvContainer.style.maxWidth = '100%';
+    cvContainer.style.overflow = 'visible';
+    cvContainer.style.position = 'relative';
+    cvContainer.style.left = '0';
+    cvContainer.style.top = '0';
+    cvContainer.style.transform = 'none';
+}
+
 // Global variables
 let currentLang = 'ar'; // Default language
 let selectedTemplate = 1; // Default template number
@@ -273,6 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Populate with test data and generate initial CV preview after DOM is ready
     // Note: populateWithTestData and generateCV will be called when modal opens or template changes now
     populateWithTestData(); // Call initially to fill form fields on page load
+    prepareCVForMobileDisplay();
     generateCV(); // Generate initial preview (might be hidden until preview modal opens)
     updateProgress(); // Calculate and display initial progress
 
@@ -303,6 +319,7 @@ function toggleLanguage() {
 
     // إعادة إنشاء السيرة الذاتية لتطبيق التغييرات اللغوية على المحتوى
     if (typeof generateCV === 'function') {
+        prepareCVForMobileDisplay();
         generateCV();
     }
 
@@ -639,6 +656,7 @@ function showTemplateSelectionStep() {
            modalContentContainer.scrollTop = 0; // تمرير المحتوى للأعلى
        }
        // إعادة إنشاء معاينة السيرة الذاتية (هذه الدالة يجب أن لا تسبب حلقات مفرغة)
+       prepareCVForMobileDisplay();
        generateCV();
        // استدعاء تحديث اللغة بعد تغيير القسم وإظهاره
        updateModalContentLanguage();
@@ -657,6 +675,7 @@ function openCvPreviewModal() {
         cvPreviewModal.classList.add('active'); // إظهار النافذة باستخدام كلاس active في CSS
 
         // إعادة إنشاء السيرة الذاتية في حاويتها لضمان أنها محدثة بأحدث البيانات والقالب
+        prepareCVForMobileDisplay();
         generateCV();
         // تحديث نصوص النافذة المنبثقة للمعاينة
         updateModalContentLanguage();
@@ -1824,6 +1843,7 @@ function selectTemplate(templateNumber, category) {
 
     // إعادة إنشاء محتوى السيرة الذاتية ليعكس القالب الجديد والبيانات الحالية
     // هذا سيتم في حاوية المعاينة (#cv-container) التي أصبحت الآن في نافذة معاينة منفصلة
+    prepareCVForMobileDisplay();
     generateCV();
     // تحديث شريط تقدم إكمال البيانات (اختياري، لكن جيد)
     updateProgress();
@@ -1843,12 +1863,14 @@ function handleProfilePicChange(event) {
         const reader = new FileReader(); // إنشاء قارئ ملفات
         reader.onload = function(e) {
             profilePicDataUrl = e.target.result; // حفظ بيانات الصورة كـ Data URL في متغير عام
+            prepareCVForMobileDisplay();
             generateCV(); // إعادة إنشاء الـ CV فوراً لتحديث الصورة
             updateProgress(); // تحديث شريط التقدم
         };
         reader.readAsDataURL(file); // قراءة الملف كـ Data URL
     } else {
         profilePicDataUrl = null; // مسح البيانات إذا لم يتم اختيار ملف
+        prepareCVForMobileDisplay();
         generateCV(); // إعادة إنشاء الـ CV بدون صورة
         updateProgress(); // تحديث شريط التقدم
     }
@@ -1871,12 +1893,13 @@ function addExperienceField() {
     // بناء هيكل الحقل الجديد (باستخدام placeholders متعدد اللغات)
     newEntry.innerHTML = `
         <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
-        <input type="text" placeholder="${currentLang === 'en' ? 'Job Title' : 'المسمى الوظيفي'}" class="experience-title" oninput="generateCV(); updateProgress()">
-        <input type="text" placeholder="${currentLang === 'en' ? 'Company' : 'الشركة'}" class="experience-company" oninput="generateCV(); updateProgress()">
-        <input type="text" placeholder="${currentLang === 'en' ? 'Duration' : 'المدة'}" class="experience-duration" oninput="generateCV(); updateProgress()">
-        <textarea placeholder="${currentLang === 'en' ? 'Description' : 'الوصف'}" class="experience-description" oninput="generateCV(); updateProgress()"></textarea>
+        <input type="text" placeholder="${currentLang === 'en' ? 'Job Title' : 'المسمى الوظيفي'}" class="experience-title" oninput="prepareCVForMobileDisplay(); generateCV(); updateProgress()">
+        <input type="text" placeholder="${currentLang === 'en' ? 'Company' : 'الشركة'}" class="experience-company" oninput="prepareCVForMobileDisplay(); generateCV(); updateProgress()">
+        <input type="text" placeholder="${currentLang === 'en' ? 'Duration' : 'المدة'}" class="experience-duration" oninput="prepareCVForMobileDisplay(); generateCV(); updateProgress()">
+        <textarea placeholder="${currentLang === 'en' ? 'Description' : 'الوصف'}" class="experience-description" oninput="prepareCVForMobileDisplay(); generateCV(); updateProgress()"></textarea>
     `;
     experienceInput.appendChild(newEntry); // إضافة الحقل الجديد إلى الحاوية
+    prepareCVForMobileDisplay();
     generateCV(); // إعادة إنشاء الـ CV لتضمين الحقل الجديد
     updateProgress(); // تحديث شريط التقدم
     updateModalContentLanguage(); // NEW: Update placeholders and button texts if language changed
@@ -1892,6 +1915,7 @@ function removeLastExperienceField() {
     // التأكد من وجود أكثر من حقل واحد قبل الحذف
     if (entries.length > 1) {
         experienceInput.removeChild(entries[entries.length - 1]); // حذف آخر حقل
+        prepareCVForMobileDisplay();
         generateCV(); // إعادة إنشاء الـ CV بعد الحذف
         updateProgress(); // تحديث شريط التقدم
     } else {
@@ -1908,11 +1932,12 @@ function addEducationField() {
     newEntry.className = 'education-entry';
     newEntry.innerHTML = `
          <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
-        <input type="text" placeholder="${currentLang === 'en' ? 'Degree' : 'الشهادة'}" class="education-degree" oninput="generateCV(); updateProgress()">
-        <input type="text" placeholder="${currentLang === 'en' ? 'University/Institution' : 'الجامعة/المعهد'}" class="education-institution" oninput="generateCV(); updateProgress()">
-        <input type="text" placeholder="${currentLang === 'en' ? 'Duration' : 'المدة'}" class="education-duration" oninput="generateCV(); updateProgress()">
+        <input type="text" placeholder="${currentLang === 'en' ? 'Degree' : 'الشهادة'}" class="education-degree" oninput="prepareCVForMobileDisplay(); generateCV(); updateProgress()">
+        <input type="text" placeholder="${currentLang === 'en' ? 'University/Institution' : 'الجامعة/المعهد'}" class="education-institution" oninput="prepareCVForMobileDisplay(); generateCV(); updateProgress()">
+        <input type="text" placeholder="${currentLang === 'en' ? 'Duration' : 'المدة'}" class="education-duration" oninput="prepareCVForMobileDisplay(); generateCV(); updateProgress()">
     `;
     educationInput.appendChild(newEntry);
+    prepareCVForMobileDisplay();
     generateCV();
     updateProgress();
     updateModalContentLanguage(); // NEW: Update placeholders and button texts if language changed
@@ -1924,6 +1949,7 @@ function removeLastEducationField() {
     const entries = educationInput.querySelectorAll('.education-entry');
     if (entries.length > 1) {
         educationInput.removeChild(entries[entries.length - 1]);
+        prepareCVForMobileDisplay();
         generateCV();
         updateProgress();
     } else {
@@ -1939,9 +1965,10 @@ function addSkillField() {
     newEntry.className = 'skill-entry';
     newEntry.innerHTML = `
         <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
-        <input type="text" placeholder="${currentLang === 'en' ? 'Enter a skill' : 'أدخل مهارة'}" class="skill-item-input" oninput="generateCV(); updateProgress()">
+        <input type="text" placeholder="${currentLang === 'en' ? 'Enter a skill' : 'أدخل مهارة'}" class="skill-item-input" oninput="prepareCVForMobileDisplay(); generateCV(); updateProgress()">
     `;
     skillsInput.appendChild(newEntry);
+    prepareCVForMobileDisplay();
     generateCV();
     updateProgress();
     updateModalContentLanguage(); // NEW: Update placeholders and button texts if language changed
@@ -1953,6 +1980,7 @@ function removeLastSkillField() {
     const entries = skillsInput.querySelectorAll('.skill-entry');
     if (entries.length > 1) {
         skillsInput.removeChild(entries[entries.length - 1]);
+        prepareCVForMobileDisplay();
         generateCV();
         updateProgress();
     } else {
@@ -1968,9 +1996,10 @@ function addLanguageField() {
     newEntry.className = 'language-entry';
     newEntry.innerHTML = `
         <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
-        <input type="text" placeholder="${currentLang === 'en' ? 'Enter a language' : 'أدخل لغة'}" class="language-item-input" oninput="generateCV(); updateProgress()">
+        <input type="text" placeholder="${currentLang === 'en' ? 'Enter a language' : 'أدخل لغة'}" class="language-item-input" oninput="prepareCVForMobileDisplay(); generateCV(); updateProgress()">
     `;
     languagesInput.appendChild(newEntry);
+    prepareCVForMobileDisplay();
     generateCV();
     updateProgress();
     updateModalContentLanguage(); // NEW: Update placeholders and button texts if language changed
@@ -1982,6 +2011,7 @@ function removeLastLanguageField() {
     const entries = languagesInput.querySelectorAll('.language-entry');
     if (entries.length > 1) {
         languagesInput.removeChild(entries[entries.length - 1]);
+        prepareCVForMobileDisplay();
         generateCV();
         updateProgress();
     } else {
@@ -1997,12 +2027,13 @@ function addReferenceField() {
     newEntry.className = 'reference-entry';
     newEntry.innerHTML = `
         <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
-        <input type="text" placeholder="${currentLang === 'en' ? 'Name' : 'الاسم'}" class="reference-name" oninput="generateCV(); updateProgress()">
-        <input type="text" placeholder="${currentLang === 'en' ? 'Position' : 'الموقع'}" class="reference-position" oninput="generateCV(); updateProgress()">
-        <input type="text" placeholder="${currentLang === 'en' ? 'Phone' : 'الهاتف'}" class="reference-phone" oninput="generateCV(); updateProgress()">
-        <input type="email" placeholder="${currentLang === 'en' ? 'Email' : 'البريد'}" class="reference-email" oninput="generateCV(); updateProgress()">
+        <input type="text" placeholder="${currentLang === 'en' ? 'Name' : 'الاسم'}" class="reference-name" oninput="prepareCVForMobileDisplay(); generateCV(); updateProgress()">
+        <input type="text" placeholder="${currentLang === 'en' ? 'Position' : 'الموقع'}" class="reference-position" oninput="prepareCVForMobileDisplay(); generateCV(); updateProgress()">
+        <input type="text" placeholder="${currentLang === 'en' ? 'Phone' : 'الهاتف'}" class="reference-phone" oninput="prepareCVForMobileDisplay(); generateCV(); updateProgress()">
+        <input type="email" placeholder="${currentLang === 'en' ? 'Email' : 'البريد'}" class="reference-email" oninput="prepareCVForMobileDisplay(); generateCV(); updateProgress()">
     `;
     referencesInput.appendChild(newEntry);
+    prepareCVForMobileDisplay();
     generateCV();
     updateProgress();
     updateModalContentLanguage(); // NEW: Update placeholders and button texts if language changed
@@ -2014,6 +2045,7 @@ function removeLastReferenceField() {
     const entries = referencesInput.querySelectorAll('.reference-entry');
     if (entries.length > 1) {
         referencesInput.removeChild(entries[entries.length - 1]);
+        prepareCVForMobileDisplay();
         generateCV();
         updateProgress();
     } else {
@@ -2039,6 +2071,7 @@ function removeField(button) {
 
     // حذف الحقل المحدد من العنصر الحاوي
     parentContainer.removeChild(entry);
+    prepareCVForMobileDisplay();
     generateCV(); // إعادة إنشاء الـ CV بعد الحذف
     updateProgress(); // تحديث شريط التقدم
 }
@@ -2788,6 +2821,7 @@ function populateWithTestData() {
 
 
     // تشغيل دالة إنشاء السيرة الذاتية وتحديث شريط التقدم بعد ملء البيانات التجريبية
+    prepareCVForMobileDisplay();
     generateCV(); // سيتم إنشاء الـ CV في حاوية المعاينة المخفية مبدئياً
     updateProgress();
     // alert('تم ملء البيانات التجريبية في النموذج لسهولة المعاينة.'); // رسالة اختيارية للمستخدم
