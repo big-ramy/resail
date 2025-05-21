@@ -1502,7 +1502,7 @@ function renderPayPalButton(finalPrice, templateCategory) {
                 }
 
                 // إرسال البيانات إلى Google Apps Script
-                const scriptUrl = `https://script.google.com/macros/s/AKfycbzmtXRmueJj09Aj-CaFVL2O0U76l99-_F5QWceKHOrlrv8UnBhCLXoVXtXO1uL3iR1EaQ/exec`;
+                const scriptUrl = `https://script.google.com/macros/s/AKfycbxxkX4jsV4zSz4vR7FcCOhYJmXXuOAt5WrJYgZmhTlmO7dzqXARLM6q_5QNo2KVs8bWww/exec`;
                 
                 const params = new URLSearchParams();
                 params.append('name', payerName);
@@ -1657,7 +1657,7 @@ async function submitPaymentProof(event) {
         }
     }
 
-    const scriptUrl = "https://script.google.com/macros/s/AKfycbzmtXRmueJj09Aj-CaFVL2O0U76l99-_F5QWceKHOrlrv8UnBhCLXoVXtXO1uL3iR1EaQ/exec";
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbxxkX4jsV4zSz4vR7FcCOhYJmXXuOAt5WrJYgZmhTlmO7dzqXARLM6q_5QNo2KVs8bWww/exec";
 
     const formData = new FormData();
     formData.append("name", name);
