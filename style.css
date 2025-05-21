@@ -202,6 +202,7 @@ body[dir="ltr"] .dropdown-menu {
     overflow: hidden; /* Hide scroll of the box itself, allow internal scrolling */
 }
 
+/* Style for the inner box of the QR/manual payment popup */
 #qr-payment-popup .popup-inner {
     padding: 30px;
     border-radius: 8px;
@@ -216,6 +217,45 @@ body[dir="ltr"] .dropdown-menu {
     box-sizing: border-box;
     margin: 20px auto; /* Center the popup-inner */
 }
+
+/* Style for QR image - ensure it's centered */
+#qr-payment-image {
+    max-width: 200px;
+    margin-bottom: 15px;
+    display: block; /* Make it a block element to apply margin: auto */
+    margin-left: auto; /* Center horizontally */
+    margin-right: auto; /* Center horizontally */
+}
+
+/* Style for PayPal button container - ensure it's centered */
+#paypal-button-container {
+    margin-top: 20px;
+    width: 100%;
+    display: flex; /* Use flex to center the button */
+    justify-content: center; /* Center the button */
+}
+
+/* Style for manual payment form - align text based on direction */
+#manual-payment-form {
+    margin-top: 20px;
+    display: none; /* Default hidden */
+    text-align: initial; /* Align form text based on direction */
+}
+
+/* Container for scrollable payment inputs */
+.qr-payment-inputs-scroll {
+    flex-grow: 1; /* Allows this container to take up available vertical space */
+    overflow-y: auto; /* Make content inside this container scrollable */
+    margin-bottom: 20px; /* Space below scrollable content */
+    box-sizing: border-box;
+    padding-right: 15px; /* Add padding for scrollbar in RTL */
+}
+
+body[dir="ltr"] .qr-payment-inputs-scroll {
+    padding-right: 0;
+    padding-left: 15px; /* Add padding for scrollbar in LTR */
+}
+
 
 @keyframes popupFade {
     from {
@@ -1762,77 +1802,3 @@ body[dir="ltr"] .ast-layout .cv-sidebar .cv-contact-item i {
     color: #555;
     line-height: 1.6;
 }
-
-/* Responsive adjustments for smaller screens (max-width: 768px) */
-@media (max-width: 768px) {
-    .popup-box {
-        padding: 15px;
-        max-width: 98vw;
-        width: 100%;
-        height: calc(100vh - 20px);
-        max-height: unset;
-        margin: 10px auto;
-    }
-
-    #cv-builder-modal .popup-box {
-        height: calc(100vh - 20px);
-        max-height: unset;
-    }
-
-    #cv-preview-modal .popup-box.large-popup-box {
-        width: 98vw;
-        max-width: 98vw;
-        height: calc(100vh - 20px);
-        max-height: unset;
-        margin: 10px auto;
-        padding: 10px; /* Adjust padding for preview modal on mobile */
-    }
-
-    #qr-payment-popup .popup-inner {
-        width: 95vw;
-        max-width: 95vw;
-        padding: 20px;
-        max-height: calc(100vh - 20px);
-        margin: 10px auto;
-    }
-
-    /* Adjustments for CV layout within the modal on smaller screens */
-    #cv-preview-area {
-        padding: 5px; /* Reduced padding around CV */
-        max-height: calc(100% - 70px); /* Adjust max height for small screens (leaving space for buttons) */
-        overflow-y: auto; /* Keep scrolling for very long CVs */
-        height: auto; /* Allow height to adjust */
-        flex-direction: column; /* Stack children vertically */
-        align-items: center; /* Center content */
-        justify-content: flex-start;
-    }
-
-    #cv-container {
-        /* This is the key for consistent appearance: scale down the A4 page to fit */
-        width: 210mm; /* Keep A4 base width for internal layout */
-        min-height: 297mm; /* Keep A4 base height for internal layout */
-        height: auto; /* Allow height to adapt if content is shorter */
-        margin: 0; /* Remove auto margin for better control */
-        padding: 0; /* No padding here, handled by inner sections */
-        box-shadow: none; /* Remove shadow in modal preview for mobile */
-        
-        /* Calculate scale factor based on A4 width (approx 794px at 96dpi) and common mobile width */
-        /* For a 375px wide mobile screen, scale = 375 / 794 = ~0.47 */
-        transform: scale(0.47); /* Adjust this value for optimal mobile view */
-        transform-origin: top center; /* Scale from the top center */
-        
-        /* Ensure it doesn't get constrained by max-width from desktop styles */
-        max-width: unset !important;
-    }
-
-    /* Further adjustments for very small screens */
-    @media (max-width: 480px) { /* Extra small devices */
-        #cv-container {
-            transform: scale(0.42); /* Even smaller for very narrow screens */
-        }
-    }
-    @media (max-width: 375px) { /* iPhone SE / older Androids */
-        #cv-container {
-            transform: scale(0.38); /* Further reduction for very small screens */
-        }
-    }
