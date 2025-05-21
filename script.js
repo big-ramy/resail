@@ -1201,504 +1201,295 @@ function outsideClickQrPayment(e) {
 // دالة جديدة لإنشاء وتنزيل السيرة الذاتية بصيغة PDF باستخدام html2pdf.js
 // دالة لإنشاء وتنزيل السيرة الذاتية بصيغة PDF باستخدام html2pdf.js
 async function generateAndDownloadPDF_html2pdf() {
-
-    // الحصول على حاوية السيرة الذاتية
-
-    const cvContainer = document.getElementById('cv-container');
-
-
-
-    // التأكد من وجود الحاوية
-
-    if (!cvContainer) {
-
-        alert(currentLang === 'ar' ? 'لم يتم العثور على حاوية السيرة الذاتية للتحويل إلى PDF.' : 'CV container not found for PDF conversion.');
-
-        return;
-
-    }
-
-
-
-    // --- حفظ الأنماط الأصلية وإعداد الأنماط المؤقتة للالتقاط ---
-
-    const originalStyles = {
-
-        width: cvContainer.style.width,
-
-        height: cvContainer.style.height,
-
-        overflow: cvContainer.style.overflow,
-
-        backgroundColor: cvContainer.style.backgroundColor,
-
-        position: cvContainer.style.position,
-
-        top: cvContainer.style.top,
-
-        left: cvContainer.style.left,
-
-        zIndex: cvContainer.style.zIndex,
-
-        transform: cvContainer.style.transform,
-
-        display: cvContainer.style.display,
-
-        maxHeight: cvContainer.style.maxHeight,
-
-        overflowY: cvContainer.style.overflowY,
-
-        padding: cvContainer.style.padding,
-
-        margin: cvContainer.style.margin,
-
-    };
-
-    const originalScrollTop = cvContainer.scrollTop; // حفظ موضع التمرير
-
-
-
-    // تطبيق الأنماط المؤقتة للسماح بالالتقاط المرئي كما نجح معك (بدون إخفاء كامل)
-
-    // هذه الأنماط تترك العنصر في تدفق المستند الطبيعي ضمن حاويته
-
-    cvContainer.style.width = '750px'; // العرض 100% داخل الحاوية الأبوية (#cv-preview-area)
-
-    cvContainer.style.height = 'auto'; // ارتفاع تلقائي ليشمل كل المحتوى
-
-    cvContainer.style.maxHeight = 'none'; // إزالة أي حد أقصى للارتفاع
-
-    cvContainer.style.overflow = 'visible'; // عرض كامل المحتوى
-
-    cvContainer.style.overflowY = 'visible'; // عرض كامل المحتوى رأسياً
-
-    cvContainer.style.backgroundColor = 'white'; // خلفية بيضاء للـ PDF
-
-    // إعادة تعيين خصائص التموضع لضمان أنه في التدفق الطبيعي
-
-    cvContainer.style.position = ''; // الوضع الافتراضي (static)
-
-    cvContainer.style.top = ''; // مسح القيمة
-
-    cvContainer.style.left = ''; // مسح القيمة
-
-    cvContainer.style.zIndex = ''; // مسح القيمة
-
-    cvContainer.style.transform = ''; // مسح القيمة
-
-    cvContainer.style.display = 'block'; // التأكد من عرضه
-
-    cvContainer.style.padding = '0'; // إزالة أي padding خاص بالعنصر نفسه
-
-    cvContainer.style.margin = '0'; // إزالة أي margin خاص بالعنصر نفسه
-
-
-
-
-
-    // إخفاء أزرار الحذف
-
-    const removeButtons = cvContainer.querySelectorAll('.remove-field');
-
-    removeButtons.forEach(btn => btn.style.display = 'none');
-
-
-
-    // فترة انتظار للسماح بالرسم (100 ملي ثانية كما جربت)
-
-    console.log("Starting wait for CV rendering (visible capture)...");
-
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    console.log("Wait finished. Attempting visible capture.");
-
-
-
-    // **التعديل هنا: تسجيل أبعاد وموقع العنصر قبل الالتقاط**
-
-    console.log(`CV Container Dimensions before capture: offsetWidth=${cvContainer.offsetWidth}, offsetHeight=${cvContainer.offsetHeight}, scrollWidth=${cvContainer.scrollWidth}, scrollHeight=${cvContainer.scrollHeight}`);
-
-    // getBoundingClientRect يعطي الموضع والحجم بالنسبة لإطار عرض النافذة (viewport)
-
-    const rect = cvContainer.getBoundingClientRect();
-
-    console.log(`CV Container Bounding Rect before capture: top=${rect.top}, left=${rect.left}, right=${rect.right}, bottom=${rect.bottom}, width=${rect.width}, height=${rect.height}`);
-
-
-
-
-
-    // --- استخدام html2pdf.js لإنشاء وتنزيل الـ PDF ---
-
-    try {
-
-        // إعداد خيارات html2pdf.js
-
-        const options = {
-
-            margin: [0, 0, 0, 0], // إزالة الهوامش الخارجية للسماح بتغطية الصفحة بالكامل
-
-            filename: 'CV.pdf',
-
-            image: { type: 'jpeg', quality: 0.98 },
-
-            html2canvas: {
-
-                scale: 3, // زيادة الجودة (اختياري)
-
-                useCORS: true,
-
-                backgroundColor: 'white',
-
-                x: 0,
-
-                y: 0,
-
-                scrollX: 0,
-
-                scrollY: 0,
-
-                width: cvContainer.scrollWidth,   // العرض الكامل بما في ذلك التمرير
-
-                height: cvContainer.scrollHeight, // الارتفاع الكامل بما في ذلك التمرير
-
-                windowWidth: cvContainer.scrollWidth,
-
-                windowHeight: cvContainer.scrollHeight,
-
-                scrollX: 0,
-
-                scrollY: 0,
-
-                allowTaint: false,
-
-                logging: false,
-
-                letterRendering: true,
-
-            },
-
-            jsPDF: {
-
-                orientation: 'portrait',
-
-                unit: 'pt', // استخدام النقاط (more precise for scaling)
-
-                format: 'a4',
-
-                compress: true,
-
-                hotfixes: ['px_scaling']
-
-            },
-
-            pageSplit: true, // يسمح بتقسيم المحتوى عبر الصفحات
-
-            maxPages: 4 // تحديد الحد الأقصى للصفحات
-
-        };
-
-        // بدء عملية التحويل والتنزيل
-
-        console.log("Calling html2pdf().from().set().save()");
-
-        await html2pdf().from(cvContainer).set(options).save();
-
-
-
-        console.log('PDF generated and downloaded successfully using html2pdf.js');
-
-
-
-    } catch (error) {
-
-        console.error("Error during PDF generation using html2pdf.js:", error);
-
-        alert(currentLang === 'ar' ? 'حدث خطأ أثناء إنشاء ملف PDF.' : 'Error generating PDF file.');
-
-        throw error;
-
-    } finally {
-
-        // --- استعادة الأنماط الأصلية وأزرار الحذف ---
-
-        console.log("Restoring original styles.");
-
-        Object.keys(originalStyles).forEach(key => {
-
-             // استعادة القيمة الأصلية أو مسح الخاصية إذا لم تكن موجودة في الأصل
-
-             if (originalStyles[key] !== null && originalStyles[key] !== undefined) {
-
-                cvContainer.style[key] = originalStyles[key];
-
-             } else {
-
-                 cvContainer.style[key] = '';
-
-             }
-
-        });
-
-        cvContainer.scrollTop = originalScrollTop; // استعادة موضع التمرير
-
-
-
-        // إعادة عرض أزرار الحذف
-
-        removeButtons.forEach(btn => btn.style.display = '');
-
-    }
-
+    // الحصول على حاوية السيرة الذاتية
+    const cvContainer = document.getElementById('cv-container');
+
+    // التأكد من وجود الحاوية
+    if (!cvContainer) {
+        alert(currentLang === 'ar' ? 'لم يتم العثور على حاوية السيرة الذاتية للتحويل إلى PDF.' : 'CV container not found for PDF conversion.');
+        return;
+    }
+
+    // --- حفظ الأنماط الأصلية وإعداد الأنماط المؤقتة للالتقاط ---
+    const originalStyles = {
+        width: cvContainer.style.width,
+        height: cvContainer.style.height,
+        overflow: cvContainer.style.overflow,
+        backgroundColor: cvContainer.style.backgroundColor,
+        position: cvContainer.style.position,
+        top: cvContainer.style.top,
+        left: cvContainer.style.left,
+        zIndex: cvContainer.style.zIndex,
+        transform: cvContainer.style.transform,
+        display: cvContainer.style.display,
+        maxHeight: cvContainer.style.maxHeight,
+        overflowY: cvContainer.style.overflowY,
+        padding: cvContainer.style.padding,
+        margin: cvContainer.style.margin,
+    };
+    const originalScrollTop = cvContainer.scrollTop; // حفظ موضع التمرير
+
+    // تطبيق الأنماط المؤقتة للسماح بالالتقاط المرئي كما نجح معك (بدون إخفاء كامل)
+    // هذه الأنماط تترك العنصر في تدفق المستند الطبيعي ضمن حاويته
+    cvContainer.style.width = '750px'; // العرض 100% داخل الحاوية الأبوية (#cv-preview-area)
+    cvContainer.style.height = 'auto'; // ارتفاع تلقائي ليشمل كل المحتوى
+    cvContainer.style.maxHeight = 'none'; // إزالة أي حد أقصى للارتفاع
+    cvContainer.style.overflow = 'visible'; // عرض كامل المحتوى
+    cvContainer.style.overflowY = 'visible'; // عرض كامل المحتوى رأسياً
+    cvContainer.style.backgroundColor = 'white'; // خلفية بيضاء للـ PDF
+    // إعادة تعيين خصائص التموضع لضمان أنه في التدفق الطبيعي
+    cvContainer.style.position = ''; // الوضع الافتراضي (static)
+    cvContainer.style.top = ''; // مسح القيمة
+    cvContainer.style.left = ''; // مسح القيمة
+    cvContainer.style.zIndex = ''; // مسح القيمة
+    cvContainer.style.transform = ''; // مسح القيمة
+    cvContainer.style.display = 'block'; // التأكد من عرضه
+    cvContainer.style.padding = '0'; // إزالة أي padding خاص بالعنصر نفسه
+    cvContainer.style.margin = '0'; // إزالة أي margin خاص بالعنصر نفسه
+
+
+    // إخفاء أزرار الحذف
+    const removeButtons = cvContainer.querySelectorAll('.remove-field');
+    removeButtons.forEach(btn => btn.style.display = 'none');
+
+    // فترة انتظار للسماح بالرسم (100 ملي ثانية كما جربت)
+    console.log("Starting wait for CV rendering (visible capture)...");
+    await new Promise(resolve => setTimeout(resolve, 100));
+    console.log("Wait finished. Attempting visible capture.");
+
+    // **التعديل هنا: تسجيل أبعاد وموقع العنصر قبل الالتقاط**
+    console.log(`CV Container Dimensions before capture: offsetWidth=${cvContainer.offsetWidth}, offsetHeight=${cvContainer.offsetHeight}, scrollWidth=${cvContainer.scrollWidth}, scrollHeight=${cvContainer.scrollHeight}`);
+    // getBoundingClientRect يعطي الموضع والحجم بالنسبة لإطار عرض النافذة (viewport)
+    const rect = cvContainer.getBoundingClientRect();
+    console.log(`CV Container Bounding Rect before capture: top=${rect.top}, left=${rect.left}, right=${rect.right}, bottom=${rect.bottom}, width=${rect.width}, height=${rect.height}`);
+
+
+    // --- استخدام html2pdf.js لإنشاء وتنزيل الـ PDF ---
+    try {
+        // إعداد خيارات html2pdf.js
+        const options = {
+            margin: [0, 0, 0, 0], // إزالة الهوامش الخارجية للسماح بتغطية الصفحة بالكامل
+            filename: 'CV.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: {
+                scale: 3, // زيادة الجودة (اختياري)
+                useCORS: true,
+                backgroundColor: 'white',
+                x: 0,
+                y: 0,
+                scrollX: 0,
+                scrollY: 0,
+                width: cvContainer.scrollWidth,   // العرض الكامل بما في ذلك التمرير
+                height: cvContainer.scrollHeight, // الارتفاع الكامل بما في ذلك التمرير
+                windowWidth: cvContainer.scrollWidth,
+                windowHeight: cvContainer.scrollHeight,
+                scrollX: 0,
+                scrollY: 0,
+                allowTaint: false,
+                logging: false,
+                letterRendering: true,
+            },
+            jsPDF: {
+                orientation: 'portrait',
+                unit: 'pt', // استخدام النقاط (more precise for scaling)
+                format: 'a4',
+                compress: true,
+                hotfixes: ['px_scaling']
+            },
+            pageSplit: true, // يسمح بتقسيم المحتوى عبر الصفحات
+            maxPages: 4 // تحديد الحد الأقصى للصفحات
+        };
+        // بدء عملية التحويل والتنزيل
+        console.log("Calling html2pdf().from().set().save()");
+        await html2pdf().from(cvContainer).set(options).save();
+
+        console.log('PDF generated and downloaded successfully using html2pdf.js');
+
+    } catch (error) {
+        console.error("Error during PDF generation using html2pdf.js:", error);
+        alert(currentLang === 'ar' ? 'حدث خطأ أثناء إنشاء ملف PDF.' : 'Error generating PDF file.');
+        throw error;
+    } finally {
+        // --- استعادة الأنماط الأصلية وأزرار الحذف ---
+        console.log("Restoring original styles.");
+        Object.keys(originalStyles).forEach(key => {
+             // استعادة القيمة الأصلية أو مسح الخاصية إذا لم تكن موجودة في الأصل
+             if (originalStyles[key] !== null && originalStyles[key] !== undefined) {
+                cvContainer.style[key] = originalStyles[key];
+             } else {
+                 cvContainer.style[key] = '';
+             }
+        });
+        cvContainer.scrollTop = originalScrollTop; // استعادة موضع التمرير
+
+        // إعادة عرض أزرار الحذف
+        removeButtons.forEach(btn => btn.style.display = '');
+    }
 }
 
 async function captureCVasPDF(cvContainer, downloadPdf = false) {
+            if (!cvContainer) {
+                throw new Error("CV container not found!");
+            }
+    
+            // حفظ الأنماط الأصلية
+            const originalStyles = {
+                width: cvContainer.style.width,
+                height: cvContainer.style.height,
+                overflow: cvContainer.style.overflow,
+                backgroundColor: cvContainer.style.backgroundColor,
+                position: cvContainer.style.position,
+                top: cvContainer.style.top,
+                left: cvContainer.style.left,
+                zIndex: cvContainer.style.zIndex,
+                transform: cvContainer.style.transform,
+                display: cvContainer.style.display,
+                maxHeight: cvContainer.style.maxHeight,
+                overflowY: cvContainer.style.overflowY,
+                padding: cvContainer.style.padding, // Added to save/restore padding
+                margin: cvContainer.style.margin,   // Added to save/restore margin
+            };
+            const originalScrollTop = cvContainer.scrollTop;
+    
+            // تطبيق الأنماط المؤقتة لجعل العنصر خارج الشاشة وغير مرئي
+            cvContainer.style.width = '800px'; // عرض ثابت للالتقاط
+            cvContainer.style.height = 'auto'; // ارتفاع تلقائي ليشمل كل المحتوى
+            cvContainer.style.maxHeight = 'none'; // إزالة أي حد أقصى للارتفاع
+            cvContainer.style.overflow = 'visible'; // عرض كل المحتوى المخفي
+            cvContainer.style.overflowY = 'visible'; // عرض كل المحتوى المخفي رأسياً
+            cvContainer.style.backgroundColor = 'white'; // خلفية بيضاء واضحة
+            cvContainer.style.position = 'absolute'; // إزالة العنصر من تدفق المستند العادي
+            cvContainer.style.top = '0'; // يمكن إبقاؤها 0 أو وضعها سالبة
+            cvContainer.style.left = '-9999px'; // **التعديل الرئيسي: نقل العنصر خارج الشاشة لليسار**
+            cvContainer.style.zIndex = '-1'; // **التعديل الرئيسي: وضعه خلف جميع العناصر الأخرى**
+            cvContainer.style.display = 'block'; // التأكد من عرضه لـ html2canvas
+    
+            const removeButtons = cvContainer.querySelectorAll('.remove-field');
+            removeButtons.forEach(btn => btn.style.display = 'none'); // إخفاء أزرار الحذف
+    
+            // انتظر تحميل الصور
+            const images = cvContainer.querySelectorAll('img');
+            await Promise.all(
+                Array.from(images).map(img => {
+                    if (!img.complete) {
+                        return new Promise(resolve => {
+                            img.onload = resolve;
+                            img.onerror = resolve;
+                        });
+                    }
+                    return Promise.resolve();
+                })
+            );
+    
+            // انتظر قليلاً للتأكد من تطبيق الأنماط بالكامل (يمكن تعديل المدة حسب الحاجة)
+            await new Promise(resolve => setTimeout(resolve, 100)); // تم تقليل المدة قليلاً للاستجابة أسرع
+    
+            let pdfBase64 = null;
+    
+            try {
+                // 📸 التقاط Canvas باستخدام html2canvas
+                const canvas = await html2canvas(cvContainer, {
+                    scale: 2, // زيادة الدقة
+                    useCORS: true, // محاولة استخدام CORS للصور
+                    backgroundColor: 'white', // تحديد الخلفية
+                    scrollX: 0, // منع التمرير الأفقي للعنصر المصدر
+                    scrollY: 0, // منع التمرير الرأسي للعنصر المصدر
+                    // تحديد أبعاد النافذة التي يرى منها html2canvas العنصر (مهم لالتقاط كامل المحتوى)
+                    windowWidth: cvContainer.scrollWidth, // استخدم عرض المحتوى الكامل
+                    windowHeight: cvContainer.scrollHeight // استخدم ارتفاع المحتوى الكامل
+                });
+    
+                // 🖼️ تحويل Canvas إلى صورة (JPEG غالباً أفضل من PNG في PDF من حيث الحجم)
+                const imgData = canvas.toDataURL('image/jpeg', 0.98);
+    
+                // ✅ إنشاء PDF باستخدام jsPDF فقط
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+    
+                const imgProps = pdf.getImageProperties(imgData);
+                const pdfWidth = 210; // عرض A4 بالملم
+                const imgHeight = imgProps.height;
+                const imgWidth = imgProps.width;
+                 // نسبة أبعاد الصورة الأصلية
+                const ratio = imgHeight / imgWidth;
+    
+                 // حساب ارتفاع الصورة في PDF بناءً على عرض PDF
+                 const imgHeightInPdf = ratio * pdfWidth;
+    
+                const pageHeight = pdf.internal.pageSize.getHeight(); // ارتفاع صفحة A4 بالملم
+    
+                let position = 0; // الموضع الحالي في ارتفاع الصورة الكلي الذي تم إضافته إلى PDF
+                let remainingHeight = imgHeightInPdf; // الارتفاع المتبقي من الصورة لإضافته إلى PDF (بوحدات mm)
+    
+                const maxPages = 6; // تحديد الحد الأقصى لعدد الصفحات (يمكن تعديله)
+    
+                while (remainingHeight > 0) {
+                    // إيقاف الحلقة إذا وصلنا إلى الحد الأقصى للصفحات
+                    if (pdf.internal.getNumberOfPages() >= maxPages) {
+                         console.log(`Reached maximum number of pages (${maxPages}). Stopping PDF generation.`);
+                         break;
+                    }
+    
+                    // حساب الارتفاع الحالي للصفحة الواحدة
+                    const heightToAdd = Math.min(pageHeight, remainingHeight);
+    
+                    // إضافة جزء من الصورة يمثل ارتفاع الصفحة الحالي
+                    pdf.addImage(
+                        imgData,
+                        'JPEG', // صيغة الصورة
+                        0, // الإحداثي X للركن الأيسر العلوي للصورة في الصفحة (0 يعني يسار الصفحة)
+                        -position, // الإحداثي Y، نستخدم -position لأنه يتم "تحريك" الصورة للأعلى بمقدار ما تم إضافته في الصفحات السابقة
+                        pdfWidth, // عرض الصورة في PDF (مطابق لعرض الصفحة)
+                        imgHeightInPdf, // ارتفاع الصورة في PDF (الارتفاع الكلي، لكن jsPDF يعرض الجزء المرئي فقط)
+                        null, // alias (اختياري)
+                        'FAST' // re-sample method (اختياري)
+                    );
+    
+                    // تحديث الارتفاع المتبقي
+                    remainingHeight -= heightToAdd;
+                    // تحديث موضع الجزء التالي من الصورة
+                    position += heightToAdd;
+    
+    
+                     // إضافة صفحة جديدة فقط إذا كان هناك المزيد من المحتوى المتبقي ولم نصل للحد الأقصى للصفحات
+                    if (remainingHeight > 0 && pdf.internal.getNumberOfPages() < maxPages) {
+                        pdf.addPage();
+                    }
+                }
+    
+                // 💾 تنزيل PDF إذا طلب المستخدم
+                if (downloadPdf) {
+                    pdf.save('CV.pdf');
+                }
+    
+                // 🔁 تحويل PDF إلى Base64
+                pdfBase64 = pdf.output('datauristring').split(',')[1];
+    
+                console.log(`Generated PDF Base64 length on frontend: ${pdfBase64 ? pdfBase64.length : 0}`); // Log length, check if base64 is null
+    
+                return pdfBase64;
+    
+            } catch (error) {
+                console.error("Error during PDF generation in captureCVasPDF:", error);
+                // يمكنك هنا إضافة تنبيه للمستخدم إذا فشل الالتقاط بشكل حرج
+                // alert(currentLang === 'ar' ? 'حدث خطأ أثناء إنشاء ملف السيرة الذاتية.' : 'Error generating CV file.');
+                throw error; // أعد رمي الخطأ ليتم التعامل معه في الدوال التي تستدعي هذه الدالة (مثل PayPal أو الدفع اليدوي)
+            } finally {
+                // 🧹 استعادة الأنماط الأصلية بغض النظر عما إذا حدث خطأ
+                Object.keys(originalStyles).forEach(key => {
+                    cvContainer.style[key] = originalStyles[key];
+                });
+                cvContainer.scrollTop = originalScrollTop; // استعادة موضع التمرير
+    
+                // إعادة عرض أزرار الحذف
+                removeButtons.forEach(btn => btn.style.display = '');
+            }
+        }
 
-
-
-    // التأكد من وجود الحاوية
-
-    if (!cvContainer) {
-
-        alert(currentLang === 'ar' ? 'لم يتم العثور على حاوية السيرة الذاتية للتحويل إلى PDF.' : 'CV container not found for PDF conversion.');
-
-        return;
-
-    }
-
-
-
-    // --- حفظ الأنماط الأصلية وإعداد الأنماط المؤقتة للالتقاط ---
-
-    const originalStyles = {
-
-        width: cvContainer.style.width,
-
-        height: cvContainer.style.height,
-
-        overflow: cvContainer.style.overflow,
-
-        backgroundColor: cvContainer.style.backgroundColor,
-
-        position: cvContainer.style.position,
-
-        top: cvContainer.style.top,
-
-        left: cvContainer.style.left,
-
-        zIndex: cvContainer.style.zIndex,
-
-        transform: cvContainer.style.transform,
-
-        display: cvContainer.style.display,
-
-        maxHeight: cvContainer.style.maxHeight,
-
-        overflowY: cvContainer.style.overflowY,
-
-        padding: cvContainer.style.padding,
-
-        margin: cvContainer.style.margin,
-
-    };
-
-    const originalScrollTop = cvContainer.scrollTop; // حفظ موضع التمرير
-
-
-
-    // تطبيق الأنماط المؤقتة للسماح بالالتقاط المرئي كما نجح معك (بدون إخفاء كامل)
-
-    // هذه الأنماط تترك العنصر في تدفق المستند الطبيعي ضمن حاويته
-
-    cvContainer.style.width = '750px'; // العرض 100% داخل الحاوية الأبوية (#cv-preview-area)
-
-    cvContainer.style.height = 'auto'; // ارتفاع تلقائي ليشمل كل المحتوى
-
-    cvContainer.style.maxHeight = 'none'; // إزالة أي حد أقصى للارتفاع
-
-    cvContainer.style.overflow = 'visible'; // عرض كامل المحتوى
-
-    cvContainer.style.overflowY = 'visible'; // عرض كامل المحتوى رأسياً
-
-    cvContainer.style.backgroundColor = 'white'; // خلفية بيضاء للـ PDF
-
-    // إعادة تعيين خصائص التموضع لضمان أنه في التدفق الطبيعي
-
-    cvContainer.style.position = ''; // الوضع الافتراضي (static)
-
-    cvContainer.style.top = ''; // مسح القيمة
-
-    cvContainer.style.left = ''; // مسح القيمة
-
-    cvContainer.style.zIndex = ''; // مسح القيمة
-
-    cvContainer.style.transform = ''; // مسح القيمة
-
-    cvContainer.style.display = 'block'; // التأكد من عرضه
-
-    cvContainer.style.padding = '0'; // إزالة أي padding خاص بالعنصر نفسه
-
-    cvContainer.style.margin = '0'; // إزالة أي margin خاص بالعنصر نفسه
-
-
-
-
-
-    // إخفاء أزرار الحذف
-
-    const removeButtons = cvContainer.querySelectorAll('.remove-field');
-
-    removeButtons.forEach(btn => btn.style.display = 'none');
-
-
-
-    // فترة انتظار للسماح بالرسم (100 ملي ثانية كما جربت)
-
-    console.log("Starting wait for CV rendering (visible capture)...");
-
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    console.log("Wait finished. Attempting visible capture.");
-
-
-
-    // **التعديل هنا: تسجيل أبعاد وموقع العنصر قبل الالتقاط**
-
-    console.log(`CV Container Dimensions before capture: offsetWidth=${cvContainer.offsetWidth}, offsetHeight=${cvContainer.offsetHeight}, scrollWidth=${cvContainer.scrollWidth}, scrollHeight=${cvContainer.scrollHeight}`);
-
-    // getBoundingClientRect يعطي الموضع والحجم بالنسبة لإطار عرض النافذة (viewport)
-
-    const rect = cvContainer.getBoundingClientRect();
-
-    console.log(`CV Container Bounding Rect before capture: top=${rect.top}, left=${rect.left}, right=${rect.right}, bottom=${rect.bottom}, width=${rect.width}, height=${rect.height}`);
-
-
-
-
-
-    // --- استخدام html2pdf.js لإنشاء وتنزيل الـ PDF ---
-
-    try {
-
-        // إعداد خيارات html2pdf.js
-
-        const options = {
-
-            margin: [0, 0, 0, 0], // إزالة الهوامش الخارجية للسماح بتغطية الصفحة بالكامل
-
-            filename: 'CV.pdf',
-
-            image: { type: 'jpeg', quality: 0.98 },
-
-            html2canvas: {
-
-                scale: 3, // زيادة الجودة (اختياري)
-
-                useCORS: true,
-
-                backgroundColor: 'white',
-
-                x: 0,
-
-                y: 0,
-
-                scrollX: 0,
-
-                scrollY: 0,
-
-                width: cvContainer.scrollWidth,   // العرض الكامل بما في ذلك التمرير
-
-                height: cvContainer.scrollHeight, // الارتفاع الكامل بما في ذلك التمرير
-
-                windowWidth: cvContainer.scrollWidth,
-
-                windowHeight: cvContainer.scrollHeight,
-
-                scrollX: 0,
-
-                scrollY: 0,
-
-                allowTaint: false,
-
-                logging: false,
-
-                letterRendering: true,
-
-            },
-
-            jsPDF: {
-
-                orientation: 'portrait',
-
-                unit: 'pt', // استخدام النقاط (more precise for scaling)
-
-                format: 'a4',
-
-                compress: true,
-
-                hotfixes: ['px_scaling']
-
-            },
-
-            pageSplit: true, // يسمح بتقسيم المحتوى عبر الصفحات
-
-            maxPages: 4 // تحديد الحد الأقصى للصفحات
-
-        };
-
-        // بدء عملية التحويل والتنزيل
-
-        console.log("Calling html2pdf().from().set().save()");
-
-        await html2pdf().from(cvContainer).set(options).save();
-
-
-
-        console.log('PDF generated and downloaded successfully using html2pdf.js');
-
-
-
-    } catch (error) {
-
-        console.error("Error during PDF generation using html2pdf.js:", error);
-
-        alert(currentLang === 'ar' ? 'حدث خطأ أثناء إنشاء ملف PDF.' : 'Error generating PDF file.');
-
-        throw error;
-
-    } finally {
-
-        // --- استعادة الأنماط الأصلية وأزرار الحذف ---
-
-        console.log("Restoring original styles.");
-
-        Object.keys(originalStyles).forEach(key => {
-
-             // استعادة القيمة الأصلية أو مسح الخاصية إذا لم تكن موجودة في الأصل
-
-             if (originalStyles[key] !== null && originalStyles[key] !== undefined) {
-
-                cvContainer.style[key] = originalStyles[key];
-
-             } else {
-
-                 cvContainer.style[key] = '';
-
-             }
-
-        });
-
-        cvContainer.scrollTop = originalScrollTop; // استعادة موضع التمرير
-
-
-
-        // إعادة عرض أزرار الحذف
-
-        removeButtons.forEach(btn => btn.style.display = '');
-
-    }
-
-}
 // ** تعديل دالة renderPayPalButton بنفس المنطق **
 function renderPayPalButton(finalPrice, templateCategory) {
     const paypalContainer = document.getElementById("paypal-button-container");
@@ -2002,6 +1793,11 @@ async function submitPaymentProof(event) {
             "An error occurred connecting to the server أو processing payment.";
     }
 }
+
+// --- نهاية الجزء الثاني ---
+
+// ... (الجزء الأول والثاني من كود script.js كما تم تقديمهما سابقاً) ...
+
 
 /************************************************
  * دوال اختيار القالب (Template Selection)
