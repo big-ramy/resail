@@ -23,6 +23,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <script src="generatePDFForMobile.js"></script>
     </head>
 <body>
 
@@ -306,7 +307,7 @@
                         <div class="template-category">
                             <h3 data-en="Normal Templates (Full Width)" data-ar="نماذج عادية (عرض الصفحة)">نماذج عادية (عرض الصفحة)</h3>
                             <div class="template-previews">
-                                <img src="CV_image 1.png" class="template-preview selected-template" onclick="selectTemplate(1, 'normal')" alt="Normal Template 1 Preview" data-template-category="normal" data-en-alt="Normal Template 1 Preview" data-ar-alt="معاينة النموذج العادي 1" loading="lazy">
+                                <img src="CV_image.png" class="template-preview selected-template" onclick="selectTemplate(1, 'normal')" alt="Normal Template 1 Preview" data-template-category="normal" data-en-alt="Normal Template 1 Preview" data-ar-alt="معاينة النموذج العادي 1" loading="lazy">
                                 <img src="CV_Image (1).png" class="template-preview" onclick="selectTemplate(2, 'normal')" alt="Normal Template 2 Preview" data-template-category="normal" data-en-alt="Normal Template 2 Preview" data-ar-alt="معاينة النموذج العادي 2" loading="lazy">
                                 <img src="CV_Image (2).png" class="template-preview" onclick="selectTemplate(3, 'normal')" alt="Normal Template 3 Preview" data-template-category="normal" data-en-alt="Normal Template 3 Preview" data-ar-alt="معاينة النموذج العادي 3" loading="lazy">
                                 <img src="CV_Image (3).png" class="template-preview" onclick="selectTemplate(4, 'normal')" alt="Normal Template 4 Preview" data-template-category="normal" data-en-alt="Normal Template 4 Preview" data-ar-alt="معاينة النموذج العادي 4" loading="lazy">
@@ -391,15 +392,16 @@
          <div class="popup-box large-popup-box">
              <button class="popup-close" onclick="closeCvPreviewModal()">×</button>
              <div id="cv-preview-area" class="mt-4">
-                 <div id="cv-container" class="template1" dir="rtl">
+                <div id="pdf-export-container" style="display:none;"></div>
+                 <div id="cv-container" class="template1" dir="rtl" style="width: 210mm; height: 297mm; margin: 0 auto; overflow: visible;">
                  </div>
              </div>
              <div class="d-flex justify-content-center mt-4">
                 <button class="btn btn-secondary btn-lg me-2" style="margin-left:30px;" onclick="backToTemplateSelection()" data-en="Back to Templates" data-ar="العودة للنماذج">العودة للنماذج</button>
                 <button class="btn btn-success btn-lg" onclick="openPaymentForCV()" data-en="Request Download / Print" data-ar="طلب تنزيل / طباعة">طلب تنزيل / طباعة</button>
-                <button class="btn btn-success btn-lg" style="display:block;" onclick="generateAndDownloadPDF_html2pdf()" data-en="Request Download / Print" data-ar=" تنزيل / "> تنزيل / </button>
+                <button class="btn btn-success btn-lg" onclick="generateAndDownloadPDF_html2pdf()" id="download-pdf-desktop" data-en="Request Download / Print" data-ar=" تنزيل / "> تنزيل / </button>
+                <button onclick="generateAndDownloadPDF()" id="download-pdf-desktop">تنزيل PDF (سطح مكتب)</button>
 
-                
             </div>
          </div>
      </div>
