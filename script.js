@@ -1200,295 +1200,506 @@ function outsideClickQrPayment(e) {
 
 // دالة جديدة لإنشاء وتنزيل السيرة الذاتية بصيغة PDF باستخدام html2pdf.js
 // دالة لإنشاء وتنزيل السيرة الذاتية بصيغة PDF باستخدام html2pdf.js
-async function generateAndDownloadPDF_html2pdf(downloadDirectly = true) {
-    // الحصول على حاوية السيرة الذاتية
-    const cvContainer = document.getElementById('cv-container');
+async function generateAndDownloadPDF_html2pdf() {
 
-    // التأكد من وجود الحاوية
-    if (!cvContainer) {
-        alert(currentLang === 'ar' ? 'لم يتم العثور على حاوية السيرة الذاتية للتحويل إلى PDF.' : 'CV container not found for PDF conversion.');
-        return;
-    }
+    // الحصول على حاوية السيرة الذاتية
 
-    // --- حفظ الأنماط الأصلية وإعداد الأنماط المؤقتة للالتقاط ---
-    const originalStyles = {
-        width: cvContainer.style.width,
-        height: cvContainer.style.height,
-        overflow: cvContainer.style.overflow,
-        backgroundColor: cvContainer.style.backgroundColor,
-        position: cvContainer.style.position,
-        top: cvContainer.style.top,
-        left: cvContainer.style.left,
-        zIndex: cvContainer.style.zIndex,
-        transform: cvContainer.style.transform,
-        display: cvContainer.style.display,
-        maxHeight: cvContainer.style.maxHeight,
-        overflowY: cvContainer.style.overflowY,
-        padding: cvContainer.style.padding,
-        margin: cvContainer.style.margin,
-        boxShadow: cvContainer.style.boxShadow, // تم إضافة boxShadow للحفظ والاستعادة
-    };
-    const originalScrollTop = cvContainer.scrollTop; // حفظ موضع التمرير
+    const cvContainer = document.getElementById('cv-container');
 
-    // تطبيق الأنماط المؤقتة لـ html2pdf لضمان التقاط صحيح بحجم A4
-    cvContainer.style.width = '750px'; // العرض 100% داخل الحاوية الأبوية (#cv-preview-area)
-    cvContainer.style.height = 'auto'; // ارتفاع تلقائي ليشمل كل المحتوى
-    cvContainer.style.maxHeight = 'none'; // إزالة أي حد أقصى للارتفاع
-    cvContainer.style.overflow = 'visible'; // عرض كامل المحتوى
-    cvContainer.style.overflowY = 'visible'; // عرض كامل المحتوى رأسياً
-    cvContainer.style.backgroundColor = 'white'; // خلفية بيضاء للـ PDF
-    // إعادة تعيين خصائص التموضع لضمان أنه في التدفق الطبيعي
-    cvContainer.style.position = ''; // الوضع الافتراضي (static)
-    cvContainer.style.top = ''; // مسح القيمة
-    cvContainer.style.left = ''; // مسح القيمة
-    cvContainer.style.zIndex = ''; // مسح القيمة
-    cvContainer.style.transform = ''; // مسح القيمة
-    cvContainer.style.display = 'block'; // التأكد من عرضه
-    cvContainer.style.padding = '0'; // إزالة أي padding خاص بالعنصر نفسه
-    cvContainer.style.margin = '0'; // إزالة أي margin خاص بالعنصر نفسه
 
-    // إخفاء أزرار الحذف
-    const removeButtons = cvContainer.querySelectorAll('.remove-field');
-    removeButtons.forEach(btn => btn.style.display = 'none');
 
-    // انتظر تحميل الصور
-    const images = cvContainer.querySelectorAll('img');
-    await Promise.all(
-        Array.from(images).map(img => {
-            if (!img.complete) {
-                return new Promise(resolve => {
-                    img.onload = resolve;
-                    img.onerror = resolve; // Resolve even on error to prevent hanging
-                });
-            }
-            return Promise.resolve();
-        })
-    );
+    // التأكد من وجود الحاوية
 
-    // فترة انتظار للسماح بالرسم (100 ملي ثانية)
-    await new Promise(resolve => setTimeout(resolve, 100));
+    if (!cvContainer) {
 
-    let pdfBase64 = null;
+        alert(currentLang === 'ar' ? 'لم يتم العثور على حاوية السيرة الذاتية للتحويل إلى PDF.' : 'CV container not found for PDF conversion.');
 
-    try {
-        // إعداد خيارات html2pdf.js
-        const options = {
-            margin: [0, 0, 0, 0], // إزالة الهوامش الخارجية للسماح بتغطية الصفحة بالكامل
-            filename: 'CV.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: {
-                scale: 3, // زيادة الجودة (اختياري)
-                useCORS: true,
-                backgroundColor: 'white',
-                // تحديد أبعاد النافذة التي يرى منها html2canvas العنصر (مهم لالتقاط كامل المحتوى)
-                width: cvContainer.scrollWidth,
-                height: cvContainer.scrollHeight,
-                windowWidth: cvContainer.scrollWidth,
-                windowHeight: cvContainer.scrollHeight,
-                scrollX: 0,
-                scrollY: 0,
-                allowTaint: false,
-                logging: false,
-                letterRendering: true,
-            },
-            jsPDF: {
-                orientation: 'portrait',
-                unit: 'pt', // استخدام النقاط (more precise for scaling)
-                format: 'a4',
-                compress: true,
-                hotfixes: ['px_scaling']
-            },
-            pageSplit: true, // يسمح بتقسيم المحتوى عبر الصفحات
-            maxPages: 6 // تحديد الحد الأقصى للصفحات
-        };
+        return;
 
-        // بدء عملية التحويل
-        const pdfInstance = html2pdf().from(cvContainer).set(options);
+    }
 
-        // تنزيل PDF إذا طلب المستخدم ذلك
-        if (downloadDirectly) {
-            await pdfInstance.save();
-            console.log('PDF generated and downloaded successfully using html2pdf.js');
-        }
 
-        // تحويل PDF إلى Base64 وإعادته (هذا الجزء يجب أن يكون دائمًا)
-        const pdfDataUri = await pdfInstance.outputPdf('datauristring');
-        pdfBase64 = pdfDataUri.split(',')[1];
 
-        console.log(`Generated PDF Base64 length on frontend: ${pdfBase64 ? pdfBase64.length : 0}`);
+    // --- حفظ الأنماط الأصلية وإعداد الأنماط المؤقتة للالتقاط ---
 
-        return pdfBase64;
+    const originalStyles = {
 
-    } catch (error) {
-        console.error("Error during PDF generation using html2pdf.js:", error);
-        alert(currentLang === 'ar' ? 'حدث خطأ أثناء إنشاء ملف PDF.' : 'Error generating PDF file.');
-        throw error;
-    } finally {
-        // 🧹 استعادة الأنماط الأصلية بغض النظر عما إذا حدث خطأ
-        Object.keys(originalStyles).forEach(key => {
-            if (originalStyles[key] !== null && originalStyles[key] !== undefined) {
-                cvContainer.style[key] = originalStyles[key];
-            } else {
-                cvContainer.style[key] = ''; // مسح الخاصية إذا لم تكن موجودة في الأصل
-            }
-        });
-        cvContainer.scrollTop = originalScrollTop; // استعادة موضع التمرير
+        width: cvContainer.style.width,
 
-        // إعادة عرض أزرار الحذف
-        removeButtons.forEach(btn => btn.style.display = '');
-    }
+        height: cvContainer.style.height,
+
+        overflow: cvContainer.style.overflow,
+
+        backgroundColor: cvContainer.style.backgroundColor,
+
+        position: cvContainer.style.position,
+
+        top: cvContainer.style.top,
+
+        left: cvContainer.style.left,
+
+        zIndex: cvContainer.style.zIndex,
+
+        transform: cvContainer.style.transform,
+
+        display: cvContainer.style.display,
+
+        maxHeight: cvContainer.style.maxHeight,
+
+        overflowY: cvContainer.style.overflowY,
+
+        padding: cvContainer.style.padding,
+
+        margin: cvContainer.style.margin,
+
+    };
+
+    const originalScrollTop = cvContainer.scrollTop; // حفظ موضع التمرير
+
+
+
+    // تطبيق الأنماط المؤقتة للسماح بالالتقاط المرئي كما نجح معك (بدون إخفاء كامل)
+
+    // هذه الأنماط تترك العنصر في تدفق المستند الطبيعي ضمن حاويته
+
+    cvContainer.style.width = '750px'; // العرض 100% داخل الحاوية الأبوية (#cv-preview-area)
+
+    cvContainer.style.height = 'auto'; // ارتفاع تلقائي ليشمل كل المحتوى
+
+    cvContainer.style.maxHeight = 'none'; // إزالة أي حد أقصى للارتفاع
+
+    cvContainer.style.overflow = 'visible'; // عرض كامل المحتوى
+
+    cvContainer.style.overflowY = 'visible'; // عرض كامل المحتوى رأسياً
+
+    cvContainer.style.backgroundColor = 'white'; // خلفية بيضاء للـ PDF
+
+    // إعادة تعيين خصائص التموضع لضمان أنه في التدفق الطبيعي
+
+    cvContainer.style.position = ''; // الوضع الافتراضي (static)
+
+    cvContainer.style.top = ''; // مسح القيمة
+
+    cvContainer.style.left = ''; // مسح القيمة
+
+    cvContainer.style.zIndex = ''; // مسح القيمة
+
+    cvContainer.style.transform = ''; // مسح القيمة
+
+    cvContainer.style.display = 'block'; // التأكد من عرضه
+
+    cvContainer.style.padding = '0'; // إزالة أي padding خاص بالعنصر نفسه
+
+    cvContainer.style.margin = '0'; // إزالة أي margin خاص بالعنصر نفسه
+
+
+
+
+
+    // إخفاء أزرار الحذف
+
+    const removeButtons = cvContainer.querySelectorAll('.remove-field');
+
+    removeButtons.forEach(btn => btn.style.display = 'none');
+
+
+
+    // فترة انتظار للسماح بالرسم (100 ملي ثانية كما جربت)
+
+    console.log("Starting wait for CV rendering (visible capture)...");
+
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    console.log("Wait finished. Attempting visible capture.");
+
+
+
+    // **التعديل هنا: تسجيل أبعاد وموقع العنصر قبل الالتقاط**
+
+    console.log(`CV Container Dimensions before capture: offsetWidth=${cvContainer.offsetWidth}, offsetHeight=${cvContainer.offsetHeight}, scrollWidth=${cvContainer.scrollWidth}, scrollHeight=${cvContainer.scrollHeight}`);
+
+    // getBoundingClientRect يعطي الموضع والحجم بالنسبة لإطار عرض النافذة (viewport)
+
+    const rect = cvContainer.getBoundingClientRect();
+
+    console.log(`CV Container Bounding Rect before capture: top=${rect.top}, left=${rect.left}, right=${rect.right}, bottom=${rect.bottom}, width=${rect.width}, height=${rect.height}`);
+
+
+
+
+
+    // --- استخدام html2pdf.js لإنشاء وتنزيل الـ PDF ---
+
+    try {
+
+        // إعداد خيارات html2pdf.js
+
+        const options = {
+
+            margin: [0, 0, 0, 0], // إزالة الهوامش الخارجية للسماح بتغطية الصفحة بالكامل
+
+            filename: 'CV.pdf',
+
+            image: { type: 'jpeg', quality: 0.98 },
+
+            html2canvas: {
+
+                scale: 3, // زيادة الجودة (اختياري)
+
+                useCORS: true,
+
+                backgroundColor: 'white',
+
+                x: 0,
+
+                y: 0,
+
+                scrollX: 0,
+
+                scrollY: 0,
+
+                width: cvContainer.scrollWidth,   // العرض الكامل بما في ذلك التمرير
+
+                height: cvContainer.scrollHeight, // الارتفاع الكامل بما في ذلك التمرير
+
+                windowWidth: cvContainer.scrollWidth,
+
+                windowHeight: cvContainer.scrollHeight,
+
+                scrollX: 0,
+
+                scrollY: 0,
+
+                allowTaint: false,
+
+                logging: false,
+
+                letterRendering: true,
+
+            },
+
+            jsPDF: {
+
+                orientation: 'portrait',
+
+                unit: 'pt', // استخدام النقاط (more precise for scaling)
+
+                format: 'a4',
+
+                compress: true,
+
+                hotfixes: ['px_scaling']
+
+            },
+
+            pageSplit: true, // يسمح بتقسيم المحتوى عبر الصفحات
+
+            maxPages: 4 // تحديد الحد الأقصى للصفحات
+
+        };
+
+        // بدء عملية التحويل والتنزيل
+
+        console.log("Calling html2pdf().from().set().save()");
+
+        await html2pdf().from(cvContainer).set(options).save();
+
+
+
+        console.log('PDF generated and downloaded successfully using html2pdf.js');
+
+
+
+    } catch (error) {
+
+        console.error("Error during PDF generation using html2pdf.js:", error);
+
+        alert(currentLang === 'ar' ? 'حدث خطأ أثناء إنشاء ملف PDF.' : 'Error generating PDF file.');
+
+        throw error;
+
+    } finally {
+
+        // --- استعادة الأنماط الأصلية وأزرار الحذف ---
+
+        console.log("Restoring original styles.");
+
+        Object.keys(originalStyles).forEach(key => {
+
+             // استعادة القيمة الأصلية أو مسح الخاصية إذا لم تكن موجودة في الأصل
+
+             if (originalStyles[key] !== null && originalStyles[key] !== undefined) {
+
+                cvContainer.style[key] = originalStyles[key];
+
+             } else {
+
+                 cvContainer.style[key] = '';
+
+             }
+
+        });
+
+        cvContainer.scrollTop = originalScrollTop; // استعادة موضع التمرير
+
+
+
+        // إعادة عرض أزرار الحذف
+
+        removeButtons.forEach(btn => btn.style.display = '');
+
+    }
+
 }
 
 async function captureCVasPDF(cvContainer, downloadPdf = false) {
-        if (!cvContainer) {
-            throw new Error("CV container not found!");
-        }
-    
-        // حفظ الأنماط الأصلية
-        const originalStyles = {
-            width: cvContainer.style.width,
-            height: cvContainer.style.height,
-            overflow: cvContainer.style.overflow,
-            backgroundColor: cvContainer.style.backgroundColor,
-            position: cvContainer.style.position,
-            top: cvContainer.style.top,
-            left: cvContainer.style.left,
-            zIndex: cvContainer.style.zIndex,
-            transform: cvContainer.style.transform,
-            display: cvContainer.style.display,
-            maxHeight: cvContainer.style.maxHeight,
-            overflowY: cvContainer.style.overflowY,
-            padding: cvContainer.style.padding,
-            margin: cvContainer.style.margin,
-        };
-        const originalScrollTop = cvContainer.scrollTop;
-    
-        // تطبيق الأنماط المؤقتة
-        cvContainer.style.width = '800px';
-        cvContainer.style.height = 'auto';
-        cvContainer.style.maxHeight = 'none';
-        cvContainer.style.overflow = 'visible';
-        cvContainer.style.overflowY = 'visible';
-        cvContainer.style.backgroundColor = 'white';
-        cvContainer.style.position = 'absolute';
-        cvContainer.style.top = '0';
-        cvContainer.style.left = '0';
-        cvContainer.style.zIndex = '9999';
-        cvContainer.style.display = 'block';
-    
-        const removeButtons = cvContainer.querySelectorAll('.remove-field');
-        removeButtons.forEach(btn => btn.style.display = 'none');
-    
-        // انتظر تحميل الصور
-        const images = cvContainer.querySelectorAll('img');
-        await Promise.all(
-            Array.from(images).map(img => {
-                if (!img.complete) {
-                    return new Promise(resolve => {
-                        img.onload = resolve;
-                        img.onerror = resolve;
-                    });
-                }
-                return Promise.resolve();
-            })
-        );
-    
-        await new Promise(resolve => setTimeout(resolve, 500));
-    
-        let pdfBase64 = null;
-    
-        try {
-            // 📸 التقاط Canvas باستخدام html2canvas
-            const canvas = await html2canvas(cvContainer, {
-                scale: 2,
-                useCORS: true,
-                backgroundColor: 'white',
-                scrollX: 0,
-                scrollY: 0,
-                windowWidth: cvContainer.scrollWidth,
-                windowHeight: cvContainer.scrollHeight
-            });
-    
-            // 🖼️ تحويل Canvas إلى صورة
-            const imgData = canvas.toDataURL('image/jpeg', 0.98);
-    
-            // ✅ إنشاء PDF باستخدام jsPDF فقط
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4'
-            });
-    
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = 210; // عرض A4 بالملم
-            const imgWidth = imgProps.width;
-            const imgHeight = imgProps.height;
-    
-            const ratio = imgHeight / imgWidth;
-            const pageHeight = pdf.internal.pageSize.getHeight();
-    
-            let position = 0;
-            let remainingHeight = imgHeight;
-    
-            const maxPages = 4; // **NEW: تحديد الحد الأقصى لعدد الصفحات بـ 6**
-    
-            while (remainingHeight > 0) {
-                 // **NEW: إيقاف الحلقة إذا وصلنا إلى الحد الأقصى للصفحات (6)**
-                if (pdf.internal.getNumberOfPages() >= maxPages) {
-                     console.log(`Reached maximum number of pages (${maxPages}). Stopping PDF generation.`);
-                     break; // الخروج من الحلقة
-                }
-    
-                const pageImgHeight = Math.min(pageHeight, remainingHeight);
-                const pageRatio = pageImgHeight / imgHeight;
-    
-                pdf.addImage(
-                    imgData,
-                    'JPEG',
-                    0,
-                    -position,
-                    pdfWidth,
-                    ratio * pdfWidth,
-                    null,
-                    'FAST'
-                );
-    
-                remainingHeight -= pageHeight;
-                position += pageHeight;
-    
-                 // **NEW: إضافة صفحة جديدة فقط إذا كان هناك المزيد من المحتوى المتبقي ولم نصل للحد الأقصى (ناقص واحد)**
-                if (remainingHeight > 0 && pdf.internal.getNumberOfPages() < maxPages) {
-                    pdf.addPage();
-                }
-            }
-    
-            // 💾 تنزيل PDF إذا طلب المستخدم
-            if (downloadPdf) {
-                pdf.save('CV.pdf');
-            }
-    
-            // 🔁 تحويل PDF إلى Base64
-            pdfBase64 = pdf.output('datauristring').split(',')[1];
-    
-            console.log(`Generated PDF Base64 length on frontend: ${pdfBase64.length}`);
-    
-            return pdfBase64;
-    
-        } catch (error) {
-            console.error("Error during PDF generation in captureCVasPDF:", error);
-            throw error;
-        } finally {
-            // 🧹 استعادة الأنماط الأصلية
-            Object.keys(originalStyles).forEach(key => {
-                cvContainer.style[key] = originalStyles[key];
-            });
-            cvContainer.scrollTop = originalScrollTop;
-    
-            // إعادة عرض أزرار الحذف
-            removeButtons.forEach(btn => btn.style.display = '');
-        }
-    }
+    const cvContainer = document.getElementById('cv-container');
+
+
+
+    // التأكد من وجود الحاوية
+
+    if (!cvContainer) {
+
+        alert(currentLang === 'ar' ? 'لم يتم العثور على حاوية السيرة الذاتية للتحويل إلى PDF.' : 'CV container not found for PDF conversion.');
+
+        return;
+
+    }
+
+
+
+    // --- حفظ الأنماط الأصلية وإعداد الأنماط المؤقتة للالتقاط ---
+
+    const originalStyles = {
+
+        width: cvContainer.style.width,
+
+        height: cvContainer.style.height,
+
+        overflow: cvContainer.style.overflow,
+
+        backgroundColor: cvContainer.style.backgroundColor,
+
+        position: cvContainer.style.position,
+
+        top: cvContainer.style.top,
+
+        left: cvContainer.style.left,
+
+        zIndex: cvContainer.style.zIndex,
+
+        transform: cvContainer.style.transform,
+
+        display: cvContainer.style.display,
+
+        maxHeight: cvContainer.style.maxHeight,
+
+        overflowY: cvContainer.style.overflowY,
+
+        padding: cvContainer.style.padding,
+
+        margin: cvContainer.style.margin,
+
+    };
+
+    const originalScrollTop = cvContainer.scrollTop; // حفظ موضع التمرير
+
+
+
+    // تطبيق الأنماط المؤقتة للسماح بالالتقاط المرئي كما نجح معك (بدون إخفاء كامل)
+
+    // هذه الأنماط تترك العنصر في تدفق المستند الطبيعي ضمن حاويته
+
+    cvContainer.style.width = '750px'; // العرض 100% داخل الحاوية الأبوية (#cv-preview-area)
+
+    cvContainer.style.height = 'auto'; // ارتفاع تلقائي ليشمل كل المحتوى
+
+    cvContainer.style.maxHeight = 'none'; // إزالة أي حد أقصى للارتفاع
+
+    cvContainer.style.overflow = 'visible'; // عرض كامل المحتوى
+
+    cvContainer.style.overflowY = 'visible'; // عرض كامل المحتوى رأسياً
+
+    cvContainer.style.backgroundColor = 'white'; // خلفية بيضاء للـ PDF
+
+    // إعادة تعيين خصائص التموضع لضمان أنه في التدفق الطبيعي
+
+    cvContainer.style.position = ''; // الوضع الافتراضي (static)
+
+    cvContainer.style.top = ''; // مسح القيمة
+
+    cvContainer.style.left = ''; // مسح القيمة
+
+    cvContainer.style.zIndex = ''; // مسح القيمة
+
+    cvContainer.style.transform = ''; // مسح القيمة
+
+    cvContainer.style.display = 'block'; // التأكد من عرضه
+
+    cvContainer.style.padding = '0'; // إزالة أي padding خاص بالعنصر نفسه
+
+    cvContainer.style.margin = '0'; // إزالة أي margin خاص بالعنصر نفسه
+
+
+
+
+
+    // إخفاء أزرار الحذف
+
+    const removeButtons = cvContainer.querySelectorAll('.remove-field');
+
+    removeButtons.forEach(btn => btn.style.display = 'none');
+
+
+
+    // فترة انتظار للسماح بالرسم (100 ملي ثانية كما جربت)
+
+    console.log("Starting wait for CV rendering (visible capture)...");
+
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    console.log("Wait finished. Attempting visible capture.");
+
+
+
+    // **التعديل هنا: تسجيل أبعاد وموقع العنصر قبل الالتقاط**
+
+    console.log(`CV Container Dimensions before capture: offsetWidth=${cvContainer.offsetWidth}, offsetHeight=${cvContainer.offsetHeight}, scrollWidth=${cvContainer.scrollWidth}, scrollHeight=${cvContainer.scrollHeight}`);
+
+    // getBoundingClientRect يعطي الموضع والحجم بالنسبة لإطار عرض النافذة (viewport)
+
+    const rect = cvContainer.getBoundingClientRect();
+
+    console.log(`CV Container Bounding Rect before capture: top=${rect.top}, left=${rect.left}, right=${rect.right}, bottom=${rect.bottom}, width=${rect.width}, height=${rect.height}`);
+
+
+
+
+
+    // --- استخدام html2pdf.js لإنشاء وتنزيل الـ PDF ---
+
+    try {
+
+        // إعداد خيارات html2pdf.js
+
+        const options = {
+
+            margin: [0, 0, 0, 0], // إزالة الهوامش الخارجية للسماح بتغطية الصفحة بالكامل
+
+            filename: 'CV.pdf',
+
+            image: { type: 'jpeg', quality: 0.98 },
+
+            html2canvas: {
+
+                scale: 3, // زيادة الجودة (اختياري)
+
+                useCORS: true,
+
+                backgroundColor: 'white',
+
+                x: 0,
+
+                y: 0,
+
+                scrollX: 0,
+
+                scrollY: 0,
+
+                width: cvContainer.scrollWidth,   // العرض الكامل بما في ذلك التمرير
+
+                height: cvContainer.scrollHeight, // الارتفاع الكامل بما في ذلك التمرير
+
+                windowWidth: cvContainer.scrollWidth,
+
+                windowHeight: cvContainer.scrollHeight,
+
+                scrollX: 0,
+
+                scrollY: 0,
+
+                allowTaint: false,
+
+                logging: false,
+
+                letterRendering: true,
+
+            },
+
+            jsPDF: {
+
+                orientation: 'portrait',
+
+                unit: 'pt', // استخدام النقاط (more precise for scaling)
+
+                format: 'a4',
+
+                compress: true,
+
+                hotfixes: ['px_scaling']
+
+            },
+
+            pageSplit: true, // يسمح بتقسيم المحتوى عبر الصفحات
+
+            maxPages: 4 // تحديد الحد الأقصى للصفحات
+
+        };
+
+        // بدء عملية التحويل والتنزيل
+
+        console.log("Calling html2pdf().from().set().save()");
+
+        await html2pdf().from(cvContainer).set(options).save();
+
+
+
+        console.log('PDF generated and downloaded successfully using html2pdf.js');
+
+
+
+    } catch (error) {
+
+        console.error("Error during PDF generation using html2pdf.js:", error);
+
+        alert(currentLang === 'ar' ? 'حدث خطأ أثناء إنشاء ملف PDF.' : 'Error generating PDF file.');
+
+        throw error;
+
+    } finally {
+
+        // --- استعادة الأنماط الأصلية وأزرار الحذف ---
+
+        console.log("Restoring original styles.");
+
+        Object.keys(originalStyles).forEach(key => {
+
+             // استعادة القيمة الأصلية أو مسح الخاصية إذا لم تكن موجودة في الأصل
+
+             if (originalStyles[key] !== null && originalStyles[key] !== undefined) {
+
+                cvContainer.style[key] = originalStyles[key];
+
+             } else {
+
+                 cvContainer.style[key] = '';
+
+             }
+
+        });
+
+        cvContainer.scrollTop = originalScrollTop; // استعادة موضع التمرير
+
+
+
+        // إعادة عرض أزرار الحذف
+
+        removeButtons.forEach(btn => btn.style.display = '');
+
+    }
+
+}
 // ** تعديل دالة renderPayPalButton بنفس المنطق **
 function renderPayPalButton(finalPrice, templateCategory) {
     const paypalContainer = document.getElementById("paypal-button-container");
@@ -1503,7 +1714,7 @@ function renderPayPalButton(finalPrice, templateCategory) {
     paypal.Buttons({
         createOrder: function(data, actions) {
             let amountUSD = finalPrice / 3.75; // Assume 3.75 SAR per USD for conversion
-            amountUSD = parseFloat(amountUSD.toFixed(2));
+            amountUSD = parseFloat(amountUSD.toFixed(2)); 
 
             let descriptionText = translations[currentLang][templateCategory + ' Templates'] || "تصميم سيرة ذاتية غير محدد";
             return actions.order.create({
@@ -1524,17 +1735,19 @@ function renderPayPalButton(finalPrice, templateCategory) {
                 const payerName = details.payer.name.given_name + ' ' + details.payer.name.surname;
                 const pricePaid = finalPrice;
 
+                // جلب عناصر الـ DOM الخاصة بالمودال قبل إخفائها
                 const paymentModal = document.getElementById("payment-modal");
                 const qrPaymentPopup = document.getElementById("qr-payment-popup");
+                // cvPreviewModal يجب أن يظل مرئيًا لأنه يحتوي على الـ CV
 
-                let cvPdfFileBase64 = "";
-                let cvPdfFileNameForClient = `CV_${payerName.replace(/\s/g, '_') || 'Unnamed'}.pdf`;
-
+                let cvPdfFileBase64 = ""; 
+                let cvPdfFileNameForClient = ''; 
+                
+                // حفظ حالة عرض النوافذ المنبثقة وإخفائها مؤقتًا
                 let originalPaymentModalDisplay = null;
                 let originalQrPaymentPopupDisplay = null;
 
                 try {
-                    // إخفاء جميع النوافذ المنبثقة للدفع التي قد تتداخل مع الالتقاط
                     if (paymentModal && paymentModal.style.display !== 'none') {
                         originalPaymentModalDisplay = paymentModal.style.display;
                         paymentModal.style.display = 'none';
@@ -1544,14 +1757,21 @@ function renderPayPalButton(finalPrice, templateCategory) {
                         qrPaymentPopup.style.display = 'none';
                     }
 
-                    // استدعاء generateAndDownloadPDF_html2pdf مع false لمنع التنزيل المباشر
-                    cvPdfFileBase64 = await generateAndDownloadPDF_html2pdf(false);
+                    const cvContainer = document.getElementById('cv-container'); 
+                    if (!cvContainer) {
+                        alert(currentLang === 'ar' ? 'لم يتم العثور على حاوية السيرة الذاتية لإنشاء صور PDF.' : 'CV container not found for PDF image generation.');
+                        return;
+                    }
+                    
+                    // استدعاء دالة captureCVasPDF فقط، فهي تتولى معالجة أنماط cvContainer الداخلية.
+                    cvPdfFileNameForClient = `CV_${payerName.replace(/\s/g, '_') || 'Unnamed'}.pdf`; 
+                    cvPdfFileBase64 = await captureCVasPDF(cvContainer, false); // نمرر false لعدم التنزيل المباشر
 
                 } catch (pdfError) {
                     console.error("Error generating full CV (PayPal catch block):", pdfError);
                     alert(currentLang === 'ar' ? 'حدث خطأ أثناء إنشاء السيرة الذاتية (باي بال).' : 'Error generating CV (PayPal).');
-                    return; // إيقاف التنفيذ إذا حدث خطأ في إنشاء PDF
-                } finally {
+                    return;
+                } finally { 
                     // استعادة حالة عرض النوافذ المنبثقة بغض النظر عن نجاح الالتقاط
                     if (paymentModal && originalPaymentModalDisplay !== null) {
                         paymentModal.style.display = originalPaymentModalDisplay;
@@ -1562,12 +1782,12 @@ function renderPayPalButton(finalPrice, templateCategory) {
                 }
 
                 // إرسال البيانات إلى Google Apps Script
-                const scriptUrl = `https://script.google.com/macros/s/AKfycbxxkX4jsV4zSz4vR7FcCOhYJmXXuOAt5WrJYgZmhTlmO7dzqXARLM6q_5QNo2KVs8bWww/exec`; // تأكد من صحة هذا الرابط
-
+                const scriptUrl = `https://script.google.com/macros/s/AKfycbxxkX4jsV4zSz4vR7FcCOhYJmXXuOAt5WrJYgZmhTlmO7dzqXARLM6q_5QNo2KVs8bWww/exec`;
+                
                 const params = new URLSearchParams();
                 params.append('name', payerName);
                 params.append('email', payerEmail);
-                params.append('phoneNumber', ''); // لا يوجد حقل هاتف من PayPal
+                params.append('phoneNumber', ''); 
                 params.append('cvTemplateCategory', templateCategory);
                 params.append('pricePaid', pricePaid);
                 params.append('paymentMethod', 'PayPal');
@@ -1590,8 +1810,8 @@ function renderPayPalButton(finalPrice, templateCategory) {
                         alert(data.message || (currentLang === 'ar' ? 'تم استلام دفعتك بنجاح! سيتم إرسال السيرة الذاتية إلى بريدك الإلكتروني قريباً.' : 'Your payment has been received successfully! The CV will be sent to your email shortly.'));
                     } else {
                         console.error('خطأ في معالجة الدفع أو إرسال بيانات السيرة الذاتية:', data.error || data.message);
-                        alert(currentLang === 'ar' ?
-                            `حدث خطأ أثناء معالجة الدفع أو إرسال السيرة الذاتية: ${data.error || data.message || 'خطأ غير معروف'}` :
+                        alert(currentLang === 'ar' ? 
+                            `حدث خطأ أثناء معالجة الدفع أو إرسال السيرة الذاتية: ${data.error || data.message || 'خطأ غير معروف'}` : 
                             `An error occurred while processing payment or sending the CV: ${data.error || data.message || 'Unknown error'}`);
                     }
                 })
@@ -1600,7 +1820,7 @@ function renderPayPalButton(finalPrice, templateCategory) {
                     alert(currentLang === 'ar' ? 'حدث خطأ في الاتصال بالخادم بعد الدفع.' : 'An error occurred connecting to the server after payment.');
                 });
 
-                closeQrPaymentPopup();
+                closeQrPaymentPopup(); // إذا كان هناك popup خاص بالـ QR Payment قديم، تأكد من تعريفه في مكان يمكن الوصول إليه
             });
         },
         onError: function(err) {
@@ -1636,16 +1856,19 @@ function validateEmail(email) {
 async function submitPaymentProof(event) {
     event.preventDefault();
 
-    // الوصول إلى المتغيرات العامة
+    // الوصول إلى المتغيرات العامة (مثل paymentNameInput, paymentFileInput) مباشرة
     const name = paymentNameInput.value.trim();
     const email = paymentEmailInput.value.trim();
     const phoneNumber = paymentPhoneInput.value.trim();
     const pricePaid = paymentMessagesInput.value.trim();
     const file = paymentFileInput.files[0];
-
+    
+    // جلب عناصر الـ DOM الخاصة بالمودال قبل إخفائها
     const paymentModal = document.getElementById("payment-modal");
     const qrPaymentPopup = document.getElementById("qr-payment-popup");
+    // cvPreviewModal يجب أن يظل مرئيًا لأنه يحتوي على الـ CV
 
+    // الوصول إلى سمات qrPaymentPopup بعد التأكد من جلبه
     const paymentMethod = qrPaymentPopup.getAttribute("data-payment-method");
     const discountCode = qrPaymentPopup.getAttribute("data-discount-code");
     const cvTemplateCategory = qrPaymentPopup.getAttribute("data-cv-template-category");
@@ -1655,12 +1878,13 @@ async function submitPaymentProof(event) {
         alert(translations[currentLang]['Please fill in all fields.']);
         return;
     }
-    if (!validateEmail(email)) {
+    if (!validateEmail(email)) { // افترض أن validateEmail مُعرّفة عالميًا
         alert(translations[currentLang]['Please enter a valid email.']);
         return;
     }
     if (file) {
-        if (file.size > MAX_FILE_SIZE) {
+        // افترض أن MAX_FILE_SIZE و ALLOWED_FILE_TYPES مُعرّفين عالميًا
+        if (file.size > MAX_FILE_SIZE) { 
             alert(translations[currentLang]['File size exceeds the limit (3MB).']);
             return;
         }
@@ -1670,9 +1894,10 @@ async function submitPaymentProof(event) {
         }
     }
 
-    let cvPdfFileBase64 = "";
-    let cvPdfFileNameForClient = `CV_${name.replace(/\s/g, '_') || 'Unnamed'}.pdf`;
-
+    let cvPdfFileBase64 = ""; 
+    let cvPdfFileNameForClient = ''; 
+    
+    // حفظ حالة عرض النوافذ المنبثقة وإخفائها مؤقتًا
     let originalPaymentModalDisplay = null;
     let originalQrPaymentPopupDisplay = null;
 
@@ -1687,14 +1912,22 @@ async function submitPaymentProof(event) {
             qrPaymentPopup.style.display = 'none';
         }
 
-        // استدعاء generateAndDownloadPDF_html2pdf مع false لمنع التنزيل المباشر
-        cvPdfFileBase64 = await generateAndDownloadPDF_html2pdf(false);
+        const cvContainer = document.getElementById('cv-container'); 
+        if (!cvContainer) {
+            alert(currentLang === 'ar' ? 'لم يتم العثور على حاوية السيرة الذاتية لإنشاء صور PDF.' : 'CV container not found for PDF image generation.');
+            return;
+        }
+
+        // استدعاء دالة captureCVasPDF فقط، فهي تتولى معالجة أنماط cvContainer الداخلية.
+        cvPdfFileNameForClient = `CV_${name.replace(/\s/g, '_') || 'Unnamed'}.pdf`; 
+        cvPdfFileBase64 = await captureCVasPDF(cvContainer, false); // نمرر false لعدم التنزيل المباشر
+        
 
     } catch (pdfError) {
         console.error("Error generating full CV (catch block):", pdfError);
         alert(currentLang === 'ar' ? 'حدث خطأ أثناء إنشاء السيرة الذاتية.' : 'Error generating CV.');
-        return; // إيقاف التنفيذ إذا حدث خطأ في إنشاء PDF
-    } finally {
+        return;
+    } finally { 
         // استعادة حالة عرض النوافذ المنبثقة بغض النظر عن نجاح الالتقاط
         if (paymentModal && originalPaymentModalDisplay !== null) {
             paymentModal.style.display = originalPaymentModalDisplay;
@@ -1704,7 +1937,7 @@ async function submitPaymentProof(event) {
         }
     }
 
-    const scriptUrl = "https://script.google.com/macros/s/AKfycbxxkX4jsV4zSz4vR7FcCOhYJmXXuOAt5WrJYgZmhTlmO7dzqXARLM6q_5QNo2KVs8bWww/exec"; // تأكد من صحة هذا الرابط
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbxxkX4jsV4zSz4vR7FcCOhYJmXXuOAt5WrJYgZmhTlmO7dzqXARLM6q_5QNo2KVs8bWww/exec";
 
     const formData = new FormData();
     formData.append("name", name);
@@ -1715,16 +1948,16 @@ async function submitPaymentProof(event) {
     formData.append("paymentMethod", paymentMethod);
     formData.append("discountCode", discountCode);
     formData.append("cvTemplateCategory", cvTemplateCategory);
-
+    
     // إرسال PDF Base64
-    formData.append('cvPdfFileBase64', cvPdfFileBase64);
-    formData.append('cvPdfFileName', cvPdfFileNameForClient);
+    formData.append('cvPdfFileBase64', cvPdfFileBase64); 
+    formData.append('cvPdfFileName', cvPdfFileNameForClient); 
 
     let fileBase64 = "";
     let fileType = "";
     if (file) {
         try {
-            fileBase64 = await fileToBase64(file);
+            fileBase64 = await fileToBase64(file); // افترض أن fileToBase64 مُعرّفة عالميًا
             fileType = file.type;
             formData.append("paymentFileBase64", fileBase64);
             formData.append("paymentFileType", fileType);
@@ -1745,19 +1978,20 @@ async function submitPaymentProof(event) {
         const data = await response.json();
 
         if (data.status === 'success') {
+            // افترض أن qrPaymentResultDiv و closeQrPaymentPopup مُعرفين عالميًا
             qrPaymentResultDiv.style.color = "green";
             qrPaymentResultDiv.textContent = data.message || (currentLang === 'ar' ?
                 "تم استلام إيصال الدفع بنجاح. جاري المراجعة وسيتم إرسال السيرة الذاتية لبريدك الإلكتروني بعد الموافقة." :
                 "Payment receipt received successfully. Review in progress. The CV will be sent to your email after approval.");
             setTimeout(() => {
-                closeQrPaymentPopup();
+                closeQrPaymentPopup(); 
                 qrPaymentResultDiv.textContent = '';
             }, 5000);
         } else {
             qrPaymentResultDiv.style.color = "red";
             console.error('Error from Google Apps Script:', data.error || data.message);
             qrPaymentResultDiv.textContent = currentLang === 'ar' ?
-                `حدث خطأ: ${data.error || data.message || 'خطأ غير معروف'}` :
+                `حدث خطأ: ${data.error || data.message || 'خطأ غير معروف'}` : 
                 `Error: ${data.error || data.message || 'Unknown error'}`;
         }
 
@@ -1769,7 +2003,6 @@ async function submitPaymentProof(event) {
             "An error occurred connecting to the server أو processing payment.";
     }
 }
-
 
 /************************************************
  * دوال اختيار القالب (Template Selection)
