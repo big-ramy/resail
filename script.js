@@ -1453,7 +1453,6 @@ async function generateAndDownloadPDF_html2pdf() {
 }
 
 async function captureCVasPDF(cvContainer, downloadPdf = false) {
-    const cvContainer = document.getElementById('cv-container');
 
 
 
