@@ -1200,8 +1200,7 @@ function outsideClickQrPayment(e) {
 
 // دالة جديدة لإنشاء وتنزيل السيرة الذاتية بصيغة PDF باستخدام html2pdf.js
 // دالة لإنشاء وتنزيل السيرة الذاتية بصيغة PDF باستخدام html2pdf.js
-async function generateAndDownloadPDF_html2pdf() {
-    // الحصول على حاوية السيرة الذاتية
+async function generateAndDownloadPDF_html2pdf(downloadDirectly = true) {    // الحصول على حاوية السيرة الذاتية
     const cvContainer = document.getElementById('cv-container');
 
     // التأكد من وجود الحاوية
