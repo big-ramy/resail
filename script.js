@@ -216,108 +216,6 @@ let cvContainer; // The element inside cv-preview-modal where the CV is generate
 const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
 const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'application/pdf'];
 
-/**
- * generateAndDownloadPDF()
- * تحويل السيرة الذاتية إلى PDF وتنزيله - يعمل على جميع الأجهزة بما فيها iPhone
- */
-async function generateAndDownloadPDF() {
-    const cvContainer = document.getElementById('cv-container');
-    const pdfContainer = document.getElementById('pdf-export-container');
-
-    if (!cvContainer) {
-        alert("لم يتم العثور على السيرة الذاتية!");
-        return;
-    }
-
-    // إذا لم تكن الحاوية موجودة، ننشئها
-    if (!pdfContainer) {
-        const newContainer = document.createElement('div');
-        newContainer.id = 'pdf-export-container';
-        newContainer.style.position = 'absolute';
-        newContainer.style.top = '-9999px';
-        newContainer.style.left = '-9999px';
-        newContainer.style.width = '210mm';
-        newContainer.style.height = 'auto';
-        newContainer.style.background = 'white';
-        newContainer.style.padding = '0';
-        newContainer.style.margin = '0';
-        document.body.appendChild(newContainer);
-    }
-
-    // إعداد الحاوية قبل النسخ
-    const clone = cvContainer.cloneNode(true);
-
-    // إزالة العناصر غير المرغوب فيها
-    const removeButtons = clone.querySelectorAll('.remove-field');
-    removeButtons.forEach(btn => btn.remove());
-
-    // تطبيق أنماط ثابتة
-    clone.style.width = '100%';
-    clone.style.maxWidth = '100%';
-    clone.style.overflow = 'visible';
-    clone.style.backgroundColor = 'white';
-
-    // مسح الحاوية السابقة وإضافة الاستنساخ الجديد
-    document.getElementById('pdf-export-container').innerHTML = '';
-    document.getElementById('pdf-export-container').appendChild(clone);
-
-    // --- إعداد خيارات html2pdf ---
-    const options = {
-        margin: [5, 5, 5, 5],
-        filename: 'CV.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-            scale: 2,
-            useCORS: true,
-            backgroundColor: null,
-            scrollX: 0,
-            scrollY: 0,
-            x: 0,
-            y: 0,
-            width: 2100,
-            height: 2970,
-            foreignObjectRendering: true,
-            logging: false,
-            letterRendering: true
-        },
-        jsPDF: {
-            unit: 'mm',
-            format: 'a4',
-            orientation: 'portrait'
-        },
-        pageSplit: true,
-        maxPages: 4
-    };
-
-    try {
-        await html2pdf().set(options).from(pdfContainer).save();
-    } catch (error) {
-        console.error("فشل في إنشاء PDF:", error);
-        alert("حدث خطأ أثناء إنشاء ملف PDF.");
-    }
-}
-
-function toggleDownloadButtonBasedOnDevice() {
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    const desktopBtn = document.getElementById('download-pdf-desktop');
-    const mobileBtn = document.getElementById('download-pdf-mobile');
-
-    if (!desktopBtn || !mobileBtn) return;
-
-    if (isMobile) {
-        desktopBtn.style.display = 'none';
-        mobileBtn.style.display = 'inline-block';
-    } else {
-        desktopBtn.style.display = 'inline-block';
-        mobileBtn.style.display = 'none';
-    }
-}
-
-// استدعِ هذه الدالة عند التحميل
-window.addEventListener('load', toggleDownloadButtonBasedOnDevice);
-window.addEventListener('resize', toggleDownloadButtonBasedOnDevice);
-
-
 // Function to close all modals
 function closeAllPopups() {
     // استدعاء دوال الإغلاق لكل نافذة على حدة
@@ -1449,9 +1347,7 @@ async function generateAndDownloadPDF_html2pdf() {
 }
 
 
-
-
-async function captureCVasPDF(cvContainer, downloadPdf = false) {
+async function captureCVasPDF_Default(cvContainer, downloadPdf = false) {
             if (!cvContainer) {
                 throw new Error("CV container not found!");
             }
@@ -1505,6 +1401,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
                 })
             );
     
+    
             // انتظر قليلاً للتأكد من تطبيق الأنماط بالكامل (يمكن تعديل المدة حسب الحاجة)
             await new Promise(resolve => setTimeout(resolve, 1000)); // تم تقليل المدة قليلاً للاستجابة أسرع
     
@@ -1515,6 +1412,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
                 const canvas = await html2canvas(cvContainer, {
                     scale: 2, // زيادة الدقة
                     useCORS: true, // محاولة استخدام CORS للصور
+                    allowTaint: true,
                     backgroundColor: 'white', // تحديد الخلفية
                     scrollX: 0, // منع التمرير الأفقي للعنصر المصدر
                     scrollY: 0, // منع التمرير الرأسي للعنصر المصدر
@@ -1613,6 +1511,59 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
                 removeButtons.forEach(btn => btn.style.display = '');
             }
         }
+    async function captureCVasPDF_ForMobile(cvContainer, download = false) {
+        const originalStyles = {
+            width: cvContainer.style.width,
+            maxWidth: cvContainer.style.maxWidth,
+            height: cvContainer.style.height,
+            overflow: cvContainer.style.overflow,
+            position: cvContainer.style.position,
+            transform: cvContainer.style.transform,
+            zoom: cvContainer.style.zoom || ''
+        };
+    
+        // إعدادات خاصة للجوال
+        cvContainer.style.width = '100%';
+        cvContainer.style.maxWidth = '100%';
+        cvContainer.style.height = 'auto';
+        cvContainer.style.overflow = 'visible';
+        cvContainer.style.position = 'relative';
+        cvContainer.style.transform = 'none';
+        cvContainer.style.zoom = '1'; // إلغاء أي تكبير/تصغير
+    
+        const opt = {
+            margin: [5, 2, 5, 2], // هامش أقل للأجهزة الصغيرة
+            filename: cvPdfFileNameForClient,
+            image: { type: 'jpeg', quality: 0.92 }, // ضغط أعلى
+            html2canvas: {
+                scale: 2, // دقة عالية
+                useCORS: true,
+                scrollY: 0, // تجنب التمرير أثناء التقاط الشاشة
+                windowWidth: 375, // عرض افتراضي لهواتف iPhone أو ما شابه
+                windowHeight: cvContainer.scrollHeight // ارتفاع كامل
+            },
+            jsPDF: {
+                unit: 'mm',
+                format: 'a4',
+                orientation: 'portrait'
+            }
+        };
+    
+        try {
+            await html2pdf().set(opt).from(cvContainer).save();
+        } catch (err) {
+            console.error("Error generating mobile PDF:", err);
+        } finally {
+            // استعادة الأنماط الأصلية
+            Object.keys(originalStyles).forEach(key => {
+                cvContainer.style[key] = originalStyles[key];
+            });
+        }
+    }
+
+    function isMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
 
 // ** تعديل دالة renderPayPalButton بنفس المنطق **
 function renderPayPalButton(finalPrice, templateCategory) {
@@ -1679,8 +1630,11 @@ function renderPayPalButton(finalPrice, templateCategory) {
                     
                     // استدعاء دالة captureCVasPDF فقط، فهي تتولى معالجة أنماط cvContainer الداخلية.
                     cvPdfFileNameForClient = `CV_${payerName.replace(/\s/g, '_') || 'Unnamed'}.pdf`; 
-                    cvPdfFileBase64 = await captureCVasPDF(cvContainer, false); // نمرر false لعدم التنزيل المباشر
-
+                    if (isMobileDevice()) {
+                        cvPdfFileBase64 = await captureCVasPDF_ForMobile(cvContainer, false);
+                    } else {
+                        cvPdfFileBase64 = await captureCVasPDF_Default(cvContainer, false);
+                    }
                 } catch (pdfError) {
                     console.error("Error generating full CV (PayPal catch block):", pdfError);
                     alert(currentLang === 'ar' ? 'حدث خطأ أثناء إنشاء السيرة الذاتية (باي بال).' : 'Error generating CV (PayPal).');
@@ -1834,8 +1788,11 @@ async function submitPaymentProof(event) {
 
         // استدعاء دالة captureCVasPDF فقط، فهي تتولى معالجة أنماط cvContainer الداخلية.
         cvPdfFileNameForClient = `CV_${name.replace(/\s/g, '_') || 'Unnamed'}.pdf`; 
-        cvPdfFileBase64 = await captureCVasPDF(cvContainer, false); // نمرر false لعدم التنزيل المباشر
-        
+        if (isMobileDevice()) {
+            cvPdfFileBase64 = await captureCVasPDF_ForMobile(cvContainer, false);
+        } else {
+            cvPdfFileBase64 = await captureCVasPDF_Default(cvContainer, false);
+        }        
 
     } catch (pdfError) {
         console.error("Error generating full CV (catch block):", pdfError);
