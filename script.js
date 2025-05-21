@@ -1231,21 +1231,21 @@ async function generateAndDownloadPDF_html2pdf(downloadDirectly = true) {
     const originalScrollTop = cvContainer.scrollTop; // حفظ موضع التمرير
 
     // تطبيق الأنماط المؤقتة لـ html2pdf لضمان التقاط صحيح بحجم A4
-    cvContainer.style.width = '210mm'; /* A4 width */
-    cvContainer.style.height = 'auto'; /* ارتفاع تلقائي ليشمل كل المحتوى */
+    cvContainer.style.width = '750px'; // العرض 100% داخل الحاوية الأبوية (#cv-preview-area)
+    cvContainer.style.height = 'auto'; // ارتفاع تلقائي ليشمل كل المحتوى
     cvContainer.style.maxHeight = 'none'; // إزالة أي حد أقصى للارتفاع
-    cvContainer.style.overflow = 'visible'; // عرض كل المحتوى المخفي
-    cvContainer.style.overflowY = 'visible'; // عرض كل المحتوى المخفي رأسياً
-    cvContainer.style.backgroundColor = 'white'; // خلفية بيضاء واضحة
-    cvContainer.style.position = 'absolute'; // إزالة العنصر من تدفق المستند العادي
-    cvContainer.style.top = '0'; // يمكن إبقاؤها 0 أو وضعها سالبة
-    cvContainer.style.left = '-9999px'; // **التعديل الرئيسي: نقل العنصر خارج الشاشة لليسار**
-    cvContainer.style.zIndex = '-1'; // **التعديل الرئيسي: وضعه خلف جميع العناصر الأخرى**
-    cvContainer.style.transform = 'scale(1)'; // **مهم: إلغاء أي تحجيم (scale) مطبق للعرض**
-    cvContainer.style.display = 'block'; // التأكد من عرضه لـ html2canvas
+    cvContainer.style.overflow = 'visible'; // عرض كامل المحتوى
+    cvContainer.style.overflowY = 'visible'; // عرض كامل المحتوى رأسياً
+    cvContainer.style.backgroundColor = 'white'; // خلفية بيضاء للـ PDF
+    // إعادة تعيين خصائص التموضع لضمان أنه في التدفق الطبيعي
+    cvContainer.style.position = ''; // الوضع الافتراضي (static)
+    cvContainer.style.top = ''; // مسح القيمة
+    cvContainer.style.left = ''; // مسح القيمة
+    cvContainer.style.zIndex = ''; // مسح القيمة
+    cvContainer.style.transform = ''; // مسح القيمة
+    cvContainer.style.display = 'block'; // التأكد من عرضه
     cvContainer.style.padding = '0'; // إزالة أي padding خاص بالعنصر نفسه
     cvContainer.style.margin = '0'; // إزالة أي margin خاص بالعنصر نفسه
-    cvContainer.style.boxShadow = 'none'; // إزالة الظل لتصوير نظيف
 
     // إخفاء أزرار الحذف
     const removeButtons = cvContainer.querySelectorAll('.remove-field');
