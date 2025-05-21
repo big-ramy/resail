@@ -2393,6 +2393,51 @@ body[dir="ltr"] .qr-payment-inputs-scroll {
     }
 }
 
+/* --- تصميم عام للخطوط على الجوال --- */
+@media only screen and (max-width: 768px) {
+    body,
+    #cv-container,
+    .cv-section,
+    .cv-contact-info,
+    .cv-section-title,
+    .cv-experience-item,
+    .cv-education-item,
+    .cv-skill-list,
+    .cv-language-list {
+        font-size: 14px !important;
+        line-height: 1.5;
+    }
+
+    .cv-section-title {
+        font-size: 16px !important;
+        margin-bottom: 8px;
+    }
+
+    .cv-contact-item {
+        font-size: 13px !important;
+    }
+
+    .cv-profile-pic img {
+        width: 100%;
+        height: auto;
+    }
+
+    .cv-standard-layout,
+    .cv-professional-layout,
+    .cv-normal-layout,
+    .cv-ast-layout {
+        padding: 10px;
+        flex-direction: column;
+    }
+
+    .cv-sidebar,
+    .cv-main-content {
+        width: 100% !important;
+        max-width: 100%;
+        margin: 0;
+    }
+}
+
 /* Responsive adjustments for modals */
 @media (max-width: 500px) {
     .popup-box {
