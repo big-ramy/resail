@@ -216,6 +216,108 @@ let cvContainer; // The element inside cv-preview-modal where the CV is generate
 const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
 const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'application/pdf'];
 
+/**
+ * generateAndDownloadPDF()
+ * تحويل السيرة الذاتية إلى PDF وتنزيله - يعمل على جميع الأجهزة بما فيها iPhone
+ */
+async function generateAndDownloadPDF() {
+    const cvContainer = document.getElementById('cv-container');
+    const pdfContainer = document.getElementById('pdf-export-container');
+
+    if (!cvContainer) {
+        alert("لم يتم العثور على السيرة الذاتية!");
+        return;
+    }
+
+    // إذا لم تكن الحاوية موجودة، ننشئها
+    if (!pdfContainer) {
+        const newContainer = document.createElement('div');
+        newContainer.id = 'pdf-export-container';
+        newContainer.style.position = 'absolute';
+        newContainer.style.top = '-9999px';
+        newContainer.style.left = '-9999px';
+        newContainer.style.width = '210mm';
+        newContainer.style.height = 'auto';
+        newContainer.style.background = 'white';
+        newContainer.style.padding = '0';
+        newContainer.style.margin = '0';
+        document.body.appendChild(newContainer);
+    }
+
+    // إعداد الحاوية قبل النسخ
+    const clone = cvContainer.cloneNode(true);
+
+    // إزالة العناصر غير المرغوب فيها
+    const removeButtons = clone.querySelectorAll('.remove-field');
+    removeButtons.forEach(btn => btn.remove());
+
+    // تطبيق أنماط ثابتة
+    clone.style.width = '100%';
+    clone.style.maxWidth = '100%';
+    clone.style.overflow = 'visible';
+    clone.style.backgroundColor = 'white';
+
+    // مسح الحاوية السابقة وإضافة الاستنساخ الجديد
+    document.getElementById('pdf-export-container').innerHTML = '';
+    document.getElementById('pdf-export-container').appendChild(clone);
+
+    // --- إعداد خيارات html2pdf ---
+    const options = {
+        margin: [5, 5, 5, 5],
+        filename: 'CV.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: null,
+            scrollX: 0,
+            scrollY: 0,
+            x: 0,
+            y: 0,
+            width: 2100,
+            height: 2970,
+            foreignObjectRendering: true,
+            logging: false,
+            letterRendering: true
+        },
+        jsPDF: {
+            unit: 'mm',
+            format: 'a4',
+            orientation: 'portrait'
+        },
+        pageSplit: true,
+        maxPages: 4
+    };
+
+    try {
+        await html2pdf().set(options).from(pdfContainer).save();
+    } catch (error) {
+        console.error("فشل في إنشاء PDF:", error);
+        alert("حدث خطأ أثناء إنشاء ملف PDF.");
+    }
+}
+
+function toggleDownloadButtonBasedOnDevice() {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const desktopBtn = document.getElementById('download-pdf-desktop');
+    const mobileBtn = document.getElementById('download-pdf-mobile');
+
+    if (!desktopBtn || !mobileBtn) return;
+
+    if (isMobile) {
+        desktopBtn.style.display = 'none';
+        mobileBtn.style.display = 'inline-block';
+    } else {
+        desktopBtn.style.display = 'inline-block';
+        mobileBtn.style.display = 'none';
+    }
+}
+
+// استدعِ هذه الدالة عند التحميل
+window.addEventListener('load', toggleDownloadButtonBasedOnDevice);
+window.addEventListener('resize', toggleDownloadButtonBasedOnDevice);
+
+
 // Function to close all modals
 function closeAllPopups() {
     // استدعاء دوال الإغلاق لكل نافذة على حدة
@@ -1346,106 +1448,7 @@ async function generateAndDownloadPDF_html2pdf() {
     }
 }
 
-/**
- * generateAndDownloadPDF()
- * تحويل السيرة الذاتية إلى PDF وتنزيله - يعمل على جميع الأجهزة بما فيها iPhone
- */
-async function generateAndDownloadPDF() {
-    const cvContainer = document.getElementById('cv-container');
-    const pdfContainer = document.getElementById('pdf-export-container');
 
-    if (!cvContainer) {
-        alert("لم يتم العثور على السيرة الذاتية!");
-        return;
-    }
-
-    // إذا لم تكن الحاوية موجودة، ننشئها
-    if (!pdfContainer) {
-        const newContainer = document.createElement('div');
-        newContainer.id = 'pdf-export-container';
-        newContainer.style.position = 'absolute';
-        newContainer.style.top = '-9999px';
-        newContainer.style.left = '-9999px';
-        newContainer.style.width = '210mm';
-        newContainer.style.height = 'auto';
-        newContainer.style.background = 'white';
-        newContainer.style.padding = '0';
-        newContainer.style.margin = '0';
-        document.body.appendChild(newContainer);
-    }
-
-    // إعداد الحاوية قبل النسخ
-    const clone = cvContainer.cloneNode(true);
-
-    // إزالة العناصر غير المرغوب فيها
-    const removeButtons = clone.querySelectorAll('.remove-field');
-    removeButtons.forEach(btn => btn.remove());
-
-    // تطبيق أنماط ثابتة
-    clone.style.width = '100%';
-    clone.style.maxWidth = '100%';
-    clone.style.overflow = 'visible';
-    clone.style.backgroundColor = 'white';
-
-    // مسح الحاوية السابقة وإضافة الاستنساخ الجديد
-    document.getElementById('pdf-export-container').innerHTML = '';
-    document.getElementById('pdf-export-container').appendChild(clone);
-
-    // --- إعداد خيارات html2pdf ---
-    const options = {
-        margin: [5, 5, 5, 5],
-        filename: 'CV.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-            scale: 2,
-            useCORS: true,
-            backgroundColor: null,
-            scrollX: 0,
-            scrollY: 0,
-            x: 0,
-            y: 0,
-            width: 2100,
-            height: 2970,
-            foreignObjectRendering: true,
-            logging: false,
-            letterRendering: true
-        },
-        jsPDF: {
-            unit: 'mm',
-            format: 'a4',
-            orientation: 'portrait'
-        },
-        pageSplit: true,
-        maxPages: 4
-    };
-
-    try {
-        await html2pdf().set(options).from(pdfContainer).save();
-    } catch (error) {
-        console.error("فشل في إنشاء PDF:", error);
-        alert("حدث خطأ أثناء إنشاء ملف PDF.");
-    }
-}
-
-function toggleDownloadButtonBasedOnDevice() {
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    const desktopBtn = document.getElementById('download-pdf-desktop');
-    const mobileBtn = document.getElementById('download-pdf-mobile');
-
-    if (!desktopBtn || !mobileBtn) return;
-
-    if (isMobile) {
-        desktopBtn.style.display = 'none';
-        mobileBtn.style.display = 'inline-block';
-    } else {
-        desktopBtn.style.display = 'inline-block';
-        mobileBtn.style.display = 'none';
-    }
-}
-
-// استدعِ هذه الدالة عند التحميل
-window.addEventListener('load', toggleDownloadButtonBasedOnDevice);
-window.addEventListener('resize', toggleDownloadButtonBasedOnDevice);
 
 
 async function captureCVasPDF(cvContainer, downloadPdf = false) {
