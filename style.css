@@ -178,23 +178,59 @@ body[dir="ltr"] .dropdown-menu {
     display: flex; /* Show the modal */
 }
 
-/* Style for the modal content box */
+/* New general page styling */
+.page-section {
+    display: none; /* Hidden by default */
+    min-height: calc(100vh - 100px); /* Adjust based on navbar/footer height */
+    padding: 20px; /* Add padding for content */
+    background-color: #f7f9fc; /* Match body background or your preference */
+}
+
+.page-section.active-page {
+    display: block; /* Show the active page */
+}
+
+/* Adjustments for containers within pages */
+.page-section .container {
+    background-color: #fff; /* White background for actual content within page */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* The old modal-content-container is now just the direct content of the page section's container */
+/* So, the scrolling is handled by the overall page section if it's too tall */
+.modal-content-container { /* This class is now obsolete in index.html, can be removed if not used */
+    /* remove most styles, or ensure it's simple padding/margin */
+    padding-right: 15px; /* Add padding for scrollbar in RTL */
+    margin-bottom: 20px; /* Space below content before buttons */
+    box-sizing: border-box;
+}
+
+body[dir="ltr"] .modal-content-container {
+    padding-right: 0;
+    padding-left: 15px; /* Add padding for scrollbar in LTR */
+}
+
+/* Modify popup-box to be a page content wrapper */
 .popup-box {
-    position: relative;
+    position: relative; /* Keep this if you need internal absolute positioning */
     background-color: #fff;
     padding: 30px;
     border-radius: 10px;
-    max-width: 95%; /* Adjusted max-width for better responsiveness */
-    width: 100%; /* Set a fixed width */
-    height: 100%;
+    max-width: 95%;
+    width: 100%;
+    min-height: 80vh; /* Ensure it takes up vertical space */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    animation: popupFade 0.4s ease;
+    /* REMOVE animation */
+    /* animation: popupFade 0.4s ease; */
     box-sizing: border-box;
-    margin: 20px auto; /* Center the modal box vertically and horizontally */
-    max-height: calc(100vh - 40px); /* Max height based on viewport, leaving some margin */
-    display: flex;
-    flex-direction: column;
-    overflow-y: hidden; /* Hide overflow of popup-box itself, modal-content-container will scroll */
+    margin: 20px auto; /* Center the page content */
+    /* REMOVE these as height will be natural */
+    /* max-height: calc(100vh - 40px); */
+    /* display: flex; */
+    /* flex-direction: column; */
+    /* overflow-y: hidden; */
 }
 
 /* Style for larger preview modal box */
@@ -286,11 +322,19 @@ body[dir="ltr"] #cv-builder-modal #template-selection-step {
 
 
 /* Ensure the active step inside the CV Builder Modal is displayed */
-/* This rule makes the active step visible */
+/* These rules are no longer needed as data-entry-step and template-selection-step are not inside a modal anymore */
+#cv-builder-modal #data-entry-step,
+#cv-builder-modal #template-selection-step {
+    display: none;
+    padding-right: 15px;
+    box-sizing: border-box;
+}
+
 #cv-builder-modal #data-entry-step.active,
 #cv-builder-modal #template-selection-step.active {
     display: block;
 }
+
 
 /* --- CV Builder Form Styles --- */
 .form-group {
@@ -1280,7 +1324,7 @@ body[dir="ltr"] .ast-layout .cv-sidebar .cv-contact-item i {
     padding: 20px; /* Add some padding around the whole CV */
     background-color: #ffffff; /* Ensure a white background by default */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for a lifted effect */
-    max-width: 800px; /* Limit max width for better readability on wide screens */
+    max-width: 800px!important; /* Limit max width for better readability on wide screens */
     margin: 20px auto; /* Center the CV on the page */
     border-radius: 8px; /* Rounded corners for the main container */
 }
@@ -2154,44 +2198,33 @@ body[dir="ltr"] .ast-layout .cv-sidebar .cv-contact-item i {
     font-family: 'Arial', sans-serif; /* Note: You specified Arial here, ensure it's intended if not matching main sidebar rule */
 }
 
-/* Styles for printing only modal content */
+/* Print styles */
 @media print {
-    /* Hide everything that's not the CV preview modal */
-    body {
+    /* Hide everything that's not the CV preview page */
+    body > *:not(#main-content-area) { /* Hide navbar, footer directly if not in #main-content-area */
         display: none !important;
     }
 
-    /* Ensure the specific modal being printed is visible */
-    #cv-preview-modal {
-        position: static !important; /* Remove fixed positioning */
-        display: block !important; /* Force display */
-        background-color: transparent !important; /* Remove background overlay */
+    #main-content-area > .page-section:not(#cv-preview-page) {
+        display: none !important; /* Hide all other page sections */
+    }
+
+    #cv-preview-page {
+        position: static !important;
+        display: block !important;
+        background-color: transparent !important;
         overflow: visible !important;
         padding: 0 !important;
         margin: 0 !important;
         box-shadow: none !important;
-        width: auto !important; /* Allow it to take necessary width */
-        height: auto !important; /* Allow it to take necessary height */
-        max-height: none !important; /* Remove max height */
+        width: auto !important;
+        height: auto !important;
+        max-height: none !important;
     }
 
-    /* Hide modal specific elements like close button and navigation/payment buttons */
-    #cv-preview-modal .popup-close,
-    #cv-preview-modal .d-flex.justify-content-center.mt-4 {
+    /* Hide buttons/navigation on the CV preview page during print */
+    #cv-preview-page .d-flex.justify-content-center.mt-4 { /* This is the button row */
         display: none !important;
-    }
-
-    /* Ensure the modal content container is visible and its content is visible */
-    #cv-preview-modal .popup-box {
-        width: auto !important; /* Allow popup-box to take necessary width */
-        max-width: none !important; /* Remove max width */
-        height: auto !important; /* Allow popup-box to take necessary height */
-        max-height: none !important; /* Remove max height */
-        overflow-y: visible !important; /* Ensure content is not hidden */
-        padding: 0 !important; /* Remove padding from popup-box */
-        margin: 0 !important; /* Remove margin from popup-box */
-        box-shadow: none !important;
-        display: block !important; /* Ensure it's displayed as a block */
     }
 
     /* Ensure the CV preview area is visible and printable */
@@ -2203,10 +2236,10 @@ body[dir="ltr"] .ast-layout .cv-sidebar .cv-contact-item i {
         background-color: transparent !important;
         overflow: visible !important;
         max-height: none !important;
-        width: auto !important; /* Allow it to take necessary width */
-        height: auto !important; /* Allow it to take necessary height */
-        justify-content: flex-start !important; /* Align to start for print */
-        align-items: flex-start !important; /* Align to start for print */
+        width: auto !important;
+        height: auto !important;
+        justify-content: flex-start !important;
+        align-items: flex-start !important;
     }
 
     /* Ensure the CV content inside the preview area is displayed correctly for print */
@@ -2220,83 +2253,97 @@ body[dir="ltr"] .ast-layout .cv-sidebar .cv-contact-item i {
         page-break-after: always; /* Ensure each CV instance is on a new page if printing multiple */
     }
 
-    /* Adjustments for multi-column layouts during print */
-    .cv-two-column-layout,
-    .cv-professional-layout,
-    .ast-layout { /* Added ast-layout */
-        display: flex !important; /* Force flex for print to manage columns */
-        flex-direction: row !important; /* Maintain columns side-by-side */
-        page-break-inside: avoid; /* Avoid breaking the layout across pages */
-        gap: 30px !important; /* Restore gap for columns */
-    }
+    /* ... rest of your existing print styles for cv-container and layouts ... */
+     .cv-two-column-layout,
+     .cv-professional-layout,
+     .ast-layout {
+         flex-direction: row !important; /* Maintain columns side-by-side */
+         grid-template-columns: 300px 1fr !important; /* Ensure grid columns if applicable */
+         grid-template-rows: auto 1fr !important;
+         grid-template-areas:
+             "header header"
+             "sidebar main" !important;
+         gap: 30px !important;
+         page-break-inside: avoid;
+     }
 
-    .cv-professional-layout[dir="ltr"],
-    .ast-layout[dir="ltr"] { /* Added ast-layout */
-        flex-direction: row-reverse !important; /* Correct column order for LTR */
-    }
+     .cv-professional-layout[dir="ltr"],
+     .ast-layout[dir="ltr"] {
+         grid-template-columns: 250px 1fr !important; /* Adjust for LTR sidebar width */
+         grid-template-areas:
+             "header header"
+             "sidebar main" !important;
+     }
+     /* Ensure sidebar position is correct for RTL/LTR print */
+     .cv-two-column-layout[dir="rtl"] .cv-sidebar,
+     .ast-layout[dir="rtl"] .cv-sidebar { order: 1; } /* Sidebar on right in RTL */
+     .cv-two-column-layout[dir="rtl"] .cv-main-content,
+     .ast-layout[dir="rtl"] .cv-main-content { order: 0; } /* Main content on left in RTL */
 
-    .cv-sidebar,
-    .cv-main-content {
-        overflow: visible !important; /* Ensure all content in columns is visible */
-        page-break-inside: avoid; /* Avoid breaking content within columns */
-        padding: 0 !important; /* Remove padding inside sidebar/main for print, let inner sections handle it */
-        width: auto !important; /* Allow sidebar/main to take necessary width */
-        flex-shrink: 0 !important; /* Prevent shrinking */
-    }
+     .cv-two-column-layout[dir="ltr"] .cv-sidebar,
+     .ast-layout[dir="ltr"] .cv-sidebar { order: 0; } /* Sidebar on left in LTR */
+     .cv-two-column-layout[dir="ltr"] .cv-main-content,
+     .ast-layout[dir="ltr"] .cv-main-content { order: 1; } /* Main content on right in LTR */
 
-    .cv-two-column-layout .cv-sidebar,
-    .ast-layout .cv-sidebar { /* Added ast-layout */
-        width: 300px !important; /* Maintain sidebar width in two-column layouts */
-    }
+     .cv-sidebar,
+     .cv-main-content {
+         overflow: visible !important;
+         page-break-inside: avoid;
+         padding: 0 !important;
+         width: auto !important;
+         flex-shrink: 0 !important;
+     }
 
+     .cv-two-column-layout .cv-sidebar,
+     .ast-layout .cv-sidebar {
+         width: 300px !important;
+     }
 
-    /* Restore padding within sections inside sidebar/main */
-    .cv-sidebar .cv-section,
-    .cv-main-content .cv-section {
-        padding: 15px !important;
-        background-color: #f8f9fa !important;
-    }
+     .cv-sidebar .cv-section,
+     .cv-main-content .cv-section {
+         padding: 15px !important;
+         background-color: #f8f9fa !important;
+     }
 
-    .cv-sidebar .cv-section.no-padding,
-    .cv-main-content .cv-section.no-padding {
-        padding: 0 !important;
-        background-color: transparent !important;
-    }
+     .cv-sidebar .cv-section.no-padding,
+     .cv-main-content .cv-section.no-padding {
+         padding: 0 !important;
+         background-color: transparent !important;
+     }
 
-    /* Restore text alignment for print */
-    .cv-content,
-    .cv-sidebar,
-    .cv-main-content,
-    .cv-section {
-        text-align: inherit !important; /* Inherit the direction's default alignment */
-    }
+     .cv-content,
+     .cv-sidebar,
+     .cv-main-content,
+     .cv-section {
+         text-align: inherit !important;
+     }
 
-    .cv-header.centered,
-    .cv-header.professional-layout,
-    .cv-sidebar .cv-section-title,
-    .cv-sidebar .cv-skill-item {
-        text-align: center !important; /* Maintain explicit centering where intended */
-    }
+     .cv-header.centered,
+     .cv-header.professional-layout,
+     .cv-sidebar .cv-section-title,
+     .cv-sidebar .cv-skill-item {
+         text-align: center !important;
+     }
 
-    .cv-contact-item {
-        justify-content: inherit !important; /* Allow contact items to align with parent */
-    }
+     .cv-contact-item {
+         justify-content: inherit !important;
+     }
 
-    .cv-sidebar .cv-contact-item {
-        justify-content: center !important; /* Explicitly center contact items in sidebar */
-    }
+     .cv-sidebar .cv-contact-item {
+         justify-content: center !important;
+     }
 
-    /* Adjustments for specific template styles during print */
-    .standard-layout.template5 .cv-sidebar {
-        border-right: none !important;
-        border-left: none !important;
-    } /* Remove border */
+     .standard-layout.template5 .cv-sidebar {
+         border-right: none !important;
+         border-left: none !important;
+     }
 
+}
 
-    /* Hide payment modals if they are triggered or visible during print attempt */
-    #payment-modal,
-    #qr-payment-popup {
-        display: none !important;
+/* Add/adjust responsive styles for general page content, not just CV */
+@media (max-width: 768px) {
+    .page-section .container {
+        padding: 20px; /* Smaller padding on small screens for all page content */
     }
 }
 
