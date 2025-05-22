@@ -888,10 +888,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         throw new Error("CV container not found!");
     }
 
-    // 1. الجزء الأول: حفظ الأنماط الأصلية
-    // تأكد من أن originalStyles يحفظ فقط الأنماط التي قد تكون متبقية من محاولات سابقة
-    // بما أننا سنجعل CV Container مخفيًا دائمًا بـ CSS، فإن معظم هذه الأنماط لن تكون مهمة للعرض
-    // ولكن نحفظها فقط لضمان عدم وجود تداخلات غير متوقعة.
+    // Preserve original styles for restoration
     const originalStyles = {
         width: cvContainer.style.width,
         height: cvContainer.style.height,
@@ -902,86 +899,111 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         left: cvContainer.style.left,
         zIndex: cvContainer.style.zIndex,
         transform: cvContainer.style.transform,
-        transformOrigin: cvContainer.style.transformOrigin,
         display: cvContainer.style.display,
         maxHeight: cvContainer.style.maxHeight,
         overflowY: cvContainer.style.overflowY,
         padding: cvContainer.style.padding,
         margin: cvContainer.style.margin,
-        visibility: cvContainer.style.visibility || '', // هام: حفظ visibility
-        // بما أن cv-container مخفي دائمًا، فإن أنماط الوالدين هذه تصبح أقل أهمية للتخزين
-        // لأننا لن نعتمد على رؤيتها قبل الالتقاط.
-        // لكن من الأفضل تركها في originalStyles فقط لضمان النظافة الشاملة
-        cvPreviewAreaDisplay: '', // لن نغير هذه لأنها ستكون مخفية
-        cvPreviewPageDisplay: '', // لن نغير هذه لأنها ستكون مخفية
+        zoom: cvContainer.style.zoom || '',
+        flexDirection: cvContainer.style.flexDirection || '',
+        gridTemplateColumns: cvContainer.style.gridTemplateColumns || '',
+        gridTemplateRows: cvContainer.style.gridTemplateRows || '',
+        gridTemplateAreas: cvContainer.style.gridTemplateAreas || '',
+        gap: cvContainer.style.gap || '',
+        justifyContent: cvContainer.style.justifyContent || '',
+        alignItems: cvContainer.style.alignItems || '',
+        textAlign: cvContainer.style.textAlign || '',
+        visibility: cvContainer.style.visibility || '',
+        // Saving parent's display properties for restoration
+        parentDisplay: cvContainer.parentElement ? cvContainer.parentElement.style.display : '',
+        grandParentDisplay: cvContainer.parentElement && cvContainer.parentElement.parentElement ? cvContainer.parentElement.parentElement.style.display : '',
+        // Capture maxWidth for cvContainer specifically
         maxWidth: cvContainer.style.maxWidth || ''
     };
     const originalScrollTop = cvContainer.scrollTop;
 
-    // --- 2. الجزء الثاني: تطبيق أنماط الالتقاط لـ A4 على العنصر المخفي ---
-    // هنا نضمن أن cvContainer هو بالضبط A4 وقابل للالتقاط
-    // لن نغير عرض cvPreviewArea أو cvPreviewPage، لأن cvContainer هو العنصر المخفي الذي نلتقطه.
+    // --- Apply temporary styles for capture ---
 
-    // 2.1. فرض أنماط A4 على cvContainer
-    cvContainer.style.width = '210mm'; // فرض عرض A4
-    cvContainer.style.minHeight = '297mm'; // فرض ارتفاع A4
-    cvContainer.style.height = 'auto'; // الارتفاع يتكيف إذا كان المحتوى يتجاوز صفحة
-    cvContainer.style.maxHeight = 'none'; // لا قيود على الارتفاع
-    cvContainer.style.overflow = 'visible'; // هام: تأكد أن html2canvas يرى كل المحتوى
-    cvContainer.style.overflowY = 'visible';
-    cvContainer.style.backgroundColor = 'white'; // خلفية بيضاء لـ PDF
-    cvContainer.style.position = 'absolute'; // هام: لإزالة العنصر من تدفق المستند
+    // 1. Ensure the CV preview area and its parent page are visible and correctly positioned for capture
+    const cvPreviewArea = document.getElementById('cv-preview-area');
+    if (cvPreviewArea) {
+        cvPreviewArea.style.display = 'block';
+        cvPreviewArea.style.justifyContent = 'flex-start'; // Align to top-left for consistent capture
+        cvPreviewArea.style.alignItems = 'flex-start'; // Align to top-left for consistent capture
+        cvPreviewArea.style.overflow = 'visible'; // Ensure no clipping
+        cvPreviewArea.style.maxHeight = 'none'; // No height limits
+        cvPreviewArea.style.padding = '0'; // Remove padding from the area itself
+        cvPreviewArea.style.margin = '0'; // Remove margin from the area itself
+    }
+    const cvPreviewPage = document.getElementById('cv-preview-page');
+    if (cvPreviewPage) {
+        cvPreviewPage.style.display = 'block';
+        cvPreviewPage.style.padding = '0'; // Remove padding from the page itself
+        cvPreviewPage.style.margin = '0'; // Remove margin from the page itself
+        cvPreviewPage.style.overflow = 'visible'; // Ensure no clipping
+        cvPreviewPage.style.minHeight = 'auto'; // Let content define height
+    }
+
+    // 2. Set the cv-container to a reliable, fixed size (A4) and temporarily move it off-screen for clean capture
+    cvContainer.style.width = '210mm'; // Standard A4 width for PDF output
+    cvContainer.style.minHeight = '297mm'; // Standard A4 height (will expand if content is longer)
+    cvContainer.style.height = 'auto'; // Allow height to grow with content
+    cvContainer.style.maxHeight = 'none'; // Remove any max height constraints
+    cvContainer.style.overflow = 'visible'; // Ensure all content is rendered
+    cvContainer.style.overflowY = 'visible'; // Ensure vertical content is not hidden
+    cvContainer.style.backgroundColor = 'white'; // Explicit white background for PDF
+    cvContainer.style.position = 'absolute'; // Position absolute to remove from document flow for consistent capture
     cvContainer.style.top = '0';
-    cvContainer.style.left = '-9999px'; // هام: نقله خارج الشاشة للالتقاط
-    cvContainer.style.zIndex = '-1'; // هام: وضعه خلف العناصر الأخرى
-    cvContainer.style.transform = 'none'; // هام: إزالة أي تحويلات (مثل scale)
-    cvContainer.style.transformOrigin = 'center center'; // إعادة تعيين نقطة التحويل
-    cvContainer.style.display = 'block'; // هام: تأكد من عرضه (على الرغم من left -9999px)
-    cvContainer.style.padding = '0'; // لا حشو إضافي للالتقاط
-    cvContainer.style.margin = '0'; // لا هوامش
-    cvContainer.style.visibility = 'visible'; // هام: جعله مرئياً للالتقاط (مؤقتًا)
+    cvContainer.style.left = '-9999px'; // Temporarily move off-screen for clean capture without flicker
+    cvContainer.style.zIndex = '-1'; // Ensure it's behind other elements
+    cvContainer.style.transform = 'none'; // Remove any transforms
+    cvContainer.style.display = 'block'; // Ensure it's displayed
+    cvContainer.style.padding = '0'; // Remove any padding on the container itself
+    cvContainer.style.margin = '0'; // Remove any margin here, we'll restore original later
+    cvContainer.style.zoom = '1'; // Reset zoom property
 
-    // 2.2. تأكيد الاتجاه
+    // 3. Ensure direction is applied consistently (important for RTL layouts)
     cvContainer.style.direction = currentLang === 'ar' ? 'rtl' : 'ltr';
 
-    // 2.3. إخفاء أزرار الحذف
+    // 4. Temporarily hide elements that shouldn't be in the PDF (like "remove" buttons)
     const removeButtons = cvContainer.querySelectorAll('.remove-field');
     removeButtons.forEach(btn => btn.style.display = 'none');
 
-    // 2.4. الانتظار لتحميل الصور وتطبيق الأنماط (1.5 ثانية للاستقرار)
+    // 5. Wait for styles to apply and images to load. This is crucial for accurate capture.
     const images = cvContainer.querySelectorAll('img');
     await Promise.all(Array.from(images).map(img => {
         if (!img.complete) {
             return new Promise(resolve => {
                 img.onload = resolve;
-                img.onerror = resolve;
+                img.onerror = resolve; // Resolve even on error to avoid blocking
             });
         }
         return Promise.resolve();
     }));
-    await new Promise(resolve => setTimeout(resolve, 1500)); // زيادة الوقت إلى 1500ms
+    await new Promise(resolve => setTimeout(resolve, 500)); // Give browser time to render (adjust if needed)
 
     let pdfBase64 = null;
     try {
-        // 2.5. خيارات html2canvas و jsPDF (هنا نلتقط من الأبعاد الثابتة A4)
         const options = {
-            margin: [0, 0, 0, 0],
+            margin: [0, 0, 0, 0], // Zero margin for the PDF pages
             filename: 'CV.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
+            image: { type: 'jpeg', quality: 0.98 }, // JPEG for smaller file size, high quality
             html2canvas: {
-                scale: 2, // جودة الالتقاط (2 أو 3 جيد)
-                useCORS: true,
-                allowTaint: true,
-                backgroundColor: 'white',
-                logging: false,
-                letterRendering: true,
-                // الالتقاط من أبعاد العنصر (التي هي الآن A4)
-                x: cvContainer.offsetLeft, // سيعطي 0
-                y: cvContainer.offsetTop,  // سيعطي 0
-                width: cvContainer.offsetWidth, // سيعطي العرض الفعلي لـ 210mm
-                height: cvContainer.offsetHeight, // سيعطي الارتفاع الفعلي لـ 297mm (أو أكثر إذا المحتوى أطول)
+                scale: 2, // High resolution for text and images
+                useCORS: true, // Attempt to load cross-origin images (important for profile pics)
+                allowTaint: true, // Allow canvas to be "tainted" by images if CORS fails (might prevent data URL)
+                backgroundColor: 'white', // Explicit background color
+                logging: false, // Disable verbose logging from html2canvas
+                letterRendering: true, // Better text rendering
+                // Define the capture area relative to the document
+                x: cvContainer.offsetLeft, // Start capture from the CV container's left edge
+                y: cvContainer.offsetTop,  // Start capture from the CV container's top edge
+                width: cvContainer.offsetWidth, // Capture the full rendered width of the CV container
+                height: cvContainer.offsetHeight, // Capture the full rendered height
+                // Use scrollWidth/Height to capture all content, even if it's not currently visible in the viewport
                 windowWidth: cvContainer.scrollWidth,
                 windowHeight: cvContainer.scrollHeight,
+                // Setting scrollX/Y to 0 ensures it captures from the top-left of the content itself
                 scrollX: 0,
                 scrollY: 0,
             },
@@ -989,14 +1011,15 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
                 orientation: 'portrait',
                 unit: 'mm',
                 format: 'a4',
-                compress: true,
-                hotfixes: ['px_scaling'],
-                putOnlyUsedFonts: true,
-                floatPrecision: 16
+                compress: true, // Compress PDF
+                hotfixes: ['px_scaling'], // Apply fixes for pixel scaling issues
+                putOnlyUsedFonts: true, // Embed only used fonts to reduce file size
+                floatPrecision: 16 // More precise rendering
             },
+            // Configure page breaks: avoid breaking elements, but force a new page after the end marker
             pagebreak: {
-                mode: ['avoid-all', 'css'],
-                after: '.cv-end-marker'
+                mode: ['avoid-all', 'css'], // 'avoid-all' tries not to break elements, 'css' respects CSS page-break properties
+                after: '.cv-end-marker' // Ensure a page break after your "End of CV" marker
             }
         };
 
@@ -1006,6 +1029,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
             await html2pdfInstance.save();
         }
 
+        // To get Base64: First get as Blob, then convert Blob to Base64
         const pdfBlob = await html2pdfInstance.output('blob');
         const reader = new FileReader();
         pdfBase64 = await new Promise((resolve, reject) => {
@@ -1023,48 +1047,56 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         alert(currentLang === 'ar' ? 'حدث خطأ أثناء إنشاء ملف PDF.' : 'Error generating PDF file.');
         throw error;
     } finally {
-        // --- 3. الجزء الثالث: استعادة الأنماط الأصلية بعد الالتقاط ---
-        // هنا نقوم بإعادة جميع الأنماط إلى حالتها الأصلية (المخفية)
-
-        // أولاً: استعادة أنماط cvContainer
+        // --- Restore original styles ---
+        // Restore `cvContainer`'s specific styles first
         Object.keys(originalStyles).forEach(key => {
+            // Restore the original value, or set to empty string to revert to CSS default
             cvContainer.style[key] = originalStyles[key] !== null && originalStyles[key] !== undefined ? originalStyles[key] : '';
         });
 
-        // استعادة visibility بشكل صريح
-        cvContainer.style.visibility = originalStyles.visibility;
-        // استعادة display بشكل صريح (لإخفائه إن كان مخفياً)
-        cvContainer.style.display = originalStyles.display;
+        // Explicitly ensure margin is restored to allow centering by CSS
+        // If your CSS uses 'margin: auto;' this will restore it
+        cvContainer.style.margin = originalStyles.margin || '0 auto'; // Use '0 auto' if original was not set, to center
 
-        // ثانيًا: استعادة أنماط الآباء (cvPreviewArea و cvPreviewPage)
-        // بما أن cvContainer مخفي دائمًا، هذه الخطوات تصبح أقل أهمية
-        // للعرض الفعلي، لكنها ضرورية لاستعادة حالة DOM "النظيفة".
+        // Restore visibility explicitly
+        cvContainer.style.visibility = originalStyles.visibility;
+
+        // Restore parent displays LAST
+        // These elements also need their margin/padding/overflow restored if they were modified
         if (cvPreviewArea) {
-            cvPreviewArea.style.display = originalStyles.cvPreviewAreaDisplay !== null && originalStyles.cvPreviewAreaDisplay !== undefined ? originalStyles.cvPreviewAreaDisplay : '';
-            cvPreviewArea.style.justifyContent = originalStyles.cvPreviewAreaJustifyContent || '';
-            cvPreviewArea.style.alignItems = originalStyles.cvPreviewAreaAlignItems || '';
-            cvPreviewArea.style.overflow = originalStyles.cvPreviewAreaOverflow || '';
-            cvPreviewArea.style.maxHeight = originalStyles.cvPreviewAreaMaxHeight || '';
-            cvPreviewArea.style.padding = originalStyles.cvPreviewAreaPadding || '';
-            cvPreviewArea.style.margin = originalStyles.cvPreviewAreaMargin || '';
+            cvPreviewArea.style.display = originalStyles.parentDisplay !== null && originalStyles.parentDisplay !== undefined ? originalStyles.parentDisplay : '';
+            cvPreviewArea.style.justifyContent = originalStyles.justifyContent || '';
+            cvPreviewArea.style.alignItems = originalStyles.alignItems || '';
+            cvPreviewArea.style.overflow = originalStyles.overflow || '';
+            cvPreviewArea.style.maxHeight = originalStyles.maxHeight || '';
+            cvPreviewArea.style.padding = originalStyles.padding || '';
+            cvPreviewArea.style.margin = originalStyles.margin || '';
         }
         if (cvPreviewPage) {
-            cvPreviewPage.style.display = originalStyles.cvPreviewPageDisplay !== null && originalStyles.cvPreviewPageDisplay !== undefined ? originalStyles.cvPreviewPageDisplay : '';
-            cvPreviewPage.style.overflow = originalStyles.cvPreviewPageOverflow || '';
-            cvPreviewPage.style.minHeight = originalStyles.cvPreviewPageMinHeight || '';
-            cvPreviewPage.style.padding = originalStyles.cvPreviewPagePadding || '';
-            cvPreviewPage.style.margin = originalStyles.cvPreviewPageMargin || '';
+            cvPreviewPage.style.display = originalStyles.grandParentDisplay !== null && originalStyles.grandParentDisplay !== undefined ? originalStyles.grandParentDisplay : '';
+            cvPreviewPage.style.padding = originalStyles.padding || '';
+            cvPreviewPage.style.margin = originalStyles.margin || '';
+            cvPreviewPage.style.overflow = originalStyles.overflow || '';
+            cvPreviewPage.style.minHeight = originalStyles.minHeight || '';
         }
 
-        cvContainer.scrollTop = originalScrollTop; // استعادة موضع التمرير
 
-        // إعادة عرض أزرار "إزالة"
+        cvContainer.scrollTop = originalScrollTop; // Restore scroll position
+
+        // Re-display "remove" buttons
         removeButtons.forEach(btn => btn.style.display = '');
 
-        // بما أن المعاينة لم تعد تعتمد على cvContainer هذا، لا داعي لـ generateCV هنا
-        // generateCV(); // لا تستدعي generateCV هنا بعد الآن
+        // Important: After restoring styles, you might want to force a re-render of the CV
+        // if the current page is still the CV preview page.
+        // This is crucial for the visual display to snap back correctly.
+        // Calling generateCV() here is usually the safest bet for visual consistency.
+        // If the current page is 'cv-preview-page' after the capture, regenerate its content.
+        if (document.getElementById('cv-preview-page').classList.contains('active-page')) {
+            generateCV(); // This will rebuild the CV with correct display styles
+        }
     }
 }
+
 /**
  * Triggers the download of the CV as a PDF directly.
  */
