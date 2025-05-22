@@ -533,11 +533,10 @@ body[dir="ltr"] #cv-container.watermarked::before {
 
 /* Container for the main CV content (header + layout) */
 .cv-content {
-    flex-grow: 0 !important; /* اجعلها لا تتمدد إلا إذا كان هناك محتوى فعلي */
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-    padding: 0;
+    flex-grow: 1 !important; /* هذا مهم للحاوية الرئيسية لكي تتمدد */
+    height: auto !important;
+    overflow: visible !important;
+    page-break-inside: auto !important; /* السماح بالانقسام إذا لزم الأمر */
 }
 
 /* CV Header Styles - Enhanced Professionalism */
@@ -926,8 +925,10 @@ body[dir="ltr"] .cv-language-list li::before {
 .cv-two-column-layout,
 .cv-professional-layout,
 .ast-layout {
-    flex-grow: 1;
-    overflow: hidden;
+    flex-grow: 1 !important; /* اسمح له بالنمو داخل cv-content */
+    overflow: visible !important;
+    height: auto !important;
+    page-break-inside: auto !important; /* السماح بالانقسام */
     position: relative;
     display: flex; /* Ensure flex is applied by default for desktop */
     gap: 30px; /* Space between columns */
@@ -2360,7 +2361,8 @@ body[dir="ltr"] .qr-payment-inputs-scroll {
         display: flex !important; /* Ensure content within column flows vertically */
         flex-direction: column !important;
         flex-shrink: 0 !important; /* Prevent shrinking */
-        flex-grow: 0 !important; /* Don't grow by default, let content define size */
+        flex-grow: 1 !important; /* اجعل الأعمدة تتمدد لتملأ المساحة الرأسية المتاحة */
+        page-break-inside: auto !important; /* السماح بالانقسام داخل الأعمدة */
         background-color: inherit !important; /* Ensure background color is inherited or set by template */
         color: inherit !important; /* Ensure text color is inherited or set by template */
     }
