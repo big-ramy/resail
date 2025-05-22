@@ -980,7 +980,11 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         }
         return Promise.resolve();
     }));
-    await new Promise(resolve => setTimeout(resolve, 500)); // Give browser time to render (adjust if needed)
+    await new Promise(resolve => setTimeout(resolve, 800)); // **Increased delay for better rendering on mobile**
+
+    // Determine html2canvas scale factor dynamically for mobile performance
+    const isMobileDevice = /Mobi|Android/i.test(navigator.userAgent);
+    const scaleFactor = isMobileDevice ? 1.5 : 2; // **Reduced scale for mobile**
 
     let pdfBase64 = null;
     try {
@@ -989,7 +993,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
             filename: 'CV.pdf',
             image: { type: 'jpeg', quality: 0.98 }, // JPEG for smaller file size, high quality
             html2canvas: {
-                scale: 2, // High resolution for text and images
+                scale: scaleFactor, // **Apply dynamic scale factor**
                 useCORS: true, // Attempt to load cross-origin images (important for profile pics)
                 allowTaint: true, // Allow canvas to be "tainted" by images if CORS fails (might prevent data URL)
                 backgroundColor: 'white', // Explicit background color
@@ -1018,8 +1022,10 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
             },
             // Configure page breaks: avoid breaking elements, but force a new page after the end marker
             pagebreak: {
-                mode: ['avoid all', 'css'], // 'avoid-all' tries not to break elements, 'css' respects CSS page-break properties
-                after: '.cv-end-marker' // Ensure a page break after your "End of CV" marker
+                mode: ['avoid-all', 'css'], // 'avoid-all' tries not to break elements, 'css' respects CSS page-break properties
+                // Removed 'after: .cv-end-marker' from here.
+                // It's more reliable to let CSS `page-break-after` or `page-break-before`
+                // on relevant sections handle explicit page breaks.
             }
         };
 
@@ -1049,37 +1055,50 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     } finally {
         // --- Restore original styles ---
         // Restore `cvContainer`'s specific styles first
-        Object.keys(originalStyles).forEach(key => {
-            // Restore the original value, or set to empty string to revert to CSS default
-            cvContainer.style[key] = originalStyles[key] !== null && originalStyles[key] !== undefined ? originalStyles[key] : '';
-        });
-
-        // Explicitly ensure margin is restored to allow centering by CSS
-        // If your CSS uses 'margin: auto;' this will restore it
-        cvContainer.style.margin = originalStyles.margin || '0 auto'; // Use '0 auto' if original was not set, to center
-
-        // Restore visibility explicitly
+        // Simplified restoration for better performance
+        cvContainer.style.width = originalStyles.width;
+        cvContainer.style.height = originalStyles.height;
+        cvContainer.style.overflow = originalStyles.overflow;
+        cvContainer.style.backgroundColor = originalStyles.backgroundColor;
+        cvContainer.style.position = originalStyles.position;
+        cvContainer.style.top = originalStyles.top;
+        cvContainer.style.left = originalStyles.left;
+        cvContainer.style.zIndex = originalStyles.zIndex;
+        cvContainer.style.transform = originalStyles.transform;
+        cvContainer.style.display = originalStyles.display;
+        cvContainer.style.maxHeight = originalStyles.maxHeight;
+        cvContainer.style.overflowY = originalStyles.overflowY;
+        cvContainer.style.padding = originalStyles.padding;
+        cvContainer.style.margin = originalStyles.margin;
+        cvContainer.style.zoom = originalStyles.zoom;
+        cvContainer.style.flexDirection = originalStyles.flexDirection;
+        cvContainer.style.gridTemplateColumns = originalStyles.gridTemplateColumns;
+        cvContainer.style.gridTemplateRows = originalStyles.style.gridTemplateRows;
+        cvContainer.style.gridTemplateAreas = originalStyles.gridTemplateAreas;
+        cvContainer.style.gap = originalStyles.gap;
+        cvContainer.style.justifyContent = originalStyles.justifyContent;
+        cvContainer.style.alignItems = originalStyles.alignItems;
+        cvContainer.style.textAlign = originalStyles.textAlign;
         cvContainer.style.visibility = originalStyles.visibility;
+        cvContainer.style.maxWidth = originalStyles.maxWidth;
 
         // Restore parent displays LAST
-        // These elements also need their margin/padding/overflow restored if they were modified
         if (cvPreviewArea) {
-            cvPreviewArea.style.display = originalStyles.parentDisplay !== null && originalStyles.parentDisplay !== undefined ? originalStyles.parentDisplay : '';
-            cvPreviewArea.style.justifyContent = originalStyles.justifyContent || '';
-            cvPreviewArea.style.alignItems = originalStyles.alignItems || '';
-            cvPreviewArea.style.overflow = originalStyles.overflow || '';
-            cvPreviewArea.style.maxHeight = originalStyles.maxHeight || '';
-            cvPreviewArea.style.padding = originalStyles.padding || '';
-            cvPreviewArea.style.margin = originalStyles.margin || '';
+            cvPreviewArea.style.display = originalStyles.parentDisplay;
+            cvPreviewArea.style.justifyContent = ''; // Reset to default
+            cvPreviewArea.style.alignItems = '';    // Reset to default
+            cvPreviewArea.style.overflow = '';      // Reset to default
+            cvPreviewArea.style.maxHeight = '';     // Reset to default
+            cvPreviewArea.style.padding = '';       // Reset to default
+            cvPreviewArea.style.margin = '';        // Reset to default
         }
         if (cvPreviewPage) {
-            cvPreviewPage.style.display = originalStyles.grandParentDisplay !== null && originalStyles.grandParentDisplay !== undefined ? originalStyles.grandParentDisplay : '';
-            cvPreviewPage.style.padding = originalStyles.padding || '';
-            cvPreviewPage.style.margin = originalStyles.margin || '';
-            cvPreviewPage.style.overflow = originalStyles.overflow || '';
-            cvPreviewPage.style.minHeight = originalStyles.minHeight || '';
+            cvPreviewPage.style.display = originalStyles.grandParentDisplay;
+            cvPreviewPage.style.padding = '';
+            cvPreviewPage.style.margin = '';
+            cvPreviewPage.style.overflow = '';
+            cvPreviewPage.style.minHeight = '';
         }
-
 
         cvContainer.scrollTop = originalScrollTop; // Restore scroll position
 
@@ -1090,7 +1109,6 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         // if the current page is still the CV preview page.
         // This is crucial for the visual display to snap back correctly.
         // Calling generateCV() here is usually the safest bet for visual consistency.
-        // If the current page is 'cv-preview-page' after the capture, regenerate its content.
         if (document.getElementById('cv-preview-page').classList.contains('active-page')) {
             generateCV(); // This will rebuild the CV with correct display styles
         }
