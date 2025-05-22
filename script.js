@@ -88,7 +88,7 @@ const translations = {
         "Back to Home": "Back to Home",
         "Back to Preview": "Back to Preview",
         "Back to Payment Options": "Back to Payment Options",
-        "AST Supported Templates": "AST Supported Templates"
+        "AST Supported Templates": "AST Supported Templates",
     },
     ar: {
         'brand-name': 'رسائل',
@@ -1018,7 +1018,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
             },
             // Configure page breaks: avoid breaking elements, but force a new page after the end marker
             pagebreak: {
-                mode: ['avoid-all', 'css'], // 'avoid-all' tries not to break elements, 'css' respects CSS page-break properties
+                mode: ['avoid all', 'css'], // 'avoid-all' tries not to break elements, 'css' respects CSS page-break properties
                 after: '.cv-end-marker' // Ensure a page break after your "End of CV" marker
             }
         };
@@ -1102,11 +1102,25 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
  */
 async function generateAndDownloadPDF_html2pdf() {
     try {
+        // 1. أضف الكلاس watermarked قبل التقاط الـ CV
+        cvContainer.classList.add('watermarked');
+
+        // 2. انتظر قليلاً لكي يتم تطبيق أنماط الـ CSS
+        await new Promise(resolve => setTimeout(resolve, 50)); // تأخير بسيط لضمان تطبيق الأنماط
+
+        // 3. استدعِ دالة التقاط الـ CV كـ PDF مع تفعيل التنزيل
         await captureCVasPDF(cvContainer, true); // Pass true to trigger download
+
         alert(currentLang === 'ar' ? 'تم تنزيل السيرة الذاتية بنجاح!' : 'CV downloaded successfully!');
     } catch (error) {
         console.error("Error downloading CV directly:", error);
         alert(currentLang === 'ar' ? 'حدث خطأ أثناء تنزيل السيرة الذاتية.' : 'Error downloading CV.');
+    } finally {
+        // 4. أزل الكلاس watermarked بعد اكتمال العملية (سواء نجحت أو فشلت)
+        if (cvContainer.classList.contains('watermarked')) {
+            cvContainer.classList.remove('watermarked');
+            // لا داعي لإعادة توليد الـ CV هنا لأن captureCVasPDF.finally() ستقوم بذلك
+        }
     }
 }
 
@@ -1420,7 +1434,7 @@ function generateCV() {
     const educationEntries = Array.from(document.querySelectorAll('#education-input .education-entry'));
     const skillInputs = Array.from(document.querySelectorAll('#skills-input .skill-item-input'));
     const languageInputs = Array.from(document.querySelectorAll('#languages-input .language-item-input'));
-    const referenceEntries = Array.from(document.querySelectorAll('#references-input .reference-entry')); // FIX: Corrected variable name
+    const referenceEntries = Array.from(document.querySelectorAll('#references-input .reference-entry'));
 
     // Profile Picture Element
     let profilePicElement = null;
@@ -1456,28 +1470,29 @@ function generateCV() {
         }
     }
 
-    // Career Objective Section
-    let objectiveSection = null;
+    // Career Objective Section - Always create the section element, but fill content only if objective exists
+    const objectiveSection = document.createElement('div');
+    objectiveSection.className = 'cv-section';
+    objectiveSection.id = 'objective';
     if (objective) {
-        objectiveSection = document.createElement('div');
-        objectiveSection.className = 'cv-section';
-        objectiveSection.id = 'objective';
         objectiveSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Career Objective']}</h3><p>${objective}</p>`;
+    } else {
+        objectiveSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Career Objective']}</h3><p></p>`; // Empty paragraph
     }
 
-    // Work Experience Section
-    let experienceSection = null;
+    // Work Experience Section - Always create the section, fill list if entries exist
+    const experienceSection = document.createElement('div');
+    experienceSection.className = 'cv-section';
+    experienceSection.id = 'experience';
+    experienceSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Work Experience']}</h3><div id="experience-list"></div>`;
+    const experienceList = experienceSection.querySelector('#experience-list');
+    
     const hasFilledExperience = experienceEntries.some(entry => {
         const inputs = entry.querySelectorAll('input, textarea');
         return Array.from(inputs).some(input => input.value.trim());
     });
-    if (hasFilledExperience) {
-        experienceSection = document.createElement('div');
-        experienceSection.className = 'cv-section';
-        experienceSection.id = 'experience';
-        experienceSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Work Experience']}</h3><div id="experience-list"></div>`;
-        const experienceList = experienceSection.querySelector('#experience-list');
 
+    if (hasFilledExperience) {
         experienceEntries.forEach(entry => {
             const itemTitle = entry.querySelector('.experience-title').value.trim();
             const itemCompany = entry.querySelector('.experience-company').value.trim();
@@ -1497,19 +1512,19 @@ function generateCV() {
         });
     }
 
-    // Education Section
-    let educationSection = null;
+    // Education Section - Always create the section, fill list if entries exist
+    const educationSection = document.createElement('div');
+    educationSection.className = 'cv-section';
+    educationSection.id = 'education';
+    educationSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Education']}</h3><div id="education-list"></div>`;
+    const educationList = educationSection.querySelector('#education-list');
+
     const hasFilledEducation = educationEntries.some(entry => {
         const inputs = entry.querySelectorAll('input');
         return Array.from(inputs).some(input => input.value.trim());
     });
-    if (hasFilledEducation) {
-        educationSection = document.createElement('div');
-        educationSection.className = 'cv-section';
-        educationSection.id = 'education';
-        educationSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Education']}</h3><div id="education-list"></div>`;
-        const educationList = educationSection.querySelector('#education-list');
 
+    if (hasFilledEducation) {
         educationEntries.forEach(entry => {
             const itemDegree = entry.querySelector('.education-degree').value.trim();
             const itemInstitution = entry.querySelector('.education-institution').value.trim();
@@ -1527,16 +1542,15 @@ function generateCV() {
         });
     }
 
-    // Skills Section
-    let skillsSection = null;
+    // Skills Section - Always create the section, fill list if inputs exist
+    const skillsSection = document.createElement('div');
+    skillsSection.className = 'cv-section';
+    skillsSection.id = 'skills';
+    skillsSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Skills']}</h3><ul class="cv-skill-list"></ul>`;
+    const skillsList = skillsSection.querySelector('.cv-skill-list');
+
     const hasFilledSkills = skillInputs.some(input => input.value.trim());
     if (hasFilledSkills) {
-        skillsSection = document.createElement('div');
-        skillsSection.className = 'cv-section';
-        skillsSection.id = 'skills';
-        skillsSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Skills']}</h3><ul class="cv-skill-list"></ul>`;
-        const skillsList = skillsSection.querySelector('.cv-skill-list');
-
         skillInputs.forEach(input => {
             if (input.value.trim()) {
                 const li = document.createElement('li');
@@ -1547,16 +1561,15 @@ function generateCV() {
         });
     }
 
-    // Languages Section
-    let languagesSection = null;
+    // Languages Section - Always create the section, fill list if inputs exist
+    const languagesSection = document.createElement('div');
+    languagesSection.className = 'cv-section';
+    languagesSection.id = 'languages';
+    languagesSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Languages']}</h3><ul class="cv-language-list"></ul>`;
+    const languagesList = languagesSection.querySelector('.cv-language-list');
+
     const hasFilledLanguages = languageInputs.some(input => input.value.trim());
     if (hasFilledLanguages) {
-        languagesSection = document.createElement('div');
-        languagesSection.className = 'cv-section';
-        languagesSection.id = 'languages';
-        languagesSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Languages']}</h3><ul class="cv-language-list"></ul>`;
-        const languagesList = languagesSection.querySelector('.cv-language-list');
-
         languageInputs.forEach(input => {
             if (input.value.trim()) {
                 const li = document.createElement('li');
@@ -1566,19 +1579,19 @@ function generateCV() {
         });
     }
 
-    // References Section
-    let referencesSection = null;
+    // References Section - Always create the section, fill list if entries exist
+    const referencesSection = document.createElement('div');
+    referencesSection.className = 'cv-section';
+    referencesSection.id = 'references';
+    referencesSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['References']}</h3><div id="references-list"></div>`;
+    const referencesList = referencesSection.querySelector('#references-list');
+
     const hasFilledReferences = referenceEntries.some(entry => {
         const inputs = entry.querySelectorAll('input');
         return Array.from(inputs).some(input => input.value.trim());
     });
-    if (hasFilledReferences) {
-        referencesSection = document.createElement('div');
-        referencesSection.className = 'cv-section';
-        referencesSection.id = 'references';
-        referencesSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['References']}</h3><div id="references-list"></div>`;
-        const referencesList = referencesSection.querySelector('#references-list');
 
+    if (hasFilledReferences) {
         referenceEntries.forEach(entry => {
             const refName = entry.querySelector('.reference-name').value.trim();
             const refPosition = entry.querySelector('.reference-position').value.trim();
@@ -1622,13 +1635,13 @@ function generateCV() {
         }
         header.appendChild(textContentContainer);
         cvContent.appendChild(header);
-        if (objectiveSection) cvContent.appendChild(objectiveSection);
-        if (experienceSection) cvContent.appendChild(experienceSection);
-        if (educationSection) cvContent.appendChild(educationSection);
-        if (skillsSection) cvContent.appendChild(skillsSection);
-        if (languagesSection) cvContent.appendChild(languagesSection);
-        if (referencesSection) cvContent.appendChild(referencesSection);
-        cvContent.appendChild(createEndMarker());
+        cvContent.appendChild(objectiveSection);
+        cvContent.appendChild(experienceSection);
+        cvContent.appendChild(educationSection);
+        cvContent.appendChild(skillsSection);
+        cvContent.appendChild(languagesSection);
+        cvContent.appendChild(referencesSection);
+        cvContent.appendChild(createEndMarker()); // Ensure end marker is present
 
     } else if (selectedTemplateCategory === 'standard' || selectedTemplateCategory === 'professional' || selectedTemplateCategory === 'ast') {
         const layout = document.createElement('div');
@@ -1647,34 +1660,42 @@ function generateCV() {
         const mainContentDiv = document.createElement('div');
         mainContentDiv.className = 'cv-main-content';
 
+        // Add elements to sidebarDiv (always create them)
+        if (profilePicElement) sidebarDiv.appendChild(profilePicElement);
+        sidebarDiv.appendChild(skillsSection);
+        sidebarDiv.appendChild(languagesSection);
+        sidebarDiv.appendChild(referencesSection);
+        // Important: Add an end marker to sidebar as well if it needs to stretch vertically
+        // This helps the sidebar fill its column height in multi-column layouts
+        sidebarDiv.appendChild(createEndMarker());
+
+
+        // Add elements to mainContentDiv (always create them)
         if (selectedTemplateCategory === 'professional') {
             const header = document.createElement('div');
             header.className = 'cv-header professional-layout';
             header.innerHTML = `<h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2>`;
             if (contactInfoDiv) header.appendChild(contactInfoDiv);
-            cvContent.appendChild(header);
+            cvContent.appendChild(header); // Professional header is a separate top-level element
         } else {
              const header = document.createElement('div');
              header.className = 'cv-header two-col-main';
              header.innerHTML = `<h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2>`;
              if (contactInfoDiv) header.appendChild(contactInfoDiv);
-             mainContentDiv.appendChild(header);
+             mainContentDiv.appendChild(header); // Standard/AST header is inside main content
         }
 
-        if (profilePicElement) sidebarDiv.appendChild(profilePicElement);
-        if (skillsSection) sidebarDiv.appendChild(skillsSection);
-        if (languagesSection) sidebarDiv.appendChild(languagesSection);
-        if (referencesSection) sidebarDiv.appendChild(referencesSection);
-        sidebarDiv.appendChild(createEndMarker());
-
-        if (objectiveSection) mainContentDiv.appendChild(objectiveSection);
-        if (experienceSection) mainContentDiv.appendChild(experienceSection);
-        if (educationSection) mainContentDiv.appendChild(educationSection);
+        mainContentDiv.appendChild(objectiveSection);
+        mainContentDiv.appendChild(experienceSection);
+        mainContentDiv.appendChild(educationSection);
+        // Ensure end marker is present in the main content area to stretch it
         mainContentDiv.appendChild(createEndMarker());
+
 
         layout.appendChild(sidebarDiv);
         layout.appendChild(mainContentDiv);
         cvContent.appendChild(layout);
+        // No need for a global cvContent end marker if layout is handling it
     }
 
     cvStructure.appendChild(cvContent);
@@ -1735,10 +1756,7 @@ function generateCV() {
     });
 }
 
-/**
- * Creates a "End of CV" marker element.
- * @returns {HTMLElement} The created marker div.
- */
+// الدالة createEndMarker يجب أن تكون موجودة في ملف script.js
 function createEndMarker() {
     const endMarkerDiv = document.createElement('div');
     endMarkerDiv.className = 'cv-end-marker';
