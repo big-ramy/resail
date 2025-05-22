@@ -888,7 +888,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         throw new Error("CV container not found!");
     }
 
-    // 1. الجزء الأول: حفظ الأنماط الأصلية للعنصر cvContainer والآباء
+    // 1. الجزء الأول: حفظ الأنماط الأصلية (تحديثات إضافية هنا)
     // ابحث عن هذا الجزء في بداية دالة captureCVasPDF
     const originalStyles = {
         width: cvContainer.style.width,
@@ -899,7 +899,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         top: cvContainer.style.top,
         left: cvContainer.style.left,
         zIndex: cvContainer.style.zIndex,
-        transform: cvContainer.style.transform,
+        transform: cvContainer.style.transform, // حفظ خاصية transform أيضاً
         display: cvContainer.style.display,
         maxHeight: cvContainer.style.maxHeight,
         overflowY: cvContainer.style.overflowY,
@@ -915,73 +915,97 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         alignItems: cvContainer.style.alignItems || '',
         textAlign: cvContainer.style.textAlign || '',
         visibility: cvContainer.style.visibility || '',
-        // تحديث: حفظ حالة display و overflow و padding و margin لـ cvPreviewArea
-        // هذه الأنماط قد تسبب قص الرأس إذا لم تحفظ وتستعد بشكل صحيح
         cvPreviewAreaDisplay: cvContainer.parentElement ? cvContainer.parentElement.style.display : '',
         cvPreviewAreaOverflow: cvContainer.parentElement ? cvContainer.parentElement.style.overflow : '',
         cvPreviewAreaMaxHeight: cvContainer.parentElement ? cvContainer.parentElement.style.maxHeight : '',
         cvPreviewAreaPadding: cvContainer.parentElement ? cvContainer.parentElement.style.padding : '',
         cvPreviewAreaMargin: cvContainer.parentElement ? cvContainer.parentElement.style.margin : '',
-        // حفظ حالة display و overflow و minHeight و padding و margin لـ cvPreviewPage
         cvPreviewPageDisplay: cvContainer.parentElement && cvContainer.parentElement.parentElement ? cvContainer.parentElement.parentElement.style.display : '',
         cvPreviewPageOverflow: cvContainer.parentElement && cvContainer.parentElement.parentElement ? cvContainer.parentElement.parentElement.style.overflow : '',
         cvPreviewPageMinHeight: cvContainer.parentElement && cvContainer.parentElement.parentElement ? cvContainer.parentElement.parentElement.style.minHeight : '',
         cvPreviewPagePadding: cvContainer.parentElement && cvContainer.parentElement.parentElement ? cvContainer.parentElement.parentElement.style.padding : '',
         cvPreviewPageMargin: cvContainer.parentElement && cvContainer.parentElement.parentElement ? cvContainer.parentElement.parentElement.style.margin : '',
-        // حفظ maxWidth لـ cvContainer
         maxWidth: cvContainer.style.maxWidth || ''
     };
     const originalScrollTop = cvContainer.scrollTop;
 
-    // --- 2. الجزء الثاني: تطبيق الأنماط المؤقتة للالتقاط
+    // --- 2. الجزء الثاني: تطبيق الأنماط المؤقتة للالتقاط (تعديل جذري هنا) ---
     // ابحث عن هذا الجزء الذي يأتي مباشرة بعد تعريف originalStyles وقبل try block
-    // تأكد من أن cvPreviewArea و cvPreviewPage مرئيان بالكامل وغير مقصوصين
+    // سنقوم بتجهيز الـ CV لتبدو جيدة على الشاشة الصغيرة قبل الالتقاط مباشرة
 
     const cvPreviewArea = document.getElementById('cv-preview-area');
+    const cvPreviewPage = document.getElementById('cv-preview-page');
+
+    // 2.1. تأكيد رؤية الآباء وإعدادهم للالتقاط المرئي
     if (cvPreviewArea) {
         cvPreviewArea.style.display = 'block';
-        cvPreviewArea.style.justifyContent = 'flex-start';
+        cvPreviewArea.style.justifyContent = 'center'; // توسيط CV في المعاينة
         cvPreviewArea.style.alignItems = 'flex-start';
-        cvPreviewArea.style.overflow = 'visible'; // هام جداً لعدم قص المحتوى
-        cvPreviewArea.style.maxHeight = 'none';   // هام جداً لعدم قص المحتوى
-        cvPreviewArea.style.padding = '0'; // إزالة أي حشوة إضافية هنا
-        cvPreviewArea.style.margin = '0'; // إزالة أي هوامش إضافية هنا
+        cvPreviewArea.style.overflow = 'visible';
+        cvPreviewArea.style.maxHeight = 'none';
+        cvPreviewArea.style.padding = '15px'; // هوامش حول السيرة الذاتية في المعاينة
+        cvPreviewArea.style.margin = '0 auto';
     }
-    const cvPreviewPage = document.getElementById('cv-preview-page');
     if (cvPreviewPage) {
         cvPreviewPage.style.display = 'block';
-        cvPreviewPage.style.overflow = 'visible'; // هام جداً لعدم قص المحتوى
-        cvPreviewPage.style.minHeight = 'auto'; // مهم للسماح بالارتفاع الكامل
-        cvPreviewPage.style.padding = '0'; // إزالة أي حشوة إضافية هنا
-        cvPreviewPage.style.margin = '0'; // إزالة أي هوامش إضافية هنا
+        cvPreviewPage.style.padding = '0';
+        cvPreviewPage.style.margin = '0';
+        cvPreviewPage.style.overflow = 'visible';
+        cvPreviewPage.style.minHeight = 'auto';
     }
 
-    // الأنماط القوية لـ cvContainer التي تضمن التقاط A4 كاملة بدون تداخل مرئي
-    cvContainer.style.width = '210mm'; // عرض A4 القياسي
-    cvContainer.style.minHeight = '297mm'; // ارتفاع A4 القياسي (سيتمدد إذا كان المحتوى أطول)
-    cvContainer.style.height = 'auto'; // السماح للارتفاع بالنمو مع المحتوى
-    cvContainer.style.maxHeight = 'none'; // إزالة أي قيود على الارتفاع الأقصى
-    cvContainer.style.overflow = 'visible'; // تأكد من عرض كل المحتوى
-    cvContainer.style.overflowY = 'visible'; // تأكد من عدم إخفاء المحتوى الرأسي
-    cvContainer.style.backgroundColor = 'white'; // خلفية بيضاء صريحة لملف PDF
-    cvContainer.style.position = 'absolute'; // وضع مطلق لإخراجها من تدفق المستند
-    cvContainer.style.top = '0';
-    cvContainer.style.left = '-9999px'; // نقل مؤقتًا خارج الشاشة لالتقاط نظيف
-    cvContainer.style.zIndex = '-1'; // تأكد من أنها خلف العناصر الأخرى
-    cvContainer.style.transform = 'none'; // إزالة أي تحويلات
-    cvContainer.style.display = 'block'; // تأكد من عرضها
-    cvContainer.style.padding = '0'; // إزالة أي حشوة على الحاوية نفسها
-    cvContainer.style.margin = '0'; // إزالة أي هوامش (مهم لعدم التوسيط في المساحة السالبة)
-    cvContainer.style.zoom = '1'; // إعادة تعيين خاصية التكبير/التصغير (zoom)
+    // 2.2. تطبيق الأنماط على cvContainer لجعله يتناسب مع الشاشة قبل الالتقاط
+    // لن نقوم بنقله خارج الشاشة هذه المرة، بل سنصغره على الشاشة.
+    cvContainer.style.position = 'static'; // إعادته للتدفق الطبيعي
+    cvContainer.style.left = 'auto';
+    cvContainer.style.top = 'auto';
+    cvContainer.style.zIndex = 'auto'; // إعادة z-index
+    cvContainer.style.width = '100%'; // اجعله يتمدد لملء العرض المتاح
+    cvContainer.style.maxWidth = '100%'; // مهم جداً للتجاوب
+    cvContainer.style.height = 'auto';
+    cvContainer.style.minHeight = 'auto'; // لا تفرض min-height هنا
+    cvContainer.style.maxHeight = 'none';
+    cvContainer.style.overflow = 'visible';
+    cvContainer.style.overflowY = 'visible';
+    cvContainer.style.backgroundColor = 'white';
+    cvContainer.style.padding = '10px'; // أضف حشوة داخلية للعرض
+    cvContainer.style.margin = '0 auto'; // توسيطه في الشاشة
+
+    // 2.3. حساب عامل التصغير (scale factor)
+    // هذا هو الجزء الجديد والمهم لحساب التصغير لجعلها تتناسب
+    const targetWidth = 800; // العرض "المثالي" الذي صُممت عليه السيرة الذاتية (أو عرض A4 بـ px)
+    const currentContainerWidth = cvContainer.offsetWidth; // العرض الحالي لعنصر السيرة الذاتية على الشاشة
+    let scaleFactor = 1;
+
+    // إذا كان العرض الحالي أصغر من العرض المستهدف (مثلاً على الجوال الرأسي)
+    if (currentContainerWidth > 0 && currentContainerWidth < targetWidth) {
+        scaleFactor = currentContainerWidth / targetWidth;
+        // لضمان أنها لا تصبح صغيرة جدًا، يمكنك وضع حد أدنى لعامل التصغير
+        scaleFactor = Math.max(scaleFactor, 0.5); // مثلاً، لا تصغر أقل من 50%
+    } else if (currentContainerWidth > targetWidth) {
+        // إذا كانت الشاشة واسعة جدًا، قلل حجمها ليتناسب مع العرض المستهدف
+        scaleFactor = targetWidth / currentContainerWidth;
+        // وربما لا تقل عن 1، أي لا تكبرها
+        scaleFactor = Math.min(scaleFactor, 1);
+    }
+    // تطبيق التصغير
+    cvContainer.style.transform = `scale(${scaleFactor})`;
+    cvContainer.style.transformOrigin = 'top center'; // التصغير من الأعلى والمنتصف
+
+    // 2.4. ضبط أبعاد html2canvas لتلتقط بعد التصغير
+    // عندما نستخدم transform: scale()، فإن offsetWidth/offsetHeight لا يعطي الحجم الفعلي للعنصر بعد التصغير
+    // بل يعطي الحجم الأصلي للعنصر قبل تطبيق الـ transform.
+    // لذلك، نحتاج إلى ضبط أبعاد الكانفاس يدوياً أو الاعتماد على html2canvas ليتعامل مع الـ transform.
+    // html2canvas لديه دعم جيد لـ transform، لذا يمكننا فقط التأكد من أن العنصر مرئي بشكل جيد.
 
     // تأكيد الاتجاه
     cvContainer.style.direction = currentLang === 'ar' ? 'rtl' : 'ltr';
 
-    // إخفاء أزرار الحذف
+    // إخفاء أزرار الحذف (هذا الجزء لا يتغير)
     const removeButtons = cvContainer.querySelectorAll('.remove-field');
     removeButtons.forEach(btn => btn.style.display = 'none');
 
-    // الانتظار لتحميل الصور وتطبيق الأنماط
+    // الانتظار لتحميل الصور وتطبيق الأنماط (قد يحتاج لوقت أطول بعد الـ scale)
     const images = cvContainer.querySelectorAll('img');
     await Promise.all(Array.from(images).map(img => {
         if (!img.complete) {
@@ -992,22 +1016,33 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         }
         return Promise.resolve();
     }));
-    await new Promise(resolve => setTimeout(resolve, 1000)); // زيادة الوقت إلى 1000ms لضمان الاستقرار
+    await new Promise(resolve => setTimeout(resolve, 1500)); // زيادة الوقت إلى 1500ms لضمان الاستقرار مع الـ scale
 
     let pdfBase64 = null;
     try {
-        // ... (خيارات html2canvas و jsPDF - هذا الجزء لا يتغير كثيراً) ...
+        // 2.5. خيارات html2canvas و jsPDF (تعديل خيارات html2canvas)
+        // يجب أن نضبط `width` و `height` في html2canvas بناءً على العرض المستهدف،
+        // ولكن نستخدم `scale` للالتقاط بجودة عالية بعد التصغير البصري.
+        // html2canvas سيتعامل مع `transform: scale()`، لذا نحدد العرض المثالي الذي نريده في الـ PDF.
         const options = {
             margin: [0, 0, 0, 0],
             filename: 'CV.pdf',
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: {
-                scale: 2,
+                scale: 2, // هذا عامل التصغير للالتقاط (لجودة الـ PDF)، لا يخلط مع الـ scaleFactor في transform
                 useCORS: true,
                 allowTaint: true,
                 backgroundColor: 'white',
                 logging: false,
                 letterRendering: true,
+                // هذه الخصائص مهمة لتحديد منطقة الالتقاط
+                x: cvContainer.offsetLeft,
+                y: cvContainer.offsetTop,
+                // نحدد الأبعاد الأصلية (قبل الـ transform) هنا، لأن scale في html2canvas
+                // سيعمل على هذه الأبعاد.
+                width: targetWidth, // نلتقط بعرض الـ A4 المستهدف
+                height: cvContainer.scrollHeight * (targetWidth / cvContainer.scrollWidth), // نحافظ على نسبة العرض إلى الارتفاع
+                // تأكد أن scrollWidth/scrollHeight تعكس الحجم الكامل للمحتوى
                 windowWidth: cvContainer.scrollWidth,
                 windowHeight: cvContainer.scrollHeight,
                 scrollX: 0,
@@ -1016,7 +1051,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
             jsPDF: {
                 orientation: 'portrait',
                 unit: 'mm',
-                format: 'a4',
+                format: 'a4', // هذا هو حجم الصفحة النهائية في الـ PDF
                 compress: true,
                 hotfixes: ['px_scaling'],
                 putOnlyUsedFonts: true,
@@ -1053,37 +1088,36 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     } finally {
         // --- 3. الجزء الثالث: استعادة الأنماط الأصلية بعد الالتقاط ---
         // ابحث عن finally block في نهاية دالة captureCVasPDF واستبدل محتواه بهذا
-        // الأهم هنا هو استعادة جميع الأنماط التي غيرناها، وبترتيب عكسي.
+        // الأهم هنا هو استعادة جميع الأنماط التي غيرناها.
 
         // أولاً: استعادة أنماط cvContainer
         Object.keys(originalStyles).forEach(key => {
-            // استعادة القيمة الأصلية. إذا كانت القيمة الأصلية فارغة أو غير معرفة، تعيينها لسلسلة فارغة
-            // هذا يعيد الخاصية إلى قيمتها الافتراضية التي تحددها ورقة الأنماط CSS
             cvContainer.style[key] = originalStyles[key] !== null && originalStyles[key] !== undefined ? originalStyles[key] : '';
         });
 
         // استعادة الهوامش بشكل صريح لضمان التوسيط في العرض
-        // إذا كان الـ CSS الرئيسي يعتمد على 'margin: auto;' للتوسيط، يجب استعادته
-        cvContainer.style.margin = originalStyles.margin || '0 auto'; 
+        cvContainer.style.margin = originalStyles.margin || '0 auto';
         // استعادة أقصى عرض لضمان التجاوب
-        cvContainer.style.maxWidth = originalStyles.maxWidth || ''; 
+        cvContainer.style.maxWidth = originalStyles.maxWidth || '';
         // استعادة الموقع لضمان أنها ليست خارج الشاشة
         cvContainer.style.position = originalStyles.position || '';
         cvContainer.style.left = originalStyles.left || '';
         cvContainer.style.top = originalStyles.top || '';
         cvContainer.style.zIndex = originalStyles.zIndex || '';
+        // استعادة transform صراحة
         cvContainer.style.transform = originalStyles.transform || '';
-        cvContainer.style.width = originalStyles.width || ''; // استعادة العرض الأصلي (قد يكون 100% أو auto)
-        cvContainer.style.height = originalStyles.height || ''; // استعادة الارتفاع الأصلي
-        cvContainer.style.minHeight = originalStyles.minHeight || ''; // استعادة الحد الأدنى للارتفاع
-        cvContainer.style.overflow = originalStyles.overflow || ''; // استعادة overflow الأصلي
-        cvContainer.style.overflowY = originalStyles.overflowY || ''; // استعادة overflowY الأصلي
+        cvContainer.style.transformOrigin = originalStyles.transformOrigin || ''; // استعادة transformOrigin
+
+        cvContainer.style.width = originalStyles.width || '';
+        cvContainer.style.height = originalStyles.height || '';
+        cvContainer.style.minHeight = originalStyles.minHeight || '';
+        cvContainer.style.overflow = originalStyles.overflow || '';
+        cvContainer.style.overflowY = originalStyles.overflowY || '';
 
         // استعادة visibility بشكل صريح
         cvContainer.style.visibility = originalStyles.visibility;
 
         // ثانيًا: استعادة أنماط الآباء (cvPreviewArea و cvPreviewPage)
-        // يجب أن تعيد هذه الأنماط التي قد تكون تسببت في تجاوزات العرض
         if (cvPreviewArea) {
             cvPreviewArea.style.display = originalStyles.cvPreviewAreaDisplay !== null && originalStyles.cvPreviewAreaDisplay !== undefined ? originalStyles.cvPreviewAreaDisplay : '';
             cvPreviewArea.style.justifyContent = originalStyles.justifyContent || '';
