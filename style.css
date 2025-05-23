@@ -8,6 +8,7 @@ body {
     direction: rtl; /* Default direction */
     text-align: right; /* Default text alignment */
     overflow-y: auto; /* Allow scrolling on the body for landing page */
+    word-spacing: normal;
 }
 
 /* Language direction classes */
@@ -478,6 +479,7 @@ body[dir="ltr"] .template-preview-container {
     border: none;
     box-shadow: none;
     font-family: 'Segoe UI', Arial, sans-serif;
+    word-spacing: normal;
     background: white;
     color: #212529;
     overflow: hidden; /* إخفاء التجاوز الافتراضي */
@@ -541,6 +543,7 @@ body[dir="ltr"] .template-preview-container {
 .cv-header {
     display: flex;
     align-items: center;
+    word-spacing: normal;
     border-bottom: 2px solid;
     padding-bottom: 20px;
     margin-bottom: 30px;
@@ -664,7 +667,29 @@ body[dir="ltr"] .cv-header:not(.centered):not(.professional-layout)[dir="ltr"] .
     margin: 10px 18px;
     color: #212529;
     word-break: break-word;
+    word-spacing: normal;
     font-weight: 700;
+}
+
+.cv-contact-info,
+.cv-contact-item p {
+    word-spacing: normal;
+}
+
+.cv-section,
+.cv-section p,
+.cv-section-title {
+    word-spacing: normal;
+}
+
+.cv-experience-item p,
+.cv-education-item p {
+    word-spacing: normal;
+}
+
+.cv-skill-list li,
+.cv-language-list li {
+    word-spacing: normal;
 }
 
 .cv-title {
@@ -672,6 +697,7 @@ body[dir="ltr"] .cv-header:not(.centered):not(.professional-layout)[dir="ltr"] .
     margin: 10px 30px;
     color: #007bff;
     word-break: break-word;
+    word-spacing: normal;
     font-weight: 400;
 }
 
