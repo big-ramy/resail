@@ -871,6 +871,7 @@ async function submitPaymentProof(event) {
             "An error occurred connecting to the server or processing payment.";
     }
 }
+// Assume global variables like 'cvContainer', 'currentLang', 'translations', 'profilePicDataUrl', 'selectedTemplateCategory', 'selectedTemplate' are defined as in your original script.js
 
 /**
  * Captures the CV container as a PDF and can optionally trigger a download.
@@ -885,7 +886,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     }
 
     // Preserve original styles for restoration
-    // We precisely define which properties will be temporarily changed to save and restore them.
+    // نحدد الخصائص التي سيتم تغييرها مؤقتًا لحفظها واستعادتها بدقة
     const originalStyles = {
         cvDisplay: cvContainer.style.display,
         cvWidth: cvContainer.style.width,
@@ -904,9 +905,10 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         cvMargin: cvContainer.style.margin,
         cvZoom: cvContainer.style.zoom || '',
         cvMaxWidth: cvContainer.style.maxWidth || '',
-        cvVisibility: cvContainer.style.visibility || '', // Save visibility state
+        cvVisibility: cvContainer.style.visibility || '', // حفظ حالة الـ visibility
+        cvWordSpacing: cvContainer.style.wordSpacing || '', // حفظ تباعد الكلمات
 
-        // Save parent properties that might be temporarily affected
+        // حفظ خصائص الآباء التي قد تتأثر مؤقتًا
         cvPreviewAreaDisplay: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.display : '',
         cvPreviewAreaJustifyContent: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.justifyContent : '',
         cvPreviewAreaAlignItems: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.alignItems : '',
@@ -923,7 +925,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     };
     const originalScrollTop = cvContainer.scrollTop;
 
-    // --- Remove any watermark class before starting the process ---
+    // --- إزالة أي كلاس watermark قبل بدء العملية ---
     cvContainer.classList.remove('watermarked');
 
     // --- Apply temporary styles for capture ---
@@ -961,10 +963,10 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     cvContainer.style.left = '-9999px'; // Temporarily move off-screen for clean capture without flicker
     cvContainer.style.zIndex = '-1'; // Ensure it's behind other elements
     cvContainer.style.transform = 'none'; // Remove any transforms
-    // **Important:** Do not change display here. Let it remain as it is from the templates to ensure Flex/Grid.
     cvContainer.style.padding = '0'; // Remove any padding on the container itself
     cvContainer.style.margin = '0'; // Remove any margin here, we'll restore original later
     cvContainer.style.zoom = '1'; // Reset zoom property
+    cvContainer.style.wordSpacing = 'normal'; // Reset word-spacing for capture
 
     // 3. Ensure direction is applied consistently (important for RTL layouts)
     cvContainer.style.direction = currentLang === 'ar' ? 'rtl' : 'ltr';
@@ -988,8 +990,8 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
 
     // Determine html2canvas scale factor dynamically for mobile performance
     const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-    const scaleFactor = isMobile ? 1.5 : 2; // **Reduced scale for mobile, adjust if needed (e.g., to 1)**
-    const imageQuality = isMobile ? 0.8 : 0.98; // **Reduced quality for mobile, adjust if needed**
+    const scaleFactor = isMobile ? 1.5 : 2; // Reduced scale for mobile, adjust if needed (e.g., to 1)
+    const imageQuality = isMobile ? 0.8 : 0.98; // Reduced quality for mobile, adjust if needed
 
     let pdfBase64 = null;
     try {
@@ -998,7 +1000,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
             filename: 'CV.pdf',
             image: { type: 'jpeg', quality: imageQuality }, // JPEG for smaller file size, high quality
             html2canvas: {
-                scale: scaleFactor, // **Apply dynamic scale factor**
+                scale: scaleFactor, // Apply dynamic scale factor
                 useCORS: true, // Attempt to load cross-origin images (important for profile pics)
                 allowTaint: true, // Allow canvas to be "tainted" by images if CORS fails (might prevent data URL)
                 backgroundColor: 'white', // Explicit background color
@@ -1059,7 +1061,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         throw error;
     } finally {
         // --- Restore original styles ---
-        // Restore precisely saved properties
+        // استعادة الخصائص التي تم حفظها بدقة
         cvContainer.style.width = originalStyles.cvWidth;
         cvContainer.style.height = originalStyles.cvHeight;
         cvContainer.style.overflow = originalStyles.cvOverflow;
@@ -1069,16 +1071,17 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         cvContainer.style.left = originalStyles.cvLeft;
         cvContainer.style.zIndex = originalStyles.cvZIndex;
         cvContainer.style.transform = originalStyles.cvTransform;
-        cvContainer.style.display = originalStyles.cvDisplay; // Restore original display
+        cvContainer.style.display = originalStyles.cvDisplay; // استعادة display الأصلي
         cvContainer.style.maxHeight = originalStyles.cvMaxHeight;
         cvContainer.style.overflowY = originalStyles.cvOverflowY;
         cvContainer.style.padding = originalStyles.cvPadding;
         cvContainer.style.margin = originalStyles.cvMargin;
         cvContainer.style.zoom = originalStyles.cvZoom;
         cvContainer.style.maxWidth = originalStyles.cvMaxWidth;
-        cvContainer.style.visibility = originalStyles.cvVisibility; // Restore visibility
+        cvContainer.style.visibility = originalStyles.cvVisibility; // استعادة الـ visibility
+        cvContainer.style.wordSpacing = originalStyles.cvWordSpacing; // استعادة تباعد الكلمات
 
-        // Restore Flexbox/Grid properties if they existed in originalStyles
+        // استعادة خصائص الـ Flexbox/Grid إذا كانت موجودة في الـ originalStyles
         cvContainer.style.flexDirection = originalStyles.cvFlexDirection;
         cvContainer.style.gridTemplateColumns = originalStyles.cvGridTemplateColumns;
         cvContainer.style.gridTemplateRows = originalStyles.cvGridTemplateRows;
@@ -1117,7 +1120,6 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         }
     }
 }
-
 /**
  * Triggers the download of the CV as a PDF directly.
  */
@@ -1410,20 +1412,6 @@ function removeField(button) {
 
 
 /**
- * Creates and returns an "end marker" div element.
- * This element is used to facilitate page breaks in multi-page CVs during PDF generation.
- * In normal view, it remains hidden, but for print media, it's styled to
- * ensure content pushes to subsequent pages.
- * @returns {HTMLDivElement} The created end marker element.
- */
-function createEndMarker() {
-    const endMarkerDiv = document.createElement('div');
-    endMarkerDiv.className = 'cv-end-marker';
-    endMarkerDiv.textContent = translations[currentLang]["End of CV"] || 'النهاية';
-    return endMarkerDiv;
-}
-
-/**
  * Generates or updates the HTML content of the CV within the #cv-container.
  * This function is responsible for dynamically building the CV based on user input
  * and the selected template.
@@ -1505,11 +1493,8 @@ function generateCV() {
     const objectiveSection = document.createElement('div');
     objectiveSection.className = 'cv-section';
     objectiveSection.id = 'objective';
-    if (objective) {
-        objectiveSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Career Objective']}</h3><p>${objective}</p>`;
-    } else {
-        objectiveSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Career Objective']}</h3><p></p>`; // Empty paragraph
-    }
+    // Ensure objective is rendered even if empty, to maintain layout consistency
+    objectiveSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Career Objective']}</h3><p>${objective || ''}</p>`;
 
     // Work Experience Section - Always create the section, fill list if entries exist
     const experienceSection = document.createElement('div');
@@ -1517,7 +1502,7 @@ function generateCV() {
     experienceSection.id = 'experience';
     experienceSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Work Experience']}</h3><div id="experience-list"></div>`;
     const experienceList = experienceSection.querySelector('#experience-list');
-    
+
     const hasFilledExperience = experienceEntries.some(entry => {
         const inputs = entry.querySelectorAll('input, textarea');
         return Array.from(inputs).some(input => input.value.trim());
@@ -1737,6 +1722,7 @@ function generateCV() {
     allCVElements.forEach(element => {
         element.style.direction = direction;
         element.style.textAlign = 'inherit';
+        element.style.wordSpacing = 'normal'; // تطبيق تباعد الكلمات العادي على جميع العناصر
 
         const isLayoutContainer = element.classList.contains('cv-header') ||
                                   element.classList.contains('cv-two-column-layout') ||
@@ -1785,6 +1771,21 @@ function generateCV() {
             li.style.textAlign = 'inherit';
         }
     });
+}
+
+
+/**
+ * Creates and returns an "end marker" div element.
+ * This element is used to facilitate page breaks in multi-page CVs during PDF generation.
+ * In normal view, it remains hidden, but for print media, it's styled to
+ * ensure content pushes to subsequent pages.
+ * @returns {HTMLDivElement} The created end marker element.
+ */
+function createEndMarker() {
+    const endMarkerDiv = document.createElement('div');
+    endMarkerDiv.className = 'cv-end-marker';
+    endMarkerDiv.textContent = translations[currentLang]["End of CV"] || 'النهاية';
+    return endMarkerDiv;
 }
 /**
  * Updates the progress bar showing data completion.
