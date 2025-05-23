@@ -872,24 +872,20 @@ async function submitPaymentProof(event) {
     }
 }
 
-/************************************************
- * CV PDF Generation
- ***********************************************/
 /**
  * Captures the CV container as a PDF and can optionally trigger a download.
- * This is the unified function for both desktop and mobile, handling necessary styling.
+ * This function is unified for both desktop and mobile, handling necessary styling for consistent output.
  * @param {HTMLElement} cvContainer The DOM element containing the CV.
  * @param {boolean} downloadPdf If true, the PDF will be downloaded by the browser.
  * @returns {Promise<string>} A promise that resolves with the PDF data as a Base64 string.
  */
-// ابحث عن هذه الدالة في ملف script.js الخاص بك
 async function captureCVasPDF(cvContainer, downloadPdf = false) {
     if (!cvContainer) {
         throw new Error("CV container not found!");
     }
 
     // Preserve original styles for restoration
-    // نحدد الخصائص التي سيتم تغييرها مؤقتًا لحفظها واستعادتها بدقة
+    // We precisely define which properties will be temporarily changed to save and restore them.
     const originalStyles = {
         cvDisplay: cvContainer.style.display,
         cvWidth: cvContainer.style.width,
@@ -908,9 +904,9 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         cvMargin: cvContainer.style.margin,
         cvZoom: cvContainer.style.zoom || '',
         cvMaxWidth: cvContainer.style.maxWidth || '',
-        cvVisibility: cvContainer.style.visibility || '', // حفظ حالة الـ visibility
+        cvVisibility: cvContainer.style.visibility || '', // Save visibility state
 
-        // حفظ خصائص الآباء التي قد تتأثر مؤقتًا
+        // Save parent properties that might be temporarily affected
         cvPreviewAreaDisplay: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.display : '',
         cvPreviewAreaJustifyContent: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.justifyContent : '',
         cvPreviewAreaAlignItems: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.alignItems : '',
@@ -927,7 +923,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     };
     const originalScrollTop = cvContainer.scrollTop;
 
-    // --- إزالة أي كلاس watermark قبل بدء العملية ---
+    // --- Remove any watermark class before starting the process ---
     cvContainer.classList.remove('watermarked');
 
     // --- Apply temporary styles for capture ---
@@ -965,8 +961,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     cvContainer.style.left = '-9999px'; // Temporarily move off-screen for clean capture without flicker
     cvContainer.style.zIndex = '-1'; // Ensure it's behind other elements
     cvContainer.style.transform = 'none'; // Remove any transforms
-    // **هام:** لا تقم بتغيير display هنا. دعه كما هو من القوالب لضمان بقاء Flex/Grid.
-    // cvContainer.style.display = 'block'; // هذا السطر سيتم إزالته/عدم تضمينه
+    // **Important:** Do not change display here. Let it remain as it is from the templates to ensure Flex/Grid.
     cvContainer.style.padding = '0'; // Remove any padding on the container itself
     cvContainer.style.margin = '0'; // Remove any margin here, we'll restore original later
     cvContainer.style.zoom = '1'; // Reset zoom property
@@ -1064,7 +1059,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         throw error;
     } finally {
         // --- Restore original styles ---
-        // استعادة الخصائص التي تم حفظها بدقة
+        // Restore precisely saved properties
         cvContainer.style.width = originalStyles.cvWidth;
         cvContainer.style.height = originalStyles.cvHeight;
         cvContainer.style.overflow = originalStyles.cvOverflow;
@@ -1074,16 +1069,16 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         cvContainer.style.left = originalStyles.cvLeft;
         cvContainer.style.zIndex = originalStyles.cvZIndex;
         cvContainer.style.transform = originalStyles.cvTransform;
-        cvContainer.style.display = originalStyles.cvDisplay; // استعادة display الأصلي
+        cvContainer.style.display = originalStyles.cvDisplay; // Restore original display
         cvContainer.style.maxHeight = originalStyles.cvMaxHeight;
         cvContainer.style.overflowY = originalStyles.cvOverflowY;
         cvContainer.style.padding = originalStyles.cvPadding;
         cvContainer.style.margin = originalStyles.cvMargin;
         cvContainer.style.zoom = originalStyles.cvZoom;
         cvContainer.style.maxWidth = originalStyles.cvMaxWidth;
-        cvContainer.style.visibility = originalStyles.cvVisibility; // استعادة الـ visibility
+        cvContainer.style.visibility = originalStyles.cvVisibility; // Restore visibility
 
-        // استعادة خصائص الـ Flexbox/Grid إذا كانت موجودة في الـ originalStyles
+        // Restore Flexbox/Grid properties if they existed in originalStyles
         cvContainer.style.flexDirection = originalStyles.cvFlexDirection;
         cvContainer.style.gridTemplateColumns = originalStyles.cvGridTemplateColumns;
         cvContainer.style.gridTemplateRows = originalStyles.cvGridTemplateRows;
@@ -1122,18 +1117,19 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         }
     }
 }
+
 /**
  * Triggers the download of the CV as a PDF directly.
  */
 async function generateAndDownloadPDF_html2pdf() {
     try {
-        // 1. أضف الكلاس watermarked قبل التقاط الـ CV
+        // 1. Add the watermarked class before capturing the CV
         cvContainer.classList.add('watermarked');
 
-        // 2. انتظر قليلاً لكي يتم تطبيق أنماط الـ CSS
-        await new Promise(resolve => setTimeout(resolve, 50)); // تأخير بسيط لضمان تطبيق الأنماط
+        // 2. Wait a little for CSS styles to apply
+        await new Promise(resolve => setTimeout(resolve, 50)); // Small delay to ensure styles apply
 
-        // 3. استدعِ دالة التقاط الـ CV كـ PDF مع تفعيل التنزيل
+        // 3. Call the function to capture CV as PDF with download enabled
         await captureCVasPDF(cvContainer, true); // Pass true to trigger download
 
         alert(currentLang === 'ar' ? 'تم تنزيل السيرة الذاتية بنجاح!' : 'CV downloaded successfully!');
@@ -1141,14 +1137,13 @@ async function generateAndDownloadPDF_html2pdf() {
         console.error("Error downloading CV directly:", error);
         alert(currentLang === 'ar' ? 'حدث خطأ أثناء تنزيل السيرة الذاتية.' : 'Error downloading CV.');
     } finally {
-        // 4. أزل الكلاس watermarked بعد اكتمال العملية (سواء نجحت أو فشلت)
+        // 4. Remove the watermarked class after the process is complete (whether successful or failed)
         if (cvContainer.classList.contains('watermarked')) {
             cvContainer.classList.remove('watermarked');
-            // لا داعي لإعادة توليد الـ CV هنا لأن captureCVasPDF.finally() ستقوم بذلك
+            // No need to regenerate CV here because captureCVasPDF.finally() will do that
         }
     }
 }
-
 
 /************************************************
  * Template Selection
@@ -1414,9 +1409,20 @@ function removeField(button) {
 }
 
 
-/************************************************
- * CV Generation and Progress
- ***********************************************/
+/**
+ * Creates and returns an "end marker" div element.
+ * This element is used to facilitate page breaks in multi-page CVs during PDF generation.
+ * In normal view, it remains hidden, but for print media, it's styled to
+ * ensure content pushes to subsequent pages.
+ * @returns {HTMLDivElement} The created end marker element.
+ */
+function createEndMarker() {
+    const endMarkerDiv = document.createElement('div');
+    endMarkerDiv.className = 'cv-end-marker';
+    endMarkerDiv.textContent = translations[currentLang]["End of CV"] || 'النهاية';
+    return endMarkerDiv;
+}
+
 /**
  * Generates or updates the HTML content of the CV within the #cv-container.
  * This function is responsible for dynamically building the CV based on user input
@@ -1780,15 +1786,6 @@ function generateCV() {
         }
     });
 }
-
-// الدالة createEndMarker يجب أن تكون موجودة في ملف script.js
-function createEndMarker() {
-    const endMarkerDiv = document.createElement('div');
-    endMarkerDiv.className = 'cv-end-marker';
-    endMarkerDiv.textContent = translations[currentLang]["End of CV"] || 'النهاية';
-    return endMarkerDiv;
-}
-
 /**
  * Updates the progress bar showing data completion.
  */
