@@ -2025,6 +2025,16 @@ body[dir="ltr"] .ast-layout .cv-sidebar .cv-contact-item i {
     font-family: 'Arial', sans-serif;
 }
 
+    .cv-sidebar {
+        min-height: 297mm !important; /* تأكد أن هذا موجود لفرض امتداده بارتفاع صفحة A4 */
+        height: auto !important; /* السماح له بالتمدد إذا كان المحتوى أطول من صفحة واحدة */
+        flex-grow: 1 !important; /* هام جداً لجعله يملأ المساحة المتاحة في Flexbox */
+        overflow: visible !important; /* هام جداً للطباعة لمنع قص المحتوى أو الخلفية */
+        background-clip: padding-box; /* لضمان أن الخلفية تمتد لتغطي منطقة الحشو */
+        /* أضف هذا إذا لم يكن موجوداً */
+        box-sizing: border-box;
+    }
+
 /* --- Responsive Adjustments for Mobile Screens --- */
 /* Media query for screens up to 768px (tablets in portrait, most phones) */
 @media (max-width: 768px) {
@@ -2118,6 +2128,22 @@ body[dir="ltr"] .ast-layout .cv-sidebar .cv-contact-item i {
            'page-break-after: always' is only for print media. */
     }
 }
+
+.cv-end-marker {
+    /* خصائص الإخفاء للعرض العادي */
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 1px !important;
+    line-height: 1px !important;
+    color: transparent !important;
+    background-color: transparent !important;
+    visibility: hidden !important;
+    width: 100%;
+    display: block !important;
+    page-break-inside: avoid; /* مهم جداً لمنع تقسيم علامة النهاية نفسها */
+}
+
 
 /* Responsive adjustments for very small screens (e.g., max-width 400px) */
 @media (max-width: 400px) {
@@ -2352,6 +2378,23 @@ body[dir="ltr"] .qr-payment-inputs-scroll {
         /* For grid, if sidebar is first in grid-template-columns, it will be on left in LTR */
     }
 
+    .cv-sidebar {
+        min-height: 297mm !important; /* تأكيد لنظام الطباعة */
+        height: auto !important;
+        overflow: visible !important;
+        page-break-inside: avoid; /* محاولة منع تقسيم الشريط الجانبي نفسه */
+        background-clip: padding-box; /* تمديد الخلفية لتشمل منطقة الحشو */
+    }
+
+    .cv-main-content {
+        min-height: 297mm !important; /* تأكيد لنظام الطباعة */
+        height: auto !important;
+        overflow: visible !important;
+        page-break-inside: avoid; /* محاولة منع تقسيم المحتوى الرئيسي نفسه */
+        flex-grow: 1 !important;
+        background-clip: padding-box; /* تمديد الخلفية لتشمل منطقة الحشو */
+    }
+    
     .cv-sidebar,
     .cv-main-content {
         overflow: visible !important;
@@ -2415,11 +2458,13 @@ body[dir="ltr"] .qr-payment-inputs-scroll {
     }
 
     .cv-end-marker {
-        margin-top: 100mm !important; /* This value will push content to a new page in the PDF */
-        font-size: 1.2em !important; /* Original text size in the PDF */
-        color: #55555500 !important; /* Text is still transparent in the PDF */
-        height: auto !important; /* Height adapts */
-        padding: 10mm 0 !important; /* Padding returns */
+        /* في الطباعة، يصبح هو العنصر الذي يجبر فاصل الصفحة */
+        page-break-after: always; /* هذا هو مفتاح إجبار صفحة جديدة بعده */
+        /* يمكنك إزالة margin-top: 100mm إذا كان يسبب صفحات فارغة غير مرغوبة
+           بينما page-break-after: always; هو ما سيفعل المطلوب */
+        margin-top: 0 !important; /* إعادة ضبط الهامش العلوي */
+        height: auto !important; /* يسمح له بأخذ ارتفاع طبيعي إذا لزم الأمر */
+        /* باقي خصائص الشفافية والإخفاء تبقى كما هي */
     }
 
 }
