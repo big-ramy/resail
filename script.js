@@ -1876,7 +1876,7 @@ function populateWithTestData() {
     if(titleInput) titleInput.value = 'مهندس برمجيات';
     if(emailInput) emailInput.value = 'ahmed.elsayed@example.com';
     if(phoneInput) phoneInput.value = '0501234567';
-    if(websiteInput) websiteInput.value = 'www.ahmedelsayed.com';
+    if(websiteInput) websiteInput.value = 'المملكة العربية السعودية';
     if(objectiveInput) objectiveInput.value = 'مهندس برمجيات ذو خبرة عالية في تطوير تطبيقات الويب والجوال، أبحث عن فرصة للانضمام إلى فريق ديناميكي للمساهمة في بناء حلول تقنية مبتكرة وذات جودة عالية.';
 
     // Helper to ensure at least one field and then populate it
