@@ -925,9 +925,6 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     };
     const originalScrollTop = cvContainer.scrollTop;
 
-    // --- إزالة أي كلاس watermark قبل بدء العملية ---
-    cvContainer.classList.remove('watermarked');
-
     // --- Apply temporary styles for capture ---
 
     // 1. Ensure the CV preview area and its parent page are visible and correctly positioned for capture
@@ -1029,7 +1026,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
             },
             // Configure page breaks: avoid breaking elements, but force a new page after the end marker
             pagebreak: {
-                mode: ['avoid-all', 'css'], // 'avoid-all' tries not to break elements, 'css' respects CSS page-break properties
+                mode: ['css'], // 'avoid-all' tries not to break elements, 'css' respects CSS page-break properties
                 // Removed 'after: .cv-end-marker' from here.
                 // It's more reliable to let CSS `page-break-after` or `page-break-before`
                 // on relevant sections handle explicit page breaks.
