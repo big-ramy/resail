@@ -2149,7 +2149,7 @@ body[dir="ltr"] .ast-layout .cv-sidebar .cv-contact-item i {
     .cv-end-marker {
         /* On mobile preview, this will allow content to push to new "pages" in a single column */
         height: auto !important; /* Allow height to be determined by content or min-height */
-        margin-top: 50mm !important; /* A large margin to push content to a new "page" */
+        margin-top: 150mm !important; /* A large margin to push content to a new "page" */
         /* It is important that this is not set to 'always' for screen view.
            'page-break-after: always' is only for print media. */
     }
