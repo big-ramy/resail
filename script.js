@@ -889,38 +889,46 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     }
 
     // Preserve original styles for restoration
+    // نحدد الخصائص التي سيتم تغييرها مؤقتًا لحفظها واستعادتها بدقة
     const originalStyles = {
-        width: cvContainer.style.width,
-        height: cvContainer.style.height,
-        overflow: cvContainer.style.overflow,
-        backgroundColor: cvContainer.style.backgroundColor,
-        position: cvContainer.style.position,
-        top: cvContainer.style.top,
-        left: cvContainer.style.left,
-        zIndex: cvContainer.style.zIndex,
-        transform: cvContainer.style.transform,
-        display: cvContainer.style.display,
-        maxHeight: cvContainer.style.maxHeight,
-        overflowY: cvContainer.style.overflowY,
-        padding: cvContainer.style.padding,
-        margin: cvContainer.style.margin,
-        zoom: cvContainer.style.zoom || '',
-        flexDirection: cvContainer.style.flexDirection || '',
-        gridTemplateColumns: cvContainer.style.gridTemplateColumns || '',
-        gridTemplateRows: cvContainer.style.gridTemplateRows || '',
-        gridTemplateAreas: cvContainer.style.gridTemplateAreas || '',
-        gap: cvContainer.style.gap || '',
-        justifyContent: cvContainer.style.justifyContent || '',
-        alignItems: cvContainer.style.alignItems || '',
-        textAlign: cvContainer.style.textAlign || '',
-        visibility: cvContainer.style.visibility || '',
-        // Saving parent's display properties for restoration
-        parentDisplay: cvContainer.parentElement ? cvContainer.parentElement.style.display : '',
-        grandParentDisplay: cvContainer.parentElement && cvContainer.parentElement.parentElement ? cvContainer.parentElement.parentElement.style.display : '',
-        // Capture maxWidth for cvContainer specifically
-        maxWidth: cvContainer.style.maxWidth || ''
+        cvDisplay: cvContainer.style.display,
+        cvWidth: cvContainer.style.width,
+        cvHeight: cvContainer.style.height,
+        cvMinHeight: cvContainer.style.minHeight,
+        cvMaxHeight: cvContainer.style.maxHeight,
+        cvOverflow: cvContainer.style.overflow,
+        cvOverflowY: cvContainer.style.overflowY,
+        cvBackgroundColor: cvContainer.style.backgroundColor,
+        cvPosition: cvContainer.style.position,
+        cvTop: cvContainer.style.top,
+        cvLeft: cvContainer.style.left,
+        cvZIndex: cvContainer.style.zIndex,
+        cvTransform: cvContainer.style.transform,
+        cvPadding: cvContainer.style.padding,
+        cvMargin: cvContainer.style.margin,
+        cvZoom: cvContainer.style.zoom || '',
+        cvMaxWidth: cvContainer.style.maxWidth || '',
+        cvVisibility: cvContainer.style.visibility || '', // حفظ حالة الـ visibility
+
+        // حفظ خصائص الآباء التي قد تتأثر مؤقتًا
+        cvPreviewAreaDisplay: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.display : '',
+        cvPreviewAreaJustifyContent: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.justifyContent : '',
+        cvPreviewAreaAlignItems: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.alignItems : '',
+        cvPreviewAreaOverflow: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.overflow : '',
+        cvPreviewAreaMaxHeight: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.maxHeight : '',
+        cvPreviewAreaPadding: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.padding : '',
+        cvPreviewAreaMargin: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.margin : '',
+
+        cvPreviewPageDisplay: document.getElementById('cv-preview-page') ? document.getElementById('cv-preview-page').style.display : '',
+        cvPreviewPagePadding: document.getElementById('cv-preview-page') ? document.getElementById('cv-preview-page').style.padding : '',
+        cvPreviewPageMargin: document.getElementById('cv-preview-page') ? document.getElementById('cv-preview-page').style.margin : '',
+        cvPreviewPageOverflow: document.getElementById('cv-preview-page') ? document.getElementById('cv-preview-page').style.overflow : '',
+        cvPreviewPageMinHeight: document.getElementById('cv-preview-page') ? document.getElementById('cv-preview-page').style.minHeight : '',
     };
     const originalScrollTop = cvContainer.scrollTop;
+
+    // --- إزالة أي كلاس watermark قبل بدء العملية ---
+    cvContainer.classList.remove('watermarked');
 
     // --- Apply temporary styles for capture ---
 
@@ -928,20 +936,20 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     const cvPreviewArea = document.getElementById('cv-preview-area');
     if (cvPreviewArea) {
         cvPreviewArea.style.display = 'block';
-        cvPreviewArea.style.justifyContent = 'flex-start'; // Align to top-left for consistent capture
-        cvPreviewArea.style.alignItems = 'flex-start'; // Align to top-left for consistent capture
-        cvPreviewArea.style.overflow = 'visible'; // Ensure no clipping
-        cvPreviewArea.style.maxHeight = 'none'; // No height limits
-        cvPreviewArea.style.padding = '0'; // Remove padding from the area itself
-        cvPreviewArea.style.margin = '0'; // Remove margin from the area itself
+        cvPreviewArea.style.justifyContent = 'flex-start';
+        cvPreviewArea.style.alignItems = 'flex-start';
+        cvPreviewArea.style.overflow = 'visible';
+        cvPreviewArea.style.maxHeight = 'none';
+        cvPreviewArea.style.padding = '0';
+        cvPreviewArea.style.margin = '0';
     }
     const cvPreviewPage = document.getElementById('cv-preview-page');
     if (cvPreviewPage) {
         cvPreviewPage.style.display = 'block';
-        cvPreviewPage.style.padding = '0'; // Remove padding from the page itself
-        cvPreviewPage.style.margin = '0'; // Remove margin from the page itself
-        cvPreviewPage.style.overflow = 'visible'; // Ensure no clipping
-        cvPreviewPage.style.minHeight = 'auto'; // Let content define height
+        cvPreviewPage.style.padding = '0';
+        cvPreviewPage.style.margin = '0';
+        cvPreviewPage.style.overflow = 'visible';
+        cvPreviewPage.style.minHeight = 'auto';
     }
 
     // 2. Set the cv-container to a reliable, fixed size (A4) and temporarily move it off-screen for clean capture
@@ -957,7 +965,8 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     cvContainer.style.left = '-9999px'; // Temporarily move off-screen for clean capture without flicker
     cvContainer.style.zIndex = '-1'; // Ensure it's behind other elements
     cvContainer.style.transform = 'none'; // Remove any transforms
-    cvContainer.style.display = 'block'; // Ensure it's displayed
+    // **هام:** لا تقم بتغيير display هنا. دعه كما هو من القوالب لضمان بقاء Flex/Grid.
+    // cvContainer.style.display = 'block'; // هذا السطر سيتم إزالته/عدم تضمينه
     cvContainer.style.padding = '0'; // Remove any padding on the container itself
     cvContainer.style.margin = '0'; // Remove any margin here, we'll restore original later
     cvContainer.style.zoom = '1'; // Reset zoom property
@@ -983,15 +992,16 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     await new Promise(resolve => setTimeout(resolve, 800)); // **Increased delay for better rendering on mobile**
 
     // Determine html2canvas scale factor dynamically for mobile performance
-    const isMobileDevice = /Mobi|Android/i.test(navigator.userAgent);
-    const scaleFactor = isMobileDevice ? 1.5 : 2; // **Reduced scale for mobile**
+    const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+    const scaleFactor = isMobile ? 1.5 : 2; // **Reduced scale for mobile, adjust if needed (e.g., to 1)**
+    const imageQuality = isMobile ? 0.8 : 0.98; // **Reduced quality for mobile, adjust if needed**
 
     let pdfBase64 = null;
     try {
         const options = {
             margin: [0, 0, 0, 0], // Zero margin for the PDF pages
             filename: 'CV.pdf',
-            image: { type: 'jpeg', quality: 0.98 }, // JPEG for smaller file size, high quality
+            image: { type: 'jpeg', quality: imageQuality }, // JPEG for smaller file size, high quality
             html2canvas: {
                 scale: scaleFactor, // **Apply dynamic scale factor**
                 useCORS: true, // Attempt to load cross-origin images (important for profile pics)
@@ -1054,50 +1064,51 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         throw error;
     } finally {
         // --- Restore original styles ---
-        // Restore `cvContainer`'s specific styles first
-        // Simplified restoration for better performance
-        cvContainer.style.width = originalStyles.width;
-        cvContainer.style.height = originalStyles.height;
-        cvContainer.style.overflow = originalStyles.overflow;
-        cvContainer.style.backgroundColor = originalStyles.backgroundColor;
-        cvContainer.style.position = originalStyles.position;
-        cvContainer.style.top = originalStyles.top;
-        cvContainer.style.left = originalStyles.left;
-        cvContainer.style.zIndex = originalStyles.zIndex;
-        cvContainer.style.transform = originalStyles.transform;
-        cvContainer.style.display = originalStyles.display;
-        cvContainer.style.maxHeight = originalStyles.maxHeight;
-        cvContainer.style.overflowY = originalStyles.overflowY;
-        cvContainer.style.padding = originalStyles.padding;
-        cvContainer.style.margin = originalStyles.margin;
-        cvContainer.style.zoom = originalStyles.zoom;
-        cvContainer.style.flexDirection = originalStyles.flexDirection;
-        cvContainer.style.gridTemplateColumns = originalStyles.gridTemplateColumns;
-        cvContainer.style.gridTemplateRows = originalStyles.style.gridTemplateRows;
-        cvContainer.style.gridTemplateAreas = originalStyles.gridTemplateAreas;
-        cvContainer.style.gap = originalStyles.gap;
-        cvContainer.style.justifyContent = originalStyles.justifyContent;
-        cvContainer.style.alignItems = originalStyles.alignItems;
-        cvContainer.style.textAlign = originalStyles.textAlign;
-        cvContainer.style.visibility = originalStyles.visibility;
-        cvContainer.style.maxWidth = originalStyles.maxWidth;
+        // استعادة الخصائص التي تم حفظها بدقة
+        cvContainer.style.width = originalStyles.cvWidth;
+        cvContainer.style.height = originalStyles.cvHeight;
+        cvContainer.style.overflow = originalStyles.cvOverflow;
+        cvContainer.style.backgroundColor = originalStyles.cvBackgroundColor;
+        cvContainer.style.position = originalStyles.cvPosition;
+        cvContainer.style.top = originalStyles.cvTop;
+        cvContainer.style.left = originalStyles.cvLeft;
+        cvContainer.style.zIndex = originalStyles.cvZIndex;
+        cvContainer.style.transform = originalStyles.cvTransform;
+        cvContainer.style.display = originalStyles.cvDisplay; // استعادة display الأصلي
+        cvContainer.style.maxHeight = originalStyles.cvMaxHeight;
+        cvContainer.style.overflowY = originalStyles.cvOverflowY;
+        cvContainer.style.padding = originalStyles.cvPadding;
+        cvContainer.style.margin = originalStyles.cvMargin;
+        cvContainer.style.zoom = originalStyles.cvZoom;
+        cvContainer.style.maxWidth = originalStyles.cvMaxWidth;
+        cvContainer.style.visibility = originalStyles.cvVisibility; // استعادة الـ visibility
 
-        // Restore parent displays LAST
+        // استعادة خصائص الـ Flexbox/Grid إذا كانت موجودة في الـ originalStyles
+        cvContainer.style.flexDirection = originalStyles.cvFlexDirection;
+        cvContainer.style.gridTemplateColumns = originalStyles.cvGridTemplateColumns;
+        cvContainer.style.gridTemplateRows = originalStyles.cvGridTemplateRows;
+        cvContainer.style.gridTemplateAreas = originalStyles.cvGridTemplateAreas;
+        cvContainer.style.gap = originalStyles.cvGap;
+        cvContainer.style.justifyContent = originalStyles.cvJustifyContent;
+        cvContainer.style.alignItems = originalStyles.cvAlignItems;
+        cvContainer.style.textAlign = originalStyles.cvTextAlign;
+
+        // Restore parent displays and properties
         if (cvPreviewArea) {
-            cvPreviewArea.style.display = originalStyles.parentDisplay;
-            cvPreviewArea.style.justifyContent = ''; // Reset to default
-            cvPreviewArea.style.alignItems = '';    // Reset to default
-            cvPreviewArea.style.overflow = '';      // Reset to default
-            cvPreviewArea.style.maxHeight = '';     // Reset to default
-            cvPreviewArea.style.padding = '';       // Reset to default
-            cvPreviewArea.style.margin = '';        // Reset to default
+            cvPreviewArea.style.display = originalStyles.cvPreviewAreaDisplay;
+            cvPreviewArea.style.justifyContent = originalStyles.cvPreviewAreaJustifyContent;
+            cvPreviewArea.style.alignItems = originalStyles.cvPreviewAreaAlignItems;
+            cvPreviewArea.style.overflow = originalStyles.cvPreviewAreaOverflow;
+            cvPreviewArea.style.maxHeight = originalStyles.cvPreviewAreaMaxHeight;
+            cvPreviewArea.style.padding = originalStyles.cvPreviewAreaPadding;
+            cvPreviewArea.style.margin = originalStyles.cvPreviewAreaMargin;
         }
         if (cvPreviewPage) {
-            cvPreviewPage.style.display = originalStyles.grandParentDisplay;
-            cvPreviewPage.style.padding = '';
-            cvPreviewPage.style.margin = '';
-            cvPreviewPage.style.overflow = '';
-            cvPreviewPage.style.minHeight = '';
+            cvPreviewPage.style.display = originalStyles.cvPreviewPageDisplay;
+            cvPreviewPage.style.padding = originalStyles.cvPreviewPagePadding;
+            cvPreviewPage.style.margin = originalStyles.cvPreviewPageMargin;
+            cvPreviewPage.style.overflow = originalStyles.cvPreviewPageOverflow;
+            cvPreviewPage.style.minHeight = originalStyles.cvPreviewPageMinHeight;
         }
 
         cvContainer.scrollTop = originalScrollTop; // Restore scroll position
@@ -1105,16 +1116,12 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         // Re-display "remove" buttons
         removeButtons.forEach(btn => btn.style.display = '');
 
-        // Important: After restoring styles, you might want to force a re-render of the CV
-        // if the current page is still the CV preview page.
-        // This is crucial for the visual display to snap back correctly.
-        // Calling generateCV() here is usually the safest bet for visual consistency.
+        // Important: After restoring styles, force a re-render of the CV
         if (document.getElementById('cv-preview-page').classList.contains('active-page')) {
             generateCV(); // This will rebuild the CV with correct display styles
         }
     }
 }
-
 /**
  * Triggers the download of the CV as a PDF directly.
  */
