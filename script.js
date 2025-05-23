@@ -1481,7 +1481,7 @@ function generateCV() {
         if (website) {
             const item = document.createElement('div');
             item.className = 'cv-contact-item';
-            item.innerHTML = `<i class="fas fa-globe"></i><p>${website}</p>`;
+            item.innerHTML = `<i class="fa fa-location-arrow"></i><p>${website}</p>`;
             contactInfoDiv.appendChild(item);
         }
     }
