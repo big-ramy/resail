@@ -532,7 +532,7 @@
 
     /* Container for the main CV content (header + layout) */
     .cv-content {
-    flex-grow: 0 !important; /* اجعلها لا تتمدد إلا إذا كان هناك محتوى فعلي */
+        flex-grow: 1 !important; /* اجعلها لا تتمدد إلا إذا كان هناك محتوى فعلي */
         display: flex;
         flex-direction: column;
         box-sizing: border-box;
@@ -716,8 +716,8 @@
 
     /* Sections (Objective, Experience, Education, etc.) - Enhanced Professionalism */
     .cv-section {
-        margin-bottom: 25px;
-        padding: 25px;
+        margin-bottom: 5mm! improtant;
+        padding: 10mm! improtant;
         background-color: #f8f9fa;
         border-radius: 8px;
         box-sizing: border-box;
@@ -748,8 +748,8 @@
     /* Experience and Education Items - Enhanced Professionalism */
     .cv-experience-item,
     .cv-education-item {
-        margin-bottom: 20px;
-        padding-bottom: 15px;
+        margin-bottom: 5mm! important;
+        padding-bottom: 3mm! important;
         border-bottom: 1px solid #dee2e6;
         box-sizing: border-box;
     }
@@ -925,7 +925,7 @@
     .cv-two-column-layout,
     .cv-professional-layout,
     .ast-layout {
-        flex-grow: 1;
+        flex-grow: 1! important;
         overflow: hidden;
         position: relative;
         display: flex; /* Ensure flex is applied by default for desktop */
@@ -974,7 +974,7 @@
     /* Sidebar in Standard and AST Layout */
     .cv-two-column-layout .cv-sidebar,
     .ast-layout .cv-sidebar {
-        width: 300px; /* Fixed sidebar width */
+        width: 300px;
         background-color: #e9ecef;
         color: #212529;
         padding: 30px;
@@ -986,10 +986,12 @@
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
-        flex-grow: 0 !important; /* هام جداً: إزالة التمدد */
-        height: auto !important; /* السماح بالارتفاع التلقائي */
-    
+        /* التعديل هنا: اسمح له بالتمدد لملء المساحة */
+        flex-grow: 1; /* اسمح للشريط الجانبي بالتمدد */
+        min-height: 297mm; /* هام: اجعل الحد الأدنى للارتفاع A4 لضمان ملء الصفحة */
+        overflow: visible !important; /* هام جداً: اجعل التجاوز مرئياً للالتقاط */
     }
+
 
     /* Sidebar in Professional Layout */
     .cv-professional-layout .cv-sidebar {
@@ -1004,14 +1006,16 @@
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
-        flex-grow: 0 !important; /* هام جداً: إزالة التمدد */
-        height: auto !important; /* السماح بالارتفاع التلقائي */
+        /* التعديل هنا: اسمح له بالتمدد لملء المساحة */
+        flex-grow: 1; /* اسمح للشريط الجانبي بالتمدد */
+        min-height: 297mm; /* هام: اجعل الحد الأدنى للارتفاع A4 */
+        overflow: visible !important; /* هام جداً: اجعل التجاوز مرئياً للالتقاط */
     }
 
     /* Main Content in Standard and AST Layout */
     .cv-two-column-layout .cv-main-content,
     .ast-layout .cv-main-content {
-        flex-grow: 1;
+        flex-grow: 1; /* اسمح له بالتمدد لملء المساحة الأفقية */
         padding: 30px;
         background-color: #fff;
         overflow-x: hidden;
@@ -1020,23 +1024,28 @@
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
-        flex-grow: 0 !important; /* هام جداً: إزالة التمدد */
-        height: auto !important; /* السماح بالارتفاع التلقائي */
+        /* التعديل هنا: اسمح له بالتمدد لملء المساحة */
+        flex-grow: 1; /* اسمح للمحتوى الرئيسي بالتمدد */
+        min-height: 297mm; /* هام: اجعل الحد الأدنى للارتفاع A4 */
+        overflow: visible !important; /* هام جداً: اجعل التجاوز مرئياً للالتقاط */
     }
 
+
     /* Main Content in Professional Layout */
-    .cv-professional-layout .cv-main-content {
-        grid-area: main;
-        background-color: #fff;
-        padding: 30px;
-        overflow-x: hidden;
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        flex-grow: 0 !important; /* هام جداً: إزالة التمدد */
-        height: auto !important; /* السماح بالارتفاع التلقائي */
-    }
+.cv-professional-layout .cv-main-content {
+    grid-area: main;
+    background-color: #fff;
+    padding: 30px;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    /* التعديل هنا: اسمح له بالتمدد لملء المساحة */
+    flex-grow: 1; /* اسمح للمحتوى الرئيسي بالتمدد */
+    min-height: 297mm; /* هام: اجعل الحد الأدنى للارتفاع A4 */
+    overflow: visible !important; /* هام جداً: اجعل التجاوز مرئياً للالتقاط */
+}
 
     /* Specific styles for elements within Standard/AST Layout Sidebar */
     .cv-two-column-layout .cv-sidebar .cv-profile-pic,
@@ -1174,19 +1183,23 @@
     }
 
 
-    /* End Marker Style */
+        /* End Marker Style */
     .cv-end-marker {
-        margin-top: 0 !important; /* لا تفرض هوامش هنا في العرض العادي */
-        text-align: center;
-        font-size: 1px !important; /* اجعله صغيراً جداً ليأخذ مساحة لا تُذكر */
-        line-height: 1px !important; /* اجعله صغيراً جداً */
-        height: 1px !important; /* ارتفاع صغير جداً */
-        padding: 0 !important; /* إزالة الحشو */
-        color: transparent !important; /* اجعل النص شفافاً */
-        background-color: transparent !important; /* اجعل الخلفية شفافة */
-        page-break-inside: avoid;
+        /* في العرض العادي (غير الطباعة)، اجعله مخفياً تماماً ولا يأخذ مساحة تذكر */
+        height: 0 !important; /* اجعله لا يأخذ ارتفاعًا */
+        padding: 0 !important;
+        margin: 0 !important;
+        font-size: 1px !important;
+        line-height: 1px !important;
+        color: transparent !important;
+        background-color: transparent !important;
+        visibility: hidden !important; /* أخفه تمامًا */
         width: 100%;
-        /* القاعدة التالية ستكون فقط في @media print */
+        display: block !important; /* تأكد من أنه Block لكي يؤثر على page-break */
+    
+        /* قواعد page-break-after مهمة هنا */
+        page-break-after: always; /* اجبر فاصل صفحة بعد كل نسخة من هذا العنصر */
+        page-break-inside: avoid; /* تجنب تقسيم العنصر نفسه */
     }
 
     /* Filler div style (used by JS to help with stretching) */
@@ -1211,8 +1224,8 @@
     }
 
     .cv-section {
-        margin-bottom: 25px;
-        padding-bottom: 15px;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
     }
 
     .cv-section-title {
@@ -2098,8 +2111,10 @@
         }
 
         .cv-end-marker {
-            margin-top: 50px !important; /* Adjust end marker margin for smaller screens */
-            font-size: 0.9em !important;
+            /* في الطباعة، هذا العنصر هو الذي سيجبر فاصل صفحة */
+            height: auto !important; /* اجعل الارتفاع يعود تلقائياً */
+            margin-top: 100mm !important; /* قيمة كبيرة لدفع المحتوى لصفحة جديدة */
+            /* هذا يضمن أن كل عمود سيبدأ صفحة جديدة إذا لزم الأمر */
         }
     }
 
