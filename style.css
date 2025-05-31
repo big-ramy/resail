@@ -2486,8 +2486,8 @@ body[dir="ltr"] .qr-payment-inputs-scroll {
     .cv-end-marker {
         /* في الطباعة، يصبح هو العنصر الذي يجبر فاصل الصفحة */
         page-break-after: always; /* هذا هو مفتاح إجبار صفحة جديدة بعده */
-        /* يمكنك إزالة margin-top: 100mm إذا كان يسبب صفحات فارغة غير مرغوبة
-           بينما page-break-after: always; هو ما سيفعل المطلوب */
+        margin-top: 300mm; /* إذا كان يسبب صفحات فارغة غير مرغوبة
+         /*  بينما page-break-after: always; هو ما سيفعل المطلوب */
         margin-top: 0 !important; /* إعادة ضبط الهامش العلوي */
         height: auto !important; /* يسمح له بأخذ ارتفاع طبيعي إذا لزم الأمر */
         /* باقي خصائص الشفافية والإخفاء تبقى كما هي */
