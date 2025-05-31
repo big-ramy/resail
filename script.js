@@ -793,6 +793,13 @@ async function submitPaymentProof(event) {
         }
     }
 
+        // Display the "Please wait..." message
+    qrPaymentResultDiv.style.color = "blue";
+    qrPaymentResultDiv.textContent = currentLang === 'ar' ?
+        'الرجاء الانتظار، جاري إنشاء سيرتك الذاتية ومعالجة الدفع...' :
+        'Please wait, your CV is being generated and payment is being processed...';
+
+
     let cvPdfFileBase64 = "";
     let cvPdfFileNameForClient = '';
 
