@@ -893,6 +893,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     }
 
     // Preserve original styles for restoration
+    // We precisely define which properties will be temporarily changed to save and restore them.
     const originalStyles = {
         cvDisplay: cvContainer.style.display,
         cvWidth: cvContainer.style.width,
@@ -991,20 +992,12 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         }
         return Promise.resolve();
     }));
-
-    // NEW: Use requestAnimationFrame to ensure the browser has rendered the changes
-    // This is more reliable than a fixed setTimeout for visual updates.
-    await new Promise(resolve => requestAnimationFrame(() => {
-        requestAnimationFrame(resolve); // A second rAF ensures layout calculations are done
-    }));
-
-    // Optional: Keep a very short timeout after rAF if complex reflows are still causing issues
-    // await new Promise(resolve => setTimeout(resolve, 100)); // Short delay if needed
+    await new Promise(resolve => setTimeout(resolve, 800)); // **Increased delay for better rendering on mobile**
 
     // Determine html2canvas scale factor dynamically for mobile performance
     const isMobile = /Mobi|Android/i.test(navigator.userAgent);
     const scaleFactor = isMobile ? 1.5 : 2; // **Reduced scale for mobile, adjust if needed (e.g., to 1)**
-    const imageQuality = isMobile ? 0.6 : 0.8; // **Reduced quality for mobile, adjust if needed**
+    const imageQuality = isMobile ? 0.4 : 0.2; // **Reduced quality for mobile, adjust if needed**
 
     let pdfBase64 = null;
     try {
@@ -1127,7 +1120,6 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         removeButtons.forEach(btn => btn.style.display = '');
 
         // Important: After restoring styles, force a re-render of the CV
-        // Only regenerate if the preview page is supposed to be active
         if (document.getElementById('cv-preview-page').classList.contains('active-page')) {
             generateCV(); // This will rebuild the CV with correct display styles
         }
