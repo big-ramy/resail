@@ -8,7 +8,7 @@ body {
     direction: rtl; /* Default direction */
     text-align: right; /* Default text alignment */
     overflow-y: auto; /* Allow scrolling on the body for landing page */
-    word-spacing: normal;
+    word-spacing: normal; /* Ensure normal word spacing */
 }
 
 /* Language direction classes */
@@ -479,7 +479,6 @@ body[dir="ltr"] .template-preview-container {
     border: none;
     box-shadow: none;
     font-family: 'Segoe UI', Arial, sans-serif;
-    word-spacing: normal;
     background: white;
     color: #212529;
     overflow: hidden; /* إخفاء التجاوز الافتراضي */
@@ -491,6 +490,9 @@ body[dir="ltr"] .template-preview-container {
     z-index: -1 !important; /* وضعه في الخلف */
     visibility: visible !important; /* هام: يجب أن يكون مرئياً للمتصفح ليتم رسمه */
     transform: none !important; /* إزالة أي تحويلات قديمة */
+    word-spacing: normal; /* Ensure normal word spacing */
+    word-break: normal; /* Allow normal word breaking */
+    overflow-wrap: break-word; /* Modern equivalent for word breaking */
 }
 
 /* Watermark style */
@@ -543,7 +545,6 @@ body[dir="ltr"] .template-preview-container {
 .cv-header {
     display: flex;
     align-items: center;
-    word-spacing: normal;
     border-bottom: 2px solid;
     padding-bottom: 20px;
     margin-bottom: 30px;
@@ -667,29 +668,7 @@ body[dir="ltr"] .cv-header:not(.centered):not(.professional-layout)[dir="ltr"] .
     margin: 10px 18px;
     color: #212529;
     word-break: break-word;
-    word-spacing: normal;
     font-weight: 700;
-}
-
-.cv-contact-info,
-.cv-contact-item p {
-    word-spacing: normal;
-}
-
-.cv-section,
-.cv-section p,
-.cv-section-title {
-    word-spacing: normal;
-}
-
-.cv-experience-item p,
-.cv-education-item p {
-    word-spacing: normal;
-}
-
-.cv-skill-list li,
-.cv-language-list li {
-    word-spacing: normal;
 }
 
 .cv-title {
@@ -697,7 +676,6 @@ body[dir="ltr"] .cv-header:not(.centered):not(.professional-layout)[dir="ltr"] .
     margin: 10px 30px;
     color: #007bff;
     word-break: break-word;
-    word-spacing: normal;
     font-weight: 400;
 }
 
@@ -825,7 +803,7 @@ body[dir="ltr"] .cv-duration {
 
 /* Skills List - Enhanced Professionalism */
 .cv-skill-list {
-    column-count: 1;
+    column-count: 2;
     column-gap: 0px;
     list-style: none;
     padding: 0;
@@ -939,7 +917,7 @@ body[dir="ltr"] .cv-language-list li::before {
 }
 
 /* Objective text wrapping */
-.cv-section #objective p {
+.cv-section#objective p {
     word-break: break-word;
     white-space: normal;
     line-height: 1.6;
@@ -1207,7 +1185,7 @@ body[dir="ltr"] .ast-layout .cv-sidebar .cv-contact-item i {
 }
 
 
-    /* End Marker Style */
+/* End Marker Style */
 .cv-end-marker {
     /* During normal preview, keep it hidden and space-less */
     height: 0 !important;
@@ -1221,8 +1199,8 @@ body[dir="ltr"] .ast-layout .cv-sidebar .cv-contact-item i {
     width: 100%;
     display: block !important; /* Important for page-break-after to work */
     /* Only for print: force a page break after this element if content goes past A4 */
-    page-break-after: always;
-    page-break-inside: avoid;
+    /* Removed page-break-after: always; here, it's moved to @media print for better control */
+    page-break-inside: avoid; /* Ensure the marker itself doesn't break */
 }
 
 /* Filler div style (used by JS to help with stretching) */
@@ -1374,7 +1352,7 @@ body[dir="ltr"] .ast-layout .cv-sidebar .cv-contact-item i {
 .normal-layout.template12 .cv-contact-item i { color: #495057; margin-right: 5px; }
 .normal-layout.template12 .cv-section-title { color: #6c757d; border-bottom-color: #dee2e6; font-family: 'Verdana', sans-serif; font-weight: 700; }
 .normal-layout.template12 .cv-profile-pic { border-color: #343a40; border-width: 4px; }
-.normal-layout.template12 #cv-container { font-family: 'Verdana', sans-serif; color: #212529; }
+.normal-layout.template12 #cv-container { font-family: 'Verdana', sans-serif; color: #212121; }
 
 
 /* --- Standard Layout Templates --- */
@@ -2051,15 +2029,15 @@ body[dir="ltr"] .ast-layout .cv-sidebar .cv-contact-item i {
     font-family: 'Arial', sans-serif;
 }
 
-    .cv-sidebar {
-        min-height: 297mm !important; /* تأكد أن هذا موجود لفرض امتداده بارتفاع صفحة A4 */
-        height: auto !important; /* السماح له بالتمدد إذا كان المحتوى أطول من صفحة واحدة */
-        flex-grow: 1 !important; /* هام جداً لجعله يملأ المساحة المتاحة في Flexbox */
-        overflow: visible !important; /* هام جداً للطباعة لمنع قص المحتوى أو الخلفية */
-        background-clip: padding-box; /* لضمان أن الخلفية تمتد لتغطي منطقة الحشو */
-        /* أضف هذا إذا لم يكن موجوداً */
-        box-sizing: border-box;
-    }
+/* Ensure sidebars stretch correctly in layout */
+.cv-sidebar {
+    min-height: 297mm !important; /* تأكد أن هذا موجود لفرض امتداده بارتفاع صفحة A4 */
+    height: auto !important; /* السماح له بالتمدد إذا كان المحتوى أطول من صفحة واحدة */
+    flex-grow: 1 !important; /* هام جداً لجعله يملأ المساحة المتاحة في Flexbox */
+    overflow: visible !important; /* هام جداً للطباعة لمنع قص المحتوى أو الخلفية */
+    background-clip: padding-box; /* لضمان أن الخلفية تمتد لتغطي منطقة الحشو */
+    box-sizing: border-box;
+}
 
 /* --- Responsive Adjustments for Mobile Screens --- */
 /* Media query for screens up to 768px (tablets in portrait, most phones) */
@@ -2149,25 +2127,10 @@ body[dir="ltr"] .ast-layout .cv-sidebar .cv-contact-item i {
     .cv-end-marker {
         /* On mobile preview, this will allow content to push to new "pages" in a single column */
         height: auto !important; /* Allow height to be determined by content or min-height */
-        margin-top: 150mm !important; /* A large margin to push content to a new "page" */
+        margin-top: 50mm !important; /* A large margin to push content to a new "page" */
         /* It is important that this is not set to 'always' for screen view.
            'page-break-after: always' is only for print media. */
     }
-}
-
-.cv-end-marker {
-    /* خصائص الإخفاء للعرض العادي */
-    height: 0 !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    font-size: 1px !important;
-    line-height: 1px !important;
-    color: transparent !important;
-    background-color: transparent !important;
-    visibility: hidden !important;
-    width: 100%;
-    display: block !important;
-    page-break-inside: avoid; /* مهم جداً لمنع تقسيم علامة النهاية نفسها */
 }
 
 
@@ -2404,28 +2367,14 @@ body[dir="ltr"] .qr-payment-inputs-scroll {
         /* For grid, if sidebar is first in grid-template-columns, it will be on left in LTR */
     }
 
-    .cv-sidebar {
+    .cv-sidebar,
+    .cv-main-content {
         min-height: 297mm !important; /* تأكيد لنظام الطباعة */
         height: auto !important;
         overflow: visible !important;
         page-break-inside: avoid; /* محاولة منع تقسيم الشريط الجانبي نفسه */
         background-clip: padding-box; /* تمديد الخلفية لتشمل منطقة الحشو */
-    }
-
-    .cv-main-content {
-        min-height: 297mm !important; /* تأكيد لنظام الطباعة */
-        height: auto !important;
-        overflow: visible !important;
-        page-break-inside: avoid; /* محاولة منع تقسيم المحتوى الرئيسي نفسه */
-        flex-grow: 1 !important;
-        background-clip: padding-box; /* تمديد الخلفية لتشمل منطقة الحشو */
-    }
-    
-    .cv-sidebar,
-    .cv-main-content {
-        overflow: visible !important;
-        page-break-inside: avoid;
-        padding: 0 !important;
+        padding: 0 !important; /* إزالة أي حشو على العمود نفسه */
         width: auto !important;
         flex-shrink: 0 !important;
     }
@@ -2483,14 +2432,37 @@ body[dir="ltr"] .qr-payment-inputs-scroll {
         display: none !important;
     }
 
-    .cv-end-marker {
-        /* في الطباعة، يصبح هو العنصر الذي يجبر فاصل الصفحة */
-        page-break-after: always; /* هذا هو مفتاح إجبار صفحة جديدة بعده */
-        /* يمكنك إزالة margin-top: 100mm إذا كان يسبب صفحات فارغة غير مرغوبة
-           بينما page-break-after: always; هو ما سيفعل المطلوب */
-        margin-top: 0 !important; /* إعادة ضبط الهامش العلوي */
-        height: auto !important; /* يسمح له بأخذ ارتفاع طبيعي إذا لزم الأمر */
-        /* باقي خصائص الشفافية والإخفاء تبقى كما هي */
+    /* NEW/MODIFIED: Print-specific styles for preventing section breaks */
+    .cv-section,
+    .cv-experience-item,
+    .cv-education-item,
+    .cv-reference-item {
+        page-break-inside: avoid !important;
     }
 
+    /* NEW/MODIFIED: End Marker for Print */
+    .cv-end-marker {
+        /* Force a page break after this marker in print */
+        page-break-after: always !important;
+        /* Ensure the marker itself doesn't break across pages */
+        page-break-inside: avoid !important;
+        /* Make it invisible and take no space */
+        height: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        font-size: 1px !important;
+        line-height: 1px !important;
+        color: transparent !important;
+        background-color: transparent !important;
+        visibility: hidden !important;
+        width: 100%;
+        display: block !important;
+    }
+
+    /* NEW: Adjust letter-spacing for RTL text in print to prevent word sticking */
+    [dir="rtl"] .cv-content *,
+    [dir="rtl"] .cv-sidebar *,
+    [dir="rtl"] .cv-main-content * {
+        letter-spacing: 0.01em !important; /* Small positive value */
+    }
 }
