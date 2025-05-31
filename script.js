@@ -956,7 +956,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
 
     // 2. Set the cv-container to a reliable, fixed size (A4) and temporarily move it off-screen for clean capture
     cvContainer.style.width = '210mm'; // Standard A4 width for PDF output
-    cvContainer.style.minHeight = '297mm'; // Standard A4 height (will expand if content is longer)
+    cvContainer.style.minHeight = '400mm'; // Standard A4 height (will expand if content is longer)
     cvContainer.style.height = 'auto'; // Allow height to grow with content
     cvContainer.style.maxHeight = 'none'; // Remove any max height constraints
     cvContainer.style.overflow = 'visible'; // Ensure all content is rendered
