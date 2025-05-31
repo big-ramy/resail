@@ -1212,7 +1212,7 @@ body[dir="ltr"] .ast-layout .cv-sidebar .cv-contact-item i {
     /* During normal preview, keep it hidden and space-less */
     height: 0 !important;
     padding: 0 !important;
-    margin: 0 !important;
+    margin-top: 300mm !important;
     font-size: 1px !important;
     line-height: 1px !important;
     color: transparent !important;
@@ -1220,9 +1220,6 @@ body[dir="ltr"] .ast-layout .cv-sidebar .cv-contact-item i {
     visibility: hidden !important;
     width: 100%;
     display: block !important; /* Important for page-break-after to work */
-    /* Only for print: force a page break after this element if content goes past A4 */
-    page-break-after: always;
-    page-break-inside: avoid;
 }
 
 /* Filler div style (used by JS to help with stretching) */
@@ -2155,20 +2152,7 @@ body[dir="ltr"] .ast-layout .cv-sidebar .cv-contact-item i {
     }
 }
 
-.cv-end-marker {
-    /* خصائص الإخفاء للعرض العادي */
-    height: 0 !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    font-size: 1px !important;
-    line-height: 1px !important;
-    color: transparent !important;
-    background-color: transparent !important;
-    visibility: hidden !important;
-    width: 100%;
-    display: block !important;
-    page-break-inside: avoid; /* مهم جداً لمنع تقسيم علامة النهاية نفسها */
-}
+
 
 
 /* Responsive adjustments for very small screens (e.g., max-width 400px) */
@@ -2485,7 +2469,6 @@ body[dir="ltr"] .qr-payment-inputs-scroll {
 
     .cv-end-marker {
         /* في الطباعة، يصبح هو العنصر الذي يجبر فاصل الصفحة */
-        page-break-after: always; /* هذا هو مفتاح إجبار صفحة جديدة بعده */
         margin-top: 300mm; /* إذا كان يسبب صفحات فارغة غير مرغوبة
          /*  بينما page-break-after: always; هو ما سيفعل المطلوب */
         margin-top: 0 !important; /* إعادة ضبط الهامش العلوي */
