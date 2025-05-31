@@ -1004,7 +1004,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     // Determine html2canvas scale factor dynamically for mobile performance
     const isMobile = /Mobi|Android/i.test(navigator.userAgent);
     const scaleFactor = isMobile ? 1.5 : 2; // **Reduced scale for mobile, adjust if needed (e.g., to 1)**
-    const imageQuality = isMobile ? 0.8 : 0.98; // **Reduced quality for mobile, adjust if needed**
+    const imageQuality = isMobile ? 0.6 : 0.8; // **Reduced quality for mobile, adjust if needed**
 
     let pdfBase64 = null;
     try {
