@@ -2468,12 +2468,30 @@ body[dir="ltr"] .qr-payment-inputs-scroll {
     }
 
     .cv-end-marker {
-        /* في الطباعة، يصبح هو العنصر الذي يجبر فاصل الصفحة */
-        margin-top: 300mm; /* إذا كان يسبب صفحات فارغة غير مرغوبة
-         /*  بينما page-break-after: always; هو ما سيفعل المطلوب */
-        margin-top: 0 !important; /* إعادة ضبط الهامش العلوي */
-        height: auto !important; /* يسمح له بأخذ ارتفاع طبيعي إذا لزم الأمر */
-        /* باقي خصائص الشفافية والإخفاء تبقى كما هي */
+        /* On print, this element can force a page break if needed.
+           It should not have a fixed large margin-top in print,
+           as the primary pagination is controlled by #cv-container's page-break-after. */
+        height: 0 !important; /* Keep it from taking up vertical space */
+        padding: 0 !important;
+        margin: 0 !important; /* Reset all margins for print */
+        font-size: 1px !important;
+        line-height: 1px !important;
+        color: transparent !important;
+        background-color: transparent !important;
+        visibility: hidden !important;
+        width: 100%;
+        display: block !important; /* Important for page-break-after to work */
+        
+        /* This is the key for forcing a page break.
+           If you want it to appear at the START of a new page, use page-break-before.
+           If you want content before it to fill the page and then break,
+           and the marker is the LAST thing on that page, use page-break-after on content before it,
+           or simply rely on #cv-container's page-break-after.
+           
+           Given #cv-container has page-break-after: always, this marker is more for internal
+           layout or specific use cases. Let's make it explicitly force a page break before it.
+        */
+        page-break-before: always !important; 
     }
 
 }
