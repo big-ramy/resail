@@ -893,7 +893,6 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     }
 
     // Preserve original styles for restoration
-    // نحدد الخصائص التي سيتم تغييرها مؤقتًا لحفظها واستعادتها بدقة
     const originalStyles = {
         cvDisplay: cvContainer.style.display,
         cvWidth: cvContainer.style.width,
@@ -912,10 +911,9 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         cvMargin: cvContainer.style.margin,
         cvZoom: cvContainer.style.zoom || '',
         cvMaxWidth: cvContainer.style.maxWidth || '',
-        cvVisibility: cvContainer.style.visibility || '', // حفظ حالة الـ visibility
-        cvWordSpacing: cvContainer.style.wordSpacing || '', // حفظ تباعد الكلمات
+        cvVisibility: cvContainer.style.visibility || '', // Save visibility state
 
-        // حفظ خصائص الآباء التي قد تتأثر مؤقتًا
+        // Save parent properties that might be temporarily affected
         cvPreviewAreaDisplay: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.display : '',
         cvPreviewAreaJustifyContent: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.justifyContent : '',
         cvPreviewAreaAlignItems: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.alignItems : '',
@@ -931,6 +929,9 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         cvPreviewPageMinHeight: document.getElementById('cv-preview-page') ? document.getElementById('cv-preview-page').style.minHeight : '',
     };
     const originalScrollTop = cvContainer.scrollTop;
+
+    // --- Remove any watermark class before starting the process ---
+    cvContainer.classList.remove('watermarked');
 
     // --- Apply temporary styles for capture ---
 
@@ -967,10 +968,10 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     cvContainer.style.left = '-9999px'; // Temporarily move off-screen for clean capture without flicker
     cvContainer.style.zIndex = '-1'; // Ensure it's behind other elements
     cvContainer.style.transform = 'none'; // Remove any transforms
+    // **Important:** Do not change display here. Let it remain as it is from the templates to ensure Flex/Grid.
     cvContainer.style.padding = '0'; // Remove any padding on the container itself
     cvContainer.style.margin = '0'; // Remove any margin here, we'll restore original later
     cvContainer.style.zoom = '1'; // Reset zoom property
-    cvContainer.style.wordSpacing = 'normal'; // Reset word-spacing for capture
 
     // 3. Ensure direction is applied consistently (important for RTL layouts)
     cvContainer.style.direction = currentLang === 'ar' ? 'rtl' : 'ltr';
@@ -990,12 +991,20 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         }
         return Promise.resolve();
     }));
-    await new Promise(resolve => setTimeout(resolve, 800)); // **Increased delay for better rendering on mobile**
+
+    // NEW: Use requestAnimationFrame to ensure the browser has rendered the changes
+    // This is more reliable than a fixed setTimeout for visual updates.
+    await new Promise(resolve => requestAnimationFrame(() => {
+        requestAnimationFrame(resolve); // A second rAF ensures layout calculations are done
+    }));
+
+    // Optional: Keep a very short timeout after rAF if complex reflows are still causing issues
+    // await new Promise(resolve => setTimeout(resolve, 100)); // Short delay if needed
 
     // Determine html2canvas scale factor dynamically for mobile performance
     const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-    const scaleFactor = isMobile ? 1.5 : 2; // Reduced scale for mobile, adjust if needed (e.g., to 1)
-    const imageQuality = isMobile ? 0.8 : 0.98; // Reduced quality for mobile, adjust if needed
+    const scaleFactor = isMobile ? 1.5 : 2; // **Reduced scale for mobile, adjust if needed (e.g., to 1)**
+    const imageQuality = isMobile ? 0.8 : 0.98; // **Reduced quality for mobile, adjust if needed**
 
     let pdfBase64 = null;
     try {
@@ -1004,7 +1013,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
             filename: 'CV.pdf',
             image: { type: 'jpeg', quality: imageQuality }, // JPEG for smaller file size, high quality
             html2canvas: {
-                scale: scaleFactor, // Apply dynamic scale factor
+                scale: scaleFactor, // **Apply dynamic scale factor**
                 useCORS: true, // Attempt to load cross-origin images (important for profile pics)
                 allowTaint: true, // Allow canvas to be "tainted" by images if CORS fails (might prevent data URL)
                 backgroundColor: 'white', // Explicit background color
@@ -1033,7 +1042,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
             },
             // Configure page breaks: avoid breaking elements, but force a new page after the end marker
             pagebreak: {
-                mode: ['css'], // 'avoid-all' tries not to break elements, 'css' respects CSS page-break properties
+                mode: ['avoid-all', 'css'], // 'avoid-all' tries not to break elements, 'css' respects CSS page-break properties
                 // Removed 'after: .cv-end-marker' from here.
                 // It's more reliable to let CSS `page-break-after` or `page-break-before`
                 // on relevant sections handle explicit page breaks.
@@ -1065,7 +1074,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         throw error;
     } finally {
         // --- Restore original styles ---
-        // استعادة الخصائص التي تم حفظها بدقة
+        // Restore precisely saved properties
         cvContainer.style.width = originalStyles.cvWidth;
         cvContainer.style.height = originalStyles.cvHeight;
         cvContainer.style.overflow = originalStyles.cvOverflow;
@@ -1075,17 +1084,16 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         cvContainer.style.left = originalStyles.cvLeft;
         cvContainer.style.zIndex = originalStyles.cvZIndex;
         cvContainer.style.transform = originalStyles.cvTransform;
-        cvContainer.style.display = originalStyles.cvDisplay; // استعادة display الأصلي
+        cvContainer.style.display = originalStyles.cvDisplay; // Restore original display
         cvContainer.style.maxHeight = originalStyles.cvMaxHeight;
         cvContainer.style.overflowY = originalStyles.cvOverflowY;
         cvContainer.style.padding = originalStyles.cvPadding;
         cvContainer.style.margin = originalStyles.cvMargin;
         cvContainer.style.zoom = originalStyles.cvZoom;
         cvContainer.style.maxWidth = originalStyles.cvMaxWidth;
-        cvContainer.style.visibility = originalStyles.cvVisibility; // استعادة الـ visibility
-        cvContainer.style.wordSpacing = originalStyles.cvWordSpacing; // استعادة تباعد الكلمات
+        cvContainer.style.visibility = originalStyles.cvVisibility; // Restore visibility
 
-        // استعادة خصائص الـ Flexbox/Grid إذا كانت موجودة في الـ originalStyles
+        // Restore Flexbox/Grid properties if they existed in originalStyles
         cvContainer.style.flexDirection = originalStyles.cvFlexDirection;
         cvContainer.style.gridTemplateColumns = originalStyles.cvGridTemplateColumns;
         cvContainer.style.gridTemplateRows = originalStyles.cvGridTemplateRows;
@@ -1119,6 +1127,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         removeButtons.forEach(btn => btn.style.display = '');
 
         // Important: After restoring styles, force a re-render of the CV
+        // Only regenerate if the preview page is supposed to be active
         if (document.getElementById('cv-preview-page').classList.contains('active-page')) {
             generateCV(); // This will rebuild the CV with correct display styles
         }
