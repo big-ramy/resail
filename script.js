@@ -396,6 +396,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // NEW: Call to PDF conversion service
 async function callPdfConversionService(htmlContent, fileName, addWatermark) {
+    // NEW: إضافة AbortController لضبط مهلة للطلب
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000); // مهلة 60 ثانية (يمكن زيادتها لـ 90000 = 90 ثانية إذا كانت التحويلات طويلة)
+
     try {
         const response = await fetch(`${PDF_SERVICE_URL}/generate-pdf`, {
             method: 'POST',
@@ -403,8 +407,11 @@ async function callPdfConversionService(htmlContent, fileName, addWatermark) {
                 'Content-Type': 'application/json',
                 'Accept': 'application/pdf'
             },
-            body: JSON.stringify({ html: htmlContent, fileName: fileName, addWatermark: addWatermark })
+            body: JSON.stringify({ html: htmlContent, fileName: fileName, addWatermark: addWatermark }),
+            signal: controller.signal // NEW: ربط الـ signal بالطلب
         });
+
+        clearTimeout(timeoutId); // NEW: مسح المهلة إذا نجح الطلب
 
         if (!response.ok) {
             const errorBody = await response.text();
@@ -412,7 +419,6 @@ async function callPdfConversionService(htmlContent, fileName, addWatermark) {
         }
 
         const pdfBlob = await response.blob();
-        // Convert Blob to Base64 to send to Google Apps Script
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onloadend = () => resolve(reader.result.split(',')[1]);
@@ -421,8 +427,14 @@ async function callPdfConversionService(htmlContent, fileName, addWatermark) {
         });
 
     } catch (error) {
-        console.error("Failed to call PDF conversion service:", error);
-        throw error; // Re-throw the error for further handling
+        clearTimeout(timeoutId); // NEW: مسح المهلة في حالة الخطأ أيضًا
+        if (error.name === 'AbortError') {
+            console.error("PDF Conversion Service timed out:", error);
+            throw new Error(currentLang === 'ar' ? 'انتهت مهلة إنشاء السيرة الذاتية. حاول مرة أخرى.' : 'CV generation timed out. Please try again.');
+        } else {
+            console.error("Failed to call PDF conversion service:", error);
+            throw error; // أعد رمي الخطأ
+        }
     }
 }
 
