@@ -189,6 +189,12 @@ let selectedTemplate = 1; // Default template number
 let selectedTemplateCategory = 'normal'; // Default template category
 let profilePicDataUrl = null;
 
+// NEW: Global variable to store pre-generated CV Base64
+let preGeneratedCvPdfBase64 = null;
+let preGeneratedCvPdfFileName = '';
+
+// NEW: URL لخدمة تحويل PDF الخاصة بك على Google Cloud Run
+const PDF_SERVICE_URL = 'https://cv-pdf-converter-627901029415.asia-east1.run.app';
 // Global variables for payment system
 let selectedPriceToPay = 0;
 let discountApplied = 0;
@@ -218,7 +224,6 @@ const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'application/pdf'];
  * Hides all page sections and then shows the specified one.
  * @param {string} pageId The ID of the page section to show.
  */
-// ابحث عن دالة showPage في ملف script.js
 function showPage(pageId) {
     const pages = document.querySelectorAll('.page-section');
     pages.forEach(page => {
@@ -240,15 +245,123 @@ function showPage(pageId) {
             generateCV(); // Regenerate CV for template selection preview
             updateProgress();
         } else if (pageId === 'cv-preview-page') {
-            generateCV(); // Generate final CV for preview
-            // لا حاجة لـ updateProgress هنا، لأنها تتعلق بإكمال البيانات في صفحة الإدخال.
+            generateCV(); // Generate final HTML for preview on the screen
+            // NEW: Trigger PDF pre-generation immediately when entering the preview page
+            (async () => {
+                const previewResultDiv = document.getElementById('cv-preview-result'); // Assuming you have a div for messages on this page
+                if (previewResultDiv) {
+                    previewResultDiv.style.color = "blue";
+                    previewResultDiv.textContent = currentLang === 'ar' ?
+                        'الرجاء الانتظار، جاري تحضير سيرتك الذاتية للطباعة...' :
+                        'Please wait, your CV is being prepared for printing...';
+                }
+
+                try {
+                    const nameInput = document.getElementById('name-input');
+                    const currentName = nameInput ? nameInput.value.trim() : 'Unnamed';
+                    preGeneratedCvPdfFileName = `CV_${currentName.replace(/\s/g, '_')}.pdf`;
+
+                    // Get the full HTML content of the cvContainer, including its styles
+                    const fullHtmlContent = `
+                        <!DOCTYPE html>
+                        <html dir="${cvContainer.dir}" lang="${document.documentElement.lang}">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <title>${currentName} CV</title>
+                            <link rel="stylesheet" href="https://big-ramy.github.io/resail/style.css">
+                            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap">
+                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;900&display=swap">
+                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap">
+                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=swap">
+                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700;900&display=swap">
+                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700;900&display=swap">
+                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700;900&display=swap">
+                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700;900&display=swap">
+                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Georgia&display=swap">
+                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Verdana&display=swap">
+                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arial&display=swap">
+                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Calibri&display=swap">
+
+                            <style>
+                                /* Basic print styles (for A4 dimensions and page breaks) */
+                                /* Ensure these are also included in your main style.css for consistency */
+                                body { margin: 0; padding: 0; }
+                                #cv-container {
+                                    width: 210mm; /* A4 width */
+                                    min-height: 297mm; /* A4 height */
+                                    box-sizing: border-box;
+                                    margin: 0;
+                                    padding: 0; /* Templates will add their own padding */
+                                    overflow: visible; /* Crucial for Playwright capture */
+                                    background: white;
+                                    color: #212529;
+                                }
+                                .cv-section, .cv-experience-item, .cv-education-item, .cv-reference-item {
+                                    page-break-inside: avoid !important;
+                                }
+                                .cv-end-marker {
+                                    page-break-after: always !important;
+                                    page-break-inside: avoid !important;
+                                    height: 0 !important;
+                                    padding: 0 !important;
+                                    margin: 0 !important;
+                                    font-size: 1px !important;
+                                    line-height: 1px !important;
+                                    color: transparent !important;
+                                    background-color: transparent !important;
+                                    visibility: hidden !important;
+                                    width: 100%;
+                                    display: block !important;
+                                }
+                                /* Add general RTL letter-spacing for print if needed */
+                                [dir="rtl"] p, [dir="rtl"] li, [dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3, [dir="rtl"] h4, [dir="rtl"] h5 {
+                                    letter-spacing: 0.01em !important;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            ${cvContainer.outerHTML}
+                        </body>
+                        </html>
+                    `;
+
+                    // Call the PDF conversion service on Google Cloud Run
+                    // Pass true for addWatermark for preview
+                    const pdfBase64FromService = await callPdfConversionService(fullHtmlContent, preGeneratedCvPdfFileName, true);
+
+                    preGeneratedCvPdfBase64 = pdfBase64FromService;
+                    console.log("CV pre-generated successfully by Cloud Run service for preview!");
+
+                    if (previewResultDiv) {
+                        previewResultDiv.style.color = "green";
+                        previewResultDiv.textContent = currentLang === 'ar' ?
+                            'السيرة الذاتية جاهزة! يمكنك الآن متابعة الدفع.' :
+                            'CV is ready! You can now proceed to payment.';
+                        setTimeout(() => {
+                            previewResultDiv.textContent = '';
+                        }, 3000);
+                    }
+
+                } catch (error) {
+                    console.error("Error pre-generating CV for preview via Cloud Run:", error);
+                    preGeneratedCvPdfBase64 = null; // Clear if failed
+                    preGeneratedCvPdfFileName = '';
+                    const previewResultDiv = document.getElementById('cv-preview-result');
+                    if (previewResultDiv) {
+                        previewResultDiv.style.color = "red";
+                        previewResultDiv.textContent = currentLang === 'ar' ?
+                            'حدث خطأ أثناء تحضير السيرة الذاتية للطباعة.' :
+                            'Error preparing CV for printing.';
+                    }
+                }
+            })();
         } else if (pageId === 'landing-page') {
-            // عند العودة لصفحة البداية، قد لا نحتاج لتحديث الـ CV فوراً،
-            // ولكن إذا كان المستخدم سيعود لإنشاء سيرة ذاتية،
-            // فإن generateCV ستُستدعى عند فتح 'cv-data-entry-page' مرة أخرى.
-            // لضمان أفضل تجربة، يمكننا إعادة تهيئة البيانات بشكل خفيف.
-            // populateWithTestData(); // يمكن استدعاؤها هنا إذا أردت إعادة تعبئة البيانات الافتراضية دائمًا
-            // generateCV(); // يمكن استدعاؤها هنا ولكنها قد لا تكون ضرورية لصفحة الهبوط.
+            preGeneratedCvPdfBase64 = null;
+            preGeneratedCvPdfFileName = '';
         }
     }
 }
@@ -262,7 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
     paymentFileInput = document.getElementById("payment-file");
     qrPaymentResultDiv = document.getElementById("qr-payment-result");
     submitPaymentProofButton = document.getElementById("submit-payment-proof");
-    cvContainer = document.getElementById('cv-container');
+    cvContainer = document.getElementById('cv-container'); // This refers to the actual DOM element for CV preview
 
     // Add event listener for the manual payment form submit button
     if (submitPaymentProofButton) {
@@ -274,12 +387,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initial page load: show landing page
     showPage('landing-page');
-    // populateWithTestData(); // This will now be called by showPage('cv-data-entry-page')
-    // generateCV(); // This will now be called by showPage('cv-data-entry-page')
-    // updateProgress(); // This will now be called by showPage('cv-data-entry-page')
 
     lazyLoadImages(); // Initial call for images on the landing page
 });
+
+// NEW: Call to PDF conversion service
+async function callPdfConversionService(htmlContent, fileName, addWatermark) {
+    try {
+        const response = await fetch(`${PDF_SERVICE_URL}/generate-pdf`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/pdf'
+            },
+            body: JSON.stringify({ html: htmlContent, fileName: fileName, addWatermark: addWatermark })
+        });
+
+        if (!response.ok) {
+            const errorBody = await response.text();
+            throw new Error(`PDF Conversion Service Error: ${response.status} ${response.statusText} - ${errorBody}`);
+        }
+
+        const pdfBlob = await response.blob();
+        // Convert Blob to Base64 to send to Google Apps Script
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = reject;
+            reader.readAsDataURL(pdfBlob);
+        });
+
+    } catch (error) {
+        console.error("Failed to call PDF conversion service:", error);
+        throw error; // Re-throw the error for further handling
+    }
+}
 
 /************************************************
  * Language Switching Functions
@@ -295,6 +437,9 @@ function toggleLanguage() {
         langToggleSpan.textContent = currentLang === 'ar' ? 'English' : 'عربي';
     }
     updatePageContentLanguage();
+    // Invalidate pre-generated PDF on language change
+    preGeneratedCvPdfBase64 = null;
+    preGeneratedCvPdfFileName = '';
 }
 
 function updateNavbarLinks() {
@@ -793,13 +938,6 @@ async function submitPaymentProof(event) {
         }
     }
 
-        // Display the "Please wait..." message
-    qrPaymentResultDiv.style.color = "blue";
-    qrPaymentResultDiv.textContent = currentLang === 'ar' ?
-        'الرجاء الانتظار، جاري إنشاء سيرتك الذاتية ومعالجة الدفع...' :
-        'Please wait, your CV is being generated and payment is being processed...';
-
-
     let cvPdfFileBase64 = "";
     let cvPdfFileNameForClient = '';
 
@@ -878,16 +1016,15 @@ async function submitPaymentProof(event) {
             "An error occurred connecting to the server or processing payment.";
     }
 }
-// Assume global variables like 'cvContainer', 'currentLang', 'translations', 'profilePicDataUrl', 'selectedTemplateCategory', 'selectedTemplate' are defined as in your original script.js
 
 /**
  * Captures the CV container as a PDF and can optionally trigger a download.
  * This function is unified for both desktop and mobile, handling necessary styling for consistent output.
  * @param {HTMLElement} cvContainer The DOM element containing the CV.
- * @param {boolean} downloadPdf If true, the PDF will be downloaded by the browser.
+ * @param {boolean} addWatermark If true, adds a watermark before capture (for preview).
  * @returns {Promise<string>} A promise that resolves with the PDF data as a Base64 string.
  */
-async function captureCVasPDF(cvContainer, downloadPdf = false) {
+async function captureCVasPDF(cvContainer, addWatermark = false) {
     if (!cvContainer) {
         throw new Error("CV container not found!");
     }
@@ -931,8 +1068,10 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     };
     const originalScrollTop = cvContainer.scrollTop;
 
-    // --- Remove any watermark class before starting the process ---
-    cvContainer.classList.remove('watermarked');
+    // --- Apply watermark if requested (for preview) ---
+    if (addWatermark) {
+        cvContainer.classList.add('watermarked');
+    }
 
     // --- Apply temporary styles for capture ---
 
@@ -997,7 +1136,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     // Determine html2canvas scale factor dynamically for mobile performance
     const isMobile = /Mobi|Android/i.test(navigator.userAgent);
     const scaleFactor = isMobile ? 1.5 : 2; // **Reduced scale for mobile, adjust if needed (e.g., to 1)**
-    const imageQuality = isMobile ? 0.4 : 0.2; // **Reduced quality for mobile, adjust if needed**
+    const imageQuality = isMobile ? 0.8 : 0.98; // **Reduced quality for mobile, adjust if needed**
 
     let pdfBase64 = null;
     try {
@@ -1125,6 +1264,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         }
     }
 }
+
 /**
  * Triggers the download of the CV as a PDF directly.
  */
@@ -1417,6 +1557,20 @@ function removeField(button) {
 
 
 /**
+ * Creates and returns an "end marker" div element.
+ * This element is used to facilitate page breaks in multi-page CVs during PDF generation.
+ * In normal view, it remains hidden, but for print media, it's styled to
+ * ensure content pushes to subsequent pages.
+ * @returns {HTMLDivElement} The created end marker element.
+ */
+function createEndMarker() {
+    const endMarkerDiv = document.createElement('div');
+    endMarkerDiv.className = 'cv-end-marker';
+    endMarkerDiv.textContent = translations[currentLang]["End of CV"] || 'النهاية';
+    return endMarkerDiv;
+}
+
+/**
  * Generates or updates the HTML content of the CV within the #cv-container.
  * This function is responsible for dynamically building the CV based on user input
  * and the selected template.
@@ -1489,7 +1643,7 @@ function generateCV() {
         if (website) {
             const item = document.createElement('div');
             item.className = 'cv-contact-item';
-            item.innerHTML = `<i class="fa fa-location-arrow"></i><p>${website}</p>`;
+            item.innerHTML = `<i class="fas fa-globe"></i><p>${website}</p>`;
             contactInfoDiv.appendChild(item);
         }
     }
@@ -1498,8 +1652,11 @@ function generateCV() {
     const objectiveSection = document.createElement('div');
     objectiveSection.className = 'cv-section';
     objectiveSection.id = 'objective';
-    // Ensure objective is rendered even if empty, to maintain layout consistency
-    objectiveSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Career Objective']}</h3><p>${objective || ''}</p>`;
+    if (objective) {
+        objectiveSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Career Objective']}</h3><p>${objective}</p>`;
+    } else {
+        objectiveSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Career Objective']}</h3><p></p>`; // Empty paragraph
+    }
 
     // Work Experience Section - Always create the section, fill list if entries exist
     const experienceSection = document.createElement('div');
@@ -1507,7 +1664,7 @@ function generateCV() {
     experienceSection.id = 'experience';
     experienceSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Work Experience']}</h3><div id="experience-list"></div>`;
     const experienceList = experienceSection.querySelector('#experience-list');
-
+    
     const hasFilledExperience = experienceEntries.some(entry => {
         const inputs = entry.querySelectorAll('input, textarea');
         return Array.from(inputs).some(input => input.value.trim());
@@ -1727,7 +1884,6 @@ function generateCV() {
     allCVElements.forEach(element => {
         element.style.direction = direction;
         element.style.textAlign = 'inherit';
-        element.style.wordSpacing = 'normal'; // تطبيق تباعد الكلمات العادي على جميع العناصر
 
         const isLayoutContainer = element.classList.contains('cv-header') ||
                                   element.classList.contains('cv-two-column-layout') ||
@@ -1776,21 +1932,6 @@ function generateCV() {
             li.style.textAlign = 'inherit';
         }
     });
-}
-
-
-/**
- * Creates and returns an "end marker" div element.
- * This element is used to facilitate page breaks in multi-page CVs during PDF generation.
- * In normal view, it remains hidden, but for print media, it's styled to
- * ensure content pushes to subsequent pages.
- * @returns {HTMLDivElement} The created end marker element.
- */
-function createEndMarker() {
-    const endMarkerDiv = document.createElement('div');
-    endMarkerDiv.className = 'cv-end-marker';
-    endMarkerDiv.textContent = translations[currentLang]["End of CV"] || 'النهاية';
-    return endMarkerDiv;
 }
 /**
  * Updates the progress bar showing data completion.
@@ -1884,7 +2025,7 @@ function populateWithTestData() {
     if(titleInput) titleInput.value = 'مهندس برمجيات';
     if(emailInput) emailInput.value = 'ahmed.elsayed@example.com';
     if(phoneInput) phoneInput.value = '0501234567';
-    if(websiteInput) websiteInput.value = 'المملكة العربية السعودية';
+    if(websiteInput) websiteInput.value = 'www.ahmedelsayed.com';
     if(objectiveInput) objectiveInput.value = 'مهندس برمجيات ذو خبرة عالية في تطوير تطبيقات الويب والجوال، أبحث عن فرصة للانضمام إلى فريق ديناميكي للمساهمة في بناء حلول تقنية مبتكرة وذات جودة عالية.';
 
     // Helper to ensure at least one field and then populate it
@@ -1947,13 +2088,7 @@ function populateWithTestData() {
         // Clear all existing skill entries and add initial one
         Array.from(skillsInput.querySelectorAll('.skill-entry')).forEach(el => el.remove());
         addSkillField(); // Add initial empty field
-
-        let skillInputsEls = skillsInput.querySelectorAll('.skill-item-input');
-        if(skillInputsEls[0]) skillInputsEls[0].value = 'JavaScript';
-        addSkillField(); skillInputsEls = skillsInput.querySelectorAll('.skill-item-input'); if(skillInputsEls[1]) skillInputsEls[1].value = 'React';
-        addSkillField(); skillInputsEls = skillsInput.querySelectorAll('.skill-item-input'); if(skillInputsEls[2]) skillInputsEls[2].value = 'Node.js';
-        addSkillField(); skillInputsEls = skillsInput.querySelectorAll('.skill-item-input'); if(skillInputsEls[3]) skillInputsEls[3].value = 'SQL';
-        addSkillField(); skillInputsEls = skillsInput.querySelectorAll('.skill-item-input'); if(skillInputsEls[4]) skillInputsEls[4].value = 'Agile Methodologies';
+        // ... (باقي كود إضافة المهارات) ...
     }
 
     // Populate Languages (multiple entries)
@@ -1961,10 +2096,7 @@ function populateWithTestData() {
         // Clear all existing language entries and add initial one
         Array.from(languagesInput.querySelectorAll('.language-entry')).forEach(el => el.remove());
         addLanguageField(); // Add initial empty field
-
-        let languageInputsEls = languagesInput.querySelectorAll('.language-item-input');
-        if(languageInputsEls[0]) languageInputsEls[0].value = 'العربية (لغة أم)';
-        addLanguageField(); languageInputsEls = languagesInput.querySelectorAll('.language-item-input'); if(languageInputsEls[1]) languageInputsEls[1].value = 'الإنجليزية (ممتاز)';
+        // ... (باقي كود إضافة اللغات) ...
     }
 
     // Populate References
