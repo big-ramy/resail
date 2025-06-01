@@ -2086,7 +2086,6 @@ function populateWithTestData() {
     ensureAndPopulateOne('references-input', 'reference-entry', addReferenceField, (entry) => {
         if(entry.querySelector('.reference-name')) entry.querySelector('.reference-name').value = 'الدكتور علي أحمد';
         if(entry.querySelector('.reference-position')) entry.querySelector('.reference-position').value = 'أستاذ مساعد، جامعة الملك فهد للبترول والمعادن';
-        if(entry.querySelector('.reference-phone')) entry.querySelector('.reference-phone').value = '0551234567';
         if(entry.querySelector('.reference-email')) entry.querySelector('.reference-email').value = 'ali.ahmed@example.com';
     });
     // Add a second reference entry
