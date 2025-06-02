@@ -899,7 +899,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
 
         
     const originalStyles = {
-        cvDisplay: cvContainer.style.display = 'flix !important',
+        cvDisplay: cvContainer.style.display,
         cvWidth: cvContainer.style.width,
         cvHeight: cvContainer.style.height,
         cvMinHeight: cvContainer.style.minHeight,
@@ -1126,8 +1126,6 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         // Important: After restoring styles, force a re-render of the CV
         if (document.getElementById('cv-preview-page').classList.contains('active-page')) {
             generateCV(); // This will rebuild the CV with correct display styles
-             cvContainer.style.display = 'none!important';
-
         }
     }
 }
