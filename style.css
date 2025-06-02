@@ -469,7 +469,7 @@ body[dir="ltr"] .template-preview-container {
     min-height: 297mm; /* فرض ارتفاع A4 قياسي */
     max-width: none !important; /* هام: لا تفرض قيوداً على العرض الأقصى لغرض الالتقاط */
     height: auto !important; /* السماح للارتفاع بالنمو إذا كان المحتوى يتجاوز صفحة واحدة */
-    display: flex !important; /* هام: يجب أن يكون display: flex أو block لكي يتم رسمه */
+    display: none!important; /* هام: يجب أن يكون display: flex أو block لكي يتم رسمه */
     flex-direction: column;
     justify-content: flex-start;
     box-sizing: border-box;
