@@ -891,9 +891,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     
     if (!cvContainer) {
         throw new Error("CV container not found!");
-    }
-
-    const 
+    } 
     // Preserve original styles for restoration
     // We precisely define which properties will be temporarily changed to save and restore them.
 
