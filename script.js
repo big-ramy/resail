@@ -2004,6 +2004,7 @@ function populateWithTestData() {
         if (entries.length > 1) {
             if(entries[1].querySelector('.experience-title')) entries[1].querySelector('.experience-title').value = 'مهندس برمجيات';
             if(entries[1].querySelector('.experience-company')) entries[1].querySelector('.experience-company').value = 'شركة التقنية الرائدة';
+            // FIX: Correcting the problematic duration string
             if(entries[1].querySelector('.experience-duration')) entries[1].querySelector('.experience-duration').value = '2017 - 2020';
             if(entries[1].querySelector('.experience-description')) entries[1].querySelector('.experience-description').value = 'تطوير وصيانة تطبيقات الويب باستخدام Node.js و React، التعاون مع فريق المنتج لتحسين تجربة المستخدم.';
         }
