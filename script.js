@@ -126,7 +126,7 @@ const translations = {
         'University/Institution': 'الجامعة/المعهد',
         'Skills': 'المهارات',
         'Add Skill': 'إضافة مهارة',
-        'Enter a skill': 'أدخل لغة',
+        'Enter a skill': 'أدخل مهارة',
         'Languages': 'اللغات',
         'Add Language': 'إضافة لغة',
         'Enter a language': 'أدخل لغة',
@@ -168,7 +168,7 @@ const translations = {
         "payment-error-general": "An error occurred during PayPal payment. Please try again.",
         "Apply Discount": "Apply Discount",
         "Enter discount code (إن وجد)": "أدخل كود الخصم (إن وجد)",
-        "End of CV": "النهاية", // أضف هذا السطر
+        "End of CV": "End of CV",
         "contact-link": "اتصل بنا",
         "Your CV Preview": "معاينة سيرتك الذاتية",
         "Download PDF (Direct)": "تنزيل PDF (مباشر)",
@@ -193,15 +193,14 @@ let profilePicDataUrl = null;
 let preGeneratedCvPdfBase64 = null;
 let preGeneratedCvPdfFileName = '';
 
-// NEW: دالة مساعدة جديدة لإلغاء صلاحية الـ PDF المحضر مسبقاً
+// NEW: دالة مساعدة لإلغاء صلاحية الـ PDF المحضر مسبقاً (مهمة لضمان إعادة التحضير عند التغيير)
 function invalidatePreGeneratedPdf() {
     preGeneratedCvPdfBase64 = null;
     preGeneratedCvPdfFileName = '';
+    console.log("Pre-generated PDF invalidated due to data change.");
 }
 
-// NEW: URL لخدمة تحويل PDF الخاصة بك على Google Cloud Run
-// **استبدل هذا بـ URL خدمتك الحقيقي بعد نشرها بنجاح!**
-const PDF_SERVICE_URL = 'https://cv-pdf-converter-627901029415.asia-east1.run.app'; // <--- **استبدل هذا بـ URL خدمتك الحقيقي!**
+// OLD: تم إزالة PDF_SERVICE_URL و callPdfConversionService لأننا نعود للجانب العميل
 
 // Global variables for payment system
 let selectedPriceToPay = 0;
@@ -254,9 +253,9 @@ function showPage(pageId) {
             updateProgress();
         } else if (pageId === 'cv-preview-page') {
             generateCV(); // Generate final HTML for preview on the screen
-            // NEW: Trigger PDF pre-generation immediately when entering the preview page
+            // NEW: Trigger client-side PDF pre-generation immediately
             (async () => {
-                const previewResultDiv = document.getElementById('cv-preview-result'); // Assuming you have a div for messages on this page
+                const previewResultDiv = document.getElementById('cv-preview-result');
                 if (previewResultDiv) {
                     previewResultDiv.style.color = "blue";
                     previewResultDiv.textContent = currentLang === 'ar' ?
@@ -265,84 +264,11 @@ function showPage(pageId) {
                 }
 
                 try {
-                    const nameInput = document.getElementById('name-input');
-                    const currentName = nameInput ? nameInput.value.trim() : 'Unnamed';
-                    preGeneratedCvPdfFileName = `CV_${currentName.replace(/\s/g, '_')}.pdf`;
+                    // Call client-side captureCVasPDF with watermark
+                    preGeneratedCvPdfFileName = `CV_${document.getElementById('name-input').value.trim().replace(/\s/g, '_') || 'Unnamed'}.pdf`;
+                    preGeneratedCvPdfBase64 = await captureCVasPDF(cvContainer, true); // true to add watermark
 
-                    // Get the full HTML content of the cvContainer, including its styles
-                    // It's crucial to include external CSS and fonts for server-side rendering
-                    const fullHtmlContent = `
-                        <!DOCTYPE html>
-                        <html dir="${cvContainer.dir}" lang="${document.documentElement.lang}">
-                        <head>
-                            <meta charset="UTF-8">
-                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                            <title>${currentName} CV</title>
-                            <link rel="stylesheet" href="https://storage.googleapis.com/resail-cv-styles/style.css"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap">
-                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
-                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
-                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;900&display=swap">
-                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap">
-                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=swap">
-                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700;900&display=swap">
-                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700;900&display=swap">
-                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700;900&display=swap">
-                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700;900&display=swap">
-                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Georgia&display=swap">
-                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Verdana&display=swap">
-                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arial&display=swap">
-                            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Calibri&display=swap">
-
-                            <style>
-                                /* Basic print styles (for A4 dimensions and page breaks) */
-                                /* Ensure these are also included in your main style.css for consistency */
-                                body { margin: 0; padding: 0; }
-                                #cv-container {
-                                    width: 210mm; /* A4 width */
-                                    min-height: 297mm; /* A4 height */
-                                    box-sizing: border-box;
-                                    margin: 0;
-                                    padding: 0; /* Templates will add their own padding */
-                                    overflow: visible; /* Crucial for Playwright capture */
-                                    background: white;
-                                    color: #212529;
-                                }
-                                .cv-section, .cv-experience-item, .cv-education-item, .cv-reference-item {
-                                    page-break-inside: avoid !important;
-                                }
-                                .cv-end-marker {
-                                    page-break-after: always !important;
-                                    page-break-inside: avoid !important;
-                                    height: 0 !important;
-                                    padding: 0 !important;
-                                    margin: 0 !important;
-                                    font-size: 1px !important;
-                                    line-height: 1px !important;
-                                    color: transparent !important;
-                                    background-color: transparent !important;
-                                    visibility: hidden !important;
-                                    width: 100%;
-                                    display: block !important;
-                                }
-                                /* Add general RTL letter-spacing for print if needed */
-                                [dir="rtl"] p, [dir="rtl"] li, [dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3, [dir="rtl"] h4, [dir="rtl"] h5 {
-                                    letter-spacing: 0.01em !important;
-                                }
-                            </style>
-                        </head>
-                        <body>
-                            ${cvContainer.outerHTML}
-                        </body>
-                        </html>
-                    `;
-
-                    // Call the PDF conversion service on Google Cloud Run
-                    // Pass true for addWatermark for preview
-                    const pdfBase64FromService = await callPdfConversionService(fullHtmlContent, preGeneratedCvPdfFileName, true);
-
-                    preGeneratedCvPdfBase64 = pdfBase64FromService;
-                    console.log("CV pre-generated successfully by Cloud Run service for preview!");
+                    console.log("Client-side CV pre-generated successfully for preview!");
 
                     if (previewResultDiv) {
                         previewResultDiv.style.color = "green";
@@ -355,7 +281,7 @@ function showPage(pageId) {
                     }
 
                 } catch (error) {
-                    console.error("Error pre-generating CV for preview via Cloud Run:", error);
+                    console.error("Error pre-generating CV on client-side for preview:", error);
                     preGeneratedCvPdfBase64 = null; // Clear if failed
                     preGeneratedCvPdfFileName = '';
                     const previewResultDiv = document.getElementById('cv-preview-result');
@@ -368,8 +294,7 @@ function showPage(pageId) {
                 }
             })();
         } else if (pageId === 'landing-page') {
-            preGeneratedCvPdfBase64 = null;
-            preGeneratedCvPdfFileName = '';
+            invalidatePreGeneratedPdf(); // Clear pre-generated PDF on returning to landing page
         }
     }
 }
@@ -383,7 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
     paymentFileInput = document.getElementById("payment-file");
     qrPaymentResultDiv = document.getElementById("qr-payment-result");
     submitPaymentProofButton = document.getElementById("submit-payment-proof");
-    cvContainer = document.getElementById('cv-container'); // This refers to the actual HTML element for CV preview
+    cvContainer = document.getElementById('cv-container');
 
     // Add event listener for the manual payment form submit button
     if (submitPaymentProofButton) {
@@ -398,51 +323,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     lazyLoadImages(); // Initial call for images on the landing page
 });
-
-// NEW: Call to PDF conversion service
-async function callPdfConversionService(htmlContent, fileName, addWatermark) {
-    // NEW: إضافة AbortController لضبط مهلة للطلب
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 90000); // مهلة 90 ثانية
-
-    try {
-        const response = await fetch(`${PDF_SERVICE_URL}/generate-pdf`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/pdf'
-            },
-            body: JSON.stringify({ html: htmlContent, fileName: fileName, addWatermark: addWatermark }),
-            signal: controller.signal // NEW: ربط الـ signal بالطلب
-        });
-
-        clearTimeout(timeoutId); // NEW: مسح المهلة إذا نجح الطلب
-
-        if (!response.ok) {
-            const errorBody = await response.text();
-            throw new Error(`PDF Conversion Service Error: ${response.status} ${response.statusText} - ${errorBody}`);
-        }
-
-        const pdfBlob = await response.blob();
-        // Convert Blob to Base64 to send to Google Apps Script
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result.split(',')[1]);
-            reader.onerror = reject;
-            reader.readAsDataURL(pdfBlob);
-        });
-
-    } catch (error) {
-        clearTimeout(timeoutId); // NEW: مسح المهلة في حالة الخطأ أيضًا
-        if (error.name === 'AbortError') {
-            console.error("PDF Conversion Service timed out:", error);
-            throw new Error(currentLang === 'ar' ? 'انتهت مهلة إنشاء السيرة الذاتية. حاول مرة أخرى.' : 'CV generation timed out. Please try again.');
-        } else {
-            console.error("Failed to call PDF conversion service:", error);
-            throw error; // أعد رمي الخطأ
-        }
-    }
-}
 
 /************************************************
  * Language Switching Functions
@@ -548,8 +428,7 @@ function updatePageContentLanguage() {
             let newTextContent = null;
             if (key && translations[currentLang] && translations[currentLang][key] !== undefined) {
                  newTextContent = translations[currentLang][key];
-            }
-            else {
+            } else {
                  const textKey = isArabic ? element.getAttribute('data-ar') : element.getAttribute('data-en');
                  if (textKey) {
                      newTextContent = textKey;
@@ -849,46 +728,8 @@ function renderPayPalButton(finalPrice, templateCategory) {
                         const nameInput = document.getElementById('name-input');
                         const currentName = nameInput ? nameInput.value.trim() : 'Unnamed';
                         cvPdfFileNameForClientToSend = `CV_${currentName.replace(/\s/g, '_')}.pdf`;
-                        const fullHtmlContent = `
-                            <!DOCTYPE html>
-                            <html dir="${cvContainer.dir}" lang="${document.documentElement.lang}">
-                            <head>
-                                <meta charset="UTF-8">
-                                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                                <title>${currentName} CV</title>
-                                <link rel="stylesheet" href="https://storage.googleapis.com/resail-cv-styles/style.css"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;900&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700;900&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700;900&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700;900&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700;900&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Georgia&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Verdana&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arial&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Calibri&display=swap">
-
-                                <style>
-                                    body { margin: 0; padding: 0; }
-                                    #cv-container {
-                                        width: 210mm; min-height: 297mm; box-sizing: border-box;
-                                        margin: 0; padding: 0; overflow: visible; background: white; color: #212529;
-                                    }
-                                    .cv-section, .cv-experience-item, .cv-education-item, .cv-reference-item { page-break-inside: avoid !important; }
-                                    .cv-end-marker { page-break-after: always !important; page-break-inside: avoid !important; height: 0 !important; padding: 0 !important; margin: 0 !important; font-size: 1px !important; line-height: 1px !important; color: transparent !important; background-color: transparent !important; visibility: hidden !important; width: 100%; display: block !important; }
-                                    [dir="rtl"] p, [dir="rtl"] li, [dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3, [dir="rtl"] h4, [dir="rtl"] h5 { letter-spacing: 0.01em !important; }
-                                </style>
-                            </head>
-                            <body>
-                                ${cvContainer.outerHTML}
-                            </body>
-                            </html>
-                        `;
-                        cvPdfFileBase64ToSend = await callPdfConversionService(fullHtmlContent, cvPdfFileNameForClientToSend, false); // No watermark for final PDF
+                        // Call client-side captureCVasPDF with NO watermark for final PDF
+                        cvPdfFileBase64ToSend = await captureCVasPDF(cvContainer, false); // false to add NO watermark
                         console.warn("Pre-generation failed or not available. Generating CV now for PayPal.");
                     } catch (pdfError) {
                         console.error("Error generating CV (PayPal fallback block):", pdfError);
@@ -1044,47 +885,8 @@ async function submitPaymentProof(event) {
         try {
             const currentName = name; // Name from form
             cvPdfFileNameForClientToSend = `CV_${currentName.replace(/\s/g, '_') || 'Unnamed'}.pdf`;
-            const fullHtmlContent = `
-                <!DOCTYPE html>
-                <html dir="${cvContainer.dir}" lang="${document.documentElement.lang}">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>${currentName} CV</title>
-                    <link rel="stylesheet" href="https://storage.googleapis.com/resail-cv-styles/style.css">
-                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;900&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700;900&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700;900&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700;900&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700;900&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Georgia&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Verdana&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arial&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Calibri&display=swap">
-
-                    <style>
-                        body { margin: 0; padding: 0; }
-                        #cv-container {
-                            width: 210mm; min-height: 297mm; box-sizing: border-box;
-                            margin: 0; padding: 0; overflow: visible; background: white; color: #212529;
-                        }
-                        .cv-section, .cv-experience-item, .cv-education-item, .cv-reference-item { page-break-inside: avoid !important; }
-                        .cv-end-marker { page-break-after: always !important; page-break-inside: avoid !important; height: 0 !important; padding: 0 !important; margin: 0 !important; font-size: 1px !important; line-height: 1px !important; color: transparent !important; background-color: transparent !important; visibility: hidden !important; width: 100%; display: block !important; }
-                        [dir="rtl"] p, [dir="rtl"] li, [dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3, [dir="rtl"] h4, [dir="rtl"] h5 { letter-spacing: 0.01em !important; }
-                    </style>
-                </head>
-                <body>
-                    ${cvContainer.outerHTML}
-                </body>
-                </html>
-            `;
-            cvPdfFileBase64ToSend = await callPdfConversionService(fullHtmlContent, cvPdfFileNameForClientToSend, false); // No watermark for final PDF
+            // Call client-side captureCVasPDF with NO watermark for final PDF
+            cvPdfFileBase64ToSend = await captureCVasPDF(cvContainer, false); // false to add NO watermark
         } catch (pdfError) {
             console.error("Error generating CV (manual payment fallback block):", pdfError);
             qrPaymentResultDiv.style.color = "red";
@@ -1136,6 +938,11 @@ async function submitPaymentProof(event) {
             qrPaymentResultDiv.textContent = data.message || (currentLang === 'ar' ?
                 "تم استلام إيصال الدفع بنجاح. جاري المراجعة وسيتم إرسال السيرة الذاتية لبريدك الإلكتروني بعد الموافقة." :
                 "Payment receipt received successfully. Review in progress. The CV will be sent to your email after approval.");
+            setTimeout(() => {
+                qrPaymentResultDiv.textContent = '';
+                showPage('landing-page');
+                location.reload();
+            }, 5000);
         } else {
             qrPaymentResultDiv.style.color = "red";
             console.error('Error from Google Apps Script:', data.error || data.message);
@@ -1150,14 +957,6 @@ async function submitPaymentProof(event) {
         qrPaymentResultDiv.textContent = currentLang === 'ar' ?
             "حدث خطأ في الاتصال بالخادم أو معالجة الدفع." :
             "An error occurred connecting to the server or processing payment.";
-    } finally { // Always reset after fetch completes or errors
-        preGeneratedCvPdfBase64 = null;
-        preGeneratedCvPdfFileName = '';
-        setTimeout(() => { // Clear result message and navigate
-            qrPaymentResultDiv.textContent = '';
-            showPage('landing-page');
-            location.reload();
-        }, 5000);
     }
 }
 
@@ -1197,7 +996,7 @@ async function generateAndDownloadPDF_html2pdf() {
                     <meta charset="UTF-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <title>${currentName} CV</title>
-                    <link rel="stylesheet" href="https://storage.googleapis.com/resail-cv-styles/style.css">
+                    <link rel="stylesheet" href="https://big-ramy.github.io/resail/style.css">
                     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
                     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap">
                     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
@@ -2114,6 +1913,4 @@ function populateWithTestData() {
     // Re-generate CV and update progress after populating
     generateCV();
     updateProgress();
-    // Invalidate pre-generated PDF after populating with test data
-    invalidatePreGeneratedPdf();
 }
