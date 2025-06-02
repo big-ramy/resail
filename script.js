@@ -892,8 +892,11 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         throw new Error("CV container not found!");
     }
 
+    const 
     // Preserve original styles for restoration
     // We precisely define which properties will be temporarily changed to save and restore them.
+    cvContainer.style.display = 'flix !important';
+        
     const originalStyles = {
         cvDisplay: cvContainer.style.display,
         cvWidth: cvContainer.style.width,
@@ -1122,6 +1125,8 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         // Important: After restoring styles, force a re-render of the CV
         if (document.getElementById('cv-preview-page').classList.contains('active-page')) {
             generateCV(); // This will rebuild the CV with correct display styles
+             cvContainer.style.display = 'none!important';
+
         }
     }
 }
