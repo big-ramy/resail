@@ -725,19 +725,24 @@ function renderPayPalButton(finalPrice, templateCategory) {
                     const currentName = nameInput ? nameInput.value.trim() : 'Unnamed';
                     cvPdfFileNameForClientToSend = `CV_${currentName.replace(/\s/g, '_') || 'Unnamed'}.pdf`;
 
+                    // إزالة العلامة المائية قبل التوليد للدفع
+                    cvContainer.classList.remove('watermarked');
+                    cvContainer.style.setProperty('--watermark-text', 'none'); // إزالة نص العلامة المائية
+
                     // توليد PDF باستخدام html2pdf.js
                     const pdfOptions = {
                         margin: 0,
                         filename: cvPdfFileNameForClientToSend,
-                        image: { type: 'jpeg', quality: isMobileDevice() ? 0.7 : 0.98 }, // جودة أقل للجوال
-                        html2canvas: { scale: isMobileDevice() ? 2 : 4, logging: false, dpi: 192, letterRendering: true },
+                        image: { type: 'jpeg', quality: isMobileDevice() ? 0.8 : 0.98 }, // جودة أقل للجوال
+                        html2canvas: { scale: isMobileDevice() ? 3 : 4, logging: false, dpi: 192, letterRendering: true, useCORS: true },
                         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
                     };
 
-                    // إزالة العلامة المائية قبل التوليد للدفع
-                    cvContainer.classList.remove('watermarked');
                     cvPdfFileBase64ToSend = await html2pdf().from(cvContainer).set(pdfOptions).output('datauristring');
-                    cvContainer.classList.add('watermarked'); // إعادة العلامة المائية بعد التوليد (للتنزيل المباشر التالي)
+
+                    // إعادة العلامة المائية بعد التوليد (للتنزيل المباشر التالي)
+                    cvContainer.classList.add('watermarked');
+                    cvContainer.style.setProperty('--watermark-text', `'${currentLang === 'ar' ? 'للعرض فقط' : 'PREVIEW ONLY'}'`);
 
                     console.log("CV generated successfully for PayPal submission!");
 
@@ -882,19 +887,24 @@ async function submitPaymentProof(event) {
         const currentName = name; // الاسم من النموذج
         cvPdfFileNameForClientToSend = `CV_${currentName.replace(/\s/g, '_') || 'Unnamed'}.pdf`;
 
+        // إزالة العلامة المائية قبل التوليد للدفع
+        cvContainer.classList.remove('watermarked');
+        cvContainer.style.setProperty('--watermark-text', 'none'); // إزالة نص العلامة المائية
+
         // توليد PDF باستخدام html2pdf.js
         const pdfOptions = {
             margin: 0,
             filename: cvPdfFileNameForClientToSend,
-            image: { type: 'jpeg', quality: isMobileDevice() ? 0.7 : 0.98 }, // جودة أقل للجوال
-            html2canvas: { scale: isMobileDevice() ? 2 : 4, logging: false, dpi: 192, letterRendering: true },
+            image: { type: 'jpeg', quality: isMobileDevice() ? 0.8 : 0.98 }, // جودة أقل للجوال
+            html2canvas: { scale: isMobileDevice() ? 3 : 4, logging: false, dpi: 192, letterRendering: true, useCORS: true },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
-        // إزالة العلامة المائية قبل التوليد للدفع
-        cvContainer.classList.remove('watermarked');
         cvPdfFileBase64ToSend = await html2pdf().from(cvContainer).set(pdfOptions).output('datauristring');
-        cvContainer.classList.add('watermarked'); // إعادة العلامة المائية بعد التوليد (للتنزيل المباشر التالي)
+
+        // إعادة العلامة المائية بعد التوليد (للتنزيل المباشر التالي)
+        cvContainer.classList.add('watermarked');
+        cvContainer.style.setProperty('--watermark-text', `'${currentLang === 'ar' ? 'للعرض فقط' : 'PREVIEW ONLY'}'`);
 
         console.log("CV generated successfully for manual payment submission!");
 
@@ -982,18 +992,23 @@ async function generateAndDownloadPDF_html2pdf() {
         const currentName = nameInput ? nameInput.value.trim() : 'Unnamed';
         const fileName = `CV_${currentName.replace(/\s/g, '_') || 'Unnamed'}.pdf`;
 
+        // إضافة العلامة المائية قبل التوليد للتنزيل المباشر
+        cvContainer.classList.add('watermarked');
+        cvContainer.style.setProperty('--watermark-text', `'${currentLang === 'ar' ? 'للعرض فقط' : 'PREVIEW ONLY'}'`);
+
         const pdfOptions = {
             margin: 0,
             filename: fileName,
-            image: { type: 'jpeg', quality: isMobileDevice() ? 0.7 : 0.98 }, // جودة أقل للجوال
-            html2canvas: { scale: isMobileDevice() ? 2 : 4, logging: false, dpi: 192, letterRendering: true },
+            image: { type: 'jpeg', quality: isMobileDevice() ? 0.8 : 0.98 }, // جودة أقل للجوال
+            html2canvas: { scale: isMobileDevice() ? 3 : 4, logging: false, dpi: 192, letterRendering: true, useCORS: true },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
-        // إضافة العلامة المائية قبل التوليد للتنزيل المباشر
-        cvContainer.classList.add('watermarked');
         await html2pdf().from(cvContainer).set(pdfOptions).save();
-        cvContainer.classList.remove('watermarked'); // إزالة العلامة المائية بعد التنزيل
+
+        // إزالة العلامة المائية بعد التنزيل
+        cvContainer.classList.remove('watermarked');
+        cvContainer.style.setProperty('--watermark-text', 'none');
 
         if (previewResultDiv) {
             previewResultDiv.textContent = ''; // مسح رسالة التحضير
@@ -1648,7 +1663,9 @@ function generateCV() {
     });
 
     // إضافة العلامة المائية بشكل افتراضي لعرض المعاينة (التي ستكون مخفية)
+    // سيتم إزالتها أو إضافتها ديناميكياً عند التنزيل/الدفع
     cvContainer.classList.add('watermarked');
+    cvContainer.style.setProperty('--watermark-text', `'${currentLang === 'ar' ? 'للعرض فقط' : 'PREVIEW ONLY'}'`);
 }
 
 /**
