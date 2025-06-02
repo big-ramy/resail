@@ -535,6 +535,7 @@ body[dir="ltr"] .template-preview-container {
     flex-direction: column;
     box-sizing: border-box;
     padding: 0;
+    overflow: hidden; /* إخفاء التجاوز الافتراضي */
 }
 
 /* CV Header Styles - Enhanced Professionalism */
@@ -839,7 +840,7 @@ body[dir="ltr"] .cv-skill-list li::before {
     margin-bottom: 8px;
     margin-left: 5px;
     font-size: 0.9em;
-    color: #212529;
+    color: #212121;
     word-break: break-word;
     white-space: normal;
 }
@@ -974,7 +975,7 @@ body[dir="ltr"] .cv-language-list li::before {
 .ast-layout .cv-sidebar {
     width: 300px;
     background-color: #e9ecef;
-    color: #212529;
+    color: #212121;
     padding: 30px;
     flex-shrink: 0;
     box-sizing: border-box;
@@ -1394,7 +1395,7 @@ body[dir="ltr"] .ast-layout .cv-sidebar .cv-contact-item i {
 .standard-layout.template2 .cv-main-content .cv-name { color: #212529; font-family: 'Roboto', sans-serif; font-weight: 900; font-size: 1.8em; }
 .standard-layout.template2 .cv-main-content .cv-title { color: #495057; font-family: 'Roboto', sans-serif; font-weight: 400; font-size: 1em; }
 .standard-layout.template2 .cv-main-content .cv-section-title { color: #495057; border-bottom-color: #f8f9fa; font-family: 'Roboto', sans-serif; font-weight: 700; }
-.standard-layout.template2 .cv-profile-pic { border: 4px solid #212529; }
+.standard-layout.template2 .cv-profile-pic { border: 4px solid #212121; }
 .standard-layout.template2 #cv-container { font-family: 'Roboto', sans-serif; color: #343a40; }
 
 .standard-layout.template3 .cv-sidebar { background-color: #007bff; color: #0056b3; font-family: 'Lato', sans-serif; }
@@ -2320,7 +2321,7 @@ body[dir="ltr"] .qr-payment-inputs-scroll {
         flex-direction: column !important;
         box-sizing: border-box;
         padding: 0 !important; /* إزالة الحشوة من هنا، ستوضع في الأقسام */
-        overflow: visible !important;
+        overflow: visible !important; /* تأكد أن المحتوى مرئي بالكامل */
     }
 
     /* --- تنسيق التخطيطات متعددة الأعمدة (قياسي، احترافي، AST) --- */
@@ -2333,7 +2334,7 @@ body[dir="ltr"] .qr-payment-inputs-scroll {
         gap: 0 !important; /* إزالة الفجوات بين الأعمدة لتجنب المشاكل، يمكن إضافة padding داخلياً */
         page-break-inside: avoid !important; /* تجنب كسر التخطيط متعدد الأعمدة في منتصفه */
         min-height: 297mm !important; /* هام: التأكد من أن التخطيط يمتد لارتفاع صفحة كاملة */
-        /* يمكن تعديل هذا إذا كانت هناك حاجة لتجاوز صفحات متعددة بسلاسة */
+        overflow: visible !important; /* تأكد أن المحتوى مرئي بالكامل داخل هذه التخطيطات */
     }
 
     /* ترتيب الأعمدة الصحيح لـ LTR (الشريط الجانبي على اليسار) */
