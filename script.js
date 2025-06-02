@@ -888,6 +888,8 @@ async function submitPaymentProof(event) {
  * @returns {Promise<string>} A promise that resolves with the PDF data as a Base64 string.
  */
 async function captureCVasPDF(cvContainer, downloadPdf = false) {
+        cvContainer.style.display = 'flix !important';
+    
     if (!cvContainer) {
         throw new Error("CV container not found!");
     }
@@ -895,7 +897,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     const 
     // Preserve original styles for restoration
     // We precisely define which properties will be temporarily changed to save and restore them.
-    cvContainer.style.display = 'flix !important';
+
         
     const originalStyles = {
         cvDisplay: cvContainer.style.display,
