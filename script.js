@@ -746,154 +746,244 @@ function validateEmail(email) { /* ... (same as before) ... */
  * Captures the CV container as a PDF.
  * Applies temporary styles for consistent A4 output, then restores original styles.
  */
-async function captureCVasPDF(cvElement, downloadPdf = false) {
-    if (!cvElement) {
-        console.error("CV container element not found for PDF capture!");
-        return Promise.reject("CV container not found");
+async function captureCVasPDF(cvContainer, downloadPdf = false) {
+    if (!cvContainer) {
+        throw new Error("CV container not found!");
     }
 
+    // Preserve original styles for restoration
+    // We precisely define which properties will be temporarily changed to save and restore them.
     const originalStyles = {
-        container: {},
-        previewArea: {},
-        previewPage: {}
+        cvDisplay: cvContainer.style.display,
+        cvWidth: cvContainer.style.width,
+        cvHeight: cvContainer.style.height,
+        cvMinHeight: cvContainer.style.minHeight,
+        cvMaxHeight: cvContainer.style.maxHeight,
+        cvOverflow: cvContainer.style.overflow,
+        cvOverflowY: cvContainer.style.overflowY,
+        cvBackgroundColor: cvContainer.style.backgroundColor,
+        cvPosition: cvContainer.style.position,
+        cvTop: cvContainer.style.top,
+        cvLeft: cvContainer.style.left,
+        cvZIndex: cvContainer.style.zIndex,
+        cvTransform: cvContainer.style.transform,
+        cvPadding: cvContainer.style.padding,
+        cvMargin: cvContainer.style.margin,
+        cvZoom: cvContainer.style.zoom || '',
+        cvMaxWidth: cvContainer.style.maxWidth || '',
+        cvVisibility: cvContainer.style.visibility || '', // Save visibility state
+
+        // Save parent properties that might be temporarily affected
+        cvPreviewAreaDisplay: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.display : '',
+        cvPreviewAreaJustifyContent: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.justifyContent : '',
+        cvPreviewAreaAlignItems: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.alignItems : '',
+        cvPreviewAreaOverflow: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.overflow : '',
+        cvPreviewAreaMaxHeight: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.maxHeight : '',
+        cvPreviewAreaPadding: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.padding : '',
+        cvPreviewAreaMargin: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.margin : '',
+
+        cvPreviewPageDisplay: document.getElementById('cv-preview-page') ? document.getElementById('cv-preview-page').style.display : '',
+        cvPreviewPagePadding: document.getElementById('cv-preview-page') ? document.getElementById('cv-preview-page').style.padding : '',
+        cvPreviewPageMargin: document.getElementById('cv-preview-page') ? document.getElementById('cv-preview-page').style.margin : '',
+        cvPreviewPageOverflow: document.getElementById('cv-preview-page') ? document.getElementById('cv-preview-page').style.overflow : '',
+        cvPreviewPageMinHeight: document.getElementById('cv-preview-page') ? document.getElementById('cv-preview-page').style.minHeight : '',
     };
+    const originalScrollTop = cvContainer.scrollTop;
 
-    const saveStyle = (el, store, prop) => { store[prop] = el.style[prop]; };
-    const restoreStyle = (el, store, prop) => { el.style[prop] = store[prop]; };
+    // --- Remove any watermark class before starting the process ---
+    cvContainer.classList.remove('watermarked');
 
-    // Properties to save and restore for cvContainer
-    const cvProps = ['display', 'width', 'height', 'minHeight', 'maxHeight', 'overflow', 'overflowY', 'backgroundColor', 'position', 'top', 'left', 'zIndex', 'transform', 'padding', 'margin', 'zoom', 'maxWidth', 'visibility', 'boxShadow', 'border', 'direction'];
-    cvProps.forEach(prop => saveStyle(cvElement, originalStyles.container, prop));
-    originalStyles.container.scrollTop = cvElement.scrollTop;
-    originalStyles.container.className = cvElement.className; // Save className
+    // --- Apply temporary styles for capture ---
 
+    // 1. Ensure the CV preview area and its parent page are visible and correctly positioned for capture
     const cvPreviewArea = document.getElementById('cv-preview-area');
+    if (cvPreviewArea) {
+        cvPreviewArea.style.display = 'block';
+        cvPreviewArea.style.justifyContent = 'flex-start';
+        cvPreviewArea.style.alignItems = 'flex-start';
+        cvPreviewArea.style.overflow = 'visible';
+        cvPreviewArea.style.maxHeight = 'none';
+        cvPreviewArea.style.padding = '0';
+        cvPreviewArea.style.margin = '0';
+    }
     const cvPreviewPage = document.getElementById('cv-preview-page');
-    const previewAreaProps = ['display', 'justifyContent', 'alignItems', 'overflow', 'maxHeight', 'padding', 'margin'];
-    const previewPageProps = ['display', 'padding', 'margin', 'overflow', 'minHeight'];
+    if (cvPreviewPage) {
+        cvPreviewPage.style.display = 'block';
+        cvPreviewPage.style.padding = '0';
+        cvPreviewPage.style.margin = '0';
+        cvPreviewPage.style.overflow = 'visible';
+        cvPreviewPage.style.minHeight = 'auto';
+    }
 
-    if (cvPreviewArea) previewAreaProps.forEach(prop => saveStyle(cvPreviewArea, originalStyles.previewArea, prop));
-    if (cvPreviewPage) previewPageProps.forEach(prop => saveStyle(cvPreviewPage, originalStyles.previewPage, prop));
-    
-    const removeButtons = Array.from(cvElement.querySelectorAll('.remove-field'));
+    // 2. Set the cv-container to a reliable, fixed size (A4) and temporarily move it off-screen for clean capture
+    cvContainer.style.width = '210mm'; // Standard A4 width for PDF output
+    cvContainer.style.minHeight = '297mm'; // Standard A4 height (will expand if content is longer)
+    cvContainer.style.height = 'auto'; // Allow height to grow with content
+    cvContainer.style.maxHeight = 'none'; // Remove any max height constraints
+    cvContainer.style.overflow = 'visible'; // Ensure all content is rendered
+    cvContainer.style.overflowY = 'visible'; // Ensure vertical content is not hidden
+    cvContainer.style.backgroundColor = 'white'; // Explicit white background for PDF
+    cvContainer.style.position = 'absolute'; // Position absolute to remove from document flow for consistent capture
+    cvContainer.style.top = '0';
+    cvContainer.style.left = '-9999px'; // Temporarily move off-screen for clean capture without flicker
+    cvContainer.style.zIndex = '-1'; // Ensure it's behind other elements
+    cvContainer.style.transform = 'none'; // Remove any transforms
+    // **Important:** Do not change display here. Let it remain as it is from the templates to ensure Flex/Grid.
+    cvContainer.style.padding = '0'; // Remove any padding on the container itself
+    cvContainer.style.margin = '0'; // Remove any margin here, we'll restore original later
+    cvContainer.style.zoom = '1'; // Reset zoom property
+
+    // 3. Ensure direction is applied consistently (important for RTL layouts)
+    cvContainer.style.direction = currentLang === 'ar' ? 'rtl' : 'ltr';
+
+    // 4. Temporarily hide elements that shouldn't be in the PDF (like "remove" buttons)
+    const removeButtons = cvContainer.querySelectorAll('.remove-field');
     removeButtons.forEach(btn => btn.style.display = 'none');
 
-    try {
-        // Temporarily prepare elements for capture
-        if (cvPreviewArea) {
-            cvPreviewArea.style.display = 'block'; cvPreviewArea.style.overflow = 'visible';
-            cvPreviewArea.style.maxHeight = 'none'; cvPreviewArea.style.padding = '0'; cvPreviewArea.style.margin = '0';
-        }
-        if (cvPreviewPage) {
-            cvPreviewPage.style.display = 'block'; cvPreviewPage.style.overflow = 'visible';
-            cvPreviewPage.style.minHeight = 'auto'; cvPreviewPage.style.padding = '0'; cvPreviewPage.style.margin = '0';
-        }
-
-        // Style cvContainer for A4 capture, ensuring it's rendered off-screen correctly
-        cvElement.style.position = 'absolute';
-        cvElement.style.left = '-10000px'; // Far off-screen
-        cvElement.style.top = '0px';
-        cvElement.style.zIndex = '1000'; // Ensure it's on top for capture if other elements are absolute
-        cvElement.style.width = '210mm';
-        cvElement.style.minHeight = '297mm'; // A4 height
-        cvElement.style.height = 'auto';    // Allow content to expand beyond one page
-        cvElement.style.maxHeight = 'none';
-        cvElement.style.overflow = 'visible'; // Crucial for capturing all content
-        cvElement.style.backgroundColor = 'white';
-        cvElement.style.padding = '10mm'; // Standard padding for A4, adjust if needed
-        cvElement.style.margin = '0';
-        cvElement.style.boxShadow = 'none';
-        cvElement.style.border = 'none';
-        cvElement.style.visibility = 'visible'; // Must be visible to html2canvas
-        cvElement.style.display = 'flex'; // Ensure flex context for internal .cv-content
-        cvElement.style.flexDirection = 'column';
-        cvElement.style.direction = currentLang === 'ar' ? 'rtl' : 'ltr'; // Explicitly set direction
-
-
-        // Ensure all images are loaded
-        const images = Array.from(cvElement.querySelectorAll('img'));
-        await Promise.all(images.map(img => {
-            if (img.complete && img.naturalHeight !== 0) return Promise.resolve();
-            return new Promise((resolve, reject) => {
+    // 5. Wait for styles to apply and images to load. This is crucial for accurate capture.
+    const images = cvContainer.querySelectorAll('img');
+    await Promise.all(Array.from(images).map(img => {
+        if (!img.complete) {
+            return new Promise(resolve => {
                 img.onload = resolve;
-                img.onerror = () => {
-                    console.warn(`Image failed to load: ${img.src}`);
-                    resolve(); // Resolve anyway to not block PDF generation
-                };
+                img.onerror = resolve; // Resolve even on error to avoid blocking
             });
-        }));
-        await new Promise(resolve => setTimeout(resolve, 800)); // Wait for rendering, fonts
+        }
+        return Promise.resolve();
+    }));
+    await new Promise(resolve => setTimeout(resolve, 800)); // **Increased delay for better rendering on mobile**
 
-        const isMobile = isMobileDevice();
-        const scaleFactor = isMobile ? 1.8 : 2.2; // Increased scale for better quality
-        const imageQuality = isMobile ? 0.85 : 0.92; // Significantly increased quality
+    // Determine html2canvas scale factor dynamically for mobile performance
+    const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+    const scaleFactor = isMobile ? 1.5 : 2; // **Reduced scale for mobile, adjust if needed (e.g., to 1)**
+    const imageQuality = isMobile ? 0.4 : 0.2; // **Reduced quality for mobile, adjust if needed**
 
-        const pdfOptions = {
-            margin: [0, 0, 0, 0], // PDF margins (can be array [top, left, bottom, right])
-            filename: `CV_${(document.getElementById('name-input')?.value.trim().replace(/\s/g, '_') || 'ResailCV')}.pdf`,
-            image: { type: 'jpeg', quality: imageQuality },
+    let pdfBase64 = null;
+    try {
+        const options = {
+            margin: [0, 0, 0, 0], // Zero margin for the PDF pages
+            filename: 'CV.pdf',
+            image: { type: 'jpeg', quality: imageQuality }, // JPEG for smaller file size, high quality
             html2canvas: {
-                scale: scaleFactor,
-                useCORS: true,
-                allowTaint: false, // Set to false if useCORS is true and working
-                backgroundColor: '#ffffff',
-                logging: false,
-                letterRendering: true,
-                scrollX: 0, // Capture from the top-left of the element content
+                scale: scaleFactor, // **Apply dynamic scale factor**
+                useCORS: true, // Attempt to load cross-origin images (important for profile pics)
+                allowTaint: true, // Allow canvas to be "tainted" by images if CORS fails (might prevent data URL)
+                backgroundColor: 'white', // Explicit background color
+                logging: false, // Disable verbose logging from html2canvas
+                letterRendering: true, // Better text rendering
+                // Define the capture area relative to the document
+                x: cvContainer.offsetLeft, // Start capture from the CV container's left edge
+                y: cvContainer.offsetTop,  // Start capture from the CV container's top edge
+                width: cvContainer.offsetWidth, // Capture the full rendered width of the CV container
+                height: cvContainer.offsetHeight, // Capture the full rendered height
+                // Use scrollWidth/Height to capture all content, even if it's not currently visible in the viewport
+                windowWidth: cvContainer.scrollWidth,
+                windowHeight: cvContainer.scrollHeight,
+                // Setting scrollX/Y to 0 ensures it captures from the top-left of the content itself
+                scrollX: 0,
                 scrollY: 0,
-                windowWidth: cvElement.scrollWidth, // Capture full scrollable width
-                windowHeight: cvElement.scrollHeight, // Capture full scrollable height
-                removeContainer: true // Clean up the cloned container html2canvas creates
             },
             jsPDF: {
                 orientation: 'portrait',
                 unit: 'mm',
-                format: 'a4', // Page format
-                compress: true,
-                putOnlyUsedFonts: true,
-                floatPrecision: 16 // Default is 2, higher precision can be better
+                format: 'a4',
+                compress: true, // Compress PDF
+                hotfixes: ['px_scaling'], // Apply fixes for pixel scaling issues
+                putOnlyUsedFonts: true, // Embed only used fonts to reduce file size
+                floatPrecision: 16 // More precise rendering
             },
-            pagebreak: { mode: ['css', 'avoid-all'], before: '.cv-page-break-before', after: '.cv-end-marker' }
+            // Configure page breaks: avoid breaking elements, but force a new page after the end marker
+            pagebreak: {
+                mode: ['avoid-all', 'css'], // 'avoid-all' tries not to break elements, 'css' respects CSS page-break properties
+                // Removed 'after: .cv-end-marker' from here.
+                // It's more reliable to let CSS `page-break-after` or `page-break-before`
+                // on relevant sections handle explicit page breaks.
+            }
         };
 
-        const worker = html2pdf().from(cvElement).set(pdfOptions);
-        
+        const html2pdfInstance = html2pdf().from(cvContainer).set(options);
+
         if (downloadPdf) {
-            await worker.save(); // Triggers download
-            return null; // No base64 needed if downloading directly
-        } else {
-            const pdfBlob = await worker.output('blob');
-            return await new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result.split(',')[1]);
-                reader.onerror = reject;
-                reader.readAsDataURL(pdfBlob);
-            });
+            await html2pdfInstance.save();
         }
+
+        // To get Base64: First get as Blob, then convert Blob to Base64
+        const pdfBlob = await html2pdfInstance.output('blob');
+        const reader = new FileReader();
+        pdfBase64 = await new Promise((resolve, reject) => {
+            reader.onloadend = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = reject;
+            reader.readAsDataURL(pdfBlob);
+        });
+
+        console.log(`Generated PDF Base64 length: ${pdfBase64 ? pdfBase64.length : 0}`);
+
+        return pdfBase64;
 
     } catch (error) {
         console.error("Error during PDF generation in captureCVasPDF:", error);
-        alert(translations[currentLang]['Error generating PDF for CV.'] + ` (${error.message})`);
-        throw error; // Re-throw to be caught by calling function
+        alert(currentLang === 'ar' ? 'حدث خطأ أثناء إنشاء ملف PDF.' : 'Error generating PDF file.');
+        throw error;
     } finally {
-        // Restore ALL original styles
-        cvProps.forEach(prop => restoreStyle(cvElement, originalStyles.container, prop));
-        cvElement.scrollTop = originalStyles.container.scrollTop;
-        cvElement.className = originalStyles.container.className;
+        // --- Restore original styles ---
+        // Restore precisely saved properties
+        cvContainer.style.width = originalStyles.cvWidth;
+        cvContainer.style.height = originalStyles.cvHeight;
+        cvContainer.style.overflow = originalStyles.cvOverflow;
+        cvContainer.style.backgroundColor = originalStyles.cvBackgroundColor;
+        cvContainer.style.position = originalStyles.cvPosition;
+        cvContainer.style.top = originalStyles.cvTop;
+        cvContainer.style.left = originalStyles.cvLeft;
+        cvContainer.style.zIndex = originalStyles.cvZIndex;
+        cvContainer.style.transform = originalStyles.cvTransform;
+        cvContainer.style.display = originalStyles.cvDisplay; // Restore original display
+        cvContainer.style.maxHeight = originalStyles.cvMaxHeight;
+        cvContainer.style.overflowY = originalStyles.cvOverflowY;
+        cvContainer.style.padding = originalStyles.cvPadding;
+        cvContainer.style.margin = originalStyles.cvMargin;
+        cvContainer.style.zoom = originalStyles.cvZoom;
+        cvContainer.style.maxWidth = originalStyles.cvMaxWidth;
+        cvContainer.style.visibility = originalStyles.cvVisibility; // Restore visibility
 
-        if (cvPreviewArea) previewAreaProps.forEach(prop => restoreStyle(cvPreviewArea, originalStyles.previewArea, prop));
-        if (cvPreviewPage) previewPageProps.forEach(prop => restoreStyle(cvPreviewPage, originalStyles.previewPage, prop));
-        
-        removeButtons.forEach(btn => btn.style.display = ''); // Restore remove buttons
+        // Restore Flexbox/Grid properties if they existed in originalStyles
+        cvContainer.style.flexDirection = originalStyles.cvFlexDirection;
+        cvContainer.style.gridTemplateColumns = originalStyles.cvGridTemplateColumns;
+        cvContainer.style.gridTemplateRows = originalStyles.cvGridTemplateRows;
+        cvContainer.style.gridTemplateAreas = originalStyles.cvGridTemplateAreas;
+        cvContainer.style.gap = originalStyles.cvGap;
+        cvContainer.style.justifyContent = originalStyles.cvJustifyContent;
+        cvContainer.style.alignItems = originalStyles.cvAlignItems;
+        cvContainer.style.textAlign = originalStyles.cvTextAlign;
 
-        // Crucial: Force a re-render of the CV in its normal preview state if on preview page
-        // This ensures the on-screen preview is correct after capture manipulation
-        if (document.getElementById('cv-preview-page')?.classList.contains('active-page')) {
-             generateCV(); // This will rebuild the CV with its normal display styles
+        // Restore parent displays and properties
+        if (cvPreviewArea) {
+            cvPreviewArea.style.display = originalStyles.cvPreviewAreaDisplay;
+            cvPreviewArea.style.justifyContent = originalStyles.cvPreviewAreaJustifyContent;
+            cvPreviewArea.style.alignItems = originalStyles.cvPreviewAreaAlignItems;
+            cvPreviewArea.style.overflow = originalStyles.cvPreviewAreaOverflow;
+            cvPreviewArea.style.maxHeight = originalStyles.cvPreviewAreaMaxHeight;
+            cvPreviewArea.style.padding = originalStyles.cvPreviewAreaPadding;
+            cvPreviewArea.style.margin = originalStyles.cvPreviewAreaMargin;
+        }
+        if (cvPreviewPage) {
+            cvPreviewPage.style.display = originalStyles.cvPreviewPageDisplay;
+            cvPreviewPage.style.padding = originalStyles.cvPreviewPagePadding;
+            cvPreviewPage.style.margin = originalStyles.cvPreviewPageMargin;
+            cvPreviewPage.style.overflow = originalStyles.cvPreviewPageOverflow;
+            cvPreviewPage.style.minHeight = originalStyles.cvPreviewPageMinHeight;
+        }
+
+        cvContainer.scrollTop = originalScrollTop; // Restore scroll position
+
+        // Re-display "remove" buttons
+        removeButtons.forEach(btn => btn.style.display = '');
+
+        // Important: After restoring styles, force a re-render of the CV
+        if (document.getElementById('cv-preview-page').classList.contains('active-page')) {
+            generateCV(); // This will rebuild the CV with correct display styles
         }
     }
 }
-
 
 async function generateAndDownloadPDF_html2pdf() {
     toggleLoadingOverlay(true, 'Generating CV, please wait...');
