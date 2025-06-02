@@ -1051,7 +1051,7 @@ async function submitPaymentProof(event) {
                     <meta charset="UTF-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <title>${currentName} CV</title>
-                    <link rel="stylesheet" href="https://big-ramy.github.io/resail/style.css">
+                    <link rel="stylesheet" href="https://storage.googleapis.com/resail-cv-styles/style.css">
                     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
                     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap">
                     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
@@ -1197,7 +1197,7 @@ async function generateAndDownloadPDF_html2pdf() {
                     <meta charset="UTF-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <title>${currentName} CV</title>
-                    <link rel="stylesheet" href="https://big-ramy.github.io/resail/style.css">
+                    <link rel="stylesheet" href="https://storage.googleapis.com/resail-cv-styles/style.css">
                     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
                     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap">
                     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
