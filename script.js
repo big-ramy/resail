@@ -193,6 +193,11 @@ let profilePicDataUrl = null;
 let preGeneratedCvPdfBase64 = null;
 let preGeneratedCvPdfFileName = '';
 
+function invalidatePreGeneratedPdf() {
+    preGeneratedCvPdfBase64 = null;
+    preGeneratedCvPdfFileName = '';
+}
+
 // NEW: URL لخدمة تحويل PDF الخاصة بك على Google Cloud Run
 // **استبدل هذا بـ URL خدمتك الحقيقي بعد نشرها بنجاح!**
 const PDF_SERVICE_URL = 'https://cv-pdf-converter-627901029415.asia-east1.run.app'; // <--- **استبدل هذا بـ URL خدمتك الحقيقي!**
