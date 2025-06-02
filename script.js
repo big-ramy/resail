@@ -165,8 +165,8 @@ const translations = {
         "File size exceeds the limit (3MB).": "حجم الملف يتجاوز الحد المسموح به (3MB).",
         "Please attach only image or PDF files.": "يرجى إرفاق صورة أو ملف PDF فقط.",
         "Error processing file.": "حدث خطأ أثناء معالجة الملف.",
-        "payment-error-general": "حدث خطأ أثناء الدفع عبر باي بال. الرجاء المحاولة مرة أخرى.",
-        "Apply Discount": "تطبيق الخصم",
+        "payment-error-general": "An error occurred during PayPal payment. Please try again.",
+        "Apply Discount": "Apply Discount",
         "Enter discount code (إن وجد)": "أدخل كود الخصم (إن وجد)",
         "End of CV": "النهاية", // أضف هذا السطر
         "contact-link": "اتصل بنا",
@@ -193,6 +193,7 @@ let profilePicDataUrl = null;
 let preGeneratedCvPdfBase64 = null;
 let preGeneratedCvPdfFileName = '';
 
+// NEW: دالة مساعدة جديدة لإلغاء صلاحية الـ PDF المحضر مسبقاً
 function invalidatePreGeneratedPdf() {
     preGeneratedCvPdfBase64 = null;
     preGeneratedCvPdfFileName = '';
@@ -547,7 +548,8 @@ function updatePageContentLanguage() {
             let newTextContent = null;
             if (key && translations[currentLang] && translations[currentLang][key] !== undefined) {
                  newTextContent = translations[currentLang][key];
-            } else {
+            }
+            else {
                  const textKey = isArabic ? element.getAttribute('data-ar') : element.getAttribute('data-en');
                  if (textKey) {
                      newTextContent = textKey;
