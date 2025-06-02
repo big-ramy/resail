@@ -209,6 +209,7 @@ let submitPaymentProofButton;
 
 // Global variable for CV container
 let cvContainer;
+let originalCvContainerDisplay = ''; // To store the original display style
 
 const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
 const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'application/pdf'];
@@ -263,6 +264,11 @@ document.addEventListener('DOMContentLoaded', () => {
     qrPaymentResultDiv = document.getElementById("qr-payment-result");
     submitPaymentProofButton = document.getElementById("submit-payment-proof");
     cvContainer = document.getElementById('cv-container');
+
+    if (cvContainer) {
+        originalCvContainerDisplay = window.getComputedStyle(cvContainer).display; // Get the computed style
+        cvContainer.style.display = 'none'; // Set to none by default
+    }
 
     // Add event listener for the manual payment form submit button
     if (submitPaymentProofButton) {
@@ -450,6 +456,57 @@ function validateAndShowTemplatePage() {
     }
     showPage('cv-template-selection-page');
 }
+
+/************************************************
+ * Loading Overlay Implementation
+ ***********************************************/
+function showLoadingOverlay() {
+    let overlay = document.getElementById('loading-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'loading-overlay';
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.5em;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+            opacity: 0;
+            pointer-events: none; /* Allow clicks through when hidden */
+        `;
+        overlay.innerHTML = `
+            <div class="spinner-border text-light" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3" id="loading-message">${currentLang === 'ar' ? 'جاري إنشاء سيرتك الذاتية...' : 'Generating your CV...'}</p>
+        `;
+        document.body.appendChild(overlay);
+    }
+    overlay.style.opacity = '1';
+    overlay.style.pointerEvents = 'auto';
+    const loadingMessage = document.getElementById('loading-message');
+    if (loadingMessage) {
+        loadingMessage.textContent = currentLang === 'ar' ? 'جاري إنشاء سيرتك الذاتية...' : 'Generating your CV...';
+    }
+}
+
+function hideLoadingOverlay() {
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay) {
+        overlay.style.opacity = '0';
+        overlay.style.pointerEvents = 'none';
+    }
+}
+
 
 /************************************************
  * Payment Related Functions (Adapted from Modals to Pages)
@@ -657,6 +714,7 @@ function renderPayPalButton(finalPrice, templateCategory) {
             });
         },
         onApprove: function(data, actions) {
+            showLoadingOverlay(); // Show loading overlay before PDF generation and submission
             return actions.order.capture().then(async function(details) {
                 alert(translations[currentLang]["payment-success"]);
 
@@ -674,6 +732,7 @@ function renderPayPalButton(finalPrice, templateCategory) {
                 } catch (pdfError) {
                     console.error("Error generating CV (PayPal catch block):", pdfError);
                     alert(currentLang === 'ar' ? 'حدث خطأ أثناء إنشاء السيرة الذاتية (باي بال).' : 'Error generating CV (PayPal).');
+                    hideLoadingOverlay(); // Hide overlay on error
                     return;
                 }
 
@@ -712,15 +771,18 @@ function renderPayPalButton(finalPrice, templateCategory) {
                 .catch(error => {
                     console.error('Error connecting to server:', error);
                     alert(currentLang === 'ar' ? 'حدث خطأ في الاتصال بالخادم بعد الدفع.' : 'An error occurred connecting to the server after payment.');
+                })
+                .finally(() => {
+                    hideLoadingOverlay(); // Ensure overlay is hidden after fetch completes
+                    showPage('landing-page'); // Navigate back to home
+                    location.reload();
                 });
-
-                showPage('landing-page'); // Navigate back to home
-                location.reload();
             });
         },
         onError: function(err) {
             console.error('PayPal Checkout error:', err);
             alert(translations[currentLang]["payment-error-general"] || "An error occurred during PayPal payment. Please try again.");
+            hideLoadingOverlay(); // Hide overlay on PayPal error
         }
     }).render('#paypal-button-container');
 }
@@ -793,12 +855,13 @@ async function submitPaymentProof(event) {
         }
     }
 
-        // Display the "Please wait..." message
+    // Display the "Please wait..." message
     qrPaymentResultDiv.style.color = "blue";
     qrPaymentResultDiv.textContent = currentLang === 'ar' ?
         'الرجاء الانتظار، جاري إنشاء سيرتك الذاتية ومعالجة الدفع...' :
         'Please wait, your CV is being generated and payment is being processed...';
 
+    showLoadingOverlay(); // Show loading overlay
 
     let cvPdfFileBase64 = "";
     let cvPdfFileNameForClient = '';
@@ -811,6 +874,7 @@ async function submitPaymentProof(event) {
         console.error("Error generating CV (manual payment catch block):", pdfError);
         qrPaymentResultDiv.style.color = "red";
         qrPaymentResultDiv.textContent = currentLang === 'ar' ? 'حدث خطأ أثناء إنشاء السيرة الذاتية.' : 'Error generating CV.';
+        hideLoadingOverlay(); // Hide overlay on error
         return;
     }
 
@@ -839,6 +903,7 @@ async function submitPaymentProof(event) {
             console.error("Error converting payment file:", error);
             qrPaymentResultDiv.style.color = "red";
             qrPaymentResultDiv.textContent = translations[currentLang]["Error processing file."];
+            hideLoadingOverlay(); // Hide overlay on error
             return;
         }
     }
@@ -876,6 +941,8 @@ async function submitPaymentProof(event) {
         qrPaymentResultDiv.textContent = currentLang === 'ar' ?
             "حدث خطأ في الاتصال بالخادم أو معالجة الدفع." :
             "An error occurred connecting to the server or processing payment.";
+    } finally {
+        hideLoadingOverlay(); // Ensure overlay is hidden after fetch completes
     }
 }
 // Assume global variables like 'cvContainer', 'currentLang', 'translations', 'profilePicDataUrl', 'selectedTemplateCategory', 'selectedTemplate' are defined as in your original script.js
@@ -891,6 +958,8 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     if (!cvContainer) {
         throw new Error("CV container not found!");
     }
+
+    showLoadingOverlay(); // Show loading overlay at the very beginning
 
     // Preserve original styles for restoration
     // We precisely define which properties will be temporarily changed to save and restore them.
@@ -913,6 +982,15 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         cvZoom: cvContainer.style.zoom || '',
         cvMaxWidth: cvContainer.style.maxWidth || '',
         cvVisibility: cvContainer.style.visibility || '', // Save visibility state
+        cvFlexDirection: cvContainer.style.flexDirection || '',
+        cvGridTemplateColumns: cvContainer.style.gridTemplateColumns || '',
+        cvGridTemplateRows: cvContainer.style.gridTemplateRows || '',
+        cvGridTemplateAreas: cvContainer.style.gridTemplateAreas || '',
+        cvGap: cvContainer.style.gap || '',
+        cvJustifyContent: cvContainer.style.justifyContent || '',
+        cvAlignItems: cvContainer.style.alignItems || '',
+        cvTextAlign: cvContainer.style.textAlign || '',
+
 
         // Save parent properties that might be temporarily affected
         cvPreviewAreaDisplay: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.display : '',
@@ -957,6 +1035,8 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     }
 
     // 2. Set the cv-container to a reliable, fixed size (A4) and temporarily move it off-screen for clean capture
+    // Explicitly set display to flex for capture as requested by user
+    cvContainer.style.display = 'flex'; // Show it for capture
     cvContainer.style.width = '210mm'; // Standard A4 width for PDF output
     cvContainer.style.minHeight = '297mm'; // Standard A4 height (will expand if content is longer)
     cvContainer.style.height = 'auto'; // Allow height to grow with content
@@ -969,7 +1049,6 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     cvContainer.style.left = '-9999px'; // Temporarily move off-screen for clean capture without flicker
     cvContainer.style.zIndex = '-1'; // Ensure it's behind other elements
     cvContainer.style.transform = 'none'; // Remove any transforms
-    // **Important:** Do not change display here. Let it remain as it is from the templates to ensure Flex/Grid.
     cvContainer.style.padding = '0'; // Remove any padding on the container itself
     cvContainer.style.margin = '0'; // Remove any margin here, we'll restore original later
     cvContainer.style.zoom = '1'; // Reset zoom property
@@ -996,8 +1075,8 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
 
     // Determine html2canvas scale factor dynamically for mobile performance
     const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-    const scaleFactor = isMobile ? 1.5 : 2; // **Reduced scale for mobile, adjust if needed (e.g., to 1)**
-    const imageQuality = isMobile ? 0.4 : 0.2; // **Reduced quality for mobile, adjust if needed**
+    const scaleFactor = isMobile ? 2.5 : 2; // **Updated scale for mobile to 2.5**
+    const imageQuality = isMobile ? 0.7 : 0.2; // **Updated quality for mobile to 0.7**
 
     let pdfBase64 = null;
     try {
@@ -1036,9 +1115,6 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
             // Configure page breaks: avoid breaking elements, but force a new page after the end marker
             pagebreak: {
                 mode: ['avoid-all', 'css'], // 'avoid-all' tries not to break elements, 'css' respects CSS page-break properties
-                // Removed 'after: .cv-end-marker' from here.
-                // It's more reliable to let CSS `page-break-after` or `page-break-before`
-                // on relevant sections handle explicit page breaks.
             }
         };
 
@@ -1120,9 +1196,16 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         removeButtons.forEach(btn => btn.style.display = '');
 
         // Important: After restoring styles, force a re-render of the CV
-        if (document.getElementById('cv-preview-page').classList.contains('active-page')) {
+        // Only regenerate if the preview page is currently active
+        const cvPreviewPageElement = document.getElementById('cv-preview-page');
+        if (cvPreviewPageElement && cvPreviewPageElement.classList.contains('active-page')) {
             generateCV(); // This will rebuild the CV with correct display styles
+        } else {
+            // If not on the preview page, simply hide the CV container
+            cvContainer.style.display = 'none';
         }
+
+        hideLoadingOverlay(); // Hide loading overlay after all restoration
     }
 }
 /**
@@ -1140,6 +1223,8 @@ async function generateAndDownloadPDF_html2pdf() {
         await captureCVasPDF(cvContainer, true); // Pass true to trigger download
 
         alert(currentLang === 'ar' ? 'تم تنزيل السيرة الذاتية بنجاح!' : 'CV downloaded successfully!');
+        showPage('landing-page'); // Navigate back to home
+        location.reload(); // Reload to reset state
     } catch (error) {
         console.error("Error downloading CV directly:", error);
         alert(currentLang === 'ar' ? 'حدث خطأ أثناء تنزيل السيرة الذاتية.' : 'Error downloading CV.');
@@ -1147,7 +1232,7 @@ async function generateAndDownloadPDF_html2pdf() {
         // 4. Remove the watermarked class after the process is complete (whether successful or failed)
         if (cvContainer.classList.contains('watermarked')) {
             cvContainer.classList.remove('watermarked');
-            // No need to regenerate CV here because captureCVasPDF.finally() will do that
+            // captureCVasPDF.finally() will handle hiding the overlay and cvContainer display
         }
     }
 }
@@ -1444,6 +1529,7 @@ function generateCV() {
     cvContainer.innerHTML = '';
     cvContainer.className = `${selectedTemplateCategory}-layout template${selectedTemplate}`;
     cvContainer.dir = direction;
+    cvContainer.style.display = 'none'; // Ensure it's hidden by default
 
     // Extract values from input fields
     const name = nameInput ? nameInput.value.trim() : '';
