@@ -2422,4 +2422,77 @@ body[dir="ltr"] .qr-payment-inputs-scroll {
         padding: 10mm 0 !important; /* Padding returns */
     }
 
+    body {
+        /* قد يساعد في بعض الحالات لضمان تطبيق التباعد */
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    /* هذا الجزء هو الأهم لتعديل تباعد الكلمات والأحرف في العربية */
+    [dir="rtl"] p,
+    [dir="rtl"] li,
+    [dir="rtl"] h1,
+    [dir="rtl"] h2,
+    [dir="rtl"] h3,
+    [dir="rtl"] h4,
+    [dir="rtl"] h5,
+    [dir="rtl"] .cv-job-title,
+    [dir="rtl"] .cv-degree,
+    [dir="rtl"] .cv-company,
+    [dir="rtl"] .cv-institution,
+    [dir="rtl"] .cv-duration,
+    [dir="rtl"] .cv-contact-item p,
+    [dir="rtl"] .cv-experience-item p,
+    [dir="rtl"] .cv-reference-item p {
+        letter-spacing: 0.02em !important; /* زيادة طفيفة لتباعد الأحرف لمنع التلاصق */
+        word-spacing: 0.05em !important;   /* زيادة طفيفة لتباعد الكلمات. جرب 0.05em ثم زد إذا لزم الأمر */
+        text-align: right !important; /* تأكيد المحاذاة لليمين */
+    }
+
+    /* تأكيد أن العناوين والمهارات في الشريط الجانبي تكون في المنتصف حتى عند الطباعة */
+    .cv-sidebar .cv-section-title,
+    .cv-sidebar .cv-skill-item {
+        text-align: center !important;
+    }
+
+    /* تأكيد أن عناصر الاتصال في الشريط الجانبي تكون في المنتصف */
+    .cv-sidebar .cv-contact-item {
+        justify-content: center !important;
+        text-align: center !important; /* تأكيد المحاذاة في المنتصف */
+    }
+
+    /* تأكيد أن نهاية السيرة الذاتية (End Marker) تظهر في نهاية الصفحة ولكن تكسر لصفحة جديدة */
+    .cv-end-marker {
+        /* في الطباعة، نجعلها تشغل مساحة كبيرة في الهامش العلوي لتدفع المحتوى لصفحة جديدة */
+        margin-top: 100mm !important; /* هذا سيجعلها تدفع أي محتوى متبقي بقوة لصفحة جديدة */
+        height: auto !important; /* السماح بارتفاع تلقائي */
+        padding: 10mm 0 !important; /* يمكن إضافة حشوة لجعلها أكثر وضوحاً في التخطيط الداخلي إذا لزم الأمر */
+        font-size: 1.2em !important; /* حجم النص الأصلي في الـ PDF */
+        color: rgba(0, 0, 0, 0.01) !important; /* نص شبه شفاف جداً */
+        visibility: visible !important;
+        background-color: transparent !important;
+        page-break-after: always !important; /* تأكيد كسر الصفحة بعد هذا العنصر */
+        page-break-inside: avoid !important; /* منع كسر العنصر نفسه */
+        width: 100%;
+        display: block !important;
+    }
+
+    /* لإخفاء العلامة المائية "PREVIEW - للعرض فقط" عند الطباعة النهائية (إذا كانت مضافة بواسطة CSS فقط) */
+    /* إذا كانت العلامة المائية تُضاف بواسطة خدمة الـ PDF نفسها، فقد تحتاج لإعداد في الخدمة لإزالتها */
+    #cv-container.watermarked::before {
+        content: none !important; /* إخفاء المحتوى الافتراضي للعلامة المائية */
+    }
+
+    /* تعديل الهوامش والحشو لكل قسم لضمان الاستفادة الكاملة من المساحة */
+    .cv-section {
+        margin-bottom: 5mm !important;
+        padding: 10mm !important; /* تأكد أن الحشو مناسب للطباعة */
+    }
+
+    /* تأكيد أن جميع النصوص داخل الـ CV لديها خصائص تباعد موحدة */
+    .cv-container p, .cv-container li, .cv-container span, .cv-container div {
+        line-height: 1.6 !important; /* قد تحتاج لتعديل ارتفاع السطر للحصول على أفضل مظهر */
+    }
+
+
 }
