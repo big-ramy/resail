@@ -126,7 +126,7 @@ const translations = {
         'University/Institution': 'الجامعة/المعهد',
         'Skills': 'المهارات',
         'Add Skill': 'إضافة مهارة',
-        'Enter a skill': 'أدخل مهارة',
+        'Enter a skill': 'أدخل لغة',
         'Languages': 'اللغات',
         'Add Language': 'إضافة لغة',
         'Enter a language': 'أدخل لغة',
@@ -272,8 +272,7 @@ function showPage(pageId) {
                             <meta charset="UTF-8">
                             <meta name="viewport" content="width=device-width, initial-scale=1.0">
                             <title>${currentName} CV</title>
-                            <link rel="stylesheet" href="https://big-ramy.github.io/resail/style.css">
-                            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+                            <link rel="stylesheet" href="https://storage.googleapis.com/your-bucket-name/style.css"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
                             <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap">
                             <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
                             <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
@@ -398,7 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function callPdfConversionService(htmlContent, fileName, addWatermark) {
     // NEW: إضافة AbortController لضبط مهلة للطلب
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 60000); // مهلة 60 ثانية (يمكن زيادتها لـ 90000 = 90 ثانية إذا كانت التحويلات طويلة)
+    const timeoutId = setTimeout(() => controller.abort(), 90000); // مهلة 90 ثانية
 
     try {
         const response = await fetch(`${PDF_SERVICE_URL}/generate-pdf`, {
@@ -419,6 +418,7 @@ async function callPdfConversionService(htmlContent, fileName, addWatermark) {
         }
 
         const pdfBlob = await response.blob();
+        // Convert Blob to Base64 to send to Google Apps Script
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onloadend = () => resolve(reader.result.split(',')[1]);
@@ -849,8 +849,7 @@ function renderPayPalButton(finalPrice, templateCategory) {
                                 <meta charset="UTF-8">
                                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                                 <title>${currentName} CV</title>
-                                <link rel="stylesheet" href="https://big-ramy.github.io/resail/style.css">
-                                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+                                <link rel="stylesheet" href="https://storage.googleapis.com/your-bucket-name/style.css"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
                                 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap">
                                 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
                                 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
