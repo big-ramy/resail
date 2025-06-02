@@ -194,9 +194,7 @@ let preGeneratedCvPdfBase64 = null;
 let preGeneratedCvPdfFileName = '';
 
 // NEW: URL لخدمة تحويل PDF الخاصة بك على Google Cloud Run
-// **استبدل هذا بـ URL خدمتك الحقيقي بعد نشرها بنجاح!**
-const PDF_SERVICE_URL = 'https://cv-pdf-converter-627901029415.asia-east1.run.app'; // <--- **استبدل هذا بـ URL خدمتك الحقيقي!**
-
+const PDF_SERVICE_URL = 'https://cv-pdf-converter-627901029415.asia-east1.run.app';
 // Global variables for payment system
 let selectedPriceToPay = 0;
 let discountApplied = 0;
@@ -215,7 +213,7 @@ let paymentFileInput;
 let qrPaymentResultDiv;
 let submitPaymentProofButton;
 
-// Global variable for CV container (this will hold the actual HTML element)
+// Global variable for CV container
 let cvContainer;
 
 const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
@@ -264,7 +262,6 @@ function showPage(pageId) {
                     preGeneratedCvPdfFileName = `CV_${currentName.replace(/\s/g, '_')}.pdf`;
 
                     // Get the full HTML content of the cvContainer, including its styles
-                    // It's crucial to include external CSS and fonts for server-side rendering
                     const fullHtmlContent = `
                         <!DOCTYPE html>
                         <html dir="${cvContainer.dir}" lang="${document.documentElement.lang}">
@@ -378,7 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
     paymentFileInput = document.getElementById("payment-file");
     qrPaymentResultDiv = document.getElementById("qr-payment-result");
     submitPaymentProofButton = document.getElementById("submit-payment-proof");
-    cvContainer = document.getElementById('cv-container'); // This refers to the actual HTML element for CV preview
+    cvContainer = document.getElementById('cv-container'); // This refers to the actual DOM element for CV preview
 
     // Add event listener for the manual payment form submit button
     if (submitPaymentProofButton) {
@@ -396,10 +393,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // NEW: Call to PDF conversion service
 async function callPdfConversionService(htmlContent, fileName, addWatermark) {
-    // NEW: إضافة AbortController لضبط مهلة للطلب
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 60000); // مهلة 60 ثانية (يمكن زيادتها لـ 90000 = 90 ثانية إذا كانت التحويلات طويلة)
-
     try {
         const response = await fetch(`${PDF_SERVICE_URL}/generate-pdf`, {
             method: 'POST',
@@ -407,11 +400,8 @@ async function callPdfConversionService(htmlContent, fileName, addWatermark) {
                 'Content-Type': 'application/json',
                 'Accept': 'application/pdf'
             },
-            body: JSON.stringify({ html: htmlContent, fileName: fileName, addWatermark: addWatermark }),
-            signal: controller.signal // NEW: ربط الـ signal بالطلب
+            body: JSON.stringify({ html: htmlContent, fileName: fileName, addWatermark: addWatermark })
         });
-
-        clearTimeout(timeoutId); // NEW: مسح المهلة إذا نجح الطلب
 
         if (!response.ok) {
             const errorBody = await response.text();
@@ -419,6 +409,7 @@ async function callPdfConversionService(htmlContent, fileName, addWatermark) {
         }
 
         const pdfBlob = await response.blob();
+        // Convert Blob to Base64 to send to Google Apps Script
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onloadend = () => resolve(reader.result.split(',')[1]);
@@ -427,14 +418,8 @@ async function callPdfConversionService(htmlContent, fileName, addWatermark) {
         });
 
     } catch (error) {
-        clearTimeout(timeoutId); // NEW: مسح المهلة في حالة الخطأ أيضًا
-        if (error.name === 'AbortError') {
-            console.error("PDF Conversion Service timed out:", error);
-            throw new Error(currentLang === 'ar' ? 'انتهت مهلة إنشاء السيرة الذاتية. حاول مرة أخرى.' : 'CV generation timed out. Please try again.');
-        } else {
-            console.error("Failed to call PDF conversion service:", error);
-            throw error; // أعد رمي الخطأ
-        }
+        console.error("Failed to call PDF conversion service:", error);
+        throw error; // Re-throw the error for further handling
     }
 }
 
@@ -453,7 +438,8 @@ function toggleLanguage() {
     }
     updatePageContentLanguage();
     // Invalidate pre-generated PDF on language change
-    invalidatePreGeneratedPdf();
+    preGeneratedCvPdfBase64 = null;
+    preGeneratedCvPdfFileName = '';
 }
 
 function updateNavbarLinks() {
@@ -823,73 +809,17 @@ function renderPayPalButton(finalPrice, templateCategory) {
                 const payerName = details.payer.name.given_name + ' ' + details.payer.name.surname;
                 const pricePaid = finalPrice;
 
-                let cvPdfFileBase64ToSend = null; // Use a different var name
-                let cvPdfFileNameForClientToSend = '';
+                let cvPdfFileBase64 = "";
+                let cvPdfFileNameForClient = '';
 
-                // NEW: Use pre-generated CV if available, otherwise generate it now
-                if (preGeneratedCvPdfBase64) {
-                    cvPdfFileBase64ToSend = preGeneratedCvPdfBase64;
-                    cvPdfFileNameForClientToSend = preGeneratedCvPdfFileName;
-                    console.log("Using pre-generated CV Base64 for PayPal submission.");
-                } else {
-                    // Fallback: Generate CV now if pre-generation failed or didn't happen
-                    // Show "Please wait..." message before generating
-                    qrPaymentResultDiv.style.color = "blue";
-                    qrPaymentResultDiv.textContent = currentLang === 'ar' ?
-                        'الرجاء الانتظار، جاري معالجة الدفع وإعداد سيرتك الذاتية...' :
-                        'Please wait, payment is being processed and your CV is being prepared...';
-                    try {
-                        const nameInput = document.getElementById('name-input');
-                        const currentName = nameInput ? nameInput.value.trim() : 'Unnamed';
-                        cvPdfFileNameForClientToSend = `CV_${currentName.replace(/\s/g, '_')}.pdf`;
-                        const fullHtmlContent = `
-                            <!DOCTYPE html>
-                            <html dir="${cvContainer.dir}" lang="${document.documentElement.lang}">
-                            <head>
-                                <meta charset="UTF-8">
-                                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                                <title>${currentName} CV</title>
-                                <link rel="stylesheet" href="https://big-ramy.github.io/resail/style.css">
-                                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;900&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700;900&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700;900&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700;900&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700;900&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Georgia&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Verdana&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arial&display=swap">
-                                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Calibri&display=swap">
-
-                                <style>
-                                    body { margin: 0; padding: 0; }
-                                    #cv-container {
-                                        width: 210mm; min-height: 297mm; box-sizing: border-box;
-                                        margin: 0; padding: 0; overflow: visible; background: white; color: #212529;
-                                    }
-                                    .cv-section, .cv-experience-item, .cv-education-item, .cv-reference-item { page-break-inside: avoid !important; }
-                                    .cv-end-marker { page-break-after: always !important; page-break-inside: avoid !important; height: 0 !important; padding: 0 !important; margin: 0 !important; font-size: 1px !important; line-height: 1px !important; color: transparent !important; background-color: transparent !important; visibility: hidden !important; width: 100%; display: block !important; }
-                                    [dir="rtl"] p, [dir="rtl"] li, [dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3, [dir="rtl"] h4, [dir="rtl"] h5 { letter-spacing: 0.01em !important; }
-                                </style>
-                            </head>
-                            <body>
-                                ${cvContainer.outerHTML}
-                            </body>
-                            </html>
-                        `;
-                        cvPdfFileBase64ToSend = await callPdfConversionService(fullHtmlContent, cvPdfFileNameForClientToSend, false); // No watermark for final PDF
-                        console.warn("Pre-generation failed or not available. Generating CV now for PayPal.");
-                    } catch (pdfError) {
-                        console.error("Error generating CV (PayPal fallback block):", pdfError);
-                        qrPaymentResultDiv.style.color = "red";
-                        qrPaymentResultDiv.textContent = currentLang === 'ar' ? 'حدث خطأ أثناء إنشاء السيرة الذاتية (باي بال).' : 'Error generating CV (PayPal).';
-                        return; // Stop further execution if CV generation fails
-                    }
+                try {
+                    cvPdfFileNameForClient = `CV_${payerName.replace(/\s/g, '_') || 'Unnamed'}.pdf`;
+                    // Use the unified captureCVasPDF function
+                    cvPdfFileBase64 = await captureCVasPDF(cvContainer, false);
+                } catch (pdfError) {
+                    console.error("Error generating CV (PayPal catch block):", pdfError);
+                    alert(currentLang === 'ar' ? 'حدث خطأ أثناء إنشاء السيرة الذاتية (باي بال).' : 'Error generating CV (PayPal).');
+                    return;
                 }
 
                 // Send data to Google Apps Script
@@ -903,8 +833,8 @@ function renderPayPalButton(finalPrice, templateCategory) {
                 params.append('pricePaid', pricePaid);
                 params.append('paymentMethod', 'PayPal');
                 params.append('language', currentLang);
-                params.append('cvPdfFileBase64', cvPdfFileBase64ToSend); // Changed variable name
-                params.append('cvPdfFileName', cvPdfFileNameForClientToSend); // Changed variable name
+                params.append('cvPdfFileBase64', cvPdfFileBase64);
+                params.append('cvPdfFileName', cvPdfFileNameForClient);
 
                 fetch(scriptUrl, {
                     method: 'POST',
@@ -916,36 +846,26 @@ function renderPayPalButton(finalPrice, templateCategory) {
                 .then(data => {
                     if (data.status === 'success') {
                         console.log('Payment processed and CV data sent successfully.');
-                        qrPaymentResultDiv.style.color = "green"; // Update message from pre-generation
-                        qrPaymentResultDiv.textContent = data.message || (currentLang === 'ar' ? 'تم استلام دفعتك بنجاح! سيتم إرسال السيرة الذاتية إلى بريدك الإلكتروني قريباً.' : 'Your payment has been received successfully! The CV will be sent to your email shortly.');
+                        alert(data.message || (currentLang === 'ar' ? 'تم استلام دفعتك بنجاح! سيتم إرسال السيرة الذاتية إلى بريدك الإلكتروني قريباً.' : 'Your payment has been received successfully! The CV will be sent to your email shortly.'));
                     } else {
                         console.error('Error processing payment or sending CV data:', data.error || data.message);
-                        qrPaymentResultDiv.style.color = "red"; // Update message from pre-generation
-                        qrPaymentResultDiv.textContent = currentLang === 'ar' ?
+                        alert(currentLang === 'ar' ?
                             `حدث خطأ أثناء معالجة الدفع أو إرسال السيرة الذاتية: ${data.error || data.message || 'خطأ غير معروف'}` :
-                            `An error occurred while processing payment or sending the CV: ${data.error || data.message || 'Unknown error'}`;
+                            `An error occurred while processing payment or sending the CV: ${data.error || data.message || 'Unknown error'}`);
                     }
                 })
                 .catch(error => {
                     console.error('Error connecting to server:', error);
-                    qrPaymentResultDiv.style.color = "red"; // Update message from pre-generation
-                    qrPaymentResultDiv.textContent = currentLang === 'ar' ? 'حدث خطأ في الاتصال بالخادم بعد الدفع.' : 'An error occurred connecting to the server after payment.';
-                })
-                .finally(() => { // Always reset after fetch completes or errors
-                    preGeneratedCvPdfBase64 = null;
-                    preGeneratedCvPdfFileName = '';
-                    setTimeout(() => { // Clear result message and navigate
-                        qrPaymentResultDiv.textContent = '';
-                        showPage('landing-page');
-                        location.reload();
-                    }, 5000);
+                    alert(currentLang === 'ar' ? 'حدث خطأ في الاتصال بالخادم بعد الدفع.' : 'An error occurred connecting to the server after payment.');
                 });
+
+                showPage('landing-page'); // Navigate back to home
+                location.reload();
             });
         },
         onError: function(err) {
             console.error('PayPal Checkout error:', err);
-            qrPaymentResultDiv.style.color = "red"; // Ensure this message is visible
-            qrPaymentResultDiv.textContent = translations[currentLang]["payment-error-general"] || "An error occurred during PayPal payment. Please try again.";
+            alert(translations[currentLang]["payment-error-general"] || "An error occurred during PayPal payment. Please try again.");
         }
     }).render('#paypal-button-container');
 }
@@ -1018,73 +938,18 @@ async function submitPaymentProof(event) {
         }
     }
 
-    // NEW: Display the "Please wait..." message immediately
-    qrPaymentResultDiv.style.color = "blue";
-    qrPaymentResultDiv.textContent = currentLang === 'ar' ?
-        'الرجاء الانتظار، جاري معالجة الدفع وإعداد سيرتك الذاتية...' :
-        'Please wait, payment is being processed and your CV is being prepared...';
+    let cvPdfFileBase64 = "";
+    let cvPdfFileNameForClient = '';
 
-    let cvPdfFileBase64ToSend = null; // Use a different var name
-    let cvPdfFileNameForClientToSend = '';
-
-    // NEW: Use pre-generated CV if available, otherwise generate it now
-    if (preGeneratedCvPdfBase64) {
-        cvPdfFileBase64ToSend = preGeneratedCvPdfBase64;
-        cvPdfFileNameForClientToSend = preGeneratedCvPdfFileName;
-        console.log("Using pre-generated CV Base64 for submission.");
-    } else {
-        // Fallback: Generate CV now if pre-generation failed or didn't happen
-        console.warn("Pre-generation failed or not available. Generating now as fallback.");
-        try {
-            const currentName = name; // Name from form
-            cvPdfFileNameForClientToSend = `CV_${currentName.replace(/\s/g, '_') || 'Unnamed'}.pdf`;
-            const fullHtmlContent = `
-                <!DOCTYPE html>
-                <html dir="${cvContainer.dir}" lang="${document.documentElement.lang}">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>${currentName} CV</title>
-                    <link rel="stylesheet" href="https://big-ramy.github.io/resail/style.css">
-                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;900&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700;900&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700;900&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700;900&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700;900&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Georgia&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Verdana&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arial&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Calibri&display=swap">
-
-                    <style>
-                        body { margin: 0; padding: 0; }
-                        #cv-container {
-                            width: 210mm; min-height: 297mm; box-sizing: border-box;
-                            margin: 0; padding: 0; overflow: visible; background: white; color: #212529;
-                        }
-                        .cv-section, .cv-experience-item, .cv-education-item, .cv-reference-item { page-break-inside: avoid !important; }
-                        .cv-end-marker { page-break-after: always !important; page-break-inside: avoid !important; height: 0 !important; padding: 0 !important; margin: 0 !important; font-size: 1px !important; line-height: 1px !important; color: transparent !important; background-color: transparent !important; visibility: hidden !important; width: 100%; display: block !important; }
-                        [dir="rtl"] p, [dir="rtl"] li, [dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3, [dir="rtl"] h4, [dir="rtl"] h5 { letter-spacing: 0.01em !important; }
-                    </style>
-                </head>
-                <body>
-                    ${cvContainer.outerHTML}
-                </body>
-                </html>
-            `;
-            cvPdfFileBase64ToSend = await callPdfConversionService(fullHtmlContent, cvPdfFileNameForClientToSend, false); // No watermark for final PDF
-        } catch (pdfError) {
-            console.error("Error generating CV (manual payment fallback block):", pdfError);
-            qrPaymentResultDiv.style.color = "red";
-            qrPaymentResultDiv.textContent = currentLang === 'ar' ? 'حدث خطأ أثناء إنشاء السيرة الذاتية.' : 'Error generating CV.';
-            return; // Stop further execution if CV generation fails
-        }
+    try {
+        cvPdfFileNameForClient = `CV_${name.replace(/\s/g, '_') || 'Unnamed'}.pdf`;
+        // Use the unified captureCVasPDF function
+        cvPdfFileBase64 = await captureCVasPDF(cvContainer, false);
+    } catch (pdfError) {
+        console.error("Error generating CV (manual payment catch block):", pdfError);
+        qrPaymentResultDiv.style.color = "red";
+        qrPaymentResultDiv.textContent = currentLang === 'ar' ? 'حدث خطأ أثناء إنشاء السيرة الذاتية.' : 'Error generating CV.';
+        return;
     }
 
     const scriptUrl = "https://script.google.com/macros/s/AKfycbxxkX4jsV4zSz4vR7FcCOhYJmXXuOAt5WrJYgZmhTlmO7dzqXARLM6q_5QNo2KVs8bWww/exec";
@@ -1099,8 +964,8 @@ async function submitPaymentProof(event) {
     formData.append("discountCode", discountCode);
     formData.append("cvTemplateCategory", cvTemplateCategory);
 
-    formData.append('cvPdfFileBase64', cvPdfFileBase64ToSend); // Changed variable name
-    formData.append('cvPdfFileName', cvPdfFileNameForClientToSend); // Changed variable name
+    formData.append('cvPdfFileBase64', cvPdfFileBase64);
+    formData.append('cvPdfFileName', cvPdfFileNameForClient);
 
     let fileBase64 = "";
     if (file) {
@@ -1130,6 +995,11 @@ async function submitPaymentProof(event) {
             qrPaymentResultDiv.textContent = data.message || (currentLang === 'ar' ?
                 "تم استلام إيصال الدفع بنجاح. جاري المراجعة وسيتم إرسال السيرة الذاتية لبريدك الإلكتروني بعد الموافقة." :
                 "Payment receipt received successfully. Review in progress. The CV will be sent to your email after approval.");
+            setTimeout(() => {
+                qrPaymentResultDiv.textContent = '';
+                showPage('landing-page'); // Navigate to home after success
+                location.reload();
+            }, 5000);
         } else {
             qrPaymentResultDiv.style.color = "red";
             console.error('Error from Google Apps Script:', data.error || data.message);
@@ -1144,14 +1014,6 @@ async function submitPaymentProof(event) {
         qrPaymentResultDiv.textContent = currentLang === 'ar' ?
             "حدث خطأ في الاتصال بالخادم أو معالجة الدفع." :
             "An error occurred connecting to the server or processing payment.";
-    } finally { // Always reset after fetch completes or errors
-        preGeneratedCvPdfBase64 = null;
-        preGeneratedCvPdfFileName = '';
-        setTimeout(() => { // Clear result message and navigate
-            qrPaymentResultDiv.textContent = '';
-            showPage('landing-page');
-            location.reload();
-        }, 5000);
     }
 }
 
@@ -1162,104 +1024,271 @@ async function submitPaymentProof(event) {
  * @param {boolean} addWatermark If true, adds a watermark before capture (for preview).
  * @returns {Promise<string>} A promise that resolves with the PDF data as a Base64 string.
  */
-// تم حذف دالة captureCVasPDF() القديمة بالكامل لأنها لم تعد تُستخدم.
-// كل التحويلات تتم الآن عبر callPdfConversionService()
+async function captureCVasPDF(cvContainer, addWatermark = false) {
+    if (!cvContainer) {
+        throw new Error("CV container not found!");
+    }
+
+    // Preserve original styles for restoration
+    // We precisely define which properties will be temporarily changed to save and restore them.
+    const originalStyles = {
+        cvDisplay: cvContainer.style.display,
+        cvWidth: cvContainer.style.width,
+        cvHeight: cvContainer.style.height,
+        cvMinHeight: cvContainer.style.minHeight,
+        cvMaxHeight: cvContainer.style.maxHeight,
+        cvOverflow: cvContainer.style.overflow,
+        cvOverflowY: cvContainer.style.overflowY,
+        cvBackgroundColor: cvContainer.style.backgroundColor,
+        cvPosition: cvContainer.style.position,
+        cvTop: cvContainer.style.top,
+        cvLeft: cvContainer.style.left,
+        cvZIndex: cvContainer.style.zIndex,
+        cvTransform: cvContainer.style.transform,
+        cvPadding: cvContainer.style.padding,
+        cvMargin: cvContainer.style.margin,
+        cvZoom: cvContainer.style.zoom || '',
+        cvMaxWidth: cvContainer.style.maxWidth || '',
+        cvVisibility: cvContainer.style.visibility || '', // Save visibility state
+
+        // Save parent properties that might be temporarily affected
+        cvPreviewAreaDisplay: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.display : '',
+        cvPreviewAreaJustifyContent: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.justifyContent : '',
+        cvPreviewAreaAlignItems: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.alignItems : '',
+        cvPreviewAreaOverflow: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.overflow : '',
+        cvPreviewAreaMaxHeight: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.maxHeight : '',
+        cvPreviewAreaPadding: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.padding : '',
+        cvPreviewAreaMargin: document.getElementById('cv-preview-area') ? document.getElementById('cv-preview-area').style.margin : '',
+
+        cvPreviewPageDisplay: document.getElementById('cv-preview-page') ? document.getElementById('cv-preview-page').style.display : '',
+        cvPreviewPagePadding: document.getElementById('cv-preview-page') ? document.getElementById('cv-preview-page').style.padding : '',
+        cvPreviewPageMargin: document.getElementById('cv-preview-page') ? document.getElementById('cv-preview-page').style.margin : '',
+        cvPreviewPageOverflow: document.getElementById('cv-preview-page') ? document.getElementById('cv-preview-page').style.overflow : '',
+        cvPreviewPageMinHeight: document.getElementById('cv-preview-page') ? document.getElementById('cv-preview-page').style.minHeight : '',
+    };
+    const originalScrollTop = cvContainer.scrollTop;
+
+    // --- Apply watermark if requested (for preview) ---
+    if (addWatermark) {
+        cvContainer.classList.add('watermarked');
+    }
+
+    // --- Apply temporary styles for capture ---
+
+    // 1. Ensure the CV preview area and its parent page are visible and correctly positioned for capture
+    const cvPreviewArea = document.getElementById('cv-preview-area');
+    if (cvPreviewArea) {
+        cvPreviewArea.style.display = 'block';
+        cvPreviewArea.style.justifyContent = 'flex-start';
+        cvPreviewArea.style.alignItems = 'flex-start';
+        cvPreviewArea.style.overflow = 'visible';
+        cvPreviewArea.style.maxHeight = 'none';
+        cvPreviewArea.style.padding = '0';
+        cvPreviewArea.style.margin = '0';
+    }
+    const cvPreviewPage = document.getElementById('cv-preview-page');
+    if (cvPreviewPage) {
+        cvPreviewPage.style.display = 'block';
+        cvPreviewPage.style.padding = '0';
+        cvPreviewPage.style.margin = '0';
+        cvPreviewPage.style.overflow = 'visible';
+        cvPreviewPage.style.minHeight = 'auto';
+    }
+
+    // 2. Set the cv-container to a reliable, fixed size (A4) and temporarily move it off-screen for clean capture
+    cvContainer.style.width = '210mm'; // Standard A4 width for PDF output
+    cvContainer.style.minHeight = '297mm'; // Standard A4 height (will expand if content is longer)
+    cvContainer.style.height = 'auto'; // Allow height to grow with content
+    cvContainer.style.maxHeight = 'none'; // Remove any max height constraints
+    cvContainer.style.overflow = 'visible'; // Ensure all content is rendered
+    cvContainer.style.overflowY = 'visible'; // Ensure vertical content is not hidden
+    cvContainer.style.backgroundColor = 'white'; // Explicit white background for PDF
+    cvContainer.style.position = 'absolute'; // Position absolute to remove from document flow for consistent capture
+    cvContainer.style.top = '0';
+    cvContainer.style.left = '-9999px'; // Temporarily move off-screen for clean capture without flicker
+    cvContainer.style.zIndex = '-1'; // Ensure it's behind other elements
+    cvContainer.style.transform = 'none'; // Remove any transforms
+    // **Important:** Do not change display here. Let it remain as it is from the templates to ensure Flex/Grid.
+    cvContainer.style.padding = '0'; // Remove any padding on the container itself
+    cvContainer.style.margin = '0'; // Remove any margin here, we'll restore original later
+    cvContainer.style.zoom = '1'; // Reset zoom property
+
+    // 3. Ensure direction is applied consistently (important for RTL layouts)
+    cvContainer.style.direction = currentLang === 'ar' ? 'rtl' : 'ltr';
+
+    // 4. Temporarily hide elements that shouldn't be in the PDF (like "remove" buttons)
+    const removeButtons = cvContainer.querySelectorAll('.remove-field');
+    removeButtons.forEach(btn => btn.style.display = 'none');
+
+    // 5. Wait for styles to apply and images to load. This is crucial for accurate capture.
+    const images = cvContainer.querySelectorAll('img');
+    await Promise.all(Array.from(images).map(img => {
+        if (!img.complete) {
+            return new Promise(resolve => {
+                img.onload = resolve;
+                img.onerror = resolve; // Resolve even on error to avoid blocking
+            });
+        }
+        return Promise.resolve();
+    }));
+    await new Promise(resolve => setTimeout(resolve, 800)); // **Increased delay for better rendering on mobile**
+
+    // Determine html2canvas scale factor dynamically for mobile performance
+    const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+    const scaleFactor = isMobile ? 1.5 : 2; // **Reduced scale for mobile, adjust if needed (e.g., to 1)**
+    const imageQuality = isMobile ? 0.8 : 0.98; // **Reduced quality for mobile, adjust if needed**
+
+    let pdfBase64 = null;
+    try {
+        const options = {
+            margin: [0, 0, 0, 0], // Zero margin for the PDF pages
+            filename: 'CV.pdf',
+            image: { type: 'jpeg', quality: imageQuality }, // JPEG for smaller file size, high quality
+            html2canvas: {
+                scale: scaleFactor, // **Apply dynamic scale factor**
+                useCORS: true, // Attempt to load cross-origin images (important for profile pics)
+                allowTaint: true, // Allow canvas to be "tainted" by images if CORS fails (might prevent data URL)
+                backgroundColor: 'white', // Explicit background color
+                logging: false, // Disable verbose logging from html2canvas
+                letterRendering: true, // Better text rendering
+                // Define the capture area relative to the document
+                x: cvContainer.offsetLeft, // Start capture from the CV container's left edge
+                y: cvContainer.offsetTop,  // Start capture from the CV container's top edge
+                width: cvContainer.offsetWidth, // Capture the full rendered width of the CV container
+                height: cvContainer.offsetHeight, // Capture the full rendered height
+                // Use scrollWidth/Height to capture all content, even if it's not currently visible in the viewport
+                windowWidth: cvContainer.scrollWidth,
+                windowHeight: cvContainer.scrollHeight,
+                // Setting scrollX/Y to 0 ensures it captures from the top-left of the content itself
+                scrollX: 0,
+                scrollY: 0,
+            },
+            jsPDF: {
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4',
+                compress: true, // Compress PDF
+                hotfixes: ['px_scaling'], // Apply fixes for pixel scaling issues
+                putOnlyUsedFonts: true, // Embed only used fonts to reduce file size
+                floatPrecision: 16 // More precise rendering
+            },
+            // Configure page breaks: avoid breaking elements, but force a new page after the end marker
+            pagebreak: {
+                mode: ['avoid-all', 'css'], // 'avoid-all' tries not to break elements, 'css' respects CSS page-break properties
+                // Removed 'after: .cv-end-marker' from here.
+                // It's more reliable to let CSS `page-break-after` or `page-break-before`
+                // on relevant sections handle explicit page breaks.
+            }
+        };
+
+        const html2pdfInstance = html2pdf().from(cvContainer).set(options);
+
+        if (downloadPdf) {
+            await html2pdfInstance.save();
+        }
+
+        // To get Base64: First get as Blob, then convert Blob to Base64
+        const pdfBlob = await html2pdfInstance.output('blob');
+        const reader = new FileReader();
+        pdfBase64 = await new Promise((resolve, reject) => {
+            reader.onloadend = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = reject;
+            reader.readAsDataURL(pdfBlob);
+        });
+
+        console.log(`Generated PDF Base64 length: ${pdfBase64 ? pdfBase64.length : 0}`);
+
+        return pdfBase64;
+
+    } catch (error) {
+        console.error("Error during PDF generation in captureCVasPDF:", error);
+        alert(currentLang === 'ar' ? 'حدث خطأ أثناء إنشاء ملف PDF.' : 'Error generating PDF file.');
+        throw error;
+    } finally {
+        // --- Restore original styles ---
+        // Restore precisely saved properties
+        cvContainer.style.width = originalStyles.cvWidth;
+        cvContainer.style.height = originalStyles.cvHeight;
+        cvContainer.style.overflow = originalStyles.cvOverflow;
+        cvContainer.style.backgroundColor = originalStyles.cvBackgroundColor;
+        cvContainer.style.position = originalStyles.cvPosition;
+        cvContainer.style.top = originalStyles.cvTop;
+        cvContainer.style.left = originalStyles.cvLeft;
+        cvContainer.style.zIndex = originalStyles.cvZIndex;
+        cvContainer.style.transform = originalStyles.cvTransform;
+        cvContainer.style.display = originalStyles.cvDisplay; // Restore original display
+        cvContainer.style.maxHeight = originalStyles.cvMaxHeight;
+        cvContainer.style.overflowY = originalStyles.cvOverflowY;
+        cvContainer.style.padding = originalStyles.cvPadding;
+        cvContainer.style.margin = originalStyles.cvMargin;
+        cvContainer.style.zoom = originalStyles.cvZoom;
+        cvContainer.style.maxWidth = originalStyles.cvMaxWidth;
+        cvContainer.style.visibility = originalStyles.cvVisibility; // Restore visibility
+
+        // Restore Flexbox/Grid properties if they existed in originalStyles
+        cvContainer.style.flexDirection = originalStyles.cvFlexDirection;
+        cvContainer.style.gridTemplateColumns = originalStyles.cvGridTemplateColumns;
+        cvContainer.style.gridTemplateRows = originalStyles.cvGridTemplateRows;
+        cvContainer.style.gridTemplateAreas = originalStyles.cvGridTemplateAreas;
+        cvContainer.style.gap = originalStyles.cvGap;
+        cvContainer.style.justifyContent = originalStyles.cvJustifyContent;
+        cvContainer.style.alignItems = originalStyles.cvAlignItems;
+        cvContainer.style.textAlign = originalStyles.cvTextAlign;
+
+        // Restore parent displays and properties
+        if (cvPreviewArea) {
+            cvPreviewArea.style.display = originalStyles.cvPreviewAreaDisplay;
+            cvPreviewArea.style.justifyContent = originalStyles.cvPreviewAreaJustifyContent;
+            cvPreviewArea.style.alignItems = originalStyles.cvPreviewAreaAlignItems;
+            cvPreviewArea.style.overflow = originalStyles.cvPreviewAreaOverflow;
+            cvPreviewArea.style.maxHeight = originalStyles.cvPreviewAreaMaxHeight;
+            cvPreviewArea.style.padding = originalStyles.cvPreviewAreaPadding;
+            cvPreviewArea.style.margin = originalStyles.cvPreviewAreaMargin;
+        }
+        if (cvPreviewPage) {
+            cvPreviewPage.style.display = originalStyles.cvPreviewPageDisplay;
+            cvPreviewPage.style.padding = originalStyles.cvPreviewPagePadding;
+            cvPreviewPage.style.margin = originalStyles.cvPreviewPageMargin;
+            cvPreviewPage.style.overflow = originalStyles.cvPreviewPageOverflow;
+            cvPreviewPage.style.minHeight = originalStyles.cvPreviewPageMinHeight;
+        }
+
+        cvContainer.scrollTop = originalScrollTop; // Restore scroll position
+
+        // Re-display "remove" buttons
+        removeButtons.forEach(btn => btn.style.display = '');
+
+        // Important: After restoring styles, force a re-render of the CV
+        if (document.getElementById('cv-preview-page').classList.contains('active-page')) {
+            generateCV(); // This will rebuild the CV with correct display styles
+        }
+    }
+}
 
 /**
  * Triggers the download of the CV as a PDF directly.
  */
 async function generateAndDownloadPDF_html2pdf() {
     try {
-        // إذا لم يكن الـ Base64 المحضر مسبقًا متاحًا، قم بتحضيره الآن مع العلامة المائية
-        if (!preGeneratedCvPdfBase64) {
-            const previewResultDiv = document.getElementById('cv-preview-result');
-            if (previewResultDiv) {
-                previewResultDiv.style.color = "blue";
-                previewResultDiv.textContent = currentLang === 'ar' ?
-                    'جاري تحضير السيرة الذاتية للتنزيل...' :
-                    'Preparing CV for download...';
-            }
-            generateCV(); // تأكد من أن cvContainer محدث
-            const nameInput = document.getElementById('name-input');
-            const currentName = nameInput ? nameInput.value.trim() : 'Unnamed';
-            preGeneratedCvPdfFileName = `CV_${currentName.replace(/\s/g, '_')}.pdf`;
+        // 1. Add the watermarked class before capturing the CV
+        cvContainer.classList.add('watermarked');
 
-            const fullHtmlContent = `
-                <!DOCTYPE html>
-                <html dir="${cvContainer.dir}" lang="${document.documentElement.lang}">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>${currentName} CV</title>
-                    <link rel="stylesheet" href="https://big-ramy.github.io/resail/style.css">
-                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;900&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700;900&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700;900&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700;900&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700;900&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Georgia&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Verdana&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arial&display=swap">
-                    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Calibri&display=swap">
+        // 2. Wait a little for CSS styles to apply
+        await new Promise(resolve => setTimeout(resolve, 50)); // Small delay to ensure styles apply
 
-                    <style>
-                        body { margin: 0; padding: 0; }
-                        #cv-container {
-                            width: 210mm; min-height: 297mm; box-sizing: border-box;
-                            margin: 0; padding: 0; overflow: visible; background: white; color: #212529;
-                        }
-                        .cv-section, .cv-experience-item, .cv-education-item, .cv-reference-item { page-break-inside: avoid !important; }
-                        .cv-end-marker { page-break-after: always !important; page-break-inside: avoid !important; height: 0 !important; padding: 0 !important; margin: 0 !important; font-size: 1px !important; line-height: 1px !important; color: transparent !important; background-color: transparent !important; visibility: hidden !important; width: 100%; display: block !important; }
-                        [dir="rtl"] p, [dir="rtl"] li, [dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3, [dir="rtl"] h4, [dir="rtl"] h5 { letter-spacing: 0.01em !important; }
-                    </style>
-                </head>
-                <body>
-                    ${cvContainer.outerHTML}
-                </body>
-                </html>
-            `;
-            preGeneratedCvPdfBase64 = await callPdfConversionService(fullHtmlContent, preGeneratedCvPdfFileName, true); // علامة مائية للمعاينة/التنزيل المباشر
-            if (previewResultDiv) {
-                previewResultDiv.textContent = '';
-            }
-        }
+        // 3. Call the function to capture CV as PDF with download enabled
+        await captureCVasPDF(cvContainer, true); // Pass true to trigger download
 
-        if (preGeneratedCvPdfBase64) {
-            // تحويل Base64 إلى Blob لإنشاء رابط تنزيل
-            const byteCharacters = atob(preGeneratedCvPdfBase64);
-            const byteNumbers = new Array(byteCharacters.length);
-            for (let i = 0; i < byteCharacters.length; i++) {
-                byteNumbers[i] = byteCharacters.charCodeAt(i);
-            }
-            const byteArray = new Uint8Array(byteNumbers);
-            const blob = new Blob([byteArray], { type: 'application/pdf' });
-
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = preGeneratedCvPdfFileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(link.href);
-
-            alert(currentLang === 'ar' ? 'تم تنزيل السيرة الذاتية بنجاح!' : 'CV downloaded successfully!');
-        } else {
-            throw new Error("Failed to get CV Base64 for download.");
-        }
+        alert(currentLang === 'ar' ? 'تم تنزيل السيرة الذاتية بنجاح!' : 'CV downloaded successfully!');
     } catch (error) {
-        console.error("Error downloading CV directly via service:", error);
+        console.error("Error downloading CV directly:", error);
         alert(currentLang === 'ar' ? 'حدث خطأ أثناء تنزيل السيرة الذاتية.' : 'Error downloading CV.');
     } finally {
-        // لا حاجة لـ reset preGeneratedCvPdfBase64 هنا لأنها قد تكون مستخدمة لعملية الدفع
-        // أو يمكن مسحها إذا كان هذا هو الإجراء الأخير قبل المغادرة
-        // preGeneratedCvPdfBase64 = null;
-        // preGeneratedCvPdfFileName = '';
+        // 4. Remove the watermarked class after the process is complete (whether successful or failed)
+        if (cvContainer.classList.contains('watermarked')) {
+            cvContainer.classList.remove('watermarked');
+            // No need to regenerate CV here because captureCVasPDF.finally() will do that
+        }
     }
 }
 
@@ -1291,8 +1320,6 @@ function selectTemplate(templateNumber, category) {
     // Regenerate CV content with the new template
     generateCV();
     updateProgress();
-    // Invalidate pre-generated PDF on template change
-    invalidatePreGeneratedPdf();
     // The navigation to 'cv-preview-page' will happen via a separate "Next" button click now.
 }
 
@@ -1312,14 +1339,12 @@ function handleProfilePicChange(event) {
             profilePicDataUrl = e.target.result;
             generateCV();
             updateProgress();
-            invalidatePreGeneratedPdf(); // Invalidate pre-generated PDF on data change
         };
         reader.readAsDataURL(file);
     } else {
         profilePicDataUrl = null;
         generateCV();
         updateProgress();
-        invalidatePreGeneratedPdf(); // Invalidate pre-generated PDF on data change
     }
 }
 
@@ -1339,16 +1364,15 @@ function addExperienceField() {
     newEntry.className = 'experience-entry';
     newEntry.innerHTML = `
         <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
-        <input type="text" placeholder="${currentLang === 'en' ? 'Job Title' : 'المسمى الوظيفي'}" class="experience-title" oninput="generateCV(); updateProgress(); invalidatePreGeneratedPdf();">
-        <input type="text" placeholder="${currentLang === 'en' ? 'Company' : 'الشركة'}" class="experience-company" oninput="generateCV(); updateProgress(); invalidatePreGeneratedPdf();">
-        <input type="text" placeholder="${currentLang === 'en' ? 'Duration' : 'المدة'}" class="experience-duration" oninput="generateCV(); updateProgress(); invalidatePreGeneratedPdf();">
-        <textarea placeholder="${currentLang === 'en' ? 'Description' : 'الوصف'}" class="experience-description" oninput="generateCV(); updateProgress(); invalidatePreGeneratedPdf();"></textarea>
+        <input type="text" placeholder="${currentLang === 'en' ? 'Job Title' : 'المسمى الوظيفي'}" class="experience-title" oninput="generateCV(); updateProgress()">
+        <input type="text" placeholder="${currentLang === 'en' ? 'Company' : 'الشركة'}" class="experience-company" oninput="generateCV(); updateProgress()">
+        <input type="text" placeholder="${currentLang === 'en' ? 'Duration' : 'المدة'}" class="experience-duration" oninput="generateCV(); updateProgress()">
+        <textarea placeholder="${currentLang === 'en' ? 'Description' : 'الوصف'}" class="experience-description" oninput="generateCV(); updateProgress()"></textarea>
     `;
     experienceInput.appendChild(newEntry);
     generateCV();
     updateProgress();
     updatePageContentLanguage(); // Update placeholders if language changed
-    invalidatePreGeneratedPdf(); // Invalidate pre-generated PDF
 }
 
 /**
@@ -1363,7 +1387,6 @@ function removeLastExperienceField() {
         experienceInput.removeChild(entries[entries.length - 1]);
         generateCV();
         updateProgress();
-        invalidatePreGeneratedPdf(); // Invalidate pre-generated PDF
     } else {
         alert(translations[currentLang]['You must have at least one field in this section.']);
     }
@@ -1379,15 +1402,14 @@ function addEducationField() {
     newEntry.className = 'education-entry';
     newEntry.innerHTML = `
          <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
-        <input type="text" placeholder="${currentLang === 'en' ? 'Degree' : 'الشهادة'}" class="education-degree" oninput="generateCV(); updateProgress(); invalidatePreGeneratedPdf();">
-        <input type="text" placeholder="${currentLang === 'en' ? 'University/Institution' : 'الجامعة/المعهد'}" class="education-institution" oninput="generateCV(); updateProgress(); invalidatePreGeneratedPdf();">
-        <input type="text" placeholder="${currentLang === 'en' ? 'Duration' : 'المدة'}" class="education-duration" oninput="generateCV(); updateProgress(); invalidatePreGeneratedPdf();">
+        <input type="text" placeholder="${currentLang === 'en' ? 'Degree' : 'الشهادة'}" class="education-degree" oninput="generateCV(); updateProgress()">
+        <input type="text" placeholder="${currentLang === 'en' ? 'University/Institution' : 'الجامعة/المعهد'}" class="education-institution" oninput="generateCV(); updateProgress()">
+        <input type="text" placeholder="${currentLang === 'en' ? 'Duration' : 'المدة'}" class="education-duration" oninput="generateCV(); updateProgress()">
     `;
     educationInput.appendChild(newEntry);
     generateCV();
     updateProgress();
     updatePageContentLanguage();
-    invalidatePreGeneratedPdf(); // Invalidate pre-generated PDF
 }
 
 /**
@@ -1401,7 +1423,6 @@ function removeLastEducationField() {
         educationInput.removeChild(entries[entries.length - 1]);
         generateCV();
         updateProgress();
-        invalidatePreGeneratedPdf(); // Invalidate pre-generated PDF
     } else {
         alert(translations[currentLang]['You must have at least one field in this section.']);
     }
@@ -1417,13 +1438,12 @@ function addSkillField() {
     newEntry.className = 'skill-entry';
     newEntry.innerHTML = `
         <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
-        <input type="text" placeholder="${currentLang === 'en' ? 'Enter a skill' : 'أدخل مهارة'}" class="skill-item-input" oninput="generateCV(); updateProgress(); invalidatePreGeneratedPdf();">
+        <input type="text" placeholder="${currentLang === 'en' ? 'Enter a skill' : 'أدخل مهارة'}" class="skill-item-input" oninput="generateCV(); updateProgress()">
     `;
     skillsInput.appendChild(newEntry);
     generateCV();
     updateProgress();
     updatePageContentLanguage();
-    invalidatePreGeneratedPdf(); // Invalidate pre-generated PDF
 }
 
 /**
@@ -1437,7 +1457,6 @@ function removeLastSkillField() {
         skillsInput.removeChild(entries[entries.length - 1]);
         generateCV();
         updateProgress();
-        invalidatePreGeneratedPdf(); // Invalidate pre-generated PDF
     } else {
         alert(translations[currentLang]['You must have at least one field in this section.']);
     }
@@ -1453,13 +1472,12 @@ function addLanguageField() {
     newEntry.className = 'language-entry';
     newEntry.innerHTML = `
         <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
-        <input type="text" placeholder="${currentLang === 'en' ? 'Enter a language' : 'أدخل لغة'}" class="language-item-input" oninput="generateCV(); updateProgress(); invalidatePreGeneratedPdf();">
+        <input type="text" placeholder="${currentLang === 'en' ? 'Enter a language' : 'أدخل لغة'}" class="language-item-input" oninput="generateCV(); updateProgress()">
     `;
     languagesInput.appendChild(newEntry);
     generateCV();
     updateProgress();
     updatePageContentLanguage();
-    invalidatePreGeneratedPdf(); // Invalidate pre-generated PDF
 }
 
 /**
@@ -1473,7 +1491,6 @@ function removeLastLanguageField() {
         languagesInput.removeChild(entries[entries.length - 1]);
         generateCV();
         updateProgress();
-        invalidatePreGeneratedPdf(); // Invalidate pre-generated PDF
     } else {
         alert(translations[currentLang]['You must have at least one field in this section.']);
     }
@@ -1489,16 +1506,15 @@ function addReferenceField() {
     newEntry.className = 'reference-entry';
     newEntry.innerHTML = `
         <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
-        <input type="text" placeholder="${currentLang === 'en' ? 'Name' : 'الاسم'}" class="reference-name" oninput="generateCV(); updateProgress(); invalidatePreGeneratedPdf();">
-        <input type="text" placeholder="${currentLang === 'en' ? 'Position' : 'الموقع'}" class="reference-position" oninput="generateCV(); updateProgress(); invalidatePreGeneratedPdf();">
-        <input type="text" placeholder="${currentLang === 'en' ? 'Phone' : 'الهاتف'}" class="reference-phone" oninput="generateCV(); updateProgress(); invalidatePreGeneratedPdf();">
-        <input type="email" placeholder="${currentLang === 'en' ? 'Email' : 'البريد'}" class="reference-email" oninput="generateCV(); updateProgress(); invalidatePreGeneratedPdf();">
+        <input type="text" placeholder="${currentLang === 'en' ? 'Name' : 'الاسم'}" class="reference-name" oninput="generateCV(); updateProgress()">
+        <input type="text" placeholder="${currentLang === 'en' ? 'Position' : 'الموقع'}" class="reference-position" oninput="generateCV(); updateProgress()">
+        <input type="text" placeholder="${currentLang === 'en' ? 'Phone' : 'الهاتف'}" class="reference-phone" oninput="generateCV(); updateProgress()">
+        <input type="email" placeholder="${currentLang === 'en' ? 'Email' : 'البريد'}" class="reference-email" oninput="generateCV(); updateProgress()">
     `;
     referencesInput.appendChild(newEntry);
     generateCV();
     updateProgress();
     updatePageContentLanguage();
-    invalidatePreGeneratedPdf(); // Invalidate pre-generated PDF
 }
 
 /**
@@ -1512,7 +1528,6 @@ function removeLastReferenceField() {
         referencesInput.removeChild(entries[entries.length - 1]);
         generateCV();
         updateProgress();
-        invalidatePreGeneratedPdf(); // Invalidate pre-generated PDF
     } else {
         alert(translations[currentLang]['You must have at least one field in this section.']);
     }
@@ -1538,7 +1553,6 @@ function removeField(button) {
     parentContainer.removeChild(entry);
     generateCV();
     updateProgress();
-    invalidatePreGeneratedPdf(); // Invalidate pre-generated PDF
 }
 
 
@@ -2074,13 +2088,7 @@ function populateWithTestData() {
         // Clear all existing skill entries and add initial one
         Array.from(skillsInput.querySelectorAll('.skill-entry')).forEach(el => el.remove());
         addSkillField(); // Add initial empty field
-
-        let skillInputsEls = skillsInput.querySelectorAll('.skill-item-input');
-        if(skillInputsEls[0]) skillInputsEls[0].value = 'JavaScript';
-        addSkillField(); skillInputsEls = skillsInput.querySelectorAll('.skill-item-input'); if(skillInputsEls[1]) skillInputsEls[1].value = 'React';
-        addSkillField(); skillInputsEls = skillsInput.querySelectorAll('.skill-item-input'); if(skillInputsEls[2]) skillInputsEls[2].value = 'Node.js';
-        addSkillField(); skillInputsEls = skillsInput.querySelectorAll('.skill-item-input'); if(skillInputsEls[3]) skillInputsEls[3].value = 'SQL';
-        addSkillField(); skillInputsEls = skillsInput.querySelectorAll('.skill-item-input'); if(skillInputsEls[4]) skillInputsEls[4].value = 'Agile Methodologies';
+        // ... (باقي كود إضافة المهارات) ...
     }
 
     // Populate Languages (multiple entries)
@@ -2088,16 +2096,14 @@ function populateWithTestData() {
         // Clear all existing language entries and add initial one
         Array.from(languagesInput.querySelectorAll('.language-entry')).forEach(el => el.remove());
         addLanguageField(); // Add initial empty field
-
-        let languageInputsEls = languagesInput.querySelectorAll('.language-item-input');
-        if(languageInputsEls[0]) languageInputsEls[0].value = 'العربية (لغة أم)';
-        addLanguageField(); languageInputsEls = languagesInput.querySelectorAll('.language-item-input'); if(languageInputsEls[1]) languageInputsEls[1].value = 'الإنجليزية (ممتاز)';
+        // ... (باقي كود إضافة اللغات) ...
     }
 
     // Populate References
     ensureAndPopulateOne('references-input', 'reference-entry', addReferenceField, (entry) => {
         if(entry.querySelector('.reference-name')) entry.querySelector('.reference-name').value = 'الدكتور علي أحمد';
         if(entry.querySelector('.reference-position')) entry.querySelector('.reference-position').value = 'أستاذ مساعد، جامعة الملك فهد للبترول والمعادن';
+        if(entry.querySelector('.reference-phone')) entry.querySelector('.reference-phone').value = '0551234567';
         if(entry.querySelector('.reference-email')) entry.querySelector('.reference-email').value = 'ali.ahmed@example.com';
     });
     // Add a second reference entry
@@ -2108,6 +2114,4 @@ function populateWithTestData() {
     // Re-generate CV and update progress after populating
     generateCV();
     updateProgress();
-    // Invalidate pre-generated PDF after populating with test data
-    invalidatePreGeneratedPdf();
 }
