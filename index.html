@@ -6,12 +6,8 @@
     <title data-en="Professional CV Builder" data-ar="إنشاء السيرة الذاتية الاحترافية">إنشاء السيرة الذاتية الاحترافية</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <script src="https://kendo.cdn.telerik.com/2024.1.301/js/kendo.all.min.js"></script>
-    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2024.1.301/styles/kendo.common.min.css">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
@@ -78,19 +74,20 @@
         </div>
     </nav>
 
+    <header class="site-header">
+        <div class="header-background"></div>
+        <div class="header-content">
+            <h1 class="display-4" data-en="Professional CV Builder" data-ar="أنشئ سيرتك الذاتية الاحترافية بسهولة">أنشئ سيرتك الذاتية الاحترافية بسهولة</h1>
+            <p class="lead" data-en="Create a professional CV that stands out and gets you hired." data-ar="ابرز مهاراتك وخبراتك بتصميم احترافي يلفت الانتباه ويفتح لك أبواب الفرص.">ابرز مهاراتك وخبراتك بتصميم احترافي يلفت الانتباه ويفتح لك أبواب الفرص.</p>
+            <button class="btn btn-primary btn-lg mt-3" id="create-cv-button" onclick="showPage('cv-data-entry-page')" data-en="Create Your CV Now" data-ar="ابدأ في إنشاء سيرتك الذاتية الآن">ابدأ في إنشاء سيرتك الذاتية الآن</button>
+        </div>
+    </header>
+    <div id="loading-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 10000; justify-content: center; align-items: center; flex-direction: column; text-align: center;">
+        <div class="spinner-border text-light" role="status" style="width: 3rem; height: 3rem;"></div>
+        <p style="color: white; margin-top: 15px; font-size: 1.2em;" data-translate-id="loading-cv-text" data-en="Generating CV, please wait..." data-ar="جاري إنشاء السيرة الذاتية، يرجى الانتظار...">جاري إنشاء السيرة الذاتية، يرجى الانتظار...</p>
+    </div>
     <div id="main-content-area">
-           <header class="site-header">
-                <div class="header-background"></div>
-                <div class="header-content">
-                    <h1 class="display-4" data-en="Professional CV Builder" data-ar="أنشئ سيرتك الذاتية الاحترافية بسهولة">أنشئ سيرتك الذاتية الاحترافية بسهولة</h1>
-                  <p class="lead" data-en="Create a professional CV that stands out and gets you hired." data-ar="ابرز مهاراتك وخبراتك بتصميم احترافي يلفت الانتباه ويفتح لك أبواب الفرص.">ابرز مهاراتك وخبراتك بتصميم احترافي يلفت الانتباه ويفتح لك أبواب الفرص.</p>
-                  <button class="btn btn-primary btn-lg mt-3" id="create-cv-button" onclick="showPage('cv-data-entry-page')" data-en="Create Your CV Now" data-ar="ابدأ في إنشاء سيرتك الذاتية الآن">ابدأ في إنشاء سيرتك الذاتية الآن</button>
-                </div>
-            </header>
-
         <div id="landing-page" class="page-section active-page">
-
-
             <section id="why-resail" class="py-5">
                 <div class="container">
                     <h2 class="text-center mb-5" data-en="Why Resail CV Builder?" data-ar="لماذا نظام رسائل لإنشاء السيرة الذاتية؟">لماذا نظام رسائل لإنشاء السيرة الذاتية؟</h2>
@@ -398,8 +395,7 @@
             <div class="container py-4">
                 <h2 class="mb-4 text-center" data-en="Your CV Preview" data-ar="معاينة سيرتك الذاتية">معاينة سيرتك الذاتية</h2>
                 <div id="cv-preview-area" class="mt-4">
-        
-                    <div id="cv-container" class="template1" dir="rtl">
+                    <div id="cv-container" class="normal-layout template1" dir="rtl">
                         </div>
                 </div>
                 <div class="d-flex justify-content-center mt-4">
@@ -410,22 +406,18 @@
             </div>
         </div>
 
-
         <div id="payment-options-page" class="page-section">
             <div class="container py-4 text-center">
                 <h3 class="mb-3" data-translate="choose-payment">اختر وسيلة الدفع</h3>
-
                 <div class="mb-3">
                   <input type="text" id="discount-code" class="form-control" placeholder="أدخل كود الخصم (إن وجد)" data-en-placeholder="Enter discount code (if any)" />
                   <button class="btn btn-secondary w-100 mt-2" onclick="applyDiscountCode()" data-translate="Apply Discount">
                     تطبيق الخصم
                   </button>
                 </div>
-
                 <div class="mb-3">
                   <h5 id="final-price-text" data-translate="messages">السعر المدفوع: 0 ريال</h5>
                 </div>
-
                 <div class="d-flex justify-content-around flex-wrap mt-4">
                   <img src="stcpay.png" alt="STC Pay" style="width: 70px; cursor: pointer; margin:5px;"
                        onclick="openQrPaymentPage('STC Pay', getDiscountedPrice(), selectedTemplateCategory)" loading="lazy"/>
@@ -443,24 +435,17 @@
         <div id="qr-manual-payment-page" class="page-section">
             <div class="container py-4 text-center">
                 <h3 data-translate="payment">الدفع</h3>
-
                 <img id="qr-payment-image" src="" alt="QR Code" style="max-width: 200px; margin-bottom: 15px; display:none;" loading="lazy"/>
                 <div id="paypal-button-container" style="display: none; margin-top: 20px;"></div>
-
                 <div id="manual-payment-form" style="display: none; text-align: initial;">
                      <p data-translate="payment-note">بعد إتمام الدفع في تطبيق البنك، الرجاء تعبئة البيانات التالية:</p>
-
                      <label data-translate="your-name">اسمك:</label>
                      <input type="text" id="payment-name" class="form-control mb-2" />
-
                      <label data-translate="your-email">بريدك الإلكتروني:</label>
                      <input type="email" id="payment-email" class="form-control mb-2" />
-
                      <label data-translate="your-phone">رقم الهاتف:</label>
                      <input type="tel" id="payment-phone" class="form-control mb-2" />
-
                      <label data-translate="messages">السعر المدفوع:</label> <input type="number" id="payment-messages" class="form-control mb-2" readonly />
-
                      <label data-translate="attachment">أرفق إيصال الدفع (صورة / PDF):</label>
                      <input type="file" id="payment-file" accept="image/*,application/pdf" class="form-control mb-3" />
                  </div>
@@ -473,11 +458,12 @@
                 </div>
             </div>
         </div>
+    </div>
 
-    </div> <footer class="bg-dark text-white py-4">
+    <footer class="bg-dark text-white py-4">
         <div class="container text-center">
             <p>&copy; 2023 <span data-translate="brand-name">رسائل</span>. All rights reserved.</p>
-            </div>
+        </div>
     </footer>
 
     <script src="script.js"></script>
