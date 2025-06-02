@@ -2307,7 +2307,7 @@ body[dir="ltr"] .qr-payment-inputs-scroll {
 
     /* Ensure the CV content inside the preview area is displayed correctly for print */
     #cv-container {
-        display: flex !important;
+        display: none !important;
         width: 210mm !important; /* Force A4 width for printing */
         min-height: 297mm !important; /* Force A4 height for printing */
         margin: 0 auto !important; /* Center on the printed page */
