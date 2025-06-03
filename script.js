@@ -1,4 +1,3 @@
-ئ// --- بداية الملف: translations, global variables, DOMContentLoaded etc. ---
 const translations = {
     en: {
         'brand-name': 'Resail',
