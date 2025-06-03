@@ -199,19 +199,17 @@ const discountCodes = { "SAVE10": 10, "FIRSTBUY": 15, "FREECV": 100 };
 
 // DOM elements
 let paymentNameInput, paymentEmailInput, paymentPhoneInput, paymentMessagesInput, paymentFileInput, qrPaymentResultDiv, submitPaymentProofButton, cvContainer, siteHeaderGlobal, loadingOverlayGlobal, loadingTextGlobal;
-let isCapturingPdf = false; // لمنع التداخل
+let isCapturingPdf = false;
 
 const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
 const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'application/pdf'];
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize DOM elements that are always present
     siteHeaderGlobal = document.querySelector('.site-header');
     loadingOverlayGlobal = document.getElementById('loading-overlay');
     loadingTextGlobal = document.querySelector('#loading-overlay p[data-translate-id="loading-cv-text"]');
     cvContainer = document.getElementById('cv-container');
 
-    // Initialize payment form elements
     paymentNameInput = document.getElementById("payment-name");
     paymentEmailInput = document.getElementById("payment-email");
     paymentPhoneInput = document.getElementById("payment-phone");
@@ -230,22 +228,13 @@ document.addEventListener('DOMContentLoaded', () => {
     lazyLoadImages();
 });
 
-/**
- * Shows/hides the main site header (landing page header).
- * @param {boolean} show True to show, false to hide.
- */
 function toggleSiteHeader(show) {
     if (siteHeaderGlobal) {
         siteHeaderGlobal.style.display = show ? 'flex' : 'none';
-        console.log(`[toggleSiteHeader] Site header display set to: ${siteHeaderGlobal.style.display}`);
+        // console.log(`[toggleSiteHeader] Site header display set to: ${siteHeaderGlobal.style.display}`);
     }
 }
 
-/**
- * Shows/hides the loading overlay.
- * @param {boolean} show True to show, false to hide.
- * @param {string} [messageKey='Generating CV, please wait...'] Translation key for the message.
- */
 function toggleLoadingOverlay(show, messageKey = 'Generating CV, please wait...') {
     if (loadingOverlayGlobal && loadingTextGlobal) {
         if (show) {
@@ -263,19 +252,15 @@ function toggleLoadingOverlay(show, messageKey = 'Generating CV, please wait...'
     }
 }
 
-/**
- * Main function to control page visibility and related actions.
- * @param {string} pageId The ID of the page section to show.
- */
 function showPage(pageId) {
-    console.log(`[showPage] Attempting to show page: ${pageId}`);
+    // console.log(`[showPage] Attempting to show page: ${pageId}`);
     const pages = document.querySelectorAll('.page-section');
     pages.forEach(page => page.classList.remove('active-page'));
 
     const targetPage = document.getElementById(pageId);
     if (targetPage) {
         targetPage.classList.add('active-page');
-        console.log(`[showPage] Page ${pageId} is now active.`);
+        // console.log(`[showPage] Page ${pageId} is now active.`);
         window.scrollTo(0, 0);
         toggleSiteHeader(pageId === 'landing-page');
         updatePageContentLanguage();
@@ -283,17 +268,17 @@ function showPage(pageId) {
         if (pageId === 'cv-data-entry-page') {
             const nameField = document.getElementById('name-input');
             if (nameField && !nameField.value.trim()) {
-                console.log("[showPage] Populating with test data as name field is empty.");
+                // console.log("[showPage] Populating with test data as name field is empty.");
                 populateWithTestData();
             }
-            console.log("[showPage] Generating CV for data entry page.");
+            // console.log("[showPage] Generating CV for data entry page.");
             generateCV();
             updateProgress();
         } else if (pageId === 'cv-template-selection-page') {
-            console.log("[showPage] Generating CV for template selection page.");
+            // console.log("[showPage] Generating CV for template selection page.");
             generateCV();
         } else if (pageId === 'cv-preview-page') {
-            console.log("[showPage] Generating CV for preview page.");
+            // console.log("[showPage] Generating CV for preview page.");
             generateCV();
         }
     } else {
@@ -301,7 +286,6 @@ function showPage(pageId) {
     }
 }
 
-// --- Language Switching Functions ---
 function toggleLanguage() {
     currentLang = currentLang === 'ar' ? 'en' : 'ar';
     console.log(`[toggleLanguage] Language toggled to: ${currentLang}`);
@@ -309,7 +293,7 @@ function toggleLanguage() {
     if (cvContainer && (document.getElementById('cv-preview-page').classList.contains('active-page') ||
                         document.getElementById('cv-template-selection-page').classList.contains('active-page') ||
                         document.getElementById('cv-data-entry-page').classList.contains('active-page'))) {
-        console.log("[toggleLanguage] Regenerating CV due to language toggle on relevant page.");
+        // console.log("[toggleLanguage] Regenerating CV due to language toggle on relevant page.");
         generateCV();
     }
 }
@@ -318,7 +302,7 @@ function updateLanguage() {
     const isArabic = currentLang === 'ar';
     document.documentElement.lang = currentLang;
     document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
-    console.log(`[updateLanguage] Document lang set to "${currentLang}", dir to "${document.documentElement.dir}".`);
+    // console.log(`[updateLanguage] Document lang set to "${currentLang}", dir to "${document.documentElement.dir}".`);
 
     if (cvContainer) {
         cvContainer.dir = isArabic ? 'rtl' : 'ltr';
@@ -418,7 +402,7 @@ function lazyLoadImages() {
             image.removeAttribute('data-src');
             image.removeAttribute('data-srcset');
         });
-        console.warn("[lazyLoadImages] IntersectionObserver not supported, falling back to eager loading.");
+        // console.warn("[lazyLoadImages] IntersectionObserver not supported, falling back to eager loading.");
     }
 }
 
@@ -671,6 +655,11 @@ function renderPayPalButton(finalPrice, templateCategory) {
 
 async function submitPaymentProof(event) {
     event.preventDefault();
+    if (isCapturingPdf) { // تحقق إضافي هنا لمنع التداخل
+        console.warn("[submitPaymentProof] PDF capture is already in progress. Aborting.");
+        alert(currentLang === 'ar' ? 'عملية إنشاء السيرة الذاتية جارية بالفعل، يرجى الانتظار.' : 'CV generation is already in progress, please wait.');
+        return;
+    }
     toggleLoadingOverlay(true, 'Payment processing, please wait...');
 
     const name = paymentNameInput.value.trim();
@@ -766,128 +755,125 @@ function validateEmail(email) {
 
 /**
  * Captures the CV container as a PDF.
- * This version includes extensive console logging for debugging.
- * @param {HTMLElement} cvElement The DOM element containing the CV.
+ * This version uses a cloning strategy and extensive console logging for debugging.
+ * @param {HTMLElement} cvElementToCapture The DOM element containing the CV (original cvContainer).
  * @param {boolean} downloadPdf If true, the PDF will be downloaded by the browser.
  * @returns {Promise<string|null>} A promise that resolves with the PDF data as a Base64 string, or null if downloaded.
  */
-async function captureCVasPDF(cvElement, downloadPdf = false) {
+async function captureCVasPDF(cvElementToCapture, downloadPdf = false) {
     console.log(`[captureCVasPDF] Initiated. Download: ${downloadPdf}, isCapturing: ${isCapturingPdf}`);
 
     if (isCapturingPdf) {
         console.warn("[captureCVasPDF] Capture already in progress. Skipping subsequent call.");
+        // لا تخفي الـ overlay هنا إذا كان قد تم عرضه من قبل الدالة المستدعية الأولى
         return Promise.reject("Capture in progress");
     }
     isCapturingPdf = true;
 
-    if (!cvElement) {
-        console.error("[captureCVasPDF] CV container element (cvElement) is null or undefined!");
+    if (!cvElementToCapture) {
+        console.error("[captureCVasPDF] Original CV container element (cvElementToCapture) is null or undefined!");
         isCapturingPdf = false;
-        // Ensure loading overlay is hidden if it was shown by the caller
-        toggleLoadingOverlay(false);
+        toggleLoadingOverlay(false); // تأكد من إخفاء الـ overlay
         return Promise.reject("CV container not found");
     }
-    console.log("[captureCVasPDF] cvElement found:", cvElement);
+    console.log("[captureCVasPDF] Original cvElementToCapture found:", cvElementToCapture);
 
-    // --- حفظ الأنماط الأصلية ---
+    // --- حفظ الأنماط الأصلية للعنصر الأصلي وأبويه ---
     const originalStyles = {
         cvContainer: {},
         cvPreviewArea: {},
         cvPreviewPage: {}
     };
-    // قائمة الخصائص التي قد يتم تعديلها ويجب حفظها واستعادتها
     const cvPropsToStore = ['display', 'width', 'height', 'minHeight', 'maxHeight', 'overflow', 'overflowX', 'overflowY', 'backgroundColor', 'position', 'top', 'left', 'right', 'bottom', 'zIndex', 'transform', 'padding', 'margin', 'zoom', 'maxWidth', 'visibility', 'boxShadow', 'border', 'className', 'scrollTop', 'direction', 'fontFamily', 'fontSize', 'lineHeight', 'color', 'pageBreakInside', 'pageBreakBefore', 'pageBreakAfter'];
     
-    console.log("[captureCVasPDF] Saving original styles for cvContainer...");
+    console.log("[captureCVasPDF] Saving original styles for original cvContainer...");
     cvPropsToStore.forEach(prop => {
-        if (prop === 'className') originalStyles.cvContainer[prop] = cvElement.className;
-        else if (prop === 'scrollTop') originalStyles.cvContainer[prop] = cvElement.scrollTop;
-        else originalStyles.cvContainer[prop] = cvElement.style[prop];
+        if (prop === 'className') originalStyles.cvContainer[prop] = cvElementToCapture.className;
+        else if (prop === 'scrollTop') originalStyles.cvContainer[prop] = cvElementToCapture.scrollTop;
+        else originalStyles.cvContainer[prop] = cvElementToCapture.style[prop];
     });
 
     const cvPreviewArea = document.getElementById('cv-preview-area');
     const cvPreviewPage = document.getElementById('cv-preview-page');
     const parentPropsToStore = ['display', 'justifyContent', 'alignItems', 'overflow', 'maxHeight', 'padding', 'margin', 'minHeight', 'position'];
 
-    if (cvPreviewArea) {
-        console.log("[captureCVasPDF] Saving original styles for cvPreviewArea...");
-        parentPropsToStore.forEach(prop => originalStyles.cvPreviewArea[prop] = cvPreviewArea.style[prop]);
-    }
-    if (cvPreviewPage) {
-        console.log("[captureCVasPDF] Saving original styles for cvPreviewPage...");
-        parentPropsToStore.forEach(prop => originalStyles.cvPreviewPage[prop] = cvPreviewPage.style[prop]);
-    }
+    if (cvPreviewArea) parentPropsToStore.forEach(prop => originalStyles.cvPreviewArea[prop] = cvPreviewArea.style[prop]);
+    if (cvPreviewPage) parentPropsToStore.forEach(prop => originalStyles.cvPreviewPage[prop] = cvPreviewPage.style[prop]);
 
-    const removeButtons = Array.from(cvElement.querySelectorAll('.remove-field'));
-    removeButtons.forEach(btn => btn.style.display = 'none');
-    console.log(`[captureCVasPDF] Hid ${removeButtons.length} remove buttons.`);
+    const removeButtonsOriginal = Array.from(cvElementToCapture.querySelectorAll('.remove-field'));
+    removeButtonsOriginal.forEach(btn => btn.style.display = 'none');
+    console.log(`[captureCVasPDF] Hid ${removeButtonsOriginal.length} remove buttons on original element.`);
 
+    let clonedCvElement = null;
     let captureError = null;
-    let clonedCvElement = null; // متغير لتخزين النسخة المستنسخة
 
     try {
-        console.log("[captureCVasPDF] Cloning cvElement for PDF capture...");
-        clonedCvElement = cvElement.cloneNode(true); // استنساخ عميق للعنصر
-        clonedCvElement.id = cvElement.id + "-clone"; // إعطاء ID فريد للنسخة
-        
-        // تطبيق الأنماط الأساسية على النسخة المستنسخة لجعلها مناسبة للالتقاط
-        console.log("[captureCVasPDF] Applying temporary styles to CLONED element for PDF capture...");
-        clonedCvElement.style.position = 'absolute';
-        clonedCvElement.style.left = '0px'; // وضعه في أعلى يسار الصفحة (سيتم إخفاؤه بـ z-index أو نقله)
+        // 1. تأكد أن المحتوى الأصلي محدث قبل الاستنساخ
+        console.log("[captureCVasPDF] Ensuring original CV content is up-to-date before cloning...");
+        generateCV(); // هذا سيحدث cvContainer.innerHTML
+        await new Promise(resolve => requestAnimationFrame(resolve)); // انتظر إطارًا واحدًا للتأكد من تطبيق التغييرات على DOM
+
+        // 2. استنساخ العنصر الأصلي
+        console.log("[captureCVasPDF] Cloning original cvContainer...");
+        clonedCvElement = cvElementToCapture.cloneNode(true);
+        clonedCvElement.id = cvElementToCapture.id + "-pdf-clone"; // ID فريد
+        console.log("[captureCVasPDF] cvContainer cloned successfully.");
+
+        // 3. تهيئة النسخة المستنسخة للالتقاط
+        console.log("[captureCVasPDF] Applying A4 styles to CLONED element...");
+        clonedCvElement.style.position = 'fixed'; // استخدام fixed قد يكون أفضل من absolute للـ "رؤية"
+        clonedCvElement.style.left = '0px';
         clonedCvElement.style.top = '0px';
-        clonedCvElement.style.zIndex = '-1000'; // وضعه خلف كل شيء لكي لا يظهر للمستخدم
-        clonedCvElement.style.visibility = 'hidden'; // إخفاؤه بصريًا ولكن السماح للمتصفح بحساب أبعاده
+        clonedCvElement.style.zIndex = '-10000'; // خلف كل شيء وغير مرئي للمستخدم
+        clonedCvElement.style.visibility = 'hidden'; // إخفاؤه بصريًا في البداية
         
         clonedCvElement.style.width = '210mm';
-        clonedCvElement.style.minHeight = '297mm'; // ارتفاع A4 كحد أدنى
-        clonedCvElement.style.height = 'auto';    // السماح للمحتوى بالتمدد
+        clonedCvElement.style.minHeight = '297mm';
+        clonedCvElement.style.height = 'auto';
         clonedCvElement.style.maxHeight = 'none';
         clonedCvElement.style.margin = '0';
-        clonedCvElement.style.padding = '10mm'; // حشوة داخلية للصفحة A4
+        clonedCvElement.style.padding = '10mm'; // حشوة داخلية لصفحة A4
         clonedCvElement.style.backgroundColor = '#ffffff';
-        clonedCvElement.style.border = 'none'; // لا حاجة لحدود في النسخة النهائية
+        clonedCvElement.style.border = 'none';
         clonedCvElement.style.boxShadow = 'none';
-        clonedCvElement.style.display = 'flex'; // لضمان تمدد .cv-content
+        clonedCvElement.style.display = 'flex'; // مهم لـ .cv-content
         clonedCvElement.style.flexDirection = 'column';
-        clonedCvElement.style.overflow = 'visible'; // مهم جداً لالتقاط كل المحتوى
-        clonedCvElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr'; // تطبيق الاتجاه
+        clonedCvElement.style.overflow = 'visible'; // مهم جداً
+        clonedCvElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+        // تطبيق الكلاسات الصحيحة للقالب على النسخة المستنسخة
+        clonedCvElement.className = `${selectedTemplateCategory}-layout template${selectedTemplate}`;
         
-        // إضافة النسخة المستنسخة إلى الـ body ليتمكن المتصفح من حساب أبعادها بشكل صحيح
         document.body.appendChild(clonedCvElement);
-        console.log("[captureCVasPDF] Cloned element appended to body.");
+        console.log("[captureCVasPDF] Cloned element appended to body, styled for A4, and initially hidden.");
 
-        // لا حاجة لاستدعاء generateCV() هنا لأن cloneNode(true) ينسخ المحتوى
-        // ولكن يجب التأكد أن generateCV() قد تم استدعاؤها على العنصر الأصلي قبل الاستنساخ
-        // أو إذا كان generateCV() يضيف event listeners، فقد تحتاج لإعادة ربطها على النسخة.
-        // للتبسيط، سنفترض أن generateCV() قد ملأت العنصر الأصلي بشكل صحيح.
-
+        // 4. Force reflow and wait for images in the CLONE
         clonedCvElement.offsetHeight; // Force reflow
-        console.log(`[captureCVasPDF] Cloned element dimensions: scrollWidth=${clonedCvElement.scrollWidth}, scrollHeight=${clonedCvElement.scrollHeight}`);
-
-        // التأكد من تحميل جميع الصور داخل النسخة المستنسخة
+        console.log(`[captureCVasPDF] Cloned element dimensions after styling: scrollWidth=${clonedCvElement.scrollWidth}, scrollHeight=${clonedCvElement.scrollHeight}, offsetWidth=${clonedCvElement.offsetWidth}, offsetHeight=${clonedCvElement.offsetHeight}`);
+        
         const imagesInClone = Array.from(clonedCvElement.querySelectorAll('img'));
         console.log(`[captureCVasPDF] Found ${imagesInClone.length} images in clone to check.`);
         if (imagesInClone.length > 0) {
             await Promise.all(imagesInClone.map(img => {
                 if (img.complete && img.naturalHeight !== 0) return Promise.resolve();
                 return new Promise((resolve) => {
-                    img.onload = resolve;
+                    img.onload = () => { console.log(`[captureCVasPDF] Image loaded in clone: ${img.src.substring(0,50)}`); resolve(); };
                     img.onerror = () => { console.warn(`[captureCVasPDF] Image FAILED to load in clone: ${img.src}`); resolve(); };
                 });
             }));
             console.log("[captureCVasPDF] All images in clone checked/loaded.");
         }
-        
-        // جعل النسخة المستنسخة مرئية مؤقتًا لـ html2canvas (مع بقائها خلف كل شيء)
-        clonedCvElement.style.visibility = 'visible';
-        console.log("[captureCVasPDF] Cloned element visibility set to visible for capture.");
-        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))); // انتظار إطارين للرسم
 
+        // 5. Make clone visible for capture and wait for paint
+        clonedCvElement.style.visibility = 'visible'; // اجعله مرئيًا الآن لـ html2canvas
+        console.log("[captureCVasPDF] Cloned element visibility set to 'visible' for capture.");
+        // انتظر إطارين للرسم لضمان أن المتصفح قد عرض كل شيء بشكل صحيح
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        console.log("[captureCVasPDF] Waited for two animation frames.");
 
         const isMobile = isMobileDevice();
-        // قيم مقترحة لتوازن الجودة والأداء
-        const scaleFactor = isMobile ? 1.3 : 1.8; // تقليل طفيف للجوال
-        const imageQuality = isMobile ? 0.8 : 0.9; // جودة جيدة
+        // قيم مقترحة أكثر توازناً
+        const scaleFactor = isMobile ? 1.2 : 1.5; // قد تحتاج لزيادة هذا إذا كانت الجودة لا تزال منخفضة
+        const imageQuality = isMobile ? 0.8 : 0.85; // جودة مقبولة
         console.log(`[captureCVasPDF] Using scale: ${scaleFactor}, quality: ${imageQuality}`);
 
         const pdfOptions = {
@@ -897,18 +883,18 @@ async function captureCVasPDF(cvElement, downloadPdf = false) {
             html2canvas: {
                 scale: scaleFactor,
                 useCORS: true,
-                allowTaint: false, // أفضل إذا كانت useCORS تعمل
+                allowTaint: false,
                 backgroundColor: '#ffffff',
                 logging: true, // مهم للتشخيص
                 letterRendering: true,
                 scrollX: 0,
                 scrollY: 0,
-                windowWidth: clonedCvElement.scrollWidth,
+                windowWidth: clonedCvElement.scrollWidth, // استخدام أبعاد النسخة المستنسخة
                 windowHeight: clonedCvElement.scrollHeight,
                 removeContainer: true,
-                onclone: (clonedDoc) => { // هذا الـ onclone يعمل على نسخة html2canvas الداخلية
+                onclone: (clonedDoc) => {
                     console.log("[captureCVasPDF] html2canvas internal onclone triggered.");
-                     // يمكن إضافة أي تعديلات نهائية على الـ DOM المستنسخ بواسطة html2canvas هنا
+                    // أي تعديلات إضافية على الـ DOM المستنسخ داخليًا بواسطة html2canvas
                 }
             },
             jsPDF: {
@@ -931,7 +917,7 @@ async function captureCVasPDF(cvElement, downloadPdf = false) {
             console.log("[captureCVasPDF] Attempting to get PDF as blob...");
             const pdfBlob = await worker.output('blob');
             console.log(`[captureCVasPDF] PDF blob received. Size: ${pdfBlob.size} bytes, Type: ${pdfBlob.type}`);
-            if (pdfBlob.size < 1024 && pdfBlob.size > 0) {
+            if (pdfBlob.size < 1024 && pdfBlob.size > 0) { // أقل من 1KB
                 console.warn("[captureCVasPDF] PDF blob size is very small, likely a blank or near-blank PDF.");
             } else if (pdfBlob.size === 0) {
                 console.error("[captureCVasPDF] PDF blob size is ZERO. Capture failed to produce content.");
@@ -947,39 +933,32 @@ async function captureCVasPDF(cvElement, downloadPdf = false) {
         throw error;
     } finally {
         console.log("[captureCVasPDF] Entering finally block...");
-        // إزالة النسخة المستنسخة من الـ DOM
         if (clonedCvElement && clonedCvElement.parentElement) {
             clonedCvElement.parentElement.removeChild(clonedCvElement);
             console.log("[captureCVasPDF] Cloned element removed from body.");
-        } else if (clonedCvElement) {
-            console.warn("[captureCVasPDF] Cloned element was created but not appended or already removed.");
         }
 
-        // استعادة الأنماط الأصلية للعنصر الأصلي وأبويه
         console.log("[captureCVasPDF] Restoring original styles to original cvContainer...");
         for (const prop in originalStyles.cvContainer) {
-            if (prop === 'className') cvElement.className = originalStyles.cvContainer[prop];
-            else if (prop === 'scrollTop') cvElement.scrollTop = originalStyles.cvContainer[prop];
-            else cvElement.style[prop] = originalStyles.cvContainer[prop];
+            if (prop === 'className') cvElementToCapture.className = originalStyles.cvContainer[prop];
+            else if (prop === 'scrollTop') cvElementToCapture.scrollTop = originalStyles.cvContainer[prop];
+            else cvElementToCapture.style[prop] = originalStyles.cvContainer[prop];
         }
 
         if (cvPreviewArea) {
-            console.log("[captureCVasPDF] Restoring original styles to cvPreviewArea...");
             for (const prop in originalStyles.cvPreviewArea) {
                 cvPreviewArea.style[prop] = originalStyles.cvPreviewArea[prop];
             }
         }
         if (cvPreviewPage) {
-            console.log("[captureCVasPDF] Restoring original styles to cvPreviewPage...");
              for (const prop in originalStyles.cvPreviewPage) {
                 cvPreviewPage.style[prop] = originalStyles.cvPreviewPage[prop];
             }
         }
         
-        removeButtons.forEach(btn => btn.style.display = '');
+        removeButtonsOriginal.forEach(btn => btn.style.display = '');
         console.log("[captureCVasPDF] Original styles restored.");
 
-        // إعادة بناء السيرة الذاتية في وضع المعاينة العادي إذا كانت الصفحة ذات صلة نشطة
         if (document.getElementById('cv-preview-page')?.classList.contains('active-page') ||
             document.getElementById('cv-template-selection-page')?.classList.contains('active-page') ||
             document.getElementById('cv-data-entry-page')?.classList.contains('active-page')) {
@@ -987,28 +966,33 @@ async function captureCVasPDF(cvElement, downloadPdf = false) {
             generateCV(); // استدعاء generateCV للعنصر الأصلي
         }
         isCapturingPdf = false;
-        console.log(`[captureCVasPDF] Process finished. isCapturingPdf: ${isCapturingPdf}. Error encountered:`, captureError);
+        console.log(`[captureCVasPDF] Process finished. isCapturingPdf: ${isCapturingPdf}. Error encountered:`, captureError ? captureError.message : 'None');
     }
 }
 
 
 async function generateAndDownloadPDF_html2pdf() {
     console.log("[generateAndDownloadPDF_html2pdf] Initiated.");
+    if (isCapturingPdf) {
+        console.warn("[generateAndDownloadPDF_html2pdf] PDF capture already in progress. Aborting.");
+        alert(translations[currentLang]['Generating CV, please wait...']); // أو رسالة مشابهة
+        return;
+    }
     toggleLoadingOverlay(true, 'Generating CV, please wait...');
     try {
         const watermarkText = translations[currentLang]['Watermark Preview Text'] || (currentLang === 'ar' ? "للعرض فقط" : "ONLY PREVIEW");
-        if (cvContainer) { // التأكد من أن cvContainer مُعرف
+        if (cvContainer) {
             cvContainer.style.setProperty('--watermark-text', `"${watermarkText}"`);
             cvContainer.classList.add('watermarked');
             console.log("[generateAndDownloadPDF_html2pdf] Watermark applied to original cvContainer.");
         } else {
-            console.error("[generateAndDownloadPDF_html2pdf] cvContainer is not defined when trying to apply watermark.");
+            console.error("[generateAndDownloadPDF_html2pdf] cvContainer is not defined for watermarking.");
             throw new Error("CV container not found for watermarking.");
         }
         
         await new Promise(resolve => setTimeout(resolve, 100));
 
-        await captureCVasPDF(cvContainer, true); // تمرير العنصر الأصلي
+        await captureCVasPDF(cvContainer, true);
 
         alert(currentLang === 'ar' ? 'تم تنزيل السيرة الذاتية بنجاح!' : 'CV downloaded successfully!');
         console.log("[generateAndDownloadPDF_html2pdf] PDF download successful message shown.");
@@ -1016,7 +1000,7 @@ async function generateAndDownloadPDF_html2pdf() {
         console.error("[generateAndDownloadPDF_html2pdf] Error:", error);
         alert(translations[currentLang]['Error generating PDF for CV.'] + ` (${error.message || 'Unknown error'})`);
     } finally {
-        if (cvContainer) { // التأكد مرة أخرى
+        if (cvContainer) {
             cvContainer.classList.remove('watermarked');
             cvContainer.style.removeProperty('--watermark-text');
             console.log("[generateAndDownloadPDF_html2pdf] Watermark removed from original cvContainer.");
@@ -1075,8 +1059,7 @@ function addExperienceField() {
         <textarea placeholder="${translations[currentLang]['Description']}" class="experience-description" oninput="generateCV(); updateProgress()"></textarea>
     `;
     container.appendChild(newEntry);
-    console.log("[addExperienceField] Experience field added.");
-    // generateCV(); updateProgress(); // استدعاء عند الإدخال أفضل
+    // console.log("[addExperienceField] Experience field added.");
 }
 function removeLastExperienceField() {
     const experienceInput = document.getElementById('experience-input');
@@ -1084,7 +1067,7 @@ function removeLastExperienceField() {
     const entries = experienceInput.querySelectorAll('.experience-entry');
     if (entries.length > 1) {
         experienceInput.removeChild(entries[entries.length - 1]);
-        console.log("[removeLastExperienceField] Last experience field removed.");
+        // console.log("[removeLastExperienceField] Last experience field removed.");
         generateCV(); updateProgress();
     } else {
         alert(translations[currentLang]['You must have at least one field in this section.']);
@@ -1102,7 +1085,7 @@ function addEducationField() {
         <input type="text" placeholder="${translations[currentLang]['Duration'] || (currentLang === 'ar' ? 'المدة' : 'Duration')}" class="education-duration" oninput="generateCV(); updateProgress()">
     `;
     educationInput.appendChild(newEntry);
-    console.log("[addEducationField] Education field added.");
+    // console.log("[addEducationField] Education field added.");
 }
 function removeLastEducationField() { 
     const educationInput = document.getElementById('education-input');
@@ -1110,7 +1093,7 @@ function removeLastEducationField() {
     const entries = educationInput.querySelectorAll('.education-entry');
     if (entries.length > 1) {
         educationInput.removeChild(entries[entries.length - 1]);
-        console.log("[removeLastEducationField] Last education field removed.");
+        // console.log("[removeLastEducationField] Last education field removed.");
         generateCV(); updateProgress();
     } else {
         alert(translations[currentLang]['You must have at least one field in this section.']);
@@ -1126,7 +1109,7 @@ function addSkillField() {
         <input type="text" placeholder="${translations[currentLang]['Enter a skill']}" class="skill-item-input" oninput="generateCV(); updateProgress()">
     `;
     skillsInput.appendChild(newEntry);
-    console.log("[addSkillField] Skill field added.");
+    // console.log("[addSkillField] Skill field added.");
 }
 function removeLastSkillField() {
     const skillsInput = document.getElementById('skills-input');
@@ -1134,7 +1117,7 @@ function removeLastSkillField() {
     const entries = skillsInput.querySelectorAll('.skill-entry');
     if (entries.length > 1) {
         skillsInput.removeChild(entries[entries.length - 1]);
-        console.log("[removeLastSkillField] Last skill field removed.");
+        // console.log("[removeLastSkillField] Last skill field removed.");
         generateCV(); updateProgress();
     } else {
         alert(translations[currentLang]['You must have at least one field in this section.']);
@@ -1150,7 +1133,7 @@ function addLanguageField() {
         <input type="text" placeholder="${translations[currentLang]['Enter a language']}" class="language-item-input" oninput="generateCV(); updateProgress()">
     `;
     languagesInput.appendChild(newEntry);
-    console.log("[addLanguageField] Language field added.");
+    // console.log("[addLanguageField] Language field added.");
 }
 function removeLastLanguageField() {
     const languagesInput = document.getElementById('languages-input');
@@ -1158,7 +1141,7 @@ function removeLastLanguageField() {
     const entries = languagesInput.querySelectorAll('.language-entry');
     if (entries.length > 1) {
         languagesInput.removeChild(entries[entries.length - 1]);
-        console.log("[removeLastLanguageField] Last language field removed.");
+        // console.log("[removeLastLanguageField] Last language field removed.");
         generateCV(); updateProgress();
     } else {
         alert(translations[currentLang]['You must have at least one field in this section.']);
@@ -1177,7 +1160,7 @@ function addReferenceField() {
         <input type="email" placeholder="${translations[currentLang]['Email']}" class="reference-email" oninput="generateCV(); updateProgress()">
     `;
     referencesInput.appendChild(newEntry);
-    console.log("[addReferenceField] Reference field added.");
+    // console.log("[addReferenceField] Reference field added.");
 }
 function removeLastReferenceField() {
     const referencesInput = document.getElementById('references-input');
@@ -1185,7 +1168,7 @@ function removeLastReferenceField() {
     const entries = referencesInput.querySelectorAll('.reference-entry');
     if (entries.length > 1) {
         referencesInput.removeChild(entries[entries.length - 1]);
-        console.log("[removeLastReferenceField] Last reference field removed.");
+        // console.log("[removeLastReferenceField] Last reference field removed.");
         generateCV(); updateProgress();
     } else {
         alert(translations[currentLang]['You must have at least one field in this section.']);
@@ -1200,7 +1183,7 @@ function removeField(button) {
         return;
     }
     parentContainer.removeChild(entry);
-    console.log(`[removeField] Field removed from ${parentContainer.id}`);
+    // console.log(`[removeField] Field removed from ${parentContainer.id}`);
     generateCV(); updateProgress();
 }
 
@@ -1214,9 +1197,9 @@ function generateCV() {
     const isArabic = currentLang === 'ar';
     const direction = isArabic ? 'rtl' : 'ltr';
 
-    // إذا كنا لا نلتقط PDF، قم بتطبيق الكلاسات العادية للمعاينه
-    // أما إذا كنا نلتقط، فإن captureCVasPDF قد طبقت كلاسات مؤقتة، فلا نغيرها هنا
-    if (!isCapturingPdf) {
+    // لا نغير className هنا إذا كانت دالة captureCVasPDF هي التي ستطبق الكلاسات المؤقتة
+    // لكن إذا كانت هذه الدالة تُستدعى للمعاينة العادية، فيجب أن تطبق الكلاسات الصحيحة
+    if (!isCapturingPdf) { // فقط إذا لم نكن في منتصف عملية التقاط
         cvContainer.className = `${selectedTemplateCategory}-layout template${selectedTemplate}`;
         // console.log(`[generateCV] Applied class for normal preview: ${cvContainer.className}`);
     }
@@ -1496,7 +1479,7 @@ function updateProgress() {
 }
 
 function populateWithTestData() {
-    console.log("[populateWithTestData] Populating form with test data...");
+    // console.log("[populateWithTestData] Populating form with test data...");
     const nameInput = document.getElementById('name-input');
     const titleInput = document.getElementById('title-input');
     const emailInput = document.getElementById('email-input');
@@ -1575,6 +1558,6 @@ function populateWithTestData() {
 
     generateCV();
     updateProgress();
-    console.log("[populateWithTestData] Test data population complete.");
+    // console.log("[populateWithTestData] Test data population complete.");
 }
 
