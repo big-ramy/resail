@@ -753,7 +753,8 @@ function validateEmail(email) {
 async function captureCVasPDF(originalCvElement, downloadPdf = false) {
     console.log(`[captureCVasPDF V7] Initiated. Download: ${downloadPdf}, isCapturing: ${isCapturingPdf}`);
 
-    const originalStyles = { // تم تعريفها هنا لتكون متاحة في نطاق الدالة بالكامل
+    // تعريف originalStyles في بداية الدالة
+    const originalStyles = {
         cvContainer: {},
         cvPreviewArea: {},
         cvPreviewPage: {}
@@ -803,15 +804,15 @@ async function captureCVasPDF(originalCvElement, downloadPdf = false) {
         captureWrapper.id = "pdf-capture-wrapper-v7";
         
         Object.assign(captureWrapper.style, {
-            position: 'absolute', left: '-7000px', top: '-7000px', // Farther off-screen
+            position: 'absolute', left: '-8000px', top: '-8000px', // Even further off-screen
             width: '210mm', 
-            height: 'auto', // Allow wrapper to grow with content
+            height: 'auto', 
             minHeight: '297mm', 
             margin: '0', padding: '0',
             backgroundColor: '#ffffff',
-            border: '1px dashed #ccc', // For debugging if made visible
-            overflow: 'visible', // Wrapper itself should be visible if content overflows its minHeight
-            visibility: 'hidden'
+            border: '1px solid #f0f0f0', // Light border for debugging
+            overflow: 'visible', 
+            visibility: 'hidden' // Start hidden
         });
         document.body.appendChild(captureWrapper);
         console.log("[captureCVasPDF V7] Capture wrapper appended to body.");
@@ -820,8 +821,8 @@ async function captureCVasPDF(originalCvElement, downloadPdf = false) {
         clonedContentHolder.id = originalCvElement.id + "-pdf-content-v7";
         Object.assign(clonedContentHolder.style, {
             width: '100%', 
-            height: 'auto',
-            minHeight: 'calc(297mm - 20mm)', // A4 content area minus padding
+            height: 'auto', // Content will define height
+            minHeight: 'calc(297mm - 20mm)', // A4 content area, assuming 10mm padding on each side
             margin: '0',
             padding: '10mm',   // Page margins
             boxSizing: 'border-box',
@@ -838,7 +839,7 @@ async function captureCVasPDF(originalCvElement, downloadPdf = false) {
 
         // --- 3. Populate the cloned content holder ---
         console.log("[captureCVasPDF V7] Calling generateCV to populate the CLONED content holder...");
-        generateCV(clonedContentHolder); // Pass the new clonedContentHolder
+        generateCV(clonedContentHolder);
         
         if (downloadPdf) {
             const watermarkText = translations[currentLang]['Watermark Preview Text'] || (currentLang === 'ar' ? "للعرض فقط" : "ONLY PREVIEW");
@@ -852,16 +853,13 @@ async function captureCVasPDF(originalCvElement, downloadPdf = false) {
                 zIndex: '10000', width: '160%', lineHeight: '1.2', wordBreak: 'break-word',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: '1'
             });
-            clonedContentHolder.style.position = 'relative'; // Ensure this for absolute positioning
+            clonedContentHolder.style.position = 'relative'; 
             clonedContentHolder.appendChild(watermarkDiv);
             console.log("[captureCVasPDF V7] Watermark DIV added to clone for direct download.");
         }
         
         clonedContentHolder.offsetHeight; // Force reflow
-        // Adjust wrapper height to actual content height AFTER content is generated and images (if any) are loaded
-        // This is crucial for multi-page PDFs.
         console.log(`[captureCVasPDF V7] Cloned content populated. Initial clonedContentHolder scrollH: ${clonedContentHolder.scrollHeight}`);
-
 
         const imagesInClone = Array.from(clonedContentHolder.querySelectorAll('img'));
         console.log(`[captureCVasPDF V7] Found ${imagesInClone.length} images in clone.`);
@@ -876,25 +874,25 @@ async function captureCVasPDF(originalCvElement, downloadPdf = false) {
             console.log("[captureCVasPDF V7] All images in clone checked/loaded.");
         }
         
-        // After images are loaded, re-calculate scrollHeight and set wrapper height
+        // Set wrapper height to content height for multi-page PDF generation
         captureWrapper.style.height = clonedContentHolder.scrollHeight + 'px';
         console.log(`[captureCVasPDF V7] Wrapper height set to cloned content scrollHeight: ${captureWrapper.style.height}`);
-
 
         // 4. Make wrapper visible for capture and wait for paint
         captureWrapper.style.visibility = 'visible';
         console.log("[captureCVasPDF V7] Capture wrapper visibility set to 'visible' for capture.");
-        await new Promise(resolve => setTimeout(resolve, isMobileDevice() ? 2500 : 1200)); // Longer timeout
+        // Increased timeout, especially for mobile
+        await new Promise(resolve => setTimeout(resolve, isMobileDevice() ? 3000 : 1500)); 
         console.log("[captureCVasPDF V7] Waited for paint after making wrapper visible.");
 
         // --- 5. Configure html2pdf.js ---
         const isMobile = isMobileDevice();
-        const scaleFactor = isMobile ? 1.0 : 1.5; // Start very low for mobile
-        const imageQuality = isMobile ? 0.7 : 0.85;
+        const scaleFactor = isMobile ? 1.0 : 1.5; // Reduced scale for mobile
+        const imageQuality = isMobile ? 0.75 : 0.9; // Good quality
         console.log(`[captureCVasPDF V7] Using scale: ${scaleFactor}, quality: ${imageQuality}. Mobile: ${isMobile}`);
 
         const pdfOptions = {
-            margin: 0, // Margin is handled by clonedContentHolder's padding
+            margin: 0, 
             filename: `CV_${(document.getElementById('name-input')?.value.trim().replace(/\s/g, '_') || 'ResailCV')}.pdf`,
             image: { type: 'jpeg', quality: imageQuality },
             html2canvas: {
@@ -906,7 +904,6 @@ async function captureCVasPDF(originalCvElement, downloadPdf = false) {
                 letterRendering: true,
                 scrollX: 0,
                 scrollY: 0,
-                // Capture the wrapper which is now sized to the content
                 width: captureWrapper.offsetWidth, 
                 height: captureWrapper.scrollHeight, // Capture full scroll height of wrapper
                 windowWidth: captureWrapper.scrollWidth,
@@ -915,7 +912,12 @@ async function captureCVasPDF(originalCvElement, downloadPdf = false) {
                 onclone: (clonedDoc) => {
                     console.log("[captureCVasPDF V7] html2canvas internal onclone triggered.");
                     const body = clonedDoc.body;
+                    // Attempt to ensure fonts are applied in the clone
                     body.style.fontFamily = getComputedStyle(originalCvElement).fontFamily || 'Tajawal, Arial, sans-serif';
+                    // Force repaint/reflow in the cloned document if possible (experimental)
+                    // if (clonedDoc.defaultView && typeof clonedDoc.defaultView.getComputedStyle === 'function') {
+                    //     clonedDoc.defaultView.getComputedStyle(body).getPropertyValue('font-family');
+                    // }
                 }
             },
             jsPDF: {
@@ -961,20 +963,27 @@ async function captureCVasPDF(originalCvElement, downloadPdf = false) {
         }
 
         console.log("[captureCVasPDF V7] Restoring original styles to original cvContainer...");
+        // استعادة الأنماط الأصلية للعنصر الأصلي
         for (const prop in originalStyles.cvContainer) {
-            if (prop === 'className') originalCvElement.className = originalStyles.cvContainer[prop];
-            else if (prop === 'scrollTop') originalCvElement.scrollTop = originalStyles.cvContainer[prop];
-            else originalCvElement.style[prop] = originalStyles.cvContainer[prop];
+            if (originalStyles.cvContainer.hasOwnProperty(prop)) { // التأكد من أن الخاصية تنتمي للكائن
+                if (prop === 'className') originalCvElement.className = originalStyles.cvContainer[prop];
+                else if (prop === 'scrollTop') originalCvElement.scrollTop = originalStyles.cvContainer[prop];
+                else originalCvElement.style[prop] = originalStyles.cvContainer[prop];
+            }
         }
 
         if (cvPreviewArea) {
             for (const prop in originalStyles.cvPreviewArea) {
-                cvPreviewArea.style[prop] = originalStyles.cvPreviewArea[prop];
+                if (originalStyles.cvPreviewArea.hasOwnProperty(prop)) {
+                    cvPreviewArea.style[prop] = originalStyles.cvPreviewArea[prop];
+                }
             }
         }
         if (cvPreviewPage) {
              for (const prop in originalStyles.cvPreviewPage) {
-                cvPreviewPage.style[prop] = originalStyles.cvPreviewPage[prop];
+                 if (originalStyles.cvPreviewPage.hasOwnProperty(prop)) {
+                    cvPreviewPage.style[prop] = originalStyles.cvPreviewPage[prop];
+                 }
             }
         }
         
