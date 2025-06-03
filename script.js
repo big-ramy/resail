@@ -265,7 +265,8 @@ pdfMake.fonts = {
     },
     Tajawal: {
         normal: TAJAWAL_REGULAR_FONT_KEY, // الإشارة إلى الخط باستخدام المفتاح
-        bold: TAJAWAL_BOLD_FONT_KEY // الإشارة إلى الخط الغامق باستخدام المفتاح
+        bold: TAJAWAL_BOLD_FONT_KEY, // الإشارة إلى الخط الغامق باستخدام المفتاح
+
     }
     // أضف خطوطًا أخرى إذا لزم الأمر لقوالب معينة
 };
@@ -919,7 +920,6 @@ async function getCVDocumentDefinition(addWatermark) {
         },
         company: {
             fontSize: isArabic ? 10 : 9,
-            italics: true,
             margin: [0, 0, 0, 2],
             alignment: isArabic ? 'right' : 'left',
             font: defaultFont
@@ -948,7 +948,6 @@ async function getCVDocumentDefinition(addWatermark) {
             color: 'rgba(0, 0, 0, 0.08)',
             alignment: 'center',
             bold: true,
-            italics: true,
             font: defaultFont
         }
     };
