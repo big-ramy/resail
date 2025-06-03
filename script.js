@@ -751,131 +751,145 @@ function validateEmail(email) {
  * @returns {Promise<string|null>} Base64 string of the PDF or null if downloaded/error.
  */
 async function captureCVasPDF(originalCvElement, downloadPdf = false) {
-    console.log(`[captureCVasPDF V4] Initiated. Download: ${downloadPdf}, isCapturing: ${isCapturingPdf}`);
+    console.log(`[captureCVasPDF V5] Initiated. Download: ${downloadPdf}, isCapturing: ${isCapturingPdf}`);
 
     if (isCapturingPdf) {
-        console.warn("[captureCVasPDF V4] Capture already in progress. Skipping.");
+        console.warn("[captureCVasPDF V5] Capture already in progress. Skipping.");
         return Promise.reject("Capture in progress");
     }
     isCapturingPdf = true;
 
     if (!originalCvElement) {
-        console.error("[captureCVasPDF V4] Original CV element is null!");
+        console.error("[captureCVasPDF V5] Original CV element is null!");
         isCapturingPdf = false;
         toggleLoadingOverlay(false);
         return Promise.reject("CV container not found");
     }
-    console.log("[captureCVasPDF V4] Original CV element found:", originalCvElement.id);
+    console.log("[captureCVasPDF V5] Original CV element found:", originalCvElement.id);
 
-    // --- 1. Save original styles ---
-    const originalStyles = {
-        cvContainer: {},
-        // We might not need to manipulate cvPreviewArea and cvPreviewPage if the clone is fully off-screen
-    };
+    // --- 1. Save original styles of the main CV container ---
+    const originalCvContainerStyles = {};
     const cvPropsToStore = ['display', 'width', 'height', 'minHeight', 'maxHeight', 'overflow', 'overflowX', 'overflowY', 'backgroundColor', 'position', 'top', 'left', 'right', 'bottom', 'zIndex', 'transform', 'padding', 'margin', 'zoom', 'maxWidth', 'visibility', 'boxShadow', 'border', 'className', 'scrollTop', 'direction', 'fontFamily', 'fontSize', 'lineHeight', 'color'];
     
     cvPropsToStore.forEach(prop => {
-        if (prop === 'className') originalStyles.cvContainer[prop] = originalCvElement.className;
-        else if (prop === 'scrollTop') originalStyles.cvContainer[prop] = originalCvElement.scrollTop;
-        else originalStyles.cvContainer[prop] = originalCvElement.style[prop];
+        if (prop === 'className') originalCvContainerStyles[prop] = originalCvElement.className;
+        else if (prop === 'scrollTop') originalCvContainerStyles[prop] = originalCvElement.scrollTop;
+        else originalCvContainerStyles[prop] = originalCvElement.style[prop];
     });
-    console.log("[captureCVasPDF V4] Original styles of cvContainer saved.");
+    console.log("[captureCVasPDF V5] Original styles of cvContainer saved.");
 
+    // Hide remove buttons on the original element if they are part of it
     const removeButtonsOriginal = Array.from(originalCvElement.querySelectorAll('.remove-field'));
     removeButtonsOriginal.forEach(btn => btn.style.display = 'none');
 
-    let clonedElementForPdf = null;
+    let captureWrapper = null; // The temporary A4-sized wrapper
+    let clonedCvContent = null; // The element where CV HTML will be injected
     let captureError = null;
 
     try {
-        // --- 2. Create and prepare a dedicated clone for PDF generation ---
-        console.log("[captureCVasPDF V4] Creating a dedicated clone for PDF generation.");
-        clonedElementForPdf = document.createElement('div');
-        clonedElementForPdf.id = originalCvElement.id + "-pdf-render-clone-v4";
+        // --- 2. Create a dedicated wrapper for PDF generation ---
+        console.log("[captureCVasPDF V5] Creating a dedicated capture wrapper for PDF generation.");
+        captureWrapper = document.createElement('div');
+        captureWrapper.id = "pdf-capture-wrapper";
         
-        console.log("[captureCVasPDF V4] Applying A4 print styles to the clone...");
-        // Styles to make it render like a full A4 page, but off-screen
-        clonedElementForPdf.style.position = 'absolute'; // Position absolute to take it out of flow
-        clonedElementForPdf.style.left = '-300mm'; // Far off-screen to the left
-        clonedElementForPdf.style.top = '0px';
-        clonedElementForPdf.style.zIndex = '1'; // Low z-index, but doesn't really matter if off-screen
-        clonedElementForPdf.style.visibility = 'hidden'; // Start hidden, make visible just before capture
+        // Style the wrapper to be A4 size and off-screen
+        captureWrapper.style.position = 'absolute';
+        captureWrapper.style.left = '-300mm'; // Far off-screen
+        captureWrapper.style.top = '0px';
+        captureWrapper.style.zIndex = '1'; // Does not need to be high if off-screen
+        captureWrapper.style.visibility = 'hidden'; // Initially hidden
         
-        clonedElementForPdf.style.width = '210mm';
-        clonedElementForPdf.style.minHeight = '297mm';
-        clonedElementForPdf.style.height = 'auto';
-        clonedElementForPdf.style.margin = '0';
-        clonedElementForPdf.style.padding = '10mm'; // Consistent padding for A4 content
-        clonedElementForPdf.style.backgroundColor = '#ffffff';
-        clonedElementForPdf.style.border = 'none';
-        clonedElementForPdf.style.boxShadow = 'none';
-        clonedElementForPdf.style.display = 'flex';
-        clonedElementForPdf.style.flexDirection = 'column';
-        clonedElementForPdf.style.overflow = 'visible'; // Crucial
-        clonedElementForPdf.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
-        clonedElementForPdf.className = `${selectedTemplateCategory}-layout template${selectedTemplate}`; // Apply template classes
+        captureWrapper.style.width = '210mm';
+        captureWrapper.style.height = '297mm'; // Fixed height for one A4 page. For multi-page, use minHeight and allow height: auto.
+                                            // For now, let's try fixed height to simplify.
+        captureWrapper.style.margin = '0';
+        captureWrapper.style.padding = '0'; // No padding on the wrapper itself
+        captureWrapper.style.backgroundColor = '#ffffff';
+        captureWrapper.style.border = '1px solid #eee'; // Light border for debugging if made visible
+        captureWrapper.style.overflow = 'hidden'; // Clip content that exceeds A4 dimensions
 
-        document.body.appendChild(clonedElementForPdf);
-        console.log("[captureCVasPDF V4] Styled clone appended to body (off-screen and hidden).");
+        // Create the element that will hold the CV content, styled to fit within the wrapper with margins
+        clonedCvContent = document.createElement('div');
+        clonedCvContent.id = originalCvElement.id + "-pdf-content-clone";
+        clonedCvContent.style.width = 'calc(210mm - 20mm)'; // 210mm - 10mm left padding - 10mm right padding
+        clonedCvContent.style.minHeight = 'calc(297mm - 20mm)'; // 297mm - 10mm top padding - 10mm bottom padding
+        clonedCvContent.style.height = 'auto'; // Allow content to define its actual height within these bounds
+        clonedCvContent.style.margin = '0'; // Margin is handled by wrapper's padding effectively
+        clonedCvContent.style.padding = '10mm'; // This becomes the "page margin"
+        clonedCvContent.style.boxSizing = 'border-box';
+        clonedCvContent.style.backgroundColor = '#ffffff'; // Ensure white background for content area
+        clonedCvContent.style.overflow = 'visible'; // Content inside should be visible
+        clonedCvContent.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+        clonedCvContent.className = `${selectedTemplateCategory}-layout template${selectedTemplate}`;
 
-        // --- 3. Populate the clone with CV content ---
-        console.log("[captureCVasPDF V4] Calling generateCV to populate the CLONED element...");
-        generateCV(clonedElementForPdf); // This will fill clonedElementForPdf.innerHTML
+        captureWrapper.appendChild(clonedCvContent);
+        document.body.appendChild(captureWrapper);
+        console.log("[captureCVasPDF V5] Capture wrapper and cloned content holder appended to body (off-screen and hidden).");
+
+        // --- 3. Populate the cloned content holder with CV HTML ---
+        console.log("[captureCVasPDF V5] Calling generateCV to populate the CLONED content holder...");
+        generateCV(clonedCvContent); // Pass the new clonedCvContent element
         
         // Add watermark if this is a direct download
         if (downloadPdf) {
             const watermarkText = translations[currentLang]['Watermark Preview Text'] || (currentLang === 'ar' ? "للعرض فقط" : "ONLY PREVIEW");
             const watermarkDiv = document.createElement('div');
             watermarkDiv.textContent = watermarkText;
-            // Apply watermark styles directly (more reliable than ::before for html2canvas)
+            // Apply watermark styles directly
             watermarkDiv.style.position = 'absolute';
             watermarkDiv.style.top = '50%';
             watermarkDiv.style.left = '50%';
-            watermarkDiv.style.transform = 'translate(-50%, -50%) rotate(-40deg)';
-            watermarkDiv.style.fontSize = 'clamp(3em, 10vw, 6em)'; // Responsive font size
-            watermarkDiv.style.color = 'rgba(0, 0, 0, 0.07)'; // Very light
+            watermarkDiv.style.transform = 'translate(-50%, -50%) rotate(-35deg) scale(1.5)'; // Made it larger
+            watermarkDiv.style.fontSize = 'clamp(2.5em, 8vw, 5em)'; // Larger and responsive
+            watermarkDiv.style.color = 'rgba(0, 0, 0, 0.06)'; // Even lighter
             watermarkDiv.style.fontWeight = 'bold';
             watermarkDiv.style.textAlign = 'center';
             watermarkDiv.style.pointerEvents = 'none';
-            watermarkDiv.style.zIndex = '10000'; // On top of other content in clone
-            watermarkDiv.style.width = '150%'; // Cover large area
-            watermarkDiv.style.lineHeight = '1.2';
+            watermarkDiv.style.zIndex = '10000';
+            watermarkDiv.style.width = '180%'; // Cover more area
+            watermarkDiv.style.height = '100px'; // Give it some height
+            watermarkDiv.style.display = 'flex';
+            watermarkDiv.style.alignItems = 'center';
+            watermarkDiv.style.justifyContent = 'center';
+            watermarkDiv.style.lineHeight = '1';
             watermarkDiv.style.wordBreak = 'break-word';
-            clonedElementForPdf.style.position = 'relative'; // Parent needs to be relative for absolute child
-            clonedElementForPdf.appendChild(watermarkDiv);
-            console.log("[captureCVasPDF V4] Watermark DIV added to clone for direct download.");
+            watermarkDiv.style.opacity = '1'; // Color is already very light
+            // Append to clonedCvContent so it's part of the capture
+            clonedCvContent.style.position = 'relative'; // Ensure parent is relative for absolute child
+            clonedCvContent.appendChild(watermarkDiv);
+            console.log("[captureCVasPDF V5] Watermark DIV added to cloned content for direct download.");
         }
         
-        clonedElementForPdf.offsetHeight; // Force reflow
-        console.log(`[captureCVasPDF V4] Cloned element populated. scrollHeight: ${clonedElementForPdf.scrollHeight}, offsetHeight: ${clonedElementForPdf.offsetHeight}`);
+        captureWrapper.offsetHeight; // Force reflow
+        console.log(`[captureCVasPDF V5] Cloned content populated. Wrapper scrollH: ${captureWrapper.scrollHeight}, clonedContent scrollH: ${clonedCvContent.scrollHeight}`);
 
-        const imagesInClone = Array.from(clonedElementForPdf.querySelectorAll('img'));
-        console.log(`[captureCVasPDF V4] Found ${imagesInClone.length} images in clone.`);
+        const imagesInClone = Array.from(clonedCvContent.querySelectorAll('img'));
+        console.log(`[captureCVasPDF V5] Found ${imagesInClone.length} images in clone.`);
         if (imagesInClone.length > 0) {
             await Promise.all(imagesInClone.map(img => {
                 if (img.complete && img.naturalHeight !== 0) return Promise.resolve();
                 return new Promise((resolve) => {
-                    img.onload = () => { console.log(`[captureCVasPDF V4] Image loaded in clone: ${img.src.substring(0,50)}`); resolve(); };
-                    img.onerror = () => { console.warn(`[captureCVasPDF V4] Image FAILED to load in clone: ${img.src}`); resolve(); };
+                    img.onload = () => { /*console.log(`[captureCVasPDF V5] Image loaded in clone: ${img.src.substring(0,50)}`);*/ resolve(); };
+                    img.onerror = () => { console.warn(`[captureCVasPDF V5] Image FAILED to load in clone: ${img.src}`); resolve(); };
                 });
             }));
-            console.log("[captureCVasPDF V4] All images in clone checked/loaded.");
+            console.log("[captureCVasPDF V5] All images in clone checked/loaded.");
         }
 
-        // 4. Make clone visible for capture and wait for paint
-        clonedElementForPdf.style.visibility = 'visible';
-        console.log("[captureCVasPDF V4] Cloned element visibility set to 'visible' for capture.");
+        // 4. Make wrapper visible for capture and wait for paint
+        captureWrapper.style.visibility = 'visible';
+        console.log("[captureCVasPDF V5] Capture wrapper visibility set to 'visible' for capture.");
         await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-        console.log("[captureCVasPDF V4] Waited for paint after making clone visible.");
+        console.log("[captureCVasPDF V5] Waited for paint after making wrapper visible.");
 
         // --- 5. Configure html2pdf.js ---
         const isMobile = isMobileDevice();
-        const scaleFactor = isMobile ? 1.1 : 1.5; // Slightly lower for mobile, decent for desktop
-        const imageQuality = isMobile ? 0.7 : 0.8; // Good enough quality
-        console.log(`[captureCVasPDF V4] Using scale: ${scaleFactor}, quality: ${imageQuality}. Mobile: ${isMobile}`);
+        const scaleFactor = isMobile ? 1.0 : 1.5; // Start low for mobile
+        const imageQuality = isMobile ? 0.7 : 0.85;
+        console.log(`[captureCVasPDF V5] Using scale: ${scaleFactor}, quality: ${imageQuality}. Mobile: ${isMobile}`);
 
         const pdfOptions = {
-            margin: 0,
+            margin: 0, // Margin is handled by clonedCvContent's padding
             filename: `CV_${(document.getElementById('name-input')?.value.trim().replace(/\s/g, '_') || 'ResailCV')}.pdf`,
             image: { type: 'jpeg', quality: imageQuality },
             html2canvas: {
@@ -887,58 +901,62 @@ async function captureCVasPDF(originalCvElement, downloadPdf = false) {
                 letterRendering: true,
                 scrollX: 0,
                 scrollY: 0,
-                width: clonedElementForPdf.offsetWidth, // Use offsetWidth
-                height: clonedElementForPdf.scrollHeight, // Use scrollHeight
-                windowWidth: clonedElementForPdf.scrollWidth,
-                windowHeight: clonedElementForPdf.scrollHeight,
+                // Capture the wrapper which is A4 sized
+                width: captureWrapper.offsetWidth,
+                height: captureWrapper.offsetHeight, // Capture fixed A4 height. For multi-page, this needs to be scrollHeight of content.
+                windowWidth: captureWrapper.scrollWidth, // Should be same as offsetWidth if no internal scroll
+                windowHeight: captureWrapper.scrollHeight, // Should be same as offsetHeight if no internal scroll
                 removeContainer: true,
                 onclone: (clonedDoc) => {
-                    console.log("[captureCVasPDF V4] html2canvas internal onclone triggered.");
+                    console.log("[captureCVasPDF V5] html2canvas internal onclone triggered.");
                 }
             },
             jsPDF: {
                 orientation: 'portrait', unit: 'mm', format: 'a4',
                 compress: true, putOnlyUsedFonts: true, floatPrecision: 'smart'
             },
+            // For multi-page, html2pdf tries to break based on height.
+            // If captureWrapper has fixed height (297mm), it will be one page.
+            // To allow multi-page, captureWrapper.style.height = 'auto', and use pagebreak options carefully.
             pagebreak: { mode: ['css', 'avoid-all'], after: '.cv-end-marker' }
         };
-        console.log("[captureCVasPDF V4] html2pdf options prepared.");
+        console.log("[captureCVasPDF V5] html2pdf options prepared.");
 
         // --- 6. Generate PDF ---
-        console.log("[captureCVasPDF V4] Starting html2pdf generation from CLONED element...");
-        const worker = html2pdf().from(clonedElementForPdf).set(pdfOptions);
+        console.log("[captureCVasPDF V5] Starting html2pdf generation from CAPTURE WRAPPER element...");
+        const worker = html2pdf().from(captureWrapper).set(pdfOptions); // Capture the wrapper
 
         if (downloadPdf) {
-            console.log("[captureCVasPDF V4] Attempting to save PDF directly...");
+            console.log("[captureCVasPDF V5] Attempting to save PDF directly...");
             await worker.save();
-            console.log("[captureCVasPDF V4] PDF save process initiated.");
+            console.log("[captureCVasPDF V5] PDF save process initiated.");
             return null;
         } else {
-            console.log("[captureCVasPDF V4] Attempting to get PDF as blob...");
+            console.log("[captureCVasPDF V5] Attempting to get PDF as blob...");
             const pdfBlob = await worker.output('blob');
-            console.log(`[captureCVasPDF V4] PDF blob received. Size: ${pdfBlob.size} bytes, Type: ${pdfBlob.type}`);
-            if (pdfBlob.size < 1024 && pdfBlob.size > 0) {
-                console.warn("[captureCVasPDF V4] PDF blob size is very small, likely a blank or near-blank PDF.");
+            console.log(`[captureCVasPDF V5] PDF blob received. Size: ${pdfBlob.size} bytes, Type: ${pdfBlob.type}`);
+            if (pdfBlob.size < 2048 && pdfBlob.size > 0) { // Less than 2KB might still be an issue
+                console.warn("[captureCVasPDF V5] PDF blob size is very small, possibly blank or minimal content.");
             } else if (pdfBlob.size === 0) {
-                console.error("[captureCVasPDF V4] PDF blob size is ZERO. Capture failed to produce content.");
+                console.error("[captureCVasPDF V5] PDF blob size is ZERO. Capture failed to produce content.");
                 throw new Error("Generated PDF is empty (size 0).");
             }
-            console.log("[captureCVasPDF V4] Converting blob to Base64...");
+            console.log("[captureCVasPDF V5] Converting blob to Base64...");
             return await fileToBase64(pdfBlob);
         }
 
     } catch (error) {
         captureError = error;
-        console.error("[captureCVasPDF V4] CRITICAL ERROR during PDF generation:", error, error.stack);
+        console.error("[captureCVasPDF V5] CRITICAL ERROR during PDF generation:", error, error.stack);
         throw error;
     } finally {
-        console.log("[captureCVasPDF V4] Entering finally block...");
-        if (clonedElementForPdf && clonedElementForPdf.parentElement) {
-            clonedElementForPdf.parentElement.removeChild(clonedElementForPdf);
-            console.log("[captureCVasPDF V4] Cloned element removed from body.");
+        console.log("[captureCVasPDF V5] Entering finally block...");
+        if (captureWrapper && captureWrapper.parentElement) {
+            captureWrapper.parentElement.removeChild(captureWrapper);
+            console.log("[captureCVasPDF V5] Capture wrapper removed from body.");
         }
 
-        console.log("[captureCVasPDF V4] Restoring original styles to original cvContainer...");
+        console.log("[captureCVasPDF V5] Restoring original styles to original cvContainer...");
         for (const prop in originalStyles.cvContainer) {
             if (prop === 'className') originalCvElement.className = originalStyles.cvContainer[prop];
             else if (prop === 'scrollTop') originalCvElement.scrollTop = originalStyles.cvContainer[prop];
@@ -957,16 +975,16 @@ async function captureCVasPDF(originalCvElement, downloadPdf = false) {
         }
         
         removeButtonsOriginal.forEach(btn => btn.style.display = '');
-        console.log("[captureCVasPDF V4] Original styles restored.");
+        console.log("[captureCVasPDF V5] Original styles restored.");
 
         if (document.getElementById('cv-preview-page')?.classList.contains('active-page') ||
             document.getElementById('cv-template-selection-page')?.classList.contains('active-page') ||
             document.getElementById('cv-data-entry-page')?.classList.contains('active-page')) {
-            console.log("[captureCVasPDF V4] Regenerating CV for on-screen preview (original container).");
+            console.log("[captureCVasPDF V5] Regenerating CV for on-screen preview (original container).");
             generateCV(originalCvElement);
         }
         isCapturingPdf = false;
-        console.log(`[captureCVasPDF V4] Process finished. isCapturingPdf: ${isCapturingPdf}. Error encountered:`, captureError ? captureError.message : 'None');
+        console.log(`[captureCVasPDF V5] Process finished. isCapturingPdf: ${isCapturingPdf}. Error encountered:`, captureError ? captureError.message : 'None');
     }
 }
 
@@ -1185,12 +1203,9 @@ function generateCV(targetElement) {
     const isArabic = currentLang === 'ar';
     const direction = isArabic ? 'rtl' : 'ltr';
 
-    // إذا لم نكن في وضع الالتقاط، أو إذا كنا نحدث العنصر الأصلي، نطبق الكلاسات
-    // أما إذا كنا نلتقط، فإن captureCVasPDF قد طبقت الكلاسات على النسخة المستنسخة.
-    // if (!isCapturingPdf || targetElement === cvContainer) { // cvContainer هو العنصر الأصلي المعروض
-        targetElement.className = `${selectedTemplateCategory}-layout template${selectedTemplate}`;
-    // }
-    targetElement.dir = direction; // الاتجاه يطبق دائماً
+    // الكلاسات تطبق دائماً على العنصر المستهدف
+    targetElement.className = `${selectedTemplateCategory}-layout template${selectedTemplate}`;
+    targetElement.dir = direction;
     targetElement.innerHTML = ''; // مسح المحتوى القديم قبل إعادة البناء
 
     // جلب البيانات
