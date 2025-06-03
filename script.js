@@ -90,7 +90,7 @@ const translations = {
         "Back to Preview": "Back to Preview",
         "Back to Payment Options": "Back to Payment Options",
         "Generating CV, please wait...": "Generating CV, please wait...",
-        "Payment processing, please wait...": "Payment processing, please wait...",
+        "Payment processing, please wait...": "جاري معالجة الدفع، يرجى الانتظار...",
         "CV generated successfully and sent!": "CV generated successfully and sent to your email!",
         "Error sending CV email. Please contact support.": "Error sending CV email. Please contact support."
     },
@@ -165,10 +165,10 @@ const translations = {
         "Please fill in all fields.": "يرجى ملء جميع الحقول.",
         "Please enter a valid email.": "يرجى إدخال بريد إلكتروني صالح.",
         "File size exceeds the limit (3MB).": "حجم الملف يتجاوز الحد المسموح به (3MB).",
-        "Please attach only image or PDF files.": "Please attach only image or PDF files.",
-        "Error processing file.": "Error processing file.",
-        "payment-error-general": "An error occurred during PayPal payment. Please try again.",
-        "Apply Discount": "Apply Discount",
+        "Please attach only image or PDF files.": "يرجى إرفاق صورة أو ملف PDF فقط.",
+        "Error processing file.": "حدث خطأ أثناء معالجة الملف.",
+        "payment-error-general": "حدث خطأ أثناء الدفع عبر باي بال. الرجاء المحاولة مرة أخرى.",
+        "Apply Discount": "تطبيق الخصم",
         "Enter discount code (if any)": "أدخل كود الخصم (إن وجد)",
         "End of CV": "نهاية السيرة",
         "Watermark Preview Text": "للعرض فقط",
@@ -176,13 +176,13 @@ const translations = {
         "contact-link": "اتصل بنا",
         "Your CV Preview": "معاينة سيرتك الذاتية",
         "Download PDF (Direct)": "تنزيل PDF (مباشر)",
-        "Back to Templates": "Back to Templates",
-        "Back to Data Entry": "Back to Data Entry",
-        "Next: Choose Template": "Next: Choose Template",
-        "Next: Preview CV": "Next: Preview CV",
-        "Back to Home": "Back to Home",
-        "Back to Preview": "Back to Preview",
-        "Back to Payment Options": "Back to Payment Options",
+        "Back to Templates": "العودة للنماذج",
+        "Back to Data Entry": "العودة لإدخال البيانات",
+        "Next: Choose Template": "التالي: اختر قالب",
+        "Next: Preview CV": "التالي: معاينة السيرة",
+        "Back to Home": "العودة للرئيسية",
+        "Back to Preview": "العودة للمعانية",
+        "Back to Payment Options": "العودة لخيارات الدفع",
         "Generating CV, please wait...": "جاري إنشاء السيرة الذاتية، يرجى الانتظار...",
         "Payment processing, please wait...": "جاري معالجة الدفع، يرجى الانتظار...",
         "CV generated successfully and sent!": "تم إنشاء السيرة الذاتية بنجاح وإرسالها لبريدك الإلكتروني!",
@@ -1024,9 +1024,8 @@ async function getCVDocumentDefinition(addWatermark) {
         skillsContent.push({
             ul: filledSkills.map(skill => ({ text: skill, style: 'listItem' })),
             margin: [0, 0, 0, 5],
-            // For RTL, pdfmake automatically handles list item bullet position.
-            // For multiple columns, we would need to manually split the array into columns.
-            columns: (filledSkills.length > 5 && selectedTemplateCategory === 'normal') ? 2 : 1
+            // تم تغيير 'columns' إلى 'columnCount' هنا لتجنب الخطأ.
+            columnCount: (filledSkills.length > 5 && selectedTemplateCategory === 'normal') ? 2 : 1
         });
     }
 
