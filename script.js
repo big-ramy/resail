@@ -269,7 +269,7 @@ function showPage(pageId) {
             if (nameField && !nameField.value.trim()) {
                 populateWithTestData();
             }
-            generateCV(cvContainer); // Pass the main cvContainer for on-screen preview
+            generateCV(cvContainer);
             updateProgress();
         } else if (pageId === 'cv-template-selection-page' || pageId === 'cv-preview-page') {
             generateCV(cvContainer);
