@@ -53,7 +53,7 @@ const translations = {
         'No Degree': 'No Degree',
         'No Name': 'No Name',
         'You must have at least one field in this section.': 'You must have at least one field in this section.',
-        'Error generating PDF for CV.': 'Error generating PDF for CV.', // رسالة خطأ عامة
+        'Error generating PDF for CV.': 'Error generating PDF for CV.',
         'Failed to load some images. The CV may not be generated correctly.': 'Failed to load some images. The CV may not be generated correctly.',
         'English': 'English',
         'العربية': 'العربية',
@@ -88,8 +88,8 @@ const translations = {
         "Back to Home": "Back to Home",
         "Back to Preview": "Back to Preview",
         "Back to Payment Options": "Back to Payment Options",
-        "Generating CV, please wait...": "Generating CV, please wait...", // لـ overlay
-        "Payment processing, please wait...": "Payment processing, please wait...", // لـ overlay
+        "Generating CV, please wait...": "Generating CV, please wait...",
+        "Payment processing, please wait...": "Payment processing, please wait...",
         "CV generated successfully and sent!": "CV generated successfully and sent to your email!",
         "Error sending CV email. Please contact support.": "Error sending CV email. Please contact support."
     },
@@ -206,9 +206,9 @@ const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'application/pdf'];
 
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize DOM elements that are always present
-    siteHeaderGlobal = document.querySelector('.site-header'); // الهيدر الرئيسي للصفحة الرئيسية
+    siteHeaderGlobal = document.querySelector('.site-header');
     loadingOverlayGlobal = document.getElementById('loading-overlay');
-    loadingTextGlobal = document.querySelector('#loading-overlay p[data-translate-id="loading-cv-text"]'); // تأكد أن هذا العنصر موجود في HTML
+    loadingTextGlobal = document.querySelector('#loading-overlay p[data-translate-id="loading-cv-text"]');
     cvContainer = document.getElementById('cv-container');
 
     // Initialize payment form elements
@@ -225,10 +225,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     loadPayPalSDK(currentLang);
-    updateLanguage(); // تطبيق اللغة عند التحميل
-    showPage('landing-page'); // عرض الصفحة الرئيسية أولاً
+    updateLanguage();
+    showPage('landing-page');
     lazyLoadImages();
-    // populateWithTestData(); // يتم استدعاؤها الآن من showPage إذا كانت الحقول فارغة
 });
 
 /**
@@ -238,6 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function toggleSiteHeader(show) {
     if (siteHeaderGlobal) {
         siteHeaderGlobal.style.display = show ? 'flex' : 'none';
+        console.log(`Site header display set to: ${siteHeaderGlobal.style.display}`);
     }
 }
 
@@ -249,12 +249,14 @@ function toggleSiteHeader(show) {
 function toggleLoadingOverlay(show, messageKey = 'Generating CV, please wait...') {
     if (loadingOverlayGlobal && loadingTextGlobal) {
         if (show) {
-            loadingTextGlobal.setAttribute('data-current-key', messageKey); // لتحديث النص عند تغيير اللغة وهو ظاهر
+            loadingTextGlobal.setAttribute('data-current-key', messageKey);
             loadingTextGlobal.textContent = translations[currentLang][messageKey] || messageKey;
             loadingOverlayGlobal.style.display = 'flex';
+            console.log(`Loading overlay SHOWN with message key: ${messageKey}`);
         } else {
             loadingOverlayGlobal.style.display = 'none';
             loadingTextGlobal.removeAttribute('data-current-key');
+            console.log("Loading overlay HIDDEN.");
         }
     }
 }
@@ -264,41 +266,48 @@ function toggleLoadingOverlay(show, messageKey = 'Generating CV, please wait...'
  * @param {string} pageId The ID of the page section to show.
  */
 function showPage(pageId) {
+    console.log(`Attempting to show page: ${pageId}`);
     const pages = document.querySelectorAll('.page-section');
     pages.forEach(page => page.classList.remove('active-page'));
 
     const targetPage = document.getElementById(pageId);
     if (targetPage) {
         targetPage.classList.add('active-page');
+        console.log(`Page ${pageId} is now active.`);
         window.scrollTo(0, 0);
-        toggleSiteHeader(pageId === 'landing-page'); // إخفاء/إظهار الهيدر
-        updatePageContentLanguage(); // تحديث نصوص الصفحة الحالية
+        toggleSiteHeader(pageId === 'landing-page');
+        updatePageContentLanguage();
 
-        // Specific logic for certain pages
         if (pageId === 'cv-data-entry-page') {
             const nameField = document.getElementById('name-input');
-            // ملء البيانات الاختبارية فقط إذا كان حقل الاسم فارغًا (لتجنب الكتابة فوق بيانات المستخدم)
             if (nameField && !nameField.value.trim()) {
+                console.log("Populating with test data as name field is empty.");
                 populateWithTestData();
             }
-            generateCV(); // عرض السيرة الذاتية للمعاينة
+            console.log("Generating CV for data entry page.");
+            generateCV();
             updateProgress();
         } else if (pageId === 'cv-template-selection-page') {
-            generateCV(); // تحديث المعاينة عند اختيار القوالب
+            console.log("Generating CV for template selection page.");
+            generateCV();
         } else if (pageId === 'cv-preview-page') {
-            generateCV(); // عرض السيرة النهائية للمعاينة
+            console.log("Generating CV for preview page.");
+            generateCV();
         }
+    } else {
+        console.error(`Target page with ID "${pageId}" not found.`);
     }
 }
 
 // --- Language Switching Functions ---
 function toggleLanguage() {
     currentLang = currentLang === 'ar' ? 'en' : 'ar';
-    updateLanguage(); // سيقوم بتحديث كل شيء بما في ذلك محتوى الصفحة النشطة
-    // إعادة إنشاء السيرة الذاتية إذا كانت إحدى الصفحات ذات الصلة نشطة
+    console.log(`Language toggled to: ${currentLang}`);
+    updateLanguage();
     if (cvContainer && (document.getElementById('cv-preview-page').classList.contains('active-page') ||
                         document.getElementById('cv-template-selection-page').classList.contains('active-page') ||
                         document.getElementById('cv-data-entry-page').classList.contains('active-page'))) {
+        console.log("Regenerating CV due to language toggle on relevant page.");
         generateCV();
     }
 }
@@ -307,28 +316,28 @@ function updateLanguage() {
     const isArabic = currentLang === 'ar';
     document.documentElement.lang = currentLang;
     document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
+    console.log(`Document lang set to "${currentLang}", dir to "${document.documentElement.dir}".`);
 
-    if (cvContainer) { // التأكد من وجود العنصر قبل تعديل dir
+    if (cvContainer) {
         cvContainer.dir = isArabic ? 'rtl' : 'ltr';
     }
 
     document.body.classList.toggle('rtl', isArabic);
     document.body.classList.toggle('ltr', !isArabic);
 
-    updateNavbarLinks(); // تحديث روابط شريط التنقل
-    updatePageContentLanguage(); // تحديث محتوى الصفحة النشطة
-    loadPayPalSDK(currentLang); // تحديث لغة أزرار PayPal
+    updateNavbarLinks();
+    updatePageContentLanguage();
+    loadPayPalSDK(currentLang); // Reload PayPal SDK with new locale
 }
 
 function updateNavbarLinks() {
-    const links = document.querySelectorAll('nav [data-translate]'); // استهداف الروابط داخل الـ nav فقط
+    const links = document.querySelectorAll('nav [data-translate]');
     links.forEach(link => {
         const key = link.getAttribute('data-translate');
         if (translations[currentLang] && translations[currentLang][key] !== undefined) {
             link.textContent = translations[currentLang][key];
         }
     });
-    // تحديث نص زر تبديل اللغة نفسه
     const langToggleSpan = document.getElementById('currentLangText');
     if (langToggleSpan) {
         langToggleSpan.textContent = currentLang === 'ar' ? translations.en.English : translations.ar.العربية;
@@ -339,7 +348,6 @@ function updatePageContentLanguage() {
     const isArabic = currentLang === 'ar';
     const activePage = document.querySelector('.page-section.active-page');
 
-    // تحديث نص مؤشر التحميل إذا كان ظاهرًا
     if (loadingOverlayGlobal && loadingOverlayGlobal.style.display === 'flex' && loadingTextGlobal) {
         const currentMessageKey = loadingTextGlobal.getAttribute('data-current-key') || 'Generating CV, please wait...';
         loadingTextGlobal.textContent = translations[currentLang][currentMessageKey] || currentMessageKey;
@@ -347,24 +355,21 @@ function updatePageContentLanguage() {
 
     if (!activePage) return;
 
-    // تحديث العناصر القابلة للترجمة (النصوص)
     const translatableElements = activePage.querySelectorAll('[data-en], [data-ar], [data-translate-id]');
     translatableElements.forEach(element => {
         let newTextContent = null;
-        const translateKey = element.getAttribute('data-translate-id'); // استخدام data-translate-id أولاً
+        const translateKey = element.getAttribute('data-translate-id');
         if (translateKey && translations[currentLang] && translations[currentLang][translateKey] !== undefined) {
             newTextContent = translations[currentLang][translateKey];
-        } else { // الرجوع إلى data-en/data-ar إذا لم يوجد data-translate-id
+        } else {
             const textKeyAttr = isArabic ? element.getAttribute('data-ar') : element.getAttribute('data-en');
             if (textKeyAttr) newTextContent = textKeyAttr;
         }
-        // لا تحدث نص التحميل هنا مرة أخرى لتجنب الكتابة فوق الرسالة المحددة
         if (newTextContent !== null && element.textContent !== newTextContent && !element.closest('#loading-overlay')) {
             element.textContent = newTextContent;
         }
     });
 
-    // تحديث النصوص النائبة (placeholders)
     const placeholderElements = activePage.querySelectorAll('[data-en-placeholder], [data-ar-placeholder]');
     placeholderElements.forEach(element => {
         const placeholderKey = isArabic ? element.getAttribute('data-ar-placeholder') : element.getAttribute('data-en-placeholder');
@@ -373,7 +378,6 @@ function updatePageContentLanguage() {
         }
     });
 
-    // تحديث النصوص البديلة للصور (alt attributes)
     const altElements = activePage.querySelectorAll('[data-en-alt], [data-ar-alt]');
     altElements.forEach(element => {
         if (element.tagName === 'IMG') {
@@ -382,7 +386,6 @@ function updatePageContentLanguage() {
         }
     });
 
-    // تحديث سعر الدفع المعروض إذا كانت صفحة خيارات الدفع نشطة
     if (document.getElementById('payment-options-page')?.classList.contains('active-page')) {
         updatePriceDisplay(getDiscountedPrice());
     }
@@ -409,7 +412,7 @@ function lazyLoadImages() {
     } else {
         lazyImages.forEach(image => {
             image.src = image.dataset.src;
-            if (image.dataset.srcset) { image.srcset = image.dataset.srcset; } // Corrected typo
+            if (image.dataset.srcset) { image.srcset = image.dataset.srcset; }
             image.removeAttribute('data-src');
             image.removeAttribute('data-srcset');
         });
@@ -429,7 +432,7 @@ function validateAndShowTemplatePage() {
     showPage('cv-template-selection-page');
 }
 
-// --- Payment Related Functions (mostly same as before, ensure correct parameters to GAS) ---
+// --- Payment Related Functions ---
 function openPaymentForCV() {
     let price = 0;
     if (selectedTemplateCategory === 'normal') price = 10;
@@ -438,7 +441,7 @@ function openPaymentForCV() {
     else if (selectedTemplateCategory === 'ast') price = 25;
 
     selectedPriceToPay = price;
-    discountApplied = 0; // Reset discount
+    discountApplied = 0;
     updatePriceDisplay(getDiscountedPrice());
     showPage('payment-options-page');
 }
@@ -473,11 +476,11 @@ function applyDiscountCode() {
         if (discountApplied === 100) {
              alert(currentLang === 'ar' ? 'هذه السيرة الذاتية مجانية! سيتم إرسالها قريباً إلى بريدك الإلكتروني.' : 'This CV is free! It will be sent to your email shortly.');
         }
-    } else if (code) { // Invalid code entered
+    } else if (code) {
         discountApplied = 0;
         updatePriceDisplay(selectedPriceToPay);
         alert(currentLang === 'ar' ? 'كود الخصم غير صالح.' : 'Invalid discount code.');
-    } else { // No code, reset
+    } else {
         discountApplied = 0;
         updatePriceDisplay(selectedPriceToPay);
     }
@@ -761,180 +764,228 @@ function validateEmail(email) {
 
 /**
  * Captures the CV container as a PDF.
- * This is the "original" version of the function from your script,
- * with minimal changes for consistency.
+ * This version includes extensive console logging for debugging.
  * @param {HTMLElement} cvElement The DOM element containing the CV.
  * @param {boolean} downloadPdf If true, the PDF will be downloaded by the browser.
  * @returns {Promise<string|null>} A promise that resolves with the PDF data as a Base64 string, or null if downloaded.
  */
 async function captureCVasPDF(cvElement, downloadPdf = false) {
+    // تسجيل بداية الدالة
+    console.log(`[captureCVasPDF] Initiated. Download: ${downloadPdf}, isCapturing: ${isCapturingPdf}`);
+
     if (isCapturingPdf) {
-        console.warn("PDF capture already in progress. Skipping.");
+        console.warn("[captureCVasPDF] Capture already in progress. Skipping subsequent call.");
         return Promise.reject("Capture in progress");
     }
     isCapturingPdf = true;
 
     if (!cvElement) {
-        console.error("CV container element not found for PDF capture!");
+        console.error("[captureCVasPDF] CV container element (cvElement) is null or undefined!");
         isCapturingPdf = false;
         return Promise.reject("CV container not found");
     }
-    console.log("Starting PDF capture (original logic). Download:", downloadPdf);
+    console.log("[captureCVasPDF] cvElement found:", cvElement);
 
     // --- حفظ الأنماط الأصلية ---
-    // (هذا الجزء مهم جدًا لضمان عودة الصفحة لحالتها الطبيعية)
     const originalStyles = {
-        cvContainer: {
-            display: cvElement.style.display,
-            width: cvElement.style.width,
-            height: cvElement.style.height,
-            minHeight: cvElement.style.minHeight,
-            maxHeight: cvElement.style.maxHeight,
-            overflow: cvElement.style.overflow,
-            overflowY: cvElement.style.overflowY,
-            backgroundColor: cvElement.style.backgroundColor,
-            position: cvElement.style.position,
-            top: cvElement.style.top,
-            left: cvElement.style.left,
-            zIndex: cvElement.style.zIndex,
-            transform: cvElement.style.transform,
-            padding: cvElement.style.padding,
-            margin: cvElement.style.margin,
-            zoom: cvElement.style.zoom || '',
-            maxWidth: cvElement.style.maxWidth || '',
-            visibility: cvElement.style.visibility || '',
-            boxShadow: cvElement.style.boxShadow || '',
-            border: cvElement.style.border || '',
-            className: cvElement.className, // حفظ الكلاسات الأصلية
-            scrollTop: cvElement.scrollTop
-        },
+        cvContainer: {},
         cvPreviewArea: {},
         cvPreviewPage: {}
     };
+    const cvPropsToStore = ['display', 'width', 'height', 'minHeight', 'maxHeight', 'overflow', 'overflowY', 'backgroundColor', 'position', 'top', 'left', 'right', 'zIndex', 'transform', 'padding', 'margin', 'zoom', 'maxWidth', 'visibility', 'boxShadow', 'border', 'className', 'scrollTop', 'direction'];
+    
+    console.log("[captureCVasPDF] Saving original styles for cvContainer...");
+    cvPropsToStore.forEach(prop => {
+        if (prop === 'className') originalStyles.cvContainer[prop] = cvElement.className;
+        else if (prop === 'scrollTop') originalStyles.cvContainer[prop] = cvElement.scrollTop;
+        else originalStyles.cvContainer[prop] = cvElement.style[prop];
+    });
+    // console.log("[captureCVasPDF] Original cvContainer styles saved:", JSON.stringify(originalStyles.cvContainer, null, 2));
+
 
     const cvPreviewArea = document.getElementById('cv-preview-area');
     const cvPreviewPage = document.getElementById('cv-preview-page');
-    const parentPropsToStore = ['display', 'justifyContent', 'alignItems', 'overflow', 'maxHeight', 'padding', 'margin', 'minHeight'];
+    const parentPropsToStore = ['display', 'justifyContent', 'alignItems', 'overflow', 'maxHeight', 'padding', 'margin', 'minHeight', 'position'];
 
-    if (cvPreviewArea) parentPropsToStore.forEach(prop => originalStyles.cvPreviewArea[prop] = cvPreviewArea.style[prop]);
-    if (cvPreviewPage) parentPropsToStore.forEach(prop => originalStyles.cvPreviewPage[prop] = cvPreviewPage.style[prop]);
+    if (cvPreviewArea) {
+        console.log("[captureCVasPDF] Saving original styles for cvPreviewArea...");
+        parentPropsToStore.forEach(prop => originalStyles.cvPreviewArea[prop] = cvPreviewArea.style[prop]);
+    }
+    if (cvPreviewPage) {
+        console.log("[captureCVasPDF] Saving original styles for cvPreviewPage...");
+        parentPropsToStore.forEach(prop => originalStyles.cvPreviewPage[prop] = cvPreviewPage.style[prop]);
+    }
 
     const removeButtons = Array.from(cvElement.querySelectorAll('.remove-field'));
     removeButtons.forEach(btn => btn.style.display = 'none');
+    console.log(`[captureCVasPDF] Hid ${removeButtons.length} remove buttons.`);
 
+    let captureError = null;
 
     try {
-        console.log("Applying temporary styles for capture (original logic)...");
+        console.log("[captureCVasPDF] Applying temporary styles for PDF capture...");
         // --- تطبيق أنماط مؤقتة للالتقاط ---
-        // هذه هي الأنماط التي كانت موجودة في style.css وجعلت العنصر مخفيًا
-        // الآن نطبقها فقط أثناء الالتقاط
-        if (cvPreviewPage) { // تأكد من أن الصفحة نفسها مرئية للالتقاط
+        if (cvPreviewPage) {
             cvPreviewPage.style.position = 'static'; cvPreviewPage.style.display = 'block';
             cvPreviewPage.style.overflow = 'visible'; cvPreviewPage.style.padding = '0';
-            cvPreviewPage.style.margin = '0'; cvPreviewPage.style.minHeight = 'auto';
+            cvPreviewPage.style.margin = '0'; cvPreviewPage.style.minHeight = '0'; // Allow it to shrink if content is small
+            console.log("[captureCVasPDF] cvPreviewPage styles applied for capture.");
         }
-        if (cvPreviewArea) { // ومنطقة المعاينة
-            cvPreviewArea.style.display = 'block'; cvPreviewArea.style.overflow = 'visible';
-            cvPreviewArea.style.padding = '0'; cvPreviewArea.style.margin = '0';
-            cvPreviewArea.style.maxHeight = 'none';
+        if (cvPreviewArea) {
+            cvPreviewArea.style.position = 'static'; cvPreviewArea.style.display = 'block';
+            cvPreviewArea.style.overflow = 'visible'; cvPreviewArea.style.padding = '0';
+            cvPreviewArea.style.margin = '0'; cvPreviewArea.style.maxHeight = 'none';
+            console.log("[captureCVasPDF] cvPreviewArea styles applied for capture.");
         }
 
-        // إعادة تعيين الكلاس لضمان تحميل الأنماط الصحيحة للقالب المحدد
-        cvElement.className = `${selectedTemplateCategory}-layout template${selectedTemplate}`;
-        cvElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr'; // تأكيد الاتجاه
+        // التأكد من أن العنصر الأب المباشر لـ cvElement يسمح بظهوره إذا كان cvElement مطلقًا
+        if (cvElement.parentElement) {
+            // console.log(`[captureCVasPDF] Parent (${cvElement.parentElement.id || cvElement.parentElement.tagName}) original overflow: ${cvElement.parentElement.style.overflow}`);
+            // cvElement.parentElement.style.overflow = 'visible'; // قد يكون هذا ضروريًا
+        }
 
-        // تطبيق الأبعاد والتموضع للالتقاط
+
+        // تهيئة حاوية السيرة الذاتية للالتقاط
+        cvElement.className = `${selectedTemplateCategory}-layout template${selectedTemplate}`; // إعادة تطبيق الكلاسات
+        cvElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+
         cvElement.style.position = 'absolute';
-        cvElement.style.left = '-9999px'; // نقله خارج الشاشة
-        cvElement.style.top = '0px';
-        cvElement.style.zIndex = '-1'; // وضعه في الخلف (أو قيمة عالية إذا كان هناك تداخل)
-        cvElement.style.width = '210mm';    // عرض A4
-        cvElement.style.minHeight = '297mm';// ارتفاع A4
-        cvElement.style.height = 'auto';    // السماح بالنمو
+        cvElement.style.left = '0px'; // البدء من اليسار لضمان التقاط كامل العرض
+        cvElement.style.top = '0px';  // البدء من الأعلى
+        cvElement.style.zIndex = '30000'; // فوق كل شيء مؤقتًا
+        cvElement.style.width = '210mm';
+        cvElement.style.minHeight = '297mm';
+        cvElement.style.height = 'auto';
         cvElement.style.maxHeight = 'none';
-        cvElement.style.overflow = 'visible'; // مهم جداً
-        cvElement.style.backgroundColor = 'white';
-        cvElement.style.padding = '0'; // الحشوة يجب أن تكون داخل القالب أو .cv-content
-        cvElement.style.margin = '0';
+        cvElement.style.margin = '0'; // إزالة أي هوامش خارجية
+        cvElement.style.padding = '10mm'; // حشوة داخلية للصفحة (يمكن تعديلها لتناسب تصميم الصفحة A4)
+        cvElement.style.backgroundColor = '#ffffff';
+        cvElement.style.border = '1px solid #ccc'; // إضافة حدود خفيفة للتحقق من الأبعاد في الالتقاط
         cvElement.style.boxShadow = 'none';
-        cvElement.style.border = 'none';
-        cvElement.style.visibility = 'visible'; // يجب أن يكون مرئيًا لـ html2canvas
-        cvElement.style.display = 'flex'; // لضمان تمدد .cv-content
+        cvElement.style.visibility = 'visible';
+        cvElement.style.display = 'flex';
         cvElement.style.flexDirection = 'column';
+        cvElement.style.overflow = 'visible'; // مهم جداً
 
-        // إعادة بناء محتوى السيرة الذاتية داخل الحاوية المُهيأة لضمان تطبيق الأنماط
-        // هذا الاستدعاء مهم جداً
-        generateCV();
-        cvElement.offsetHeight; // Force reflow
+        console.log("[captureCVasPDF] cvContainer temporary styles applied for capture.");
+        console.log(`[captureCVasPDF] cvContainer computed width: ${getComputedStyle(cvElement).width}, height: ${getComputedStyle(cvElement).height}`);
 
-        await new Promise(resolve => setTimeout(resolve, 800)); // مهلة للعرض (يمكن زيادتها إذا لزم الأمر)
+
+        // إعادة بناء محتوى السيرة الذاتية داخل الحاوية المُهيأة
+        console.log("[captureCVasPDF] Regenerating CV content inside prepared container...");
+        generateCV(); // هذا سيملأ cvElement.innerHTML بالمحتوى المنسق
+        cvElement.offsetHeight; // Force reflow to apply styles and content
+        console.log("[captureCVasPDF] CV content regenerated. scrollHeight:", cvElement.scrollHeight);
+
+        // التأكد من تحميل جميع الصور داخل السيرة
+        const images = Array.from(cvElement.querySelectorAll('img'));
+        console.log(`[captureCVasPDF] Found ${images.length} images to check.`);
+        await Promise.all(images.map(img => {
+            if (img.complete && img.naturalHeight !== 0) {
+                // console.log(`[captureCVasPDF] Image already loaded: ${img.src.substring(0,100)}`);
+                return Promise.resolve();
+            }
+            // console.log(`[captureCVasPDF] Waiting for image to load: ${img.src.substring(0,100)}`);
+            return new Promise((resolve) => {
+                img.onload = () => { /* console.log(`[captureCVasPDF] Image loaded: ${img.src.substring(0,100)}`); */ resolve(); };
+                img.onerror = () => { console.warn(`[captureCVasPDF] Image FAILED to load: ${img.src}`); resolve(); }; // Resolve on error too
+            });
+        }));
+        console.log("[captureCVasPDF] All images checked/loaded.");
+
+        // مهلة إضافية للسماح بأي عمليات rendering نهائية
+        console.log("[captureCVasPDF] Waiting for final rendering (1.5s)...");
+        await new Promise(resolve => setTimeout(resolve, 1500)); // زيادة المهلة
 
         const isMobile = isMobileDevice();
-        // هذه هي الإعدادات التي كانت لديك سابقًا أو مشابهة لها
-        const scaleFactor = isMobile ? 1.5 : 2; // (كانت 1.5 / 2 في إحدى النسخ)
-        const imageQuality = isMobile ? 0.4 : 0.2; // (كانت 0.4 / 0.2 في إحدى النسخ)
-
-        console.log(`Using scale (original logic): ${scaleFactor}, quality: ${imageQuality}`);
+        // إعادة القيم الأصلية للـ scale و quality التي ذكرت أنها كانت تعمل
+        const scaleFactor = isMobile ? 1.5 : 2;
+        const imageQuality = isMobile ? 0.4 : 0.2; // هذه قيم منخفضة جداً، قد تكون سبب الـ PDF الفارغ أو الجودة السيئة
+        console.log(`[captureCVasPDF] Using scale: ${scaleFactor}, quality: ${imageQuality} (original settings)`);
 
         const pdfOptions = {
-            margin: [0, 0, 0, 0],
+            margin: 0, // هامش الـ PDF نفسه
             filename: `CV_${(document.getElementById('name-input')?.value.trim().replace(/\s/g, '_') || 'ResailCV')}.pdf`,
             image: { type: 'jpeg', quality: imageQuality },
             html2canvas: {
                 scale: scaleFactor,
                 useCORS: true,
-                allowTaint: true, // كان true في النسخة الأصلية
-                backgroundColor: 'white',
-                logging: false, // كان false
+                allowTaint: true, // كان true في النسخة التي قدمتها
+                backgroundColor: '#ffffff', // خلفية بيضاء للـ canvas
+                logging: true, // تفعيل التسجيل للمساعدة في التشخيص
                 letterRendering: true,
-                scrollX: 0,
-                scrollY: 0,
-                windowWidth: cvElement.scrollWidth,
-                windowHeight: cvElement.scrollHeight,
-                // x: cvElement.offsetLeft, // هذه قد تسبب مشاكل إذا كان العنصر منقولاً
-                // y: cvElement.offsetTop,
-                // width: cvElement.offsetWidth,
-                // height: cvElement.offsetHeight,
+                scrollX: 0, // يجب أن يكون صفرًا لالتقاط من بداية العنصر
+                scrollY: 0, // يجب أن يكون صفرًا لالتقاط من بداية العنصر
+                windowWidth: cvElement.scrollWidth, // لالتقاط كامل عرض المحتوى القابل للتمرير
+                windowHeight: cvElement.scrollHeight, // لالتقاط كامل ارتفاع المحتوى القابل للتمرير
+                // x: 0, // لا نستخدم x, y هنا لأننا نلتقط العنصر نفسه
+                // y: 0,
+                // width: cvElement.offsetWidth, // استخدام scrollWidth أفضل
+                // height: cvElement.offsetHeight, // استخدام scrollHeight أفضل
+                removeContainer: true, // مهم لتنظيف الـ DOM
+                onclone: (clonedDoc) => {
+                    console.log("[captureCVasPDF] html2canvas onclone started.");
+                    const clonedCvContainer = clonedDoc.getElementById(cvElement.id);
+                    if (clonedCvContainer) {
+                        console.log("[captureCVasPDF] Cloned container found in onclone.");
+                        // التأكد من أن كل العناصر الداخلية مرئية بالكامل ولها ارتفاع كافٍ
+                        Array.from(clonedCvContainer.querySelectorAll('*')).forEach(el => {
+                            el.style.overflow = 'visible'; // ضمان أن المحتوى الداخلي لا يُقطع
+                            // إذا كان العنصر له ارتفاع محدد أقل من ارتفاع محتواه الفعلي، قم بتوسيعه
+                            // هذا قد يكون مفيدًا للعناصر التي لها ارتفاع ثابت ولكن محتواها يتجاوزه
+                            // if(el.scrollHeight > el.clientHeight) {
+                            //     el.style.height = el.scrollHeight + 'px';
+                            // }
+                        });
+                    } else {
+                        console.warn("[captureCVasPDF] Cloned container NOT found in onclone.");
+                    }
+                }
             },
             jsPDF: {
                 orientation: 'portrait', unit: 'mm', format: 'a4',
-                compress: true, hotfixes: ['px_scaling'], putOnlyUsedFonts: true, floatPrecision: 16
+                compress: true, hotfixes: ['px_scaling'], putOnlyUsedFonts: true, floatPrecision: 16 // أو 'smart'
             },
-            pagebreak: { mode: ['avoid-all', 'css'], after: '.cv-end-marker' }
+            // pagebreak: { mode: ['css', 'legacy', 'avoid-all'], before: '.cv-page-break-before', after: '.cv-end-marker' }
+            pagebreak: { mode: ['css', 'avoid-all'], after: '.cv-end-marker' } // 'avoid-all' لمحاولة تجنب كسر العناصر
         };
+        console.log("[captureCVasPDF] html2pdf options prepared:", JSON.stringify(pdfOptions, null, 2));
 
+        console.log("[captureCVasPDF] Starting html2pdf generation...");
         const worker = html2pdf().from(cvElement).set(pdfOptions);
 
         if (downloadPdf) {
+            console.log("[captureCVasPDF] Attempting to save PDF directly...");
             await worker.save();
+            console.log("[captureCVasPDF] PDF save process initiated.");
             return null;
         } else {
+            console.log("[captureCVasPDF] Attempting to get PDF as blob...");
             const pdfBlob = await worker.output('blob');
-            console.log("PDF blob (original logic) size:", pdfBlob.size);
-            if (pdfBlob.size < 1000 && pdfBlob.size > 0) { // التحقق من الحجم الصغير جداً
-                console.warn("PDF blob size is very small (original logic), might be a blank PDF.");
+            console.log(`[captureCVasPDF] PDF blob received. Size: ${pdfBlob.size} bytes, Type: ${pdfBlob.type}`);
+            if (pdfBlob.size < 1024 && pdfBlob.size > 0) { // أقل من 1KB
+                console.warn("[captureCVasPDF] PDF blob size is very small, likely a blank or near-blank PDF.");
             } else if (pdfBlob.size === 0) {
-                console.error("PDF blob size is ZERO (original logic). Capture failed.");
+                console.error("[captureCVasPDF] PDF blob size is ZERO. Capture failed to produce content.");
                 throw new Error("Generated PDF is empty (size 0).");
             }
+            console.log("[captureCVasPDF] Converting blob to Base64...");
             return await fileToBase64(pdfBlob);
         }
 
     } catch (error) {
-        console.error("Error during PDF generation (original logic):", error);
-        // لا تعرض alert هنا، دع الدالة المستدعية تتعامل معه
+        captureError = error;
+        console.error("[captureCVasPDF] CRITICAL ERROR during PDF generation:", error);
+        // سيتم التعامل مع الـ alert في الدالة المستدعية
         throw error;
     } finally {
-        console.log("Restoring original styles (original logic)...");
-        // استعادة الأنماط الأصلية
+        console.log("[captureCVasPDF] Entering finally block. Restoring original styles...");
+        // استعادة الأنماط الأصلية دائماً
         for (const prop in originalStyles.cvContainer) {
-            if (prop !== 'className' && prop !== 'scrollTop') { // className و scrollTop يتم التعامل معهما بشكل منفصل
-                 cvElement.style[prop] = originalStyles.cvContainer[prop];
-            }
+            if (prop === 'className') cvElement.className = originalStyles.cvContainer[prop];
+            else if (prop === 'scrollTop') cvElement.scrollTop = originalStyles.cvContainer[prop];
+            else cvElement.style[prop] = originalStyles.cvContainer[prop];
         }
-        cvElement.className = originalStyles.cvContainer.className;
-        cvElement.scrollTop = originalStyles.cvContainer.scrollTop;
-
 
         if (cvPreviewArea) {
             for (const prop in originalStyles.cvPreviewArea) {
@@ -947,51 +998,61 @@ async function captureCVasPDF(cvElement, downloadPdf = false) {
             }
         }
         
-        removeButtons.forEach(btn => btn.style.display = '');
+        removeButtons.forEach(btn => btn.style.display = ''); // استعادة أزرار الحذف
+        console.log("[captureCVasPDF] Original styles restored.");
 
-        // إعادة بناء السيرة الذاتية في وضع المعاينة العادي
+        // إعادة بناء السيرة الذاتية في وضع المعاينة العادي إذا كانت الصفحة ذات صلة نشطة
         if (document.getElementById('cv-preview-page')?.classList.contains('active-page') ||
             document.getElementById('cv-template-selection-page')?.classList.contains('active-page') ||
             document.getElementById('cv-data-entry-page')?.classList.contains('active-page')) {
+            console.log("[captureCVasPDF] Regenerating CV for on-screen preview after capture.");
             generateCV();
         }
         isCapturingPdf = false;
+        console.log(`[captureCVasPDF] Process finished. isCapturingPdf: ${isCapturingPdf}. Error encountered:`, captureError);
     }
 }
 
 async function generateAndDownloadPDF_html2pdf() {
+    console.log("[generateAndDownloadPDF_html2pdf] Initiated.");
     toggleLoadingOverlay(true, 'Generating CV, please wait...');
     try {
         const watermarkText = translations[currentLang]['Watermark Preview Text'] || (currentLang === 'ar' ? "للعرض فقط" : "ONLY PREVIEW");
-        // التأكد من أن cvContainer موجود قبل محاولة تعديل خصائصه
         if (cvContainer) {
             cvContainer.style.setProperty('--watermark-text', `"${watermarkText}"`);
             cvContainer.classList.add('watermarked');
+            console.log("[generateAndDownloadPDF_html2pdf] Watermark applied.");
         } else {
+            console.error("[generateAndDownloadPDF_html2pdf] cvContainer is not defined for watermarking.");
             throw new Error("cvContainer is not defined for watermarking.");
         }
         
-        await new Promise(resolve => setTimeout(resolve, 50)); // اسمح بتطبيق الـ CSS
+        await new Promise(resolve => setTimeout(resolve, 100)); // مهلة قصيرة لتطبيق الـ CSS
 
         await captureCVasPDF(cvContainer, true); // true for direct download
 
         alert(currentLang === 'ar' ? 'تم تنزيل السيرة الذاتية بنجاح!' : 'CV downloaded successfully!');
+        console.log("[generateAndDownloadPDF_html2pdf] PDF download successful message shown.");
     } catch (error) {
-        console.error("Error in generateAndDownloadPDF_html2pdf:", error);
+        console.error("[generateAndDownloadPDF_html2pdf] Error:", error);
         alert(translations[currentLang]['Error generating PDF for CV.'] + ` (${error.message || 'Unknown error'})`);
     } finally {
-        if (cvContainer) { // التأكد مرة أخرى قبل إزالة الخصائص
+        if (cvContainer) {
             cvContainer.classList.remove('watermarked');
             cvContainer.style.removeProperty('--watermark-text');
+            console.log("[generateAndDownloadPDF_html2pdf] Watermark removed.");
         }
         toggleLoadingOverlay(false);
+        console.log("[generateAndDownloadPDF_html2pdf] Process finished.");
     }
 }
+
 
 // --- CV Content Generation (generateCV, selectTemplate, handleProfilePicChange, add/remove fields, populateWithTestData) ---
 // ... (الدوال الأخرى تبقى كما هي من الرد السابق، مع التأكيد على استخدام translations للنصوص النائبة)
 
 function selectTemplate(templateNumber, category) {
+    console.log(`[selectTemplate] Template: ${templateNumber}, Category: ${category}`);
     const previews = document.querySelectorAll('.template-preview-container .template-preview');
     previews.forEach(preview => preview.classList.remove('selected-template'));
 
@@ -1001,19 +1062,22 @@ function selectTemplate(templateNumber, category) {
     }
     selectedTemplate = templateNumber;
     selectedTemplateCategory = category;
-    generateCV(); // Update CV preview with new template
+    generateCV();
 }
 
 function handleProfilePicChange(event) {
     const file = event.target.files[0];
     if (file) {
+        console.log(`[handleProfilePicChange] File selected: ${file.name}`);
         const reader = new FileReader();
         reader.onload = function(e) {
             profilePicDataUrl = e.target.result;
+            console.log("[handleProfilePicChange] Profile picture loaded into data URL.");
             generateCV(); updateProgress();
         };
         reader.readAsDataURL(file);
     } else {
+        console.log("[handleProfilePicChange] No file selected, clearing profile picture.");
         profilePicDataUrl = null;
         generateCV(); updateProgress();
     }
@@ -1032,14 +1096,16 @@ function addExperienceField() {
         <textarea placeholder="${translations[currentLang]['Description']}" class="experience-description" oninput="generateCV(); updateProgress()"></textarea>
     `;
     container.appendChild(newEntry);
+    console.log("[addExperienceField] Experience field added.");
     // generateCV(); updateProgress(); // استدعاء عند الإدخال أفضل
 }
-function removeLastExperienceField() { /* ... same ... */ 
+function removeLastExperienceField() {
     const experienceInput = document.getElementById('experience-input');
     if (!experienceInput) return;
     const entries = experienceInput.querySelectorAll('.experience-entry');
     if (entries.length > 1) {
         experienceInput.removeChild(entries[entries.length - 1]);
+        console.log("[removeLastExperienceField] Last experience field removed.");
         generateCV(); updateProgress();
     } else {
         alert(translations[currentLang]['You must have at least one field in this section.']);
@@ -1057,13 +1123,15 @@ function addEducationField() {
         <input type="text" placeholder="${translations[currentLang]['Duration'] || (currentLang === 'ar' ? 'المدة' : 'Duration')}" class="education-duration" oninput="generateCV(); updateProgress()">
     `;
     educationInput.appendChild(newEntry);
+    console.log("[addEducationField] Education field added.");
 }
-function removeLastEducationField() { /* ... same ... */ 
+function removeLastEducationField() { 
     const educationInput = document.getElementById('education-input');
     if (!educationInput) return;
     const entries = educationInput.querySelectorAll('.education-entry');
     if (entries.length > 1) {
         educationInput.removeChild(entries[entries.length - 1]);
+        console.log("[removeLastEducationField] Last education field removed.");
         generateCV(); updateProgress();
     } else {
         alert(translations[currentLang]['You must have at least one field in this section.']);
@@ -1079,13 +1147,15 @@ function addSkillField() {
         <input type="text" placeholder="${translations[currentLang]['Enter a skill']}" class="skill-item-input" oninput="generateCV(); updateProgress()">
     `;
     skillsInput.appendChild(newEntry);
+    console.log("[addSkillField] Skill field added.");
 }
-function removeLastSkillField() { /* ... same ... */ 
+function removeLastSkillField() {
     const skillsInput = document.getElementById('skills-input');
     if (!skillsInput) return;
     const entries = skillsInput.querySelectorAll('.skill-entry');
     if (entries.length > 1) {
         skillsInput.removeChild(entries[entries.length - 1]);
+        console.log("[removeLastSkillField] Last skill field removed.");
         generateCV(); updateProgress();
     } else {
         alert(translations[currentLang]['You must have at least one field in this section.']);
@@ -1101,13 +1171,15 @@ function addLanguageField() {
         <input type="text" placeholder="${translations[currentLang]['Enter a language']}" class="language-item-input" oninput="generateCV(); updateProgress()">
     `;
     languagesInput.appendChild(newEntry);
+    console.log("[addLanguageField] Language field added.");
 }
-function removeLastLanguageField() { /* ... same ... */
+function removeLastLanguageField() {
     const languagesInput = document.getElementById('languages-input');
     if (!languagesInput) return;
     const entries = languagesInput.querySelectorAll('.language-entry');
     if (entries.length > 1) {
         languagesInput.removeChild(entries[entries.length - 1]);
+        console.log("[removeLastLanguageField] Last language field removed.");
         generateCV(); updateProgress();
     } else {
         alert(translations[currentLang]['You must have at least one field in this section.']);
@@ -1126,19 +1198,21 @@ function addReferenceField() {
         <input type="email" placeholder="${translations[currentLang]['Email']}" class="reference-email" oninput="generateCV(); updateProgress()">
     `;
     referencesInput.appendChild(newEntry);
+    console.log("[addReferenceField] Reference field added.");
 }
-function removeLastReferenceField() { /* ... same ... */
+function removeLastReferenceField() {
     const referencesInput = document.getElementById('references-input');
     if (!referencesInput) return;
     const entries = referencesInput.querySelectorAll('.reference-entry');
     if (entries.length > 1) {
         referencesInput.removeChild(entries[entries.length - 1]);
+        console.log("[removeLastReferenceField] Last reference field removed.");
         generateCV(); updateProgress();
     } else {
         alert(translations[currentLang]['You must have at least one field in this section.']);
     }
 }
-function removeField(button) { /* ... same ... */
+function removeField(button) {
     const entry = button.parentElement;
     const parentContainer = entry.parentElement;
     const entries = parentContainer.querySelectorAll(`.${entry.className}`);
@@ -1147,26 +1221,30 @@ function removeField(button) { /* ... same ... */
         return;
     }
     parentContainer.removeChild(entry);
+    console.log(`[removeField] Field removed from ${parentContainer.id}`);
     generateCV(); updateProgress();
 }
 
 function generateCV() {
+    // console.log(`[generateCV] Called. isCapturingPdf: ${isCapturingPdf}`);
     if (!cvContainer) {
-        console.error("CV container not found in generateCV!");
+        console.error("[generateCV] CV container not found!");
         return;
     }
 
     const isArabic = currentLang === 'ar';
     const direction = isArabic ? 'rtl' : 'ltr';
 
-    // لا نغير className هنا إذا كانت دالة captureCVasPDF هي التي ستطبق الكلاسات المؤقتة
-    // لكن إذا كانت هذه الدالة تُستدعى للمعاينة العادية، فيجب أن تطبق الكلاسات الصحيحة
-    if (!isCapturingPdf) { // فقط إذا لم نكن في منتصف عملية التقاط
+    // فقط قم بتغيير الكلاس إذا لم نكن في منتصف عملية التقاط PDF
+    // لأن captureCVasPDF ستكون قد طبقت الكلاسات والأنماط المؤقتة
+    if (!isCapturingPdf) {
         cvContainer.className = `${selectedTemplateCategory}-layout template${selectedTemplate}`;
+        // console.log(`[generateCV] Applied class for normal preview: ${cvContainer.className}`);
     }
     cvContainer.dir = direction;
     cvContainer.innerHTML = ''; // Clear previous content before rebuilding
 
+    // جلب البيانات من حقول الإدخال
     const name = document.getElementById('name-input')?.value.trim() || '';
     const title = document.getElementById('title-input')?.value.trim() || '';
     const email = document.getElementById('email-input')?.value.trim() || '';
@@ -1174,21 +1252,25 @@ function generateCV() {
     const website = document.getElementById('website-input')?.value.trim() || '';
     const objective = document.getElementById('objective-input')?.value.trim() || '';
 
+    // بناء HTML للصورة الشخصية
     let profilePicHTML = '';
     if (profilePicDataUrl) {
         profilePicHTML = `<img src="${profilePicDataUrl}" class="cv-profile-pic" alt="${translations[currentLang]['Profile Picture']}">`;
     }
 
+    // بناء HTML لمعلومات الاتصال
     let contactInfoHTML = '<div class="cv-contact-info">';
     let hasContactInfo = false;
     if (email) { contactInfoHTML += `<div class="cv-contact-item"><i class="fas fa-envelope"></i><p>${email}</p></div>`; hasContactInfo = true; }
     if (phone) { contactInfoHTML += `<div class="cv-contact-item"><i class="fas fa-phone"></i><p>${phone}</p></div>`; hasContactInfo = true; }
     if (website) { contactInfoHTML += `<div class="cv-contact-item"><i class="fas fa-globe"></i><p>${website}</p></div>`; hasContactInfo = true; }
     contactInfoHTML += '</div>';
-    if (!hasContactInfo) contactInfoHTML = '';
+    if (!hasContactInfo) contactInfoHTML = ''; // إفراغ السلسلة إذا لم تكن هناك معلومات اتصال
 
+    // بناء HTML للهدف الوظيفي
     const objectiveHTML = objective ? `<div class="cv-section" id="objective"><h3 class="cv-section-title">${translations[currentLang]['Career Objective']}</h3><p>${objective.replace(/\n/g, '<br>')}</p></div>` : '';
 
+    // بناء HTML للخبرات العملية
     let experienceHTML = '';
     const experienceEntries = document.querySelectorAll('#experience-input .experience-entry');
     const hasFilledExperience = Array.from(experienceEntries).some(e => e.querySelector('.experience-title')?.value.trim() || e.querySelector('.experience-company')?.value.trim() || e.querySelector('.experience-duration')?.value.trim() || e.querySelector('.experience-description')?.value.trim());
@@ -1199,7 +1281,7 @@ function generateCV() {
             const company = entry.querySelector('.experience-company')?.value.trim() || '';
             const duration = entry.querySelector('.experience-duration')?.value.trim() || '';
             const desc = entry.querySelector('.experience-description')?.value.trim().replace(/\n/g, '<br>') || '';
-            if (expTitle || company || duration || desc) {
+            if (expTitle || company || duration || desc) { // إضافة العنصر فقط إذا كان هناك أي بيانات فيه
                  experienceHTML += `<div class="cv-experience-item">
                                     <h4 class="cv-job-title">${expTitle || translations[currentLang]['No Title']}</h4>
                                     ${company || duration ? `<h5 class="cv-company">${company}${company && duration ? ' - ' : ''}${duration}</h5>` : ''}
@@ -1210,6 +1292,7 @@ function generateCV() {
         experienceHTML += '</div>';
     }
 
+    // بناء HTML للمؤهلات العلمية
     let educationHTML = '';
     const educationEntries = document.querySelectorAll('#education-input .education-entry');
     const hasFilledEducation = Array.from(educationEntries).some(e => e.querySelector('.education-degree')?.value.trim() || e.querySelector('.education-institution')?.value.trim() || e.querySelector('.education-duration')?.value.trim());
@@ -1229,17 +1312,18 @@ function generateCV() {
         educationHTML += '</div>';
     }
 
+    // بناء HTML للمهارات
     let skillsHTML = '';
     const skillInputs = document.querySelectorAll('#skills-input .skill-item-input');
     const filledSkills = Array.from(skillInputs).map(input => input.value.trim()).filter(skill => skill);
     if (filledSkills.length > 0) {
-        // تحديد ما إذا كان يجب استخدام عمود واحد للمهارات (خاصة في الشريط الجانبي إذا كان عدد المهارات قليل)
-        const useSingleColumnSkills = (selectedTemplateCategory !== 'normal' && filledSkills.length <= 5) || selectedTemplateCategory === 'normal'; // يمكن تعديل هذا الشرط
+        const useSingleColumnSkills = (selectedTemplateCategory !== 'normal' && filledSkills.length <= 5) || selectedTemplateCategory === 'normal';
         skillsHTML = `<div class="cv-section" id="skills"><h3 class="cv-section-title">${translations[currentLang]['Skills']}</h3><ul class="cv-skill-list ${useSingleColumnSkills ? 'single-column' : ''}">`;
         filledSkills.forEach(skill => { skillsHTML += `<li class="cv-skill-item">${skill}</li>`; });
         skillsHTML += '</ul></div>';
     }
 
+    // بناء HTML للغات
     let languagesHTML = '';
     const languageInputs = document.querySelectorAll('#languages-input .language-item-input');
     const filledLanguages = Array.from(languageInputs).map(input => input.value.trim()).filter(lang => lang);
@@ -1249,6 +1333,7 @@ function generateCV() {
         languagesHTML += '</ul></div>';
     }
     
+    // بناء HTML للمراجع
     let referencesHTML = '';
     const referenceEntries = document.querySelectorAll('#references-input .reference-entry');
     const hasFilledReferences = Array.from(referenceEntries).some(e => e.querySelector('.reference-name')?.value.trim() || e.querySelector('.reference-position')?.value.trim() || e.querySelector('.reference-phone')?.value.trim() || e.querySelector('.reference-email')?.value.trim());
@@ -1271,13 +1356,14 @@ function generateCV() {
         referencesHTML += '</div>';
     }
 
+    // تجميع هيكل السيرة الذاتية بناءً على نوع القالب
     const cvContentDiv = document.createElement('div');
     cvContentDiv.className = 'cv-content'; // هذا الكلاس يجب أن يكون له display:flex و flex-direction:column في CSS
     cvContentDiv.dir = direction;
 
     if (selectedTemplateCategory === 'normal') {
         let headerClass = 'cv-header';
-        if (selectedTemplate === 3 && selectedTemplateCategory === 'normal') headerClass += ' centered';
+        if (selectedTemplate === 3 && selectedTemplateCategory === 'normal') headerClass += ' centered'; // مثال على منطق خاص بقالب معين
 
         cvContentDiv.innerHTML = `
             <div class="${headerClass}" dir="${direction}">
@@ -1314,10 +1400,8 @@ function generateCV() {
             const professionalHeader = document.createElement('div');
             professionalHeader.className = 'cv-header professional-layout'; // هذا الكلاس يحدد شكل الهيدر العلوي
             professionalHeader.dir = direction;
-            // الصورة الشخصية في الهيدر الاحترافي تعتمد على تصميم القالب المحدد
             let proHeaderPicHTML = '';
-            // مثال: إذا كان القالب 1 أو 2 من النوع الاحترافي يضع الصورة في الهيدر
-            if (profilePicDataUrl && (selectedTemplate === 1 || selectedTemplate === 2 /* أو أي قوالب أخرى تريدها */)) {
+            if (profilePicDataUrl && (selectedTemplate === 1 || selectedTemplate === 2 /* أو أي قوالب أخرى حسب التصميم */)) {
                 proHeaderPicHTML = profilePicHTML;
             }
             professionalHeader.innerHTML = `
@@ -1326,11 +1410,10 @@ function generateCV() {
                 <h2 class="cv-title">${title}</h2>
                 ${contactInfoHTML}
             `;
-            cvContentDiv.appendChild(professionalHeader); // الهيدر يضاف أولاً في .cv-content
+            cvContentDiv.appendChild(professionalHeader);
 
-            // محتوى الشريط الجانبي والمحتوى الرئيسي للتخطيط الاحترافي
             sidebarDiv.innerHTML = `
-                ${(profilePicDataUrl && !proHeaderPicHTML) ? profilePicHTML : ''} {/* إذا لم تكن الصورة في الهيدر، ضعها هنا */}
+                ${(profilePicDataUrl && !proHeaderPicHTML) ? profilePicHTML : ''}
                 ${skillsHTML}
                 ${languagesHTML}
                 ${referencesHTML}
@@ -1340,14 +1423,13 @@ function generateCV() {
                 ${objectiveHTML}
                 ${experienceHTML}
                 ${educationHTML}
-                {/* قد تحتاج لإضافة أقسام أخرى هنا إذا لم تكن في الشريط الجانبي */}
                 ${createEndMarkerHTML()}
             `;
 
         } else { // Standard and AST
             sidebarDiv.innerHTML = `
                 ${profilePicHTML}
-                ${contactInfoHTML} {/* معلومات الاتصال غالباً في الشريط الجانبي لهذه التخطيطات */}
+                ${contactInfoHTML}
                 ${skillsHTML}
                 ${languagesHTML}
                 ${referencesHTML}
@@ -1357,7 +1439,6 @@ function generateCV() {
                 <div class="cv-header two-col-main" dir="${direction}">
                     <h1 class="cv-name">${name}</h1>
                     <h2 class="cv-title">${title}</h2>
-                    {/* لا توجد معلومات اتصال هنا إذا كانت في الشريط الجانبي */}
                 </div>
                 ${objectiveHTML}
                 ${experienceHTML}
@@ -1366,24 +1447,26 @@ function generateCV() {
             `;
         }
         
-        // ترتيب الأعمدة لـ LTR/RTL
         if (direction === 'ltr' && (selectedTemplateCategory === 'standard' || selectedTemplateCategory === 'ast')) {
-            layoutDiv.appendChild(mainContentDiv); // المحتوى الرئيسي أولاً في DOM لـ LTR مع flex-direction: row-reverse
+            layoutDiv.appendChild(mainContentDiv);
             layoutDiv.appendChild(sidebarDiv);
-        } else { // RTL أو Professional (حيث يتحكم Grid بالترتيب)
+        } else {
             layoutDiv.appendChild(sidebarDiv);
             layoutDiv.appendChild(mainContentDiv);
         }
         cvContentDiv.appendChild(layoutDiv);
     }
     cvContainer.appendChild(cvContentDiv);
+    // console.log("[generateCV] CV HTML structure generated and appended.");
 }
 
 function createEndMarkerHTML() {
-    return `<div class="cv-end-marker" style="height: 1px !important; margin-top:auto !important; visibility: hidden !important;">${translations[currentLang]["End of CV"] || "End"}</div>`;
+    // التأكد من أن النص يأتي من translations
+    const endText = translations[currentLang]["End of CV"] || (currentLang === 'ar' ? "نهاية السيرة" : "End of CV");
+    return `<div class="cv-end-marker" style="height: 1px !important; margin-top:auto !important; visibility: hidden !important; font-size:1px; color:transparent;">${endText}</div>`;
 }
 
-function updateProgress() { /* ... same ... */
+function updateProgress() {
     const progressBar = document.getElementById('progressBar');
     if (!progressBar) return;
 
@@ -1433,7 +1516,8 @@ function updateProgress() { /* ... same ... */
     else progressBar.style.backgroundColor = '#28a745';
 }
 
-function populateWithTestData() { /* ... same ... */
+function populateWithTestData() {
+    console.log("[populateWithTestData] Populating form with test data...");
     const nameInput = document.getElementById('name-input');
     const titleInput = document.getElementById('title-input');
     const emailInput = document.getElementById('email-input');
@@ -1454,6 +1538,7 @@ function populateWithTestData() { /* ... same ... */
         const container = document.getElementById(`${type}-input`);
         if (container) {
             Array.from(container.children).forEach(child => { if (child.classList.contains(`${type}-entry`)) child.remove(); });
+            // إضافة الحقول بناءً على النوع
             if (type === 'experience') { addExperienceField(); addExperienceField(); }
             else if (type === 'education') { addEducationField(); addEducationField(); }
             else if (type === 'skills') { addSkillField(); addSkillField(); addSkillField(); addSkillField(); addSkillField(); }
@@ -1462,6 +1547,7 @@ function populateWithTestData() { /* ... same ... */
         }
     });
     
+    // ملء الحقول المضافة
     const expEntries = document.querySelectorAll('#experience-input .experience-entry');
     if (expEntries[0]) {
         expEntries[0].querySelector('.experience-title').value = currentLang === 'ar' ? 'مهندس برمجيات أول' : 'Senior Software Engineer';
@@ -1510,5 +1596,6 @@ function populateWithTestData() { /* ... same ... */
 
     generateCV();
     updateProgress();
+    console.log("[populateWithTestData] Test data population complete.");
 }
 
