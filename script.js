@@ -886,14 +886,14 @@ async function getCVDocumentDefinition(addWatermark) {
             fontSize: isArabic ? 24 : 22,
             bold: true,
             margin: [0, 0, 0, 10],
-            alignment: isArabic ? 'right' : 'left',
+            // alignment: isArabic ? 'right' : 'left', // Removed
             font: defaultFont
         },
         subHeader: {
             fontSize: isArabic ? 16 : 14,
             bold: false,
             margin: [0, 0, 0, 5],
-            alignment: isArabic ? 'right' : 'left',
+            // alignment: isArabic ? 'right' : 'left', // Removed
             color: '#007bff',
             font: defaultFont
         },
@@ -901,7 +901,7 @@ async function getCVDocumentDefinition(addWatermark) {
             fontSize: isArabic ? 14 : 12,
             bold: true,
             margin: [0, 15, 0, 5],
-            alignment: isArabic ? 'right' : 'left',
+            // alignment: isArabic ? 'right' : 'left', // Removed
             color: '#007bff',
             decoration: 'underline',
             decorationColor: '#007bff',
@@ -909,13 +909,13 @@ async function getCVDocumentDefinition(addWatermark) {
         },
         text: {
             fontSize: isArabic ? 11 : 10,
-            alignment: isArabic ? 'right' : 'left',
+            // alignment: isArabic ? 'right' : 'left', // Removed
             margin: [0, 0, 0, 2],
             font: defaultFont
         },
         listItem: {
             fontSize: isArabic ? 11 : 10,
-            alignment: isArabic ? 'right' : 'left',
+            // alignment: isArabic ? 'right' : 'left', // Removed
             margin: [0, 0, 0, 2],
             font: defaultFont
         },
@@ -923,38 +923,38 @@ async function getCVDocumentDefinition(addWatermark) {
             fontSize: isArabic ? 12 : 11,
             bold: true,
             margin: [0, 5, 0, 2],
-            alignment: isArabic ? 'right' : 'left',
+            // alignment: isArabic ? 'right' : 'left', // Removed
             font: defaultFont
         },
         company: {
             fontSize: isArabic ? 10 : 9,
             margin: [0, 0, 0, 2],
-            alignment: isArabic ? 'right' : 'left',
+            // alignment: isArabic ? 'right' : 'left', // Removed
             font: defaultFont
         },
         description: {
             fontSize: isArabic ? 10 : 9,
             margin: [0, 0, 0, 5],
-            alignment: isArabic ? 'right' : 'left',
+            // alignment: isArabic ? 'right' : 'left', // Removed
             font: defaultFont
         },
         referenceName: {
             fontSize: isArabic ? 11 : 10,
             bold: true,
             margin: [0, 5, 0, 2],
-            alignment: isArabic ? 'right' : 'left',
+            // alignment: isArabic ? 'right' : 'left', // Removed
             font: defaultFont
         },
         referenceDetail: {
             fontSize: isArabic ? 10 : 9,
             margin: [0, 0, 0, 2],
-            alignment: isArabic ? 'right' : 'left',
+            // alignment: isArabic ? 'right' : 'left', // Removed
             font: defaultFont
         },
         skillTag: { 
             fontSize: isArabic ? 10 : 9,
             color: '#212121',
-            alignment: 'center',
+            alignment: 'center', // Keep center alignment as it's not direction-dependent
             bold: false,
             font: defaultFont
         },
@@ -980,9 +980,9 @@ async function getCVDocumentDefinition(addWatermark) {
     // Helper for contact info
     const getContactInfoContent = () => {
         const items = [];
-        if (emailVal) items.push({ text: (isArabic ? '\u2709 ' : '\u2709 ') + emailVal, style: 'text', alignment: isArabic ? 'right' : 'left' });
-        if (phone) items.push({ text: (isArabic ? '\u260E ' : '\u260E ') + phone, style: 'text', alignment: isArabic ? 'right' : 'left' });
-        if (website) items.push({ text: (isArabic ? '\u1F310 ' : '\u1F310 ') + website, style: 'text', alignment: isArabic ? 'right' : 'left' });
+        if (emailVal) items.push({ text: (isArabic ? '\u2709 ' : '\u2709 ') + emailVal, style: 'text' /* alignment removed */ });
+        if (phone) items.push({ text: (isArabic ? '\u260E ' : '\u260E ') + phone, style: 'text' /* alignment removed */ });
+        if (website) items.push({ text: (isArabic ? '\u1F310 ' : '\u1F310 ') + website, style: 'text' /* alignment removed */ });
         return items;
     };
 
@@ -1148,7 +1148,7 @@ async function getCVDocumentDefinition(addWatermark) {
             image: profilePicBase64,
             width: 80,
             height: 80,
-            alignment: 'center',
+            alignment: 'center', // Keep center alignment for profile pic
             margin: [0, 0, 0, 15]
         } : null,
         ...createSection('Contact Info', getContactInfoContent()),
@@ -1165,28 +1165,28 @@ async function getCVDocumentDefinition(addWatermark) {
                         image: profilePicBase64,
                         width: 80,
                         height: 80,
-                        alignment: isArabic ? 'right' : 'left',
+                        // alignment: isArabic ? 'right' : 'left', // Removed
                         margin: isArabic ? [0, 0, 10, 0] : [0, 0, 10, 0]
                     } : null,
                     {
                         width: '*',
                         stack: [
-                            { text: name, style: 'header', alignment: isArabic ? 'right' : 'left' },
-                            { text: title, style: 'subHeader', alignment: isArabic ? 'right' : 'left' },
+                            { text: name, style: 'header' /* alignment removed */ },
+                            { text: title, style: 'subHeader' /* alignment removed */ },
                             {
                                 columns: getContactInfoContent().map(item => ({
                                     text: item.text,
-                                    alignment: isArabic ? 'right' : 'left',
+                                    // alignment: isArabic ? 'right' : 'left', // Removed
                                     width: 'auto',
                                     margin: [0, 0, 5, 0],
                                     color: '#e9ecef'
                                 })),
                                 columnGap: 10,
                                 margin: [0, 5, 0, 0],
-                                alignment: isArabic ? 'right' : 'left'
+                                // alignment: isArabic ? 'right' : 'left' // Removed
                             }
                         ].filter(Boolean),
-                        alignment: isArabic ? 'right' : 'left'
+                        // alignment: isArabic ? 'right' : 'left' // Removed
                     }
                 ].filter(Boolean),
                 columnGap: 20,
@@ -1207,8 +1207,8 @@ async function getCVDocumentDefinition(addWatermark) {
                     { // Main Content (right for RTL)
                         width: '*',
                         stack: [
-                            { text: name, style: 'header', alignment: 'right' },
-                            { text: title, style: 'subHeader', alignment: 'right', color: '#007bff' },
+                            { text: name, style: 'header' /* alignment removed */ },
+                            { text: title, style: 'subHeader' /* alignment removed */, color: '#007bff' },
                             ...mainContentSections
                         ],
                         margin: [10, 0, 0, 0]
@@ -1216,12 +1216,12 @@ async function getCVDocumentDefinition(addWatermark) {
                     { // Sidebar (left for RTL)
                         width: 150,
                         stack: sidebarSections.map(item => {
-                            if (item.style && item.style.alignment) item.style.alignment = 'center';
+                            // if (item.style && item.style.alignment) item.style.alignment = 'center'; // Removed
                             if (item.columns) {
-                                item.columns.forEach(col => col.alignment = 'center');
+                                item.columns.forEach(col => col.alignment = 'center'); // Keep center for contact info in sidebar
                             }
                             if (item.ul) {
-                                item.ul.forEach(li => li.alignment = 'center');
+                                item.ul.forEach(li => li.alignment = 'center'); // Keep center for lists in sidebar
                             }
                             if (item.style && item.style.color) item.color = '#212121';
                             return item;
@@ -1235,7 +1235,7 @@ async function getCVDocumentDefinition(addWatermark) {
                     { // Sidebar (left for LTR)
                         width: 150,
                         stack: sidebarSections.map(item => {
-                            if (item.style && item.style.alignment) item.style.alignment = 'center';
+                            // if (item.style && item.style.alignment) item.style.alignment = 'center'; // Removed
                             if (item.columns) {
                                 item.columns.forEach(col => col.alignment = 'center');
                             }
@@ -1253,8 +1253,8 @@ async function getCVDocumentDefinition(addWatermark) {
                     { // Main Content (right for LTR)
                         width: '*',
                         stack: [
-                            { text: name, style: 'header', alignment: 'left' },
-                            { text: title, style: 'subHeader', alignment: 'left', color: '#007bff' },
+                            { text: name, style: 'header' /* alignment removed */ },
+                            { text: title, style: 'subHeader' /* alignment removed */, color: '#007bff' },
                             ...mainContentSections
                         ],
                         margin: [10, 0, 0, 0]
@@ -1272,28 +1272,28 @@ async function getCVDocumentDefinition(addWatermark) {
                         image: profilePicBase64,
                         width: 80,
                         height: 80,
-                        alignment: 'center',
+                        alignment: 'center', // Keep center alignment for profile pic
                         margin: [0, 0, 0, 10]
                     } : null,
-                    { text: name, style: 'header', alignment: 'center', color: '#fff' },
-                    { text: title, style: 'subHeader', alignment: 'center', color: '#ced4da' },
+                    { text: name, style: 'header', alignment: 'center', color: '#fff' }, // Keep center alignment for name
+                    { text: title, style: 'subHeader', alignment: 'center', color: '#ced4da' }, // Keep center alignment for title
                     {
                         columns: getContactInfoContent().map(item => ({
                             text: item.text,
-                            alignment: 'center',
+                            alignment: 'center', // Keep center alignment for contact info
                             width: 'auto',
                             color: '#fff',
                             margin: [0, 0, 5, 0]
                         })),
                         columnGap: 10,
                         margin: [0, 10, 0, 0],
-                        alignment: 'center'
+                        alignment: 'center' // Keep center alignment for contact info columns container
                     }
                 ].filter(Boolean),
-                background: '#004085', // Header background color
-                color: '#f8f9fa', // Header text color
+                background: '#004085',
+                color: '#f8f9fa',
                 padding: [20, 20, 20, 20],
-                margin: [-40, -40, -40, 0] // Negative margins to fill page width
+                margin: [-40, -40, -40, 0]
             });
 
             docContent.push({
@@ -1304,9 +1304,9 @@ async function getCVDocumentDefinition(addWatermark) {
                         margin: [10, 0, 0, 0]
                     },
                     { // Sidebar (left for RTL)
-                        width: 120, // Smaller sidebar for professional look
+                        width: 120,
                         stack: sidebarSections.map(item => {
-                            if (item.style && item.style.alignment) item.style.alignment = 'center';
+                            // if (item.style && item.style.alignment) item.style.alignment = 'center'; // Removed
                             if (item.columns) {
                                 item.columns.forEach(col => col.alignment = 'center');
                             }
@@ -1325,7 +1325,7 @@ async function getCVDocumentDefinition(addWatermark) {
                     { // Sidebar (left for LTR)
                         width: 120,
                         stack: sidebarSections.map(item => {
-                            if (item.style && item.style.alignment) item.style.alignment = 'center';
+                            // if (item.style && item.style.alignment) item.style.alignment = 'center'; // Removed
                             if (item.columns) {
                                 item.columns.forEach(col => col.alignment = 'center');
                             }
@@ -1357,8 +1357,8 @@ async function getCVDocumentDefinition(addWatermark) {
                     { // Main Content (right for RTL)
                         width: '*',
                         stack: [
-                            { text: name, style: 'header', alignment: 'right' },
-                            { text: title, style: 'subHeader', alignment: 'right', color: '#00acc1' },
+                            { text: name, style: 'header' /* alignment removed */ },
+                            { text: title, style: 'subHeader' /* alignment removed */, color: '#00acc1' },
                             ...mainContentSections
                         ],
                         margin: [10, 0, 0, 0]
@@ -1366,7 +1366,7 @@ async function getCVDocumentDefinition(addWatermark) {
                     { // Sidebar (left for RTL)
                         width: 150,
                         stack: sidebarSections.map(item => {
-                            if (item.style && item.style.alignment) item.style.alignment = 'center';
+                            // if (item.style && item.style.alignment) item.style.alignment = 'center'; // Removed
                             if (item.columns) {
                                 item.columns.forEach(col => col.alignment = 'center');
                             }
@@ -1385,7 +1385,7 @@ async function getCVDocumentDefinition(addWatermark) {
                     { // Sidebar (left for LTR)
                         width: 150,
                         stack: sidebarSections.map(item => {
-                            if (item.style && item.style.alignment) item.style.alignment = 'center';
+                            // if (item.style && item.style.alignment) item.style.alignment = 'center'; // Removed
                             if (item.columns) {
                                 item.columns.forEach(col => col.alignment = 'center');
                             }
@@ -1403,8 +1403,8 @@ async function getCVDocumentDefinition(addWatermark) {
                     { // Main Content (right for LTR)
                         width: '*',
                         stack: [
-                            { text: name, style: 'header', alignment: 'left' },
-                            { text: title, style: 'subHeader', alignment: 'left', color: '#00acc1' },
+                            { text: name, style: 'header' /* alignment removed */ },
+                            { text: title, style: 'subHeader' /* alignment removed */, color: '#00acc1' },
                             ...mainContentSections
                         ],
                         margin: [10, 0, 0, 0]
@@ -1423,13 +1423,13 @@ async function getCVDocumentDefinition(addWatermark) {
                     {
                         columns: getContactInfoContent().map(item => ({
                             text: item.text,
-                            alignment: isArabic ? 'right' : 'left',
+                            // alignment: isArabic ? 'right' : 'left', // Removed
                             width: 'auto',
                             margin: [0, 0, 5, 0]
                         })),
                         columnGap: 10,
                         margin: [0, 5, 0, 10],
-                        alignment: isArabic ? 'right' : 'left'
+                        // alignment: isArabic ? 'right' : 'left' // Removed
                     }
                 ].filter(Boolean)
             });
@@ -1445,6 +1445,7 @@ async function getCVDocumentDefinition(addWatermark) {
         styles: styles,
         defaultStyle: {
             font: defaultFont,
+            // alignment: isArabic ? 'right' : 'left', // Removed from defaultStyle
             lineHeight: 1.2
         },
         pageMargins: [40, 40, 40, 40], // Left, Top, Right, Bottom margins (approx 10mm)
@@ -1454,6 +1455,7 @@ async function getCVDocumentDefinition(addWatermark) {
 
     return docDefinition;
 }
+
 
 
 
