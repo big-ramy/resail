@@ -842,7 +842,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         }
 
         Object.assign(cvContainer.style, {
-            width: '210mm',          // عرض A4
+            width: '800px',          // عرض A4
             minHeight: '297mm',      // ارتفاع A4 الأدنى (ستتمدد إذا كان المحتوى أطول)
             height: 'auto',          // السماح للارتفاع بالنمو مع المحتوى
             maxHeight: 'none',       // إزالة أي قيود على أقصى ارتفاع
