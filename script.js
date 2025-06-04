@@ -955,8 +955,8 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
 
         // --- 5. تهيئة html2pdf.js وإعدادات html2canvas ---
         const isMobile = isMobileDevice();
-        const scaleFactor = isMobile ? 1.5 : 2;
-        const imageQuality = isMobile ? 0.9 : 0.98;
+        const scaleFactor = isMobile ? 1 : 2;
+        const imageQuality = isMobile ? 0.7 : 0.98;
         console.log(`[captureCVasPDF V20 Revert to V9 with Enhancements] استخدام المقياس: ${scaleFactor}، الجودة: ${imageQuality}. جوال: ${isMobile}`);
 
         const pdfOptions = {
