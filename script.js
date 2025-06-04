@@ -1445,7 +1445,6 @@ async function getCVDocumentDefinition(addWatermark) {
         styles: styles,
         defaultStyle: {
             font: defaultFont,
-            alignment: isArabic ? 'right' : 'left',
             lineHeight: 1.2
         },
         pageMargins: [40, 40, 40, 40], // Left, Top, Right, Bottom margins (approx 10mm)
