@@ -461,7 +461,6 @@ body[dir="ltr"] .template-preview-container {
     min-height: 297mm; /* ارتفاع A4 كحد أدنى للمعاينة، ولكن يمكن أن ينمو */
     height: auto; /* السماح للارتفاع بالنمو */
     margin: 0 auto; /* توسيطها في #cv-preview-area */
-    padding: 10mm; /* حشوة داخلية للسيرة الذاتية، يمكن تعديلها حسب القوالب */
     box-sizing: border-box;
     background: white;
     color: #212529;
@@ -1681,7 +1680,6 @@ body[dir="ltr"] .cv-skill-item {
 @media (max-width: 768px) {
     /* Adjust CV container preview on mobile */
     #cv-container {
-        padding: 5mm; /* أقل حشوة للمعاينة على الجوال */
         min-height: auto; /* اجعل الارتفاع مرنًا أكثر في المعاينة على الجوال */
     }
 
@@ -1813,7 +1811,6 @@ body[dir="ltr"] .qr-payment-inputs-scroll { padding-right: 0; padding-left: 15px
         min-height: 297mm !important; /* أو 296mm إذا كانت هناك مشاكل هوامش */
         height: auto !important; /* السماح بالنمو لعدة صفحات */
         margin: 0 auto !important; /* توسيط الصفحة في نافذة الطباعة */
-        padding: 10mm !important; /* حشوة داخلية للصفحة، يمكن تعديلها لتناسب القوالب */
         box-shadow: none !important;
         overflow: visible !important; /* هام جداً للسماح للمحتوى بالتجاوز */
         page-break-before: auto !important;
