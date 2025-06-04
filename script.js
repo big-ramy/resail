@@ -861,7 +861,6 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
             margin: '0',
             zIndex: '-1',
             transform: 'none',
-            padding: '10mm', // **تعديل:** العودة إلى 10mm padding 
             zoom: '1',
             maxWidth: 'none',
             visibility: 'visible',
@@ -888,10 +887,10 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
             watermarkDiv.textContent = watermarkText;
             Object.assign(watermarkDiv.style, {
                 position: 'absolute',
-                top: '50%',
+                top: '20%',
                 left: '50%',
                 transform: 'translate(-50%, -50%) rotate(-45deg) scale(2.0)', // زادت scale
-                fontSize: 'clamp(4em, 12vw, 7em)', // زادت قيم clamp
+                fontSize: 'clamp(4em, 10vw, 7em)', // زادت قيم clamp
                 color: 'rgba(0, 0, 0, 0.07)', // قللت الشفافية قليلاً
                 fontWeight: 'bold',
                 textAlign: 'center',
@@ -955,7 +954,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
 
         // --- 5. تهيئة html2pdf.js وإعدادات html2canvas ---
         const isMobile = isMobileDevice();
-        const scaleFactor = isMobile ? 1.5 : 2;
+        const scaleFactor = isMobile ? 0.9 : 1.30;
         const imageQuality = isMobile ? 0.9 : 0.98;
         console.log(`[captureCVasPDF V20 Revert to V9 with Enhancements] استخدام المقياس: ${scaleFactor}، الجودة: ${imageQuality}. جوال: ${isMobile}`);
 
