@@ -861,7 +861,7 @@ async function getCVDocumentDefinition(addWatermark) {
     const isArabic = currentLang === 'ar';
     // استخدام خط Amiri إذا كانت اللغة عربية، وإلا Roboto
     // تأكد من أنك قمت بتضمين خطوط Amiri Regular و Bold بصيغة Base64 بشكل صحيح في pdfMake.vfs
-    const defaultFont = isArabic ? 'Amiri' : 'Roboto';
+    const defaultFont = isArabic ? 'Tajawal' : 'Roboto';
 
     const name = document.getElementById('name-input')?.value.trim() || '';
     const title = document.getElementById('title-input')?.value.trim() || '';
