@@ -751,17 +751,16 @@ function validateEmail(email) {
  * @returns {Promise<string|null>} Base64 string of the PDF or null if downloaded/error.
  */
 async function captureCVasPDF(cvContainer, downloadPdf = false) {
-    console.log(`[captureCVasPDF V17 Final Optimized & Mobile Compatible] بدأت العملية. تنزيل PDF: ${downloadPdf}`);
+    console.log(`[captureCVasPDF V19 Left Shift & No Padding] بدأت العملية. تنزيل PDF: ${downloadPdf}`);
 
     if (!cvContainer) {
-        console.error("[captureCVasPDF V17 Final Optimized & Mobile Compatible] لم يتم العثور على عنصر حاوية السيرة الذاتية!");
+        console.error("[captureCVasPDF V19 Left Shift & No Padding] لم يتم العثور على عنصر حاوية السيرة الذاتية!");
         return Promise.reject("CV container not found");
     }
-    console.log("[captureCVasPDF V17 Final Optimized & Mobile Compatible] تم العثور على عنصر حاوية السيرة الذاتية:", cvContainer.id);
+    console.log("[captureCVasPDF V19 Left Shift & No Padding] تم العثور على عنصر حاوية السيرة الذاتية:", cvContainer.id);
 
-    // التأكد من إدارة علامة isCapturingPdf لمنع التشغيل المتزامن
     if (typeof isCapturingPdf !== 'undefined' && isCapturingPdf) {
-        console.warn("[captureCVasPDF V17 Final Optimized & Mobile Compatible] عملية الالتقاط قيد التقدم بالفعل. سيتم التخطي.");
+        console.warn("[captureCVasPDF V19 Left Shift & No Padding] عملية الالتقاط قيد التقدم بالفعل. سيتم التخطي.");
         return Promise.reject("Capture in progress");
     }
     if (typeof toggleLoadingOverlay === 'function') {
@@ -775,7 +774,8 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     const originalStyles = {
         cvContainer: {},
         cvPreviewArea: {},
-        cvPreviewPage: {}
+        cvPreviewPage: {},
+        bodyOverflow: document.body.style.overflow
     };
 
     const cvPropsToStore = [
@@ -792,11 +792,11 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     });
     originalStyles.cvContainer.className = cvContainer.className;
     originalStyles.cvContainer.scrollTop = cvContainer.scrollTop;
-    console.log("[captureCVasPDF V17 Final Optimized & Mobile Compatible] تم حفظ الأنماط الأصلية لحاوية السيرة الذاتية.");
+    console.log("[captureCVasPDF V19 Left Shift & No Padding] تم حفظ الأنماط الأصلية لحاوية السيرة الذاتية.");
 
     const cvPreviewArea = document.getElementById('cv-preview-area');
     const cvPreviewPage = document.getElementById('cv-preview-page');
-    const parentPropsToStore = ['display', 'justifyContent', 'alignItems', 'overflow', 'maxHeight', 'padding', 'margin', 'minHeight', 'position', 'boxSizing'];
+    const parentPropsToStore = ['display', 'justifyContent', 'alignItems', 'overflow', 'maxHeight', 'padding', 'margin', 'minHeight', 'position', 'boxSizing', 'width'];
 
     if (cvPreviewArea) {
         parentPropsToStore.forEach(prop => originalStyles.cvPreviewArea[prop] = getComputedStyle(cvPreviewArea)[prop]);
@@ -804,19 +804,20 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     if (cvPreviewPage) {
         parentPropsToStore.forEach(prop => originalStyles.cvPreviewPage[prop] = getComputedStyle(cvPreviewPage)[prop]);
     }
-    console.log("[captureCVasPDF V17 Final Optimized & Mobile Compatible] تم حفظ الأنماط الأصلية للعناصر الأصلية (الآباء).");
+    console.log("[captureCVasPDF V19 Left Shift & No Padding] تم حفظ الأنماط الأصلية للعناصر الأصلية (الآباء).");
 
     const removeButtonsOriginal = Array.from(cvContainer.querySelectorAll('.remove-field'));
     removeButtonsOriginal.forEach(btn => btn.style.display = 'none');
-    console.log("[captureCVasPDF V17 Final Optimized & Mobile Compatible] تم إخفاء أزرار الإزالة.");
+    console.log("[captureCVasPDF V19 Left Shift & No Padding] تم إخفاء أزرار الإزالة.");
 
     let captureError = null;
 
     try {
         // --- 2. تطبيق الأنماط المؤقتة لالتقاط PDF ---
-        console.log("[captureCVasPDF V17 Final Optimized & Mobile Compatible] تطبيق الأنماط المؤقتة على حاوية السيرة الذاتية لالتقاط PDF.");
+        console.log("[captureCVasPDF V19 Left Shift & No Padding] تطبيق الأنماط المؤقتة على حاوية السيرة الذاتية لالتقاط PDF.");
 
-        // تأكد من أن الآباء لا يقيدون العرض أو يسببون توسيطًا غير مرغوب فيه
+        document.body.style.overflow = 'hidden';
+
         if (cvPreviewArea) {
             Object.assign(cvPreviewArea.style, {
                 display: 'block',
@@ -827,7 +828,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
                 padding: '0',
                 margin: '0',
                 position: 'relative',
-                width: '100%',
+                width: '100%', // يجب أن تكون 100% للسماح بـ left: 30% على cvContainer
                 boxSizing: 'border-box'
             });
         }
@@ -839,13 +840,11 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
                 overflow: 'visible',
                 minHeight: 'auto',
                 position: 'relative',
-                width: '100%',
+                width: '100%', // يجب أن تكون 100% للسماح بـ left: 30% على cvContainer
                 boxSizing: 'border-box'
             });
         }
 
-        // ضبط حاوية السيرة الذاتية بحجم A4 قياسي.
-        // وضعها خارج الشاشة لضمان عدم تأثيرها على العرض المرئي للمستخدم
         Object.assign(cvContainer.style, {
             width: '210mm',
             minHeight: '297mm',
@@ -854,127 +853,124 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
             overflow: 'visible',
             overflowY: 'visible',
             backgroundColor: '#ffffff',
-            position: 'absolute', // إخراج العنصر من التدفق العادي
+            position: 'absolute',
             top: '0',
-            left: '-8000px', // ابعد مسافة كافية لضمان عدم ظهورها
+            left: '30%', // **التعديل هنا: تحريك إلى اليسار 30%**
             right: 'auto',
             margin: '0',
             zIndex: '-1',
             transform: 'none',
-            padding: '10mm', // هوامش داخلية للصفحة
+            padding: '0', // **التعديل هنا: حذف البادينغ نهائياً**
             zoom: '1',
             maxWidth: 'none',
-            visibility: 'visible', // يجب أن تكون مرئية لـ html2canvas لالتقاطها
+            visibility: 'visible',
             boxSizing: 'border-box'
         });
 
         cvContainer.className = `${selectedTemplateCategory}-layout template${selectedTemplate}`;
         cvContainer.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
-        console.log(`[captureCVasPDF V17 Final Optimized & Mobile Compatible] تم ضبط اتجاه حاوية السيرة الذاتية إلى: ${cvContainer.dir}`);
+        console.log(`[captureCVasPDF V19 Left Shift & No Padding] تم ضبط اتجاه حاوية السيرة الذاتية إلى: ${cvContainer.dir}`);
 
         // --- 3. إعادة إنشاء محتوى السيرة الذاتية للالتقاط ---
-        console.log("[captureCVasPDF V17 Final Optimized & Mobile Compatible] استدعاء generateCV لتعبئة حاوية السيرة الذاتية الحالية...");
+        console.log("[captureCVasPDF V19 Left Shift & No Padding] استدعاء generateCV لتعبئة حاوية السيرة الذاتية الحالية...");
         generateCV(cvContainer);
 
-        // --- 4. الانتظار لضمان اكتمال العرض وتحميل جميع الأصول ---
-        // فرض إعادة التدفق (reflow) وتحديث الأبعاد المحسوبة بعد تطبيق الأنماط
-        cvContainer.offsetHeight;
-        console.log(`[captureCVasPDF V17 Final Optimized & Mobile Compatible] ارتفاع تمرير حاوية السيرة الذاتية بعد تعبئة المحتوى: ${cvContainer.scrollHeight}px`);
+        if (cvContainer.innerHTML.trim().length === 0) {
+            console.error("[captureCVasPDF V19 Left Shift & No Padding] cvContainer فارغ بعد generateCV. قد تكون دالة generateCV لا تعمل.");
+            throw new Error("CV content is empty after generation. Cannot capture blank page.");
+        }
 
-        // انتظار تحميل جميع الصور داخل العنصر
+        // --- 4. الانتظار لضمان اكتمال العرض وتحميل جميع الأصول ---
+        cvContainer.offsetHeight; // Force reflow
+        console.log(`[captureCVasPDF V19 Left Shift & No Padding] ارتفاع تمرير حاوية السيرة الذاتية بعد تعبئة المحتوى: ${cvContainer.scrollHeight}px`);
+
         const imagesInCv = Array.from(cvContainer.querySelectorAll('img'));
-        console.log(`[captureCVasPDF V17 Final Optimized & Mobile Compatible] تم العثور على ${imagesInCv.length} صورة في حاوية السيرة الذاتية.`);
+        console.log(`[captureCVasPDF V19 Left Shift & No Padding] تم العثور على ${imagesInCv.length} صورة في حاوية السيرة الذاتية.`);
         if (imagesInCv.length > 0) {
             await Promise.all(imagesInCv.map(img => {
                 if (img.complete && img.naturalHeight !== 0 && img.naturalWidth !== 0) return Promise.resolve();
                 return new Promise((resolve) => {
                     img.onload = () => { resolve(); };
                     img.onerror = () => {
-                        console.warn(`[captureCVasPDF V17 Final Optimized & Mobile Compatible] فشل تحميل الصورة في حاوية السيرة الذاتية: ${img.src}`);
+                        console.warn(`[captureCVasPDF V19 Left Shift & No Padding] فشل تحميل الصورة في حاوية السيرة الذاتية: ${img.src}`);
                         resolve();
                     };
-                    if (img.src && !img.complete) { // محاولة إعادة تحميل الصورة إذا لم تكن مكتملة
+                    if (img.src && !img.complete) {
                         const tempSrc = img.src;
                         img.src = '';
                         img.src = tempSrc;
                     }
                 });
             }));
-            console.log("[captureCVasPDF V17 Final Optimized & Mobile Compatible] تم فحص/تحميل جميع الصور في حاوية السيرة الذاتية.");
+            console.log("[captureCVasPDF V19 Left Shift & No Padding] تم فحص/تحميل جميع الصور في حاوية السيرة الذاتية.");
         }
 
-        // انتظار الخطوط المخصصة (يتطلب FontFaceObserver)
         if (typeof FontFaceObserver !== 'undefined' && getComputedStyle(cvContainer).fontFamily) {
-            const desiredFontFamilies = getComputedStyle(cvContainer).fontFamily.split(',').map(f => f.trim().replace(/['"]/g, ''));
-            console.log(`[captureCVasPDF V17 Final Optimized & Mobile Compatible] انتظار تحميل الخطوط: ${desiredFontFamilies.join(', ')}`);
+            const desiredFontFamilies = getComputedStyle(cvContainer).fontFamily.split(',').map(f => f.trim().replace(/['']/g, ''));
+            console.log(`[captureCVasPDF V19 Left Shift & No Padding] انتظار تحميل الخطوط: ${desiredFontFamilies.join(', ')}`);
             await Promise.all(desiredFontFamilies.map(fontName => {
                 if (fontName && !['sans-serif', 'serif', 'monospace', 'cursive', 'fantasy', 'system-ui', '-apple-system', 'Segoe UI', 'arial', 'helvetica'].includes(fontName.toLowerCase())) {
                     const font = new FontFaceObserver(fontName);
-                    return font.load(null, 5000) // 5 ثواني مهلة لتحميل الخط
-                        .catch(e => console.warn(`[captureCVasPDF V17 Final Optimized & Mobile Compatible] فشل تحميل الخط ${fontName}:`, e));
+                    return font.load(null, 5000)
+                        .catch(e => console.warn(`[captureCVasPDF V19 Left Shift & No Padding] فشل تحميل الخط ${fontName}:`, e));
                 }
                 return Promise.resolve();
             }));
-            console.log("[captureCVasPDF V17 Final Optimized & Mobile Compatible] تم فحص/تحميل جميع الخطوط المطلوبة.");
+            console.log("[captureCVasPDF V19 Left Shift & No Padding] تم فحص/تحميل جميع الخطوط المطلوبة.");
         }
 
-        // مهلة إضافية لضمان أن المتصفح قد انتهى من جميع عمليات الرسم
-        // هذه المهلة مهمة جداً للجوال والأنظمة الأبطأ
         await new Promise(resolve => setTimeout(resolve, isMobileDevice() ? 3000 : 1500));
-        console.log("[captureCVasPDF V17 Final Optimized & Mobile Compatible] تم الانتظار للرسم النهائي بعد تطبيق الأنماط وتحميل الأصول.");
+        console.log("[captureCVasPDF V19 Left Shift & No Padding] تم الانتظار للرسم النهائي بعد تطبيق الأنماط وتحميل الأصول.");
 
         // --- 5. تهيئة html2pdf.js وإعدادات html2canvas ---
         const isMobile = isMobileDevice();
-        // مقياس للتقاط الصورة: أعلى جودة ممكنة (مع الأخذ في الاعتبار الأداء)
-        const scaleFactor = isMobile ? 1.5 : 2; // 1.5 للجوال جيد، 2 للديسكتوب عالي الجودة
-        const imageQuality = isMobile ? 0.9 : 0.98; // جودة صور JPEG (0.9 للجوال، 0.98 للديسكتوب)
-        console.log(`[captureCVasPDF V17 Final Optimized & Mobile Compatible] استخدام المقياس: ${scaleFactor}، الجودة: ${imageQuality}. جوال: ${isMobile}`);
+        const scaleFactor = isMobile ? 1.5 : 2;
+        const imageQuality = isMobile ? 0.9 : 0.98;
+        console.log(`[captureCVasPDF V19 Left Shift & No Padding] استخدام المقياس: ${scaleFactor}، الجودة: ${imageQuality}. جوال: ${isMobile}`);
 
         const pdfOptions = {
-            margin: 0, // لا توجد هوامش إضافية على مستوى PDF (الهوامش ستأتي من padding الخاص بـ cvContainer)
+            margin: 0,
             filename: `CV_${(document.getElementById('name-input')?.value.trim().replace(/\s/g, '_') || 'ResailCV')}.pdf`,
             image: { type: 'jpeg', quality: imageQuality },
             html2canvas: {
                 scale: scaleFactor,
-                useCORS: true,      // محاولة تحميل الصور من مصادر خارجية
-                allowTaint: true,    // السماح بـ "تلويث" الكانفاس بالصور الخارجية إذا فشل CORS (قد يمنع الحصول على Data URL)
-                backgroundColor: '#ffffff', // خلفية بيضاء صريحة
-                logging: false,      // تعطيل تسجيل html2canvas المطول
-                letterRendering: true, // تحسين عرض النص
-                // هذه الخصائص حاسمة: يجب أن تتطابق مع الأبعاد الفعلية لعنصر الالتقاط
-                x: 0, // الالتقاط من بداية العنصر نفسه
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#ffffff',
+                logging: false,
+                letterRendering: true,
+                // x و y يجب أن تكون 0 لأن العنصر نفسه أصبح في left: 30%
+                x: 0,
                 y: 0,
-                width: cvContainer.offsetWidth, // عرض العنصر المراد التقاطه
-                height: cvContainer.scrollHeight, // ارتفاع التمرير الكامل
-                windowWidth: cvContainer.offsetWidth, // حجم النافذة (html2canvas يعتبره جزءًا من الالتقاط)
-                windowHeight: cvContainer.scrollHeight, // يجب أن يتطابق مع ارتفاع التمرير
+                width: cvContainer.offsetWidth,
+                height: cvContainer.scrollHeight,
+                windowWidth: cvContainer.offsetWidth,
+                windowHeight: cvContainer.scrollHeight,
                 scrollX: 0,
                 scrollY: 0,
-                // `removeContainer: true` يمكن أن يسبب مشاكل في بعض الحالات، نتركه false أو نعتمد على الافتراضي
                 onclone: (clonedDoc) => {
-                    console.log("[captureCVasPDF V17 Final Optimized & Mobile Compatible] تم تشغيل onclone الداخلي لـ html2canvas.");
+                    console.log("[captureCVasPDF V19 Left Shift & No Padding] تم تشغيل onclone الداخلي لـ html2canvas.");
                     const body = clonedDoc.body;
-                    // تطبيق الخطوط والاتجاه على body المستنسخ
                     body.style.fontFamily = getComputedStyle(cvContainer).fontFamily || 'Tajawal, Arial, sans-serif';
                     body.style.direction = cvContainer.dir;
 
                     const clonedCvElement = clonedDoc.getElementById(cvContainer.id);
                     if (clonedCvElement) {
-                        // تطبيق الأنماط المحسوبة من العنصر الأصلي على العنصر المستنسخ لضمان دقة العرض
                         const computedCvStyles = getComputedStyle(cvContainer);
                         cvPropsToStore.forEach(prop => {
                             clonedCvElement.style[prop] = computedCvStyles[prop];
                         });
-                        // تأكيد خصائص الموضع والتوسيط لـ clonedCvElement في المستنسخ
                         Object.assign(clonedCvElement.style, {
                             width: '210mm',
-                            padding: '10mm',
+                            padding: '0', // **التعديل هنا: حذف البادينغ**
                             boxSizing: 'border-box',
                             margin: '0',
-                            left: '0', top: '0', // تثبيته في الزاوية العلوية اليسرى للحاوية المستنسخة
-                            right: 'auto', bottom: 'auto',
+                            left: '30%', // **التعديل هنا: تحريك إلى اليسار 30%**
+                            top: '0',
+                            right: 'auto',
+                            bottom: 'auto',
                             maxWidth: 'none',
-                            position: 'relative' // لضمان احتواء العناصر المطلقة داخله بشكل صحيح
+                            position: 'relative'
                         });
                         clonedCvElement.className = cvContainer.className;
                         clonedCvElement.dir = cvContainer.dir;
@@ -992,105 +988,102 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
             }
         };
 
-        // *** إضافة callback لـ jsPDF لوضع العلامة المائية على كل صفحة ***
         if (downloadPdf) {
             pdfOptions.jsPDF.callback = function(pdf) {
-                console.log(`[captureCVasPDF V17 Final Optimized & Mobile Compatible] jsPDF callback triggered. Current page: ${pdf.internal.getNumberOfPages()}`);
+                console.log(`[captureCVasPDF V19 Left Shift & No Padding] jsPDF callback triggered. Current page: ${pdf.internal.getNumberOfPages()}`);
 
                 const totalPages = pdf.internal.getNumberOfPages();
                 const watermarkText = translations[currentLang]['Watermark Preview Text'] || (currentLang === 'ar' ? "للعرض فقط" : "ONLY PREVIEW");
 
-                // *** تحقق من وجود الخطوط المسجلة أولاً ***
-                const fontNameForPdf = 'Tajawal'; // اسم الخط الذي سجلته في jsPDF
+                const fontNameForPdf = 'Tajawal';
                 const fontStyleForPdf = 'normal';
 
                 let fontToUse = fontNameForPdf;
-                let defaultFontForArabic = 'helvetica'; // خط احتياطي
+                let defaultFontForArabic = 'helvetica';
                 
-                const availableFonts = pdf.getFontList(); // الحصول على قائمة الخطوط المسجلة
-                // منطق اختيار الخط:
+                const availableFonts = pdf.getFontList();
                 if (currentLang === 'ar') {
                     if (availableFonts['tajawal'] && availableFonts['tajawal']['normal']) {
                          fontToUse = 'tajawal';
-                    } else if (availableFonts['amiri'] && availableFonts['amiri']['normal']) { // مثال: إذا سجلت خط أميري
-                         fontTouse = 'amiri';
+                    } else if (availableFonts['amiri'] && availableFonts['amiri']['normal']) {
+                         fontToUse = 'amiri';
                     } else {
-                        fontToUse = defaultFontForArabic; // هذا قد يعرض مربعات للعربية
-                        console.warn(`[captureCVasPDF V17 Final Optimized & Mobile Compatible] الخط العربي المخصص (Tajawal أو Amiri) غير مسجل في jsPDF. استخدام '${fontToUse}'. قد لا تدعم الأحرف العربية.`);
+                        fontToUse = defaultFontForArabic;
+                        console.warn(`[captureCVasPDF V19 Left Shift & No Padding] الخط العربي المخصص (Tajawal أو Amiri) غير مسجل في jsPDF. استخدام '${fontToUse}'. قد لا تدعم الأحرف العربية.`);
                     }
-                } else { // للغة الإنجليزية
+                } else {
                     if (availableFonts['helvetica'] && availableFonts['helvetica']['normal']) {
                         fontToUse = 'helvetica';
                     } else {
-                        fontToUse = 'sans-serif'; // خط عام
+                        fontToUse = 'sans-serif';
                     }
                 }
 
                 pdf.setFont(fontToUse, fontStyleForPdf);
-                pdf.setFontSize(50); // حجم الخط (يمكن تعديله) - 50pt حجم جيد للعلامة المائية
-                pdf.setTextColor(0, 0, 0, 0.08); // لون شفاف (RGBA)
-                pdf.setGState(new pdf.GState({ opacity: 0.12 })); // زيادة الشفافية قليلاً (12%)
+                pdf.setFontSize(50); // حجم الخط (يمكن تعديله)
+                pdf.setTextColor(0, 0, 0, 0.08);
+                pdf.setGState(new pdf.GState({ opacity: 0.12 }));
 
                 const pageWidth = pdf.internal.pageSize.getWidth();
                 const pageHeight = pdf.internal.pageSize.getHeight();
-                const angleInDegrees = -45; // زاوية الدوران
+                const angleInDegrees = -45;
 
                 for (let i = 1; i <= totalPages; i++) {
                     pdf.setPage(i);
-                    pdf.saveGraphicsState(); // حفظ الحالة الحالية لـ PDF
+                    pdf.saveGraphicsState();
                     
-                    // حساب مركز الصفحة ديناميكيا
                     const centerX = pageWidth / 2;
                     const centerY = pageHeight / 2;
 
-                    // ترجمة نقطة الأصل إلى مركز الصفحة، ثم تدوير، ثم رسم
                     pdf.translate(centerX, centerY);
-                    pdf.rotate(angleInDegrees * Math.PI / 180, 0, 0); // التدوير حول نقطة (0,0) الجديدة
+                    pdf.rotate(angleInDegrees * Math.PI / 180, 0, 0);
                     
-                    pdf.text(watermarkText, 0, 0, { // النص يرسم عند (0,0) بالنسبة لنقطة الأصل المحولة
+                    pdf.text(watermarkText, 0, 0, {
                         align: 'center',
                         baseline: 'middle'
                     });
 
-                    pdf.restoreGraphicsState(); // استعادة الحالة الأصلية لـ PDF (مهم جداً)
+                    pdf.restoreGraphicsState();
                 }
-                pdf.setGState(new pdf.GState({ opacity: 1 })); // استعادة الشفافية الافتراضية
+                pdf.setGState(new pdf.GState({ opacity: 1 }));
             };
         }
-        console.log("[captureCVasPDF V17 Final Optimized & Mobile Compatible] تم إعداد خيارات html2pdf.");
+        console.log("[captureCVasPDF V19 Left Shift & No Padding] تم إعداد خيارات html2pdf.");
 
         // --- 6. إنشاء ملف PDF ---
-        console.log("[captureCVasPDF V17 Final Optimized & Mobile Compatible] بدء إنشاء html2pdf من عنصر حاوية السيرة الذاتية...");
+        console.log("[captureCVasPDF V19 Left Shift & No Padding] بدء إنشاء html2pdf من عنصر حاوية السيرة الذاتية...");
         const worker = html2pdf().from(cvContainer).set(pdfOptions);
 
         if (downloadPdf) {
-            console.log("[captureCVasPDF V17 Final Optimized & Mobile Compatible] محاولة حفظ PDF مباشرة...");
+            console.log("[captureCVasPDF V19 Left Shift & No Padding] محاولة حفظ PDF مباشرة...");
             await worker.save();
-            console.log("[captureCVasPDF V17 Final Optimized & Mobile Compatible] بدأت عملية حفظ PDF.");
+            console.log("[captureCVasPDF V19 Left Shift & No Padding] بدأت عملية حفظ PDF.");
             return null;
         } else {
-            console.log("[captureCVasPDF V17 Final Optimized & Mobile Compatible] محاولة الحصول على PDF كـ blob...");
+            console.log("[captureCVasPDF V19 Left Shift & No Padding] محاولة الحصول على PDF كـ blob...");
             const pdfBlob = await worker.output('blob');
-            console.log(`[captureCVasPDF V17 Final Optimized & Mobile Compatible] تم استلام PDF blob. الحجم: ${pdfBlob.size} بايت، النوع: ${pdfBlob.type}`);
+            console.log(`[captureCVasPDF V19 Left Shift & No Padding] تم استلام PDF blob. الحجم: ${pdfBlob.size} بايت، النوع: ${pdfBlob.type}`);
             if (pdfBlob.size < 2048 && pdfBlob.size > 0) {
-                console.warn("[captureCVasPDF V17 Final Optimized & Mobile Compatible] حجم PDF blob صغير جدًا، قد يكون فارغًا أو محتواه ضئيلًا.");
+                console.warn("[captureCVasPDF V19 Left Shift & No Padding] حجم PDF blob صغير جدًا، قد يكون فارغًا أو محتواه ضئيلًا.");
             } else if (pdfBlob.size === 0) {
-                console.error("[captureCVasPDF V17 Final Optimized & Mobile Compatible] حجم PDF blob صفر. فشل الالتقاط في إنتاج محتوى.");
+                console.error("[captureCVasPDF V19 Left Shift & No Padding] حجم PDF blob صفر. فشل الالتقاط في إنتاج محتوى.");
                 throw new Error("Generated PDF is empty (size 0).");
             }
-            console.log("[captureCVasPDF V17 Final Optimized & Mobile Compatible] تحويل blob إلى Base64...");
+            console.log("[captureCVasPDF V19 Left Shift & No Padding] تحويل blob إلى Base64...");
             return await fileToBase64(pdfBlob);
         }
 
     } catch (error) {
         captureError = error;
-        console.error("[captureCVasPDF V17 Final Optimized & Mobile Compatible] خطأ حرج أثناء إنشاء PDF:", error, error.stack);
+        console.error("[captureCVasPDF V19 Left Shift & No Padding] خطأ حرج أثناء إنشاء PDF:", error, error.stack);
         alert(translations[currentLang]['Error generating PDF for CV.'] + ` (${error.message || 'Unknown error'})`);
         throw error;
     } finally {
-        console.log("[captureCVasPDF V17 Final Optimized & Mobile Compatible] الدخول إلى كتلة finally لاستعادة الأنماط...");
+        console.log("[captureCVasPDF V19 Left Shift & No Padding] الدخول إلى كتلة finally لاستعادة الأنماط...");
 
-        console.log("[captureCVasPDF V17 Final Optimized & Mobile Compatible] استعادة الأنماط الأصلية لحاوية السيرة الذاتية...");
+        document.body.style.overflow = originalStyles.bodyOverflow;
+
+        console.log("[captureCVasPDF V19 Left Shift & No Padding] استعادة الأنماط الأصلية لحاوية السيرة الذاتية...");
         for (const prop in originalStyles.cvContainer) {
             if (originalStyles.cvContainer.hasOwnProperty(prop)) {
                 if (prop === 'className') {
@@ -1119,12 +1112,12 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         }
 
         removeButtonsOriginal.forEach(btn => btn.style.display = '');
-        console.log("[captureCVasPDF V17 Final Optimized & Mobile Compatible] تم استعادة الأنماط الأصلية وأزرار الإزالة.");
+        console.log("[captureCVasPDF V19 Left Shift & No Padding] تم استعادة الأنماط الأصلية وأزرار الإزالة.");
 
         if (document.getElementById('cv-preview-page')?.classList.contains('active-page') ||
             document.getElementById('cv-template-selection-page')?.classList.contains('active-page') ||
             document.getElementById('cv-data-entry-page')?.classList.contains('active-page')) {
-            console.log("[captureCVasPDF V17 Final Optimized & Mobile Compatible] إعادة إنشاء السيرة الذاتية للمعاينة على الشاشة (الحاوية الأصلية).");
+            console.log("[captureCVasPDF V19 Left Shift & No Padding] إعادة إنشاء السيرة الذاتية للمعاينة على الشاشة (الحاوية الأصلية).");
             generateCV(cvContainer);
         }
 
@@ -1134,7 +1127,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         if (typeof toggleLoadingOverlay === 'function') {
             toggleLoadingOverlay(false);
         }
-        console.log(`[captureCVasPDF V17 Final Optimized & Mobile Compatible] انتهت العملية. isCapturingPdf: ${typeof isCapturingPdf !== 'undefined' ? isCapturingPdf : 'N/A'}. الخطأ الذي حدث: ${captureError ? captureError.message : 'لا يوجد'}`);
+        console.log(`[captureCVasPDF V19 Left Shift & No Padding] انتهت العملية. isCapturingPdf: ${typeof isCapturingPdf !== 'undefined' ? isCapturingPdf : 'N/A'}. الخطأ الذي حدث: ${captureError ? captureError.message : 'لا يوجد'}`);
     }
 }
 
