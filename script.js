@@ -842,23 +842,24 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         }
 
         Object.assign(cvContainer.style, {
-            width: '210mm',
-            minHeight: '297mm',
-            height: 'auto',
-            maxHeight: 'none',
-            overflow: 'visible',
-            overflowY: 'visible',
-            backgroundColor: '#ffffff',
-            position: 'absolute',
-            top: '0',
-            left: '-9999px',
-            zIndex: '-1',
-            transform: 'none',
-            padding: '10mm', // هوامش داخلية للصفحة
-            margin: '0',
-            zoom: '1',
-            maxWidth: 'none',
-            visibility: 'visible',
+            width: '210mm',          // عرض A4
+            minHeight: '297mm',      // ارتفاع A4 الأدنى (ستتمدد إذا كان المحتوى أطول)
+            height: 'auto',          // السماح للارتفاع بالنمو مع المحتوى
+            maxHeight: 'none',       // إزالة أي قيود على أقصى ارتفاع
+            overflow: 'visible',     // ضروري لضمان التقاط كل المحتوى المتجاوز
+            overflowY: 'visible',    // نفس الشيء لـ Y
+            backgroundColor: '#ffffff', // خلفية بيضاء صريحة لملف PDF
+            position: 'absolute',    // وضع مطلق لإخراج العنصر من تدفق المستند
+            top: '0',                // يمكن وضعها في 0 أو خارج الشاشة
+            left: '0',               // **جديد:** تأكد من أنها تبدأ من أقصى اليسار
+            right: 'auto',           // **جديد:** تأكد من عدم وجود قيود من اليمين
+            zIndex: '-1',            // وضعه خلف العناصر الأخرى
+            transform: 'none',       // إزالة أي تحويلات (لا تستخدم translateX هنا)
+            padding: '10mm',         // هوامش داخلية للصفحة
+            margin: '0',             // إزالة الهوامش الخارجية
+            zoom: '1',               // إعادة تعيين التكبير/التصغير
+            maxWidth: 'none',        // **مهم:** إزالة أي قيود على أقصى عرض
+            visibility: 'visible',   // مهم: يجب أن يكون العنصر مرئيًا لكي يلتقطه html2canvas
             boxSizing: 'border-box'
         });
 
