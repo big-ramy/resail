@@ -852,6 +852,151 @@ async function getPDFMakeBase64(addWatermark = true) {
     });
 }
 
+
+
+
+/** تعريف تصميم جميع القوالب **/
+
+const templateStylesConfig = {
+    normal: {
+        template1: {
+            pageMargins: [0,0,0,0], // لا هوامش للصفحة، الترويسة تملأ العرض
+            header: {
+                bgColor: '#0056b3', textColor: '#e9ecef', contactColor: '#ffffff',
+                padding: [20, 20, 20, 20], // يُطبق كهامش داخلي للمحتوى
+                nameSize: (isArabic) => isArabic ? 24 : 22, titleSize: (isArabic) => isArabic ? 16 : 14,
+                alignment: (isArabic) => isArabic ? 'right' : 'left',
+                profilePicBorderColor: '#ffffff',
+            },
+            main: {
+                sectionTitleColor: '#004085', sectionTitleDecorationColor: '#cce5ff',
+                textColor: '#343a40', jobTitleColor: '#343a40', companyColor: '#495057',
+                skillBgColor: '#e0e9f3', skillTextColor: '#0056b3',
+                defaultPadding: [20,15,20,15] // حشو افتراضي للمحتوى الرئيسي إذا لم تكن الترويسة تملأ الصفحة
+            }
+        },
+        // template2: { ... }, // أكمل هنا لباقي القوالب العادية
+        // ...حتى template12
+    },
+    standard: { // (قسم جانبي ورئيسي)
+        template1: {
+            pageMargins: [0,0,0,0],
+            sidebar: {
+                width: 250, // عرض الشريط الجانبي
+                bgColor: '#004085', textColor: '#a2cbfd', sectionTitleColor: '#0056b3',
+                contactIconColor: '#ffffff',
+                skillBgColor: '#0056b3', skillTextColor: '#fff',
+                padding: [20, 20, 20, 20],
+                profilePicBorderColor: '#fff',
+                alignment: (isArabic) => isArabic ? 'right' : 'left',
+            },
+            main: {
+                headerNameColor: '#212529', headerTitleColor: '#007bff',
+                headerBorderBottomColor: '#007bff',
+                sectionTitleColor: '#007bff', sectionTitleDecorationColor: '#e9ecef',
+                textColor: '#343a40', jobTitleColor: '#343a40', companyColor: '#495057',
+                padding: [20,20,20,20] // حشو للمحتوى الرئيسي
+            }
+        },
+        // template2: { ... },
+        // ...حتى template12
+    },
+    professional: { // (رأس وجانبي ورئيسي)
+        template1: {
+            pageMargins: [0,0,0,0],
+            professionalHeader: { // الشريط العلوي
+                bgColor: '#004085', textColor: '#ffffff', contactColor: '#cce5ff',
+                padding: [30, 20, 30, 20], // الحشو الداخلي للشريط العلوي
+                nameSize: (isArabic) => isArabic ? 28: 26, titleSize: (isArabic) => isArabic ? 18 : 16,
+                profilePicBorderColor: '#007bff', // إذا كانت الصورة في الترويسة
+            },
+            sidebar: {
+                width: 250,
+                bgColor: '#f8f9fa', textColor: '#495057', sectionTitleColor: '#004085',
+                contactIconColor: '#007bff',
+                skillBgColor: '#e0e9f3', skillTextColor: '#007bff',
+                padding: [20, 20, 20, 20],
+                profilePicBorderColor: '#007bff', // إذا كانت الصورة في الشريط الجانبي
+                alignment: (isArabic) => isArabic ? 'right' : 'left',
+            },
+            main: {
+                sectionTitleColor: '#004085', sectionTitleDecorationColor: '#cce5ff',
+                textColor: '#343a40', jobTitleColor: '#343a40', companyColor: '#495057',
+                padding: [20,20,20,20] // حشو للمحتوى الرئيسي
+            }
+        },
+        // template2: { ... },
+        // ...حتى template12
+    },
+    ast: { // (نماذج داعمة لأنظمة AST)
+        template1: {
+            pageMargins: [0,0,0,0],
+            sidebar: { // في AST، الشريط الجانبي هو المسيطر على الألوان الأساسية
+                width: 250,
+                bgColor: '#00acc1', textColor: '#e0f7fa', sectionTitleColor: '#ffffff', // عنوان القسم أبيض
+                sectionTitleDecorationColor: '#00838f', // لون الخط تحت عنوان القسم
+                contactIconColor: '#4dd0e1',
+                skillBgColor: '#4dd0e1', skillTextColor: '#004d40',
+                padding: [20, 20, 20, 20],
+                profilePicBorderColor: '#ffffff', // مثال
+                alignment: (isArabic) => isArabic ? 'right' : 'left',
+            },
+            main: { // المحتوى الرئيسي عادة ما يكون بخلفية بيضاء أو فاتحة جداً
+                headerNameColor: '#006064', headerTitleColor: '#00acc1',
+                headerBorderBottomColor: '#00acc1',
+                sectionTitleColor: '#00acc1', sectionTitleDecorationColor: '#e0f7fa',
+                textColor: '#343a40', jobTitleColor: '#343a40', companyColor: '#495057',
+                padding: [20,20,20,20]
+            }
+        },
+        // template2: { ... },
+        // ...حتى template12
+    }
+};
+
+
+// دالة مساعدة لجلب الأنماط المحددة للقالب الحالي
+function getSpecificTemplateStyles(category, templateNumber, isArabic) {
+    const cat = templateStylesConfig[category];
+    if (cat && cat[`template${templateNumber}`]) {
+        const specificStyles = JSON.parse(JSON.stringify(cat[`template${templateNumber}`])); // نسخة عميقة لتجنب التعديل العرضي
+
+        // معالجة الدوال في الأحجام إذا كانت موجودة
+        if (specificStyles.header && typeof specificStyles.header.nameSize === 'function') {
+            specificStyles.header.nameSize = specificStyles.header.nameSize(isArabic);
+        }
+        if (specificStyles.header && typeof specificStyles.header.titleSize === 'function') {
+            specificStyles.header.titleSize = specificStyles.header.titleSize(isArabic);
+        }
+        if (specificStyles.professionalHeader && typeof specificStyles.professionalHeader.nameSize === 'function') {
+            specificStyles.professionalHeader.nameSize = specificStyles.professionalHeader.nameSize(isArabic);
+        }
+        if (specificStyles.professionalHeader && typeof specificStyles.professionalHeader.titleSize === 'function') {
+            specificStyles.professionalHeader.titleSize = specificStyles.professionalHeader.titleSize(isArabic);
+        }
+        // معالجة المحاذاة
+        if (specificStyles.header && typeof specificStyles.header.alignment === 'function') {
+            specificStyles.header.alignment = specificStyles.header.alignment(isArabic);
+        }
+        if (specificStyles.sidebar && typeof specificStyles.sidebar.alignment === 'function') {
+            specificStyles.sidebar.alignment = specificStyles.sidebar.alignment(isArabic);
+        }
+
+        return specificStyles;
+    }
+    // إرجاع إعدادات افتراضية إذا لم يتم العثور على القالب المحدد
+    console.warn(`Styles for ${category}-template${templateNumber} not found. Using defaults.`);
+    const defaultAlignment = isArabic ? 'right' : 'left';
+    return {
+        pageMargins: [30,30,30,30],
+        header: { bgColor: '#eeeeee', textColor: '#333333', contactColor: '#555555', padding: [15,15,15,15], nameSize: isArabic ? 24:22, titleSize: isArabic? 16:14, alignment: defaultAlignment, profilePicBorderColor: '#333333' },
+        sidebar: { width: 220, bgColor: '#f5f5f5', textColor: '#444444', sectionTitleColor: '#337ab7', contactIconColor: '#337ab7', skillBgColor: '#e0e0e0', skillTextColor: '#333333', padding: [15,15,15,15], profilePicBorderColor: '#cccccc', alignment: defaultAlignment },
+        main: { sectionTitleColor: '#337ab7', sectionTitleDecorationColor: '#337ab7', textColor: '#333333', jobTitleColor: '#333333', companyColor: '#555555', defaultPadding: [15,15,15,15] },
+        professionalHeader: { bgColor: '#333333', textColor: '#ffffff', contactColor: '#dddddd', padding: [20,20,20,20], nameSize: isArabic ? 26:24, titleSize: isArabic ? 17:15, profilePicBorderColor: '#ffffff' },
+    };
+}
+
+
 /**
  * Constructs the PDFMake document definition object based on current CV data and selected template.
  * @param {boolean} addWatermark If true, adds a watermark for preview.
@@ -861,7 +1006,10 @@ async function getCVDocumentDefinition(addWatermark) {
     const isArabic = currentLang === 'ar';
     const defaultFont = isArabic ? 'Tajawal' : 'Roboto';
 
-    // --- جمع البيانات (نفس الكود الأصلي) ---
+    // جلب الأنماط الخاصة بالقالب الحالي
+    const s = getSpecificTemplateStyles(selectedTemplateCategory, selectedTemplate, isArabic);
+
+    // --- جمع البيانات (كما هو في الكود الأصلي) ---
     const name = document.getElementById('name-input')?.value.trim() || '';
     const title = document.getElementById('title-input')?.value.trim() || '';
     const emailVal = document.getElementById('email-input')?.value.trim() || '';
@@ -873,129 +1021,68 @@ async function getCVDocumentDefinition(addWatermark) {
     if (profilePicDataUrl) {
         try {
             profilePicBase64 = profilePicDataUrl.startsWith('data:') ? profilePicDataUrl.split(',')[1] : profilePicDataUrl;
-        } catch (e) {
-            console.error("Error processing profile picture for PDFMake:", e);
-        }
+        } catch (e) { console.error("Error processing profile picture:", e); }
     }
 
-    // --- تعريف الألوان والأنماط الديناميكية بناءً على القالب المختار ---
-    // هذا الجزء يحتاج إلى توسيع ليشمل جميع القوالب. سنركز على template1 كأمثلة.
-    let stylesConfig = {
-        header: { bgColor: null, textColor: '#212529', padding: [0, 0, 0, 0], alignment: isArabic ? 'right' : 'left', nameSize: isArabic ? 26 : 24, titleSize: isArabic ? 17 : 15, contactColor: '#555' },
-        sidebar: { bgColor: null, textColor: '#212529', padding: [10, 15, 10, 15], sectionTitleColor: '#007bff', skillBgColor: '#e9ecef', skillTextColor: '#212529' },
-        main: { sectionTitleColor: '#007bff', sectionTitleDecorationColor: '#007bff', textColor: '#333333', jobTitleColor: '#212529', companyColor: '#555555' },
-        professionalHeader: { bgColor: null, textColor: '#ffffff', padding: [20, 20, 20, 20], contactColor: '#ced4da' },
-        pageMargins: [30,30,30,30]
-    };
+    // --- تعريف أنماط pdfMake الأساسية ---
+    // هذه الأنماط ستُستخدم بشكل عام ويمكن تخصيصها أكثر عند بناء العناصر
+    const pdfStyles = {
+        // الترويسة العادية والاحترافية (الشريط العلوي)
+        headerName: { fontSize: s.header?.nameSize || (s.professionalHeader?.nameSize || 22), bold: true, margin: [0, 0, 0, 2], color: s.header?.textColor || s.professionalHeader?.textColor, font: defaultFont, alignment: s.header?.alignment || (s.professionalHeader ? 'center' : (isArabic ? 'right' : 'left')) },
+        headerTitle: { fontSize: s.header?.titleSize || (s.professionalHeader?.titleSize || 14), margin: [0, 0, 0, 8], color: s.header?.textColor || s.professionalHeader?.textColor, font: defaultFont, alignment: s.header?.alignment || (s.professionalHeader ? 'center' : (isArabic ? 'right' : 'left')) },
+        
+        // المحتوى الرئيسي
+        sectionTitle: { fontSize: isArabic ? 15 : 13, bold: true, margin: [0, 10, 0, 5], color: s.main.sectionTitleColor, font: defaultFont, decoration: 'underline', decorationColor: s.main.sectionTitleDecorationColor, decorationStyle: 'solid', alignment: isArabic ? 'right' : 'left' },
+        text: { fontSize: isArabic ? 11 : 10, margin: [0, 0, 0, 3], color: s.main.textColor, font: defaultFont, alignment: isArabic ? 'right' : 'left', lineHeight: 1.3 },
+        jobTitle: { fontSize: isArabic ? 12 : 11, bold: true, margin: [0, 5, 0, 2], color: s.main.jobTitleColor, font: defaultFont, alignment: isArabic ? 'right' : 'left' },
+        company: { fontSize: isArabic ? 10 : 9, margin: [0, 0, 0, 2], color: s.main.companyColor, font: defaultFont, alignment: isArabic ? 'right' : 'left' },
+        description: { fontSize: isArabic ? 10 : 9, margin: [0, 0, 0, 8], color: s.main.textColor, font: defaultFont, alignment: isArabic ? 'right' : 'left', lineHeight: 1.3 },
 
-    if (selectedTemplateCategory === 'normal') {
-        stylesConfig.pageMargins = [0,0,0,0]; // للسماح للترويسة بملء العرض
-        if (selectedTemplate === 1) { // normal-layout.template1
-            stylesConfig.header.bgColor = '#0056b3'; // [cite: 5]
-            stylesConfig.header.textColor = '#e9ecef'; // [cite: 5]
-            stylesConfig.header.padding = [20, 20, 20, 20]; // [cite: 5]
-            stylesConfig.header.contactColor = '#e9ecef';
-            stylesConfig.main.sectionTitleColor = '#004085'; // [cite: 5]
-            stylesConfig.main.sectionTitleDecorationColor = '#cce5ff'; // [cite: 5]
-            stylesConfig.sidebar.skillBgColor = '#e0e9f3'; // مثال مطابق للثيم
-            stylesConfig.sidebar.skillTextColor = '#0056b3';
-        }
-        // ... أضف else if لباقي القوالب العادية
-    } else if (selectedTemplateCategory === 'standard') {
-        stylesConfig.pageMargins = [0,0,0,0];
-        if (selectedTemplate === 1) { // standard-layout.template1
-            stylesConfig.sidebar.bgColor = '#004085'; // [cite: 5]
-            stylesConfig.sidebar.textColor = '#a2cbfd'; // لون النص العام في الشريط [cite: 5]
-            stylesConfig.sidebar.sectionTitleColor = '#0056b3'; // [cite: 5]
-            stylesConfig.sidebar.skillBgColor = '#0056b3'; // [cite: 5]
-            stylesConfig.sidebar.skillTextColor = '#fff'; // [cite: 5]
-            stylesConfig.main.sectionTitleColor = '#007bff'; // [cite: 5]
-            stylesConfig.main.sectionTitleDecorationColor = '#e9ecef'; // [cite: 5]
-        }
-        // ... أضف else if لباقي القوالب العادية (standard)
-    } else if (selectedTemplateCategory === 'professional') {
-        stylesConfig.pageMargins = [0,0,0,0];
-        if (selectedTemplate === 1) { // professional-layout.template1
-            stylesConfig.professionalHeader.bgColor = '#004085'; // [cite: 5]
-            stylesConfig.professionalHeader.textColor = '#ffffff'; // [cite: 5]
-            stylesConfig.professionalHeader.contactColor = '#cce5ff'; // [cite: 5]
-            stylesConfig.professionalHeader.padding = [30,20,30,20]; // [cite: 5]
+        // الشريط الجانبي
+        sidebarSectionTitle: { fontSize: isArabic ? 14 : 12, bold: true, margin: [0, 8, 0, 4], color: s.sidebar.sectionTitleColor, font: defaultFont, decoration: 'underline', decorationColor: s.sidebar.sectionTitleColor, decorationStyle: 'solid', alignment: s.sidebar.alignment },
+        sidebarText: { fontSize: isArabic ? 10 : 9, margin: [0, 2, 0, 2], color: s.sidebar.textColor, font: defaultFont, alignment: s.sidebar.alignment, lineHeight: 1.2 },
+        
+        // عناصر الاتصال (نمط عام، اللون يُحدد لاحقاً)
+        contactItemText: { fontSize: isArabic ? 10 : 9, margin: [0,0,0,0], font: defaultFont, lineHeight: 1.2 },
+        contactIcon: { fontSize: 10, font: 'Roboto', margin: isArabic ? [0, 0, 0, 4] : [0, 4, 0, 0] },
 
-            stylesConfig.sidebar.bgColor = '#f8f9fa'; // [cite: 5]
-            stylesConfig.sidebar.textColor = '#495057'; // [cite: 5]
-            stylesConfig.sidebar.sectionTitleColor = '#004085'; // [cite: 5]
-            stylesConfig.sidebar.skillBgColor = '#e0e9f3'; // [cite: 5]
-            stylesConfig.sidebar.skillTextColor = '#007bff'; // [cite: 5]
-
-            stylesConfig.main.sectionTitleColor = '#004085'; // [cite: 5]
-            stylesConfig.main.sectionTitleDecorationColor = '#cce5ff'; // [cite: 5]
-        }
-        // ... أضف else if لباقي القوالب الاحترافية
-    } else if (selectedTemplateCategory === 'ast') {
-        stylesConfig.pageMargins = [0,0,0,0];
-        if (selectedTemplate === 1) { // ast-layout.template1
-            stylesConfig.sidebar.bgColor = '#00acc1'; // [cite: 5]
-            stylesConfig.sidebar.textColor = '#e0f7fa'; // [cite: 5]
-            stylesConfig.sidebar.sectionTitleColor = '#ffffff'; // [cite: 5]
-            stylesConfig.sidebar.skillBgColor = '#4dd0e1'; // [cite: 5]
-            stylesConfig.sidebar.skillTextColor = '#004d40'; // [cite: 5]
-            stylesConfig.main.sectionTitleColor = '#00acc1'; // [cite: 5]
-            stylesConfig.main.sectionTitleDecorationColor = '#e0f7fa'; // [cite: 5]
-        }
-        // ... أضف else if لباقي قوالب AST
-    }
-
-
-    // --- أنماط pdfMake ---
-    const styles = {
-        headerName: { fontSize: stylesConfig.header.nameSize, bold: true, margin: [0, 0, 0, 5], color: stylesConfig.header.textColor, font: defaultFont },
-        headerTitle: { fontSize: stylesConfig.header.titleSize, margin: [0, 0, 0, 10], color: stylesConfig.header.textColor, font: defaultFont },
-        professionalName: { fontSize: stylesConfig.header.nameSize, bold: true, margin: [0, 0, 0, 5], color: stylesConfig.professionalHeader.textColor, font: defaultFont, alignment: 'center' },
-        professionalTitle: { fontSize: stylesConfig.header.titleSize, margin: [0, 0, 0, 10], color: stylesConfig.professionalHeader.textColor, font: defaultFont, alignment: 'center' },
-        sectionTitle: { fontSize: isArabic ? 15 : 13, bold: true, margin: [0, 10, 0, 5], color: stylesConfig.main.sectionTitleColor, font: defaultFont, decoration: 'underline', decorationColor: stylesConfig.main.sectionTitleDecorationColor, decorationStyle: 'solid' },
-        sidebarSectionTitle: { fontSize: isArabic ? 14 : 12, bold: true, margin: [0, 10, 0, 5], color: stylesConfig.sidebar.sectionTitleColor, font: defaultFont, decoration: 'underline', decorationColor: stylesConfig.sidebar.sectionTitleColor, decorationStyle: 'solid', alignment: isArabic? 'right' : 'left'},
-        text: { fontSize: isArabic ? 11 : 10, margin: [0, 0, 0, 3], color: stylesConfig.main.textColor, font: defaultFont, alignment: isArabic ? 'right' : 'left' },
-        sidebarText: { fontSize: isArabic ? 10 : 9, margin: [0, 2, 0, 2], color: stylesConfig.sidebar.textColor, font: defaultFont, alignment: isArabic ? 'right' : 'left'},
-        contactItemText: { fontSize: isArabic ? 10 : 9, margin: [0, 0, 0, 0], font: defaultFont /* اللون سيُحدد ديناميكيًا */ },
-        contactIcon: { fontSize: 10, font: 'Roboto', margin: isArabic ? [0, 0, 0, 5] : [0, 5, 0, 0] /* اللون سيُحدد ديناميكيًا */ },
-        jobTitle: { fontSize: isArabic ? 12 : 11, bold: true, margin: [0, 5, 0, 2], color: stylesConfig.main.jobTitleColor, font: defaultFont },
-        company: { fontSize: isArabic ? 10 : 9, margin: [0, 0, 0, 2], color: stylesConfig.main.companyColor, font: defaultFont },
-        description: { fontSize: isArabic ? 10 : 9, margin: [0, 0, 0, 5], color: stylesConfig.main.textColor, font: defaultFont },
-        skillItem: { fontSize: isArabic ? 9 : 8, font: defaultFont, margin: [2, 5, 2, 5] /* كهامش داخلي للـ "بطاقة" */, alignment: 'center' },
+        skillItem: { fontSize: isArabic ? 9 : 8, font: defaultFont, margin: [1, 3, 1, 3], alignment: 'center' }, // الهامش هنا يعمل كحشو داخلي
         watermark: { fontSize: 50, color: 'rgba(0, 0, 0, 0.06)', bold: true, italics: true, font: defaultFont, alignment: 'center' }
     };
 
-    // --- بناء عناصر المحتوى ---
+    // --- بناء عناصر المحتوى (مع تطبيق الأنماط الديناميكية) ---
     const contactItemsList = [];
-    const createContactEntry = (iconUnicode, textValue, textColor, iconColor) => {
+    const createContactEntry = (iconUnicode, textValue, itemTextColor, itemIconColor, itemAlignment) => {
         if (!textValue) return null;
         return {
             columns: isArabic ?
-                [ { text: textValue, style: 'contactItemText', color: textColor, alignment: 'right' }, { text: iconUnicode, style: 'contactIcon', color: iconColor, alignment: 'right' } ] :
-                [ { text: iconUnicode, style: 'contactIcon', color: iconColor, alignment: 'left' }, { text: textValue, style: 'contactItemText', color: textColor, alignment: 'left' } ],
-            columnGap: 3, margin: [0,0,5,3] // مسافة بين عناصر الاتصال
+                [ { text: textValue, style: 'contactItemText', color: itemTextColor, alignment: itemAlignment }, { text: iconUnicode, style: 'contactIcon', color: itemIconColor, alignment: itemAlignment } ] :
+                [ { text: iconUnicode, style: 'contactIcon', color: itemIconColor, alignment: itemAlignment }, { text: textValue, style: 'contactItemText', color: itemTextColor, alignment: itemAlignment } ],
+            columnGap: 3, margin: [0,0,5,2] // هامش سفلي بين عناصر الاتصال
         };
     };
-    
-    // تحديد ألوان الاتصال بناءً على السياق
-    let currentContactTextColor = stylesConfig.header.contactColor;
-    let currentContactIconColor = stylesConfig.header.contactColor;
 
+    let contactTextColor, contactIconColor, contactAlignment;
     if (selectedTemplateCategory === 'professional') {
-        currentContactTextColor = stylesConfig.professionalHeader.contactColor;
-        currentContactIconColor = stylesConfig.professionalHeader.contactColor;
-    } else if (selectedTemplateCategory !== 'normal') { // Standard or AST (sidebar context)
-        currentContactTextColor = stylesConfig.sidebar.textColor;
-        currentContactIconColor = stylesConfig.sidebar.sectionTitleColor; // الأيقونة بلون عنوان قسم الشريط
+        contactTextColor = s.professionalHeader.contactColor;
+        contactIconColor = s.professionalHeader.contactColor;
+        contactAlignment = 'center';
+    } else if (selectedTemplateCategory === 'normal') {
+        contactTextColor = s.header.contactColor;
+        contactIconColor = s.header.contactColor;
+        contactAlignment = s.header.alignment;
+    } else { // standard or ast (sidebar)
+        contactTextColor = s.sidebar.textColor;
+        contactIconColor = s.sidebar.contactIconColor || s.sidebar.sectionTitleColor;
+        contactAlignment = s.sidebar.alignment;
     }
-    
-    if (emailVal) contactItemsList.push(createContactEntry('\u2709', emailVal, currentContactTextColor, currentContactIconColor));
-    if (phone) contactItemsList.push(createContactEntry('\u260E', phone, currentContactTextColor, currentContactIconColor));
-    if (website) contactItemsList.push(createContactEntry('\uD83C\uDF10', website, currentContactTextColor, currentContactIconColor));
 
-    const objectiveContent = objective ? [ { text: translations[currentLang]['Career Objective'], style: 'sectionTitle' }, { text: objective, style: 'text' } ] : [];
-    // ... (بنفس الطريقة قم ببناء experienceContent, educationContent, languagesContent, referencesContent مع استخدام الأنماط المناسبة)
-    // مثال للخبرات
+    if (emailVal) contactItemsList.push(createContactEntry('\u2709', emailVal, contactTextColor, contactIconColor, contactAlignment));
+    if (phone) contactItemsList.push(createContactEntry('\u260E', phone, contactTextColor, contactIconColor, contactAlignment));
+    if (website) contactItemsList.push(createContactEntry('\uD83C\uDF10', website, contactTextColor, contactIconColor, contactAlignment));
+    
+    const objectiveContent = objective ? [{ text: translations[currentLang]['Career Objective'], style: 'sectionTitle' }, { text: objective, style: 'text' }] : [];
+
     const experienceContent = [];
     const experienceEntries = document.querySelectorAll('#experience-input .experience-entry');
     if (Array.from(experienceEntries).some(e => Array.from(e.querySelectorAll('input, textarea')).some(input => input.value.trim()))) {
@@ -1016,121 +1103,168 @@ async function getCVDocumentDefinition(addWatermark) {
             }
         });
     }
-    // ... قم ببناء باقي الأقسام
-    const educationContent = []; // ... أكمل هنا
-    const languagesContent = []; // ... أكمل هنا (استخدم sidebarText إذا كان في الشريط الجانبي)
-    const referencesContent = []; // ... أكمل هنا (استخدم sidebarText إذا كان في الشريط الجانبي)
 
+    const educationContent = [];
+    const educationEntries = document.querySelectorAll('#education-input .education-entry');
+    if (Array.from(educationEntries).some(e => Array.from(e.querySelectorAll('input')).some(input => input.value.trim()))) {
+        educationContent.push({ text: translations[currentLang]['Education'], style: 'sectionTitle' });
+        educationEntries.forEach(entry => {
+            const degree = entry.querySelector('.education-degree')?.value.trim() || '';
+            const institution = entry.querySelector('.education-institution')?.value.trim() || '';
+            const duration = entry.querySelector('.education-duration')?.value.trim() || '';
+            if (degree || institution || duration) {
+                educationContent.push({
+                    stack: [
+                        { text: degree || translations[currentLang]['No Degree'], style: 'jobTitle' },
+                        { text: `${institution}${institution && duration ? ' - ' : ''}${duration}`, style: 'company' }
+                    ].filter(Boolean), margin: [0, 0, 0, 10]
+                });
+            }
+        });
+    }
+    
     const skillsRenderedContent = [];
     const skillInputs = document.querySelectorAll('#skills-input .skill-item-input');
     const filledSkills = Array.from(skillInputs).map(input => input.value.trim()).filter(skill => skill);
     if (filledSkills.length > 0) {
-        const skillTitleStyle = (selectedTemplateCategory !== 'normal') ? 'sidebarSectionTitle' : 'sectionTitle';
-        skillsRenderedContent.push({ text: translations[currentLang]['Skills'], style: skillTitleStyle });
-        const skillItems = filledSkills.map(skill => ({
-            text: skill, style: 'skillItem',
-            background: stylesConfig.sidebar.skillBgColor, // استخدام الألوان من الإعدادات
-            color: stylesConfig.sidebar.skillTextColor,
+        const skillTitleStyleKey = (selectedTemplateCategory !== 'normal') ? 'sidebarSectionTitle' : 'sectionTitle';
+        skillsRenderedContent.push({ text: translations[currentLang]['Skills'], style: skillTitleStyleKey });
+        
+        const skillItems = filledSkills.map(skillText => ({
+            text: skillText, style: 'skillItem',
+            background: s.sidebar.skillBgColor, // استخدام لون الخلفية من الإعدادات
+            color: s.sidebar.skillTextColor,     // استخدام لون النص من الإعدادات
             margin: [0, 2, 3, 2] // هامش بين بطاقات المهارات
         }));
-        skillsRenderedContent.push({ stack: skillItems, alignment: (selectedTemplateCategory !== 'normal') ? (isArabic ? 'right' : 'left') : 'center', margin: [0, 0, 0, 10] });
+        // لعرض المهارات كبطاقات متجاورة، يمكن استخدام أعمدة أو canvas لرسمها بشكل أكثر تحكماً
+        // هنا سنستخدم stack بسيط، أو columns إذا أردنا توزيعها على أكثر من عمود
+        let skillsLayout;
+        if (selectedTemplateCategory !== 'normal' && filledSkills.length > 3) { // توزيع المهارات في الشريط الجانبي على عمودين إذا زادت عن 3
+             const half = Math.ceil(filledSkills.length / 2);
+             skillsLayout = {
+                columns: [
+                    { stack: skillItems.slice(0, half) },
+                    { stack: skillItems.slice(half) }
+                ],
+                columnGap: 5,
+                alignment: s.sidebar.alignment
+             };
+        } else {
+            skillsLayout = { stack: skillItems, alignment: (selectedTemplateCategory !== 'normal') ? s.sidebar.alignment : 'center' };
+        }
+        skillsRenderedContent.push({...skillsLayout, margin: [0, 0, 0, 10] });
     }
 
+    const languagesContent = [];
+    const languageInputs = document.querySelectorAll('#languages-input .language-item-input');
+    const filledLanguages = Array.from(languageInputs).map(input => input.value.trim()).filter(lang => lang);
+    if (filledLanguages.length > 0) {
+        const langTitleStyleKey = (selectedTemplateCategory !== 'normal') ? 'sidebarSectionTitle' : 'sectionTitle';
+        languagesContent.push({ text: translations[currentLang]['Languages'], style: langTitleStyleKey });
+        languagesContent.push({
+            ul: filledLanguages.map(lang => ({ text: lang, style: (selectedTemplateCategory !== 'normal' ? 'sidebarText' : 'text') })),
+            margin: [0, 0, 0, 10],
+            alignment: (selectedTemplateCategory !== 'normal') ? s.sidebar.alignment : (isArabic ? 'right' : 'left')
+        });
+    }
 
-    let docContent = [];
+    const referencesContent = []; // ... أكمل بناء المراجع بنفس الطريقة
+
+    // --- بناء هيكل المستند ---
+    let docDefinitionContent = [];
     const watermarkText = translations[currentLang]['Watermark Preview Text'];
 
     if (selectedTemplateCategory === 'normal') {
-        const headerStack = {
+        const headerContentStack = {
             stack: [
-                profilePicBase64 && stylesConfig.header.alignment === 'center' ? { image: `data:image/jpeg;base64,${profilePicBase64}`, width: 80, fit: [80, 80], alignment: 'center', margin: [0,0,0,10] } : null,
-                { text: name, style: 'headerName', alignment: stylesConfig.header.alignment },
-                { text: title, style: 'headerTitle', alignment: stylesConfig.header.alignment },
-                ...contactItemsList.map(item => ({ ...item, alignment: stylesConfig.header.alignment }))
+                profilePicBase64 && s.header.alignment === 'center' ? { image: `data:image/jpeg;base64,${profilePicBase64}`, width: 80, fit: [80, 80], alignment: 'center', margin: [0,0,0,10], borderColor: s.header.profilePicBorderColor ? [s.header.profilePicBorderColor] : undefined, border: s.header.profilePicBorderColor ? [2,2,2,2] : undefined } : null,
+                { text: name, style: 'headerName' },
+                { text: title, style: 'headerTitle' },
+                ...(contactItemsList || []).map(item => ({ ...item, columns: item.columns.map(col => ({...col, alignment: s.header.alignment}))})) // ضمان محاذاة عناصر الاتصال
             ].filter(Boolean),
-            margin: stylesConfig.header.padding // هذا كهامش داخلي للمحتوى ضمن الخلفية
+            margin: s.header.padding // هذا هو الحشو الداخلي للترويسة
         };
 
-        const headerBlock = {
-            stack: [headerStack], // نضع المكدس داخل مكدس آخر لتطبيق الخلفية بشكل صحيح
-            background: stylesConfig.header.bgColor,
-            margin: [0, 0, 0, 20] // الهامش أسفل الترويسة بأكملها
-        };
-        
-        if (profilePicBase64 && stylesConfig.header.alignment !== 'center') {
-             headerBlock.columns = isArabic ?
-                [ { width: '*', stack: [headerStack] }, { image: `data:image/jpeg;base64,${profilePicBase64}`, width: 80, fit: [80, 80], alignment: 'right', margin: [stylesConfig.header.padding[0], stylesConfig.header.padding[0], 0, 0] }] :
-                [ { image: `data:image/jpeg;base64,${profilePicBase64}`, width: 80, fit: [80, 80], alignment: 'left', margin: [stylesConfig.header.padding[0], 0, 0, stylesConfig.header.padding[0]] }, { width: '*', stack: [headerStack] } ];
-            delete headerBlock.stack; // نستخدم الأعمدة بدلاً من المكدس
+        let headerBlock;
+        if (profilePicBase64 && s.header.alignment !== 'center') {
+            const imageElement = { image: `data:image/jpeg;base64,${profilePicBase64}`, width: 80, fit: [80, 80], alignment: isArabic ? 'right' : 'left', margin: isArabic ? [s.header.padding[0], 0, s.header.padding[2], s.header.padding[3]] : [s.header.padding[0], s.header.padding[1], s.header.padding[2], 0], borderColor: s.header.profilePicBorderColor ? [s.header.profilePicBorderColor] : undefined, border: s.header.profilePicBorderColor ? [2,2,2,2] : undefined };
+            const textElement = { width: '*', stack: [headerContentStack] };
+             headerBlock = {
+                columns: isArabic ? [textElement, imageElement] : [imageElement, textElement],
+                background: s.header.bgColor,
+                margin: [0,0,0,20] // هامش أسفل الترويسة
+            };
+        } else {
+            headerBlock = {
+                stack: [headerContentStack],
+                background: s.header.bgColor,
+                margin: [0,0,0,20]
+            };
         }
+        docDefinitionContent.push(headerBlock);
+        // إضافة باقي المحتوى مع الحشو الافتراضي للفئة العادية
+        const mainContentStack = [
+            ...objectiveContent, ...experienceContent, ...educationContent,
+            ...skillsRenderedContent, ...languagesContent, ...referencesContent
+        ];
+        docDefinitionContent.push({ stack: mainContentStack, margin: s.main.defaultPadding });
 
-
-        docContent.push(headerBlock);
-        docContent.push(...objectiveContent, ...experienceContent, ...educationContent, ...skillsRenderedContent, ...languagesContent, ...referencesContent);
 
     } else { // Standard, AST, Professional
-        const sidebarActualContent = [
-            profilePicBase64 && selectedTemplateCategory !== 'professional' ? { image: `data:image/jpeg;base64,${profilePicBase64}`, width: 100, fit: [100, 100], alignment: 'center', margin: [0, 0, 0, 15] } : null,
+        const sidebarContent = [
+            profilePicBase64 && selectedTemplateCategory !== 'professional' ? { image: `data:image/jpeg;base64,${profilePicBase64}`, width: 100, fit: [100, 100], alignment: 'center', margin: [0, 0, 0, 15], borderColor: s.sidebar.profilePicBorderColor ? [s.sidebar.profilePicBorderColor] : undefined, border: s.sidebar.profilePicBorderColor ? [2,2,2,2] : undefined } : null,
             contactItemsList.length > 0 && selectedTemplateCategory !== 'professional' ? { stack: [ { text: translations[currentLang]['Contact Info'], style: 'sidebarSectionTitle' }, ...contactItemsList ], margin: [0,0,0,15] } : null,
             ...skillsRenderedContent,
             ...languagesContent,
             ...referencesContent
         ].filter(Boolean);
 
-        const mainActualContent = [
-            (selectedTemplateCategory !== 'professional') ? { text: name, style: 'headerName', color: stylesConfig.main.jobTitleColor } : null,
-            (selectedTemplateCategory !== 'professional') ? { text: title, style: 'headerTitle', color: stylesConfig.main.sectionTitleColor, margin: [0,0,0,20] } : null,
+        const mainContent = [
+            (selectedTemplateCategory !== 'professional') ? { text: name, style: 'headerName', color: s.main.headerNameColor || pdfStyles.headerName.color } : null,
+            (selectedTemplateCategory !== 'professional') ? { text: title, style: 'headerTitle', color: s.main.headerTitleColor || pdfStyles.headerTitle.color, margin: [0,0,0,15], decoration: s.main.headerBorderBottomColor ? 'underline' : null, decorationColor: s.main.headerBorderBottomColor, decorationStyle: 'solid' } : null,
             ...objectiveContent, ...experienceContent, ...educationContent
         ].filter(Boolean);
 
         const sidebarColumn = {
-            width: (selectedTemplateCategory === 'professional') ? 180 : 200,
-            stack: [{ stack: sidebarActualContent, margin: stylesConfig.sidebar.padding }], // لتطبيق الحشو الداخلي
-            background: stylesConfig.sidebar.bgColor,
+            width: s.sidebar.width,
+            stack: [{ stack: sidebarContent, margin: s.sidebar.padding }], // لتطبيق الحشو الداخلي
+            background: s.sidebar.bgColor,
         };
 
         const mainColumn = {
             width: '*',
-            stack: [{ stack: mainActualContent, margin: (selectedTemplateCategory === 'professional') ? [20,20,20,20] : stylesConfig.sidebar.padding }], // حشو للمحتوى الرئيسي
-            background: stylesConfig.main.bgColor || '#ffffff'
+            stack: [{ stack: mainContent, margin: s.main.padding }], // لتطبيق الحشو الداخلي
+            background: s.main.bgColor || '#ffffff'
         };
 
         if (selectedTemplateCategory === 'professional') {
-            const profHeader = {
+            const professionalHeaderElement = {
                 stack: [
-                     profilePicBase64 ? { image: `data:image/jpeg;base64,${profilePicBase64}`, width: 80, fit:[80,80], alignment: 'center', margin: [0,0,0,10] } : null,
-                    { text: name, style: 'professionalName' },
+                    profilePicBase64 ? { image: `data:image/jpeg;base64,${profilePicBase64}`, width: 80, fit:[80,80], alignment: 'center', margin: [0,0,0,10], borderColor: s.professionalHeader.profilePicBorderColor ? [s.professionalHeader.profilePicBorderColor] : undefined, border: s.professionalHeader.profilePicBorderColor ? [2,2,2,2] : undefined } : null,
+                    { text: name, style: 'professionalName' }, // استخدام نمط مخصص للترويسة الاحترافية
                     { text: title, style: 'professionalTitle' },
                     contactItemsList.length > 0 ? { stack: contactItemsList, alignment: 'center', margin: [0, 10, 0, 0] } : null
                 ].filter(Boolean),
-                background: stylesConfig.professionalHeader.bgColor,
-                margin: [0,0,0,0], // يملأ من الحافة للحافة إذا pageMargins = 0
-                padding: stylesConfig.professionalHeader.padding, // الحشو الداخلي لشريط الترويسة
+                background: s.professionalHeader.bgColor,
+                margin: (s.pageMargins.reduce((a,b)=>a+b,0) > 0) ? [-s.pageMargins[0], -s.pageMargins[1], -s.pageMargins[2], 20] : [0,0,0,20], // ملء العرض إذا كانت هناك هوامش للصفحة
+                padding: s.professionalHeader.padding // الحشو الداخلي
             };
-            // إذا كانت هوامش الصفحة > 0، نحتاج لضبط هوامش سالبة للترويسة الاحترافية
-             if(stylesConfig.pageMargins.reduce((a, b) => a + b, 0) > 0) {
-                profHeader.margin = [-stylesConfig.pageMargins[0], -stylesConfig.pageMargins[1], -stylesConfig.pageMargins[2], 20]; // أعلى، يسار، يمين، أسفل (هامش سفلي)
-            } else {
-                profHeader.margin = [0,0,0,20]; // هامش سفلي فقط إذا لا توجد هوامش للصفحة
-            }
-            docContent.push(profHeader);
-            docContent.push({ columns: isArabic ? [mainColumn, sidebarColumn] : [sidebarColumn, mainColumn], columnGap: 15, margin: [0, (stylesConfig.pageMargins.reduce((a, b) => a + b, 0) === 0 ? 20 : 0) ,0,0] }); // هامش علوي للأعمدة إذا لم تكن هناك هوامش صفحة
+            docDefinitionContent.push(professionalHeaderElement);
+            docDefinitionContent.push({ columns: isArabic ? [mainColumn, sidebarColumn] : [sidebarColumn, mainColumn], columnGap: 15, margin: [0, (s.pageMargins.reduce((a,b)=>a+b,0) > 0 ? 0 : 20) ,0,0] });
         } else { // Standard, AST
-            docContent.push({ columns: isArabic ? [mainColumn, sidebarColumn] : [sidebarColumn, mainColumn], columnGap: 15 });
+            docDefinitionContent.push({ columns: isArabic ? [mainColumn, sidebarColumn] : [sidebarColumn, mainColumn], columnGap: 15 });
         }
     }
 
-    const docDefinition = {
+    return {
         pageSize: 'A4',
-        pageMargins: stylesConfig.pageMargins,
-        content: docContent,
-        styles: styles,
-        defaultStyle: { font: defaultFont, alignment: isArabic ? 'right' : 'left', lineHeight: 1.3, color: stylesConfig.main.textColor },
+        pageMargins: s.pageMargins,
+        content: docDefinitionContent,
+        styles: pdfStyles,
+        defaultStyle: { font: defaultFont, alignment: isArabic ? 'right' : 'left', lineHeight: 1.3, color: s.main?.textColor || '#333333' },
         watermark: addWatermark ? { text: watermarkText, style: 'watermark', opacity: 0.08 } : null,
         rtl: isArabic,
     };
-
-    return docDefinition;
 }
 
 // --- CV Content Generation (generateCV, selectTemplate, handleProfilePicChange, add/remove fields, populateWithTestData) ---
