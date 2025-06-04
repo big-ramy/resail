@@ -867,8 +867,7 @@ async function getCVDocumentDefinition(addWatermark) {
     const title = document.getElementById('title-input')?.value.trim() || '';
     const emailVal = document.getElementById('email-input')?.value.trim() || '';
     const phone = document.getElementById('phone-input')?.value.trim() || '';
-    // تغيير 'website' إلى 'location' إذا كان المقصود هو الموقع الجغرافي
-    const location = document.getElementById('website-input')?.value.trim() || ''; // تم تغيير الاسم هنا
+    const website = document.getElementById('website-input')?.value.trim() || ''; // التأكد من استخدام 'website' هنا
     const objective = document.getElementById('objective-input')?.value.trim() || '';
 
     let profilePicBase64 = null;
@@ -954,13 +953,12 @@ async function getCVDocumentDefinition(addWatermark) {
             alignment: isArabic ? 'right' : 'left',
             font: defaultFont
         },
-        skillTag: { // Style for simulating skill tags (applied to table cells)
+        skillTag: { // Style for simulating skill tags (will be applied to text blocks)
             fontSize: isArabic ? 10 : 9,
-            color: '#212121', // Text color for the tag
+            color: '#212121',
             alignment: 'center',
             bold: false,
-            font: defaultFont,
-            // Padding and fillColor will be set at the table cell level
+            font: defaultFont
         },
         watermark: {
             fontSize: 60,
@@ -989,7 +987,7 @@ async function getCVDocumentDefinition(addWatermark) {
         // Order of icon and text is important for RTL display
         if (emailVal) items.push({ text: (isArabic ? '\u2709 ' : '\u2709 ') + emailVal, style: 'text', alignment: isArabic ? 'right' : 'left' });
         if (phone) items.push({ text: (isArabic ? '\u260E ' : '\u260E ') + phone, style: 'text', alignment: isArabic ? 'right' : 'left' });
-        if (location) items.push({ text: (isArabic ? '\u1F310 ' : '\u1F310 ') + location, style: 'text', alignment: isArabic ? 'right' : 'left' }); // استخدام 'location'
+        if (website) items.push({ text: (isArabic ? '\u1F310 ' : '\u1F310 ') + website, style: 'text', alignment: isArabic ? 'right' : 'left' }); // استخدام 'website'
         return items;
     };
 
@@ -1046,24 +1044,28 @@ async function getCVDocumentDefinition(addWatermark) {
         const skillTableBody = [];
         let currentRow = [];
         const maxCols = 3; // Maximum columns for skills, adjust as needed
-        const cellPadding = [4, 2, 4, 2]; // [left, top, right, bottom] padding for each skill "tag"
+        const cellPadding = [5, 2, 5, 2]; // [left, top, right, bottom] padding for each skill "tag"
 
         for (const skill of filledSkills) {
-            currentRow.push({
+            const skillCell = {
                 text: skill,
                 style: 'skillTag',
                 fillColor: '#e9ecef', // Background color for the tag
-                // No explicit border, pdfMake will draw default if layout is not 'noBorders'
-                // Padding is applied directly to the cell
+                border: [false, false, false, false], // No border for cells
                 padding: cellPadding
-            });
+            };
+            currentRow.push(skillCell);
 
             if (currentRow.length === maxCols) {
                 skillTableBody.push(currentRow);
                 currentRow = [];
             }
         }
-        if (currentRow.length > 0) { // Add any remaining skills
+        // IMPORTANT FIX: Fill the last row with empty cells if it's not full
+        while (currentRow.length > 0 && currentRow.length < maxCols) {
+            currentRow.push({}); // Push empty cell object to fill the row
+        }
+        if (currentRow.length > 0) { // Add any remaining skills (which might be a partially filled row)
             skillTableBody.push(currentRow);
         }
 
@@ -1071,12 +1073,8 @@ async function getCVDocumentDefinition(addWatermark) {
             { text: translations[currentLang]['Skills'], style: 'sectionTitle' },
             {
                 table: {
-                    // Define widths for columns, 'auto' will size them based on content
-                    // '*' will take remaining space, 'auto' will size to content
-                    // For tags, 'auto' is usually good, or fixed widths if you want strict columns
-                    widths: Array(maxCols).fill('auto'),
+                    widths: Array(maxCols).fill('auto'), // Auto width for columns
                     body: skillTableBody,
-                    // Optional: remove default table borders for a cleaner "tag" look
                     layout: {
                         hLineWidth: function(i, node) { return 0; },
                         vLineWidth: function(i, node) { return 0; },
@@ -1186,7 +1184,6 @@ async function getCVDocumentDefinition(addWatermark) {
                             { text: name, style: 'header', alignment: isArabic ? 'right' : 'left' },
                             { text: title, style: 'subHeader', alignment: isArabic ? 'right' : 'left' },
                             {
-                                // Contact info as inline text or columns
                                 columns: getContactInfoContent().map(item => ({
                                     text: item.text,
                                     alignment: isArabic ? 'right' : 'left',
@@ -1472,6 +1469,7 @@ async function getCVDocumentDefinition(addWatermark) {
 
     return docDefinition;
 }
+
 
 
 // --- CV Content Generation (generateCV, selectTemplate, handleProfilePicChange, add/remove fields, populateWithTestData) ---
