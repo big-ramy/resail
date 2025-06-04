@@ -859,415 +859,196 @@ async function getPDFMakeBase64(addWatermark = true) {
  */
 async function getCVDocumentDefinition(addWatermark) {
     const isArabic = currentLang === 'ar';
-    // استخدام المفتاح الذي تم تخزين الخط به في pdfMake.vfs
     const defaultFont = isArabic ? 'Tajawal' : 'Roboto';
+
+    // جلب البيانات من الحقول
     const name = document.getElementById('name-input')?.value.trim() || '';
     const title = document.getElementById('title-input')?.value.trim() || '';
     const emailVal = document.getElementById('email-input')?.value.trim() || '';
     const phone = document.getElementById('phone-input')?.value.trim() || '';
     const website = document.getElementById('website-input')?.value.trim() || '';
-    const objective = document.getElementById('objective-input')?.value.trim() || '';
+    const objectiveInput = document.getElementById('objective-input')?.value.trim() || '';
 
-    let profilePicBase64 = null;
-    if (profilePicDataUrl) {
-        try {
-            // pdfmake requires base64 without the "data:image/jpeg;base64," prefix.
-            // But it also handles it if it's there. Let's ensure it's a clean base64.
-            profilePicBase64 = profilePicDataUrl.split(',')[1] ? profilePicDataUrl : null;
-        } catch (e) {
-            console.error("Error processing profile picture for PDFMake:", e);
-            profilePicBase64 = null;
-        }
-    }
+    const experienceItems = Array.from(document.getElementsByClassName('experience-item'));
+    const educationItems = Array.from(document.getElementsByClassName('education-item'));
+    const skillInputs = Array.from(document.getElementsByClassName('skill-item-input'));
+    const languageInputs = Array.from(document.getElementsByClassName('language-item-input'));
 
-    // Define common styles
+    // تحديد نوع القالب
+    const selectedTemplateCategory = document.querySelector('.template-category-select')?.value || 'normal';
+    const selectedTemplate = parseInt(document.querySelector('.template-number-select')?.value || '1');
+
+    // ألوان افتراضية حسب نوع القالب
+    const templateColors = {
+        normal: ['#007bff', '#6c757d'],       // أزرق وأخضر فاتح
+        standard: ['#28a745', '#6c757d'],     // أخضر
+        professional: ['#dc3545', '#6c757d'], // أحمر
+        ast: ['#ffc107', '#6c757d']          // أصفر
+    };
+
+    const [primaryColor, secondaryColor] = templateColors[selectedTemplateCategory] || ['#007bff', '#6c757d'];
+
+    // دالة لإضافة خلفية عبر canvas
+    const addBackground = (color, height = 15) => ({
+        canvas: [{
+            type: 'rect',
+            x: 0,
+            y: 0,
+            w: 595,
+            h: height,
+            color
+        }]
+    });
+
+    // بناء قسم الخبرة
+    const experienceSection = {
+        ...addBackground(primaryColor, 15),
+        stack: [
+            { text: isArabic ? 'الخبرة العملية' : 'Work Experience', style: 'sectionTitle', color: '#fff' },
+            ...experienceItems.map(item => {
+                const position = item.querySelector('.experience-title')?.value.trim();
+                const company = item.querySelector('.experience-company')?.value.trim();
+                const duration = item.querySelector('.experience-duration')?.value.trim();
+                const description = item.querySelector('.experience-description')?.value.trim();
+
+                return {
+                    stack: [
+                        { text: position + ' - ' + company, bold: true },
+                        { text: duration, color: '#ccc' },
+                        { text: description }
+                    ],
+                    margin: [0, 2, 0, 5]
+                };
+            })
+        ],
+        margin: [0, 10, 0, 0]
+    };
+
+    // بناء قسم التعليم
+    const educationSection = {
+        ...addBackground(secondaryColor, 15),
+        stack: [
+            { text: isArabic ? 'المؤهلات العلمية' : 'Education', style: 'sectionTitle', color: '#fff' },
+            ...educationItems.map(item => {
+                const degree = item.querySelector('.education-degree')?.value.trim();
+                const institution = item.querySelector('.education-institution')?.value.trim();
+                const eduDuration = item.querySelector('.education-duration')?.value.trim();
+                const eduDescription = item.querySelector('.education-description')?.value.trim();
+
+                return {
+                    stack: [
+                        { text: degree + ' - ' + institution, bold: true },
+                        { text: eduDuration, color: '#ccc' },
+                        { text: eduDescription }
+                    ],
+                    margin: [0, 2, 0, 5]
+                };
+            })
+        ],
+        margin: [0, 10, 0, 0]
+    };
+
+    // بناء قسم المهارات
+    const skillsSection = {
+        stack: [
+            { text: isArabic ? 'المهارات' : 'Skills', style: 'sectionTitle', color: primaryColor },
+            {
+                ul: skillInputs.filter(i => i.value.trim()).map(i => i.value.trim()),
+                margin: [0, 2, 0, 5]
+            }
+        ],
+        margin: [0, 10, 0, 0]
+    };
+
+    // بناء قسم اللغات
+    const languagesSection = {
+        stack: [
+            { text: isArabic ? 'اللغات' : 'Languages', style: 'sectionTitle', color: primaryColor },
+            {
+                ul: languageInputs.filter(i => i.value.trim()).map(i => i.value.trim()),
+                margin: [0, 2, 0, 5]
+            }
+        ],
+        margin: [0, 10, 0, 0]
+    };
+
+    // بناء قسم المعلومات الشخصية
+    const personalInfoSection = {
+        columns: isArabic ? [
+            { width: '*', text: `\u2709 ${emailVal}`, style: 'text' },
+            { width: '*', text: `\u260E ${phone}`, style: 'text' },
+            { width: '*', text: `\u1F310 ${website}`, style: 'text' }
+        ] : [
+            { width: '*', text: `\u2709 ${emailVal}`, style: 'text' },
+            { width: '*', text: `\u260E ${phone}`, style: 'text' },
+            { width: '*', text: `\u1F310 ${website}`, style: 'text' }
+        ]
+    };
+
+    // إعداد محتوى المستند
+    const docContent = [
+        { text: name, style: 'name' },
+        { text: title, style: 'title' },
+        personalInfoSection,
+        ...(objectiveInput ? [{ text: objectiveInput, style: 'objective' }] : []),
+        experienceSection,
+        educationSection,
+        skillsSection,
+        languagesSection
+    ];
+
+    // إعداد الأنماط
     const styles = {
-        header: {
-            fontSize: isArabic ? 24 : 22,
+        name: {
+            fontSize: 22,
             bold: true,
+            alignment: isArabic ? 'right' : 'left',
             margin: [0, 0, 0, 10],
-            alignment: isArabic ? 'right' : 'left',
-            font: defaultFont
+            color: primaryColor
         },
-        subHeader: {
-            fontSize: isArabic ? 16 : 14,
-            bold: false,
-            margin: [0, 0, 0, 5],
+        title: {
+            fontSize: 16,
+            italics: true,
             alignment: isArabic ? 'right' : 'left',
-            color: '#007bff',
-            font: defaultFont
+            margin: [0, 0, 0, 10],
+            color: secondaryColor
         },
         sectionTitle: {
-            fontSize: isArabic ? 14 : 12,
+            fontSize: 14,
             bold: true,
-            margin: [0, 15, 0, 5],
+            alignment: 'center',
+            margin: [0, 5, 0, 5]
+        },
+        objective: {
+            fontSize: 12,
             alignment: isArabic ? 'right' : 'left',
-            color: '#007bff',
-            decoration: 'underline',
-            decorationColor: '#007bff',
-            font: defaultFont
+            margin: [0, 0, 0, 10]
         },
         text: {
-            fontSize: isArabic ? 11 : 10,
-            alignment: isArabic ? 'right' : 'left',
-            margin: [0, 0, 0, 2],
-            font: defaultFont
-        },
-        listItem: {
-            fontSize: isArabic ? 11 : 10,
-            alignment: isArabic ? 'right' : 'left',
-            margin: [0, 0, 0, 2],
-            font: defaultFont
-        },
-        contactIcon: {
-            fontSize: 10,
-            margin: [0, 0, 5, 0], // Margin for icon
-            color: '#007bff',
-            font: 'Roboto' // FontAwesome is not directly supported, use a fallback or custom icon font if needed
-        },
-        jobTitle: {
-            fontSize: isArabic ? 12 : 11,
-            bold: true,
-            margin: [0, 5, 0, 2],
-            alignment: isArabic ? 'right' : 'left',
-            font: defaultFont
-        },
-        company: {
-            fontSize: isArabic ? 10 : 9,
-            // تم إزالة 'italics: true' هنا لتجنب الخطأ إذا لم يكن خط Tajawal Italic متوفراً.
-            // إذا كان لديك خط Tajawal Italic، قم بإضافة 'italics: true' مرة أخرى بعد تعريفه في pdfMake.fonts.
-            margin: [0, 0, 0, 2],
-            alignment: isArabic ? 'right' : 'left',
-            font: defaultFont
-        },
-        description: {
-            fontSize: isArabic ? 10 : 9,
-            margin: [0, 0, 0, 5],
-            alignment: isArabic ? 'right' : 'left',
-            font: defaultFont
-        },
-        referenceName: {
-            fontSize: isArabic ? 11 : 10,
-            bold: true,
-            margin: [0, 5, 0, 2],
-            alignment: isArabic ? 'right' : 'left',
-            font: defaultFont
-        },
-        referenceDetail: {
-            fontSize: isArabic ? 10 : 9,
-            margin: [0, 0, 0, 2],
-            alignment: isArabic ? 'right' : 'left',
-            font: defaultFont
-        },
-        watermark: {
-            fontSize: 60,
-            color: 'rgba(0, 0, 0, 0.08)',
-            alignment: 'center',
-            bold: true,
-            italics: true,
-            font: defaultFont
+            fontSize: 12,
+            alignment: isArabic ? 'right' : 'left'
         }
     };
 
-    // Common elements
-    const contactItems = [];
-    // استخدام أيقونات يونيكود بدلاً من Font Awesome
-    // تم عكس الترتيب لضمان ظهور النص بعد الأيقونة في RTL
-    if (emailVal) contactItems.push({ text: emailVal + (isArabic ? ' \u2709' : ' \u2709'), style: 'text' }); // أيقونة مظروف
-    if (phone) contactItems.push({ text: phone + (isArabic ? ' \u260E' : ' \u260E'), style: 'text' }); // أيقونة هاتف
-    if (website) contactItems.push({ text: website + (isArabic ? ' \u1F310' : ' \u1F310'), style: 'text' }); // أيقونة كرة أرضية
+    // نص العلامة المائية
+    const watermarkText = translations[currentLang]['Watermark Preview Text'] || 'Preview Only';
 
-    const objectiveContent = objective ? [
-        { text: translations[currentLang]['Career Objective'], style: 'sectionTitle' },
-        { text: objective, style: 'text' }
-    ] : [];
-
-    const experienceContent = [];
-    const experienceEntries = document.querySelectorAll('#experience-input .experience-entry');
-    const hasFilledExperience = Array.from(experienceEntries).some(e => Array.from(e.querySelectorAll('input, textarea')).some(input => input.value.trim()));
-    if (hasFilledExperience) {
-        experienceContent.push({ text: translations[currentLang]['Work Experience'], style: 'sectionTitle' });
-        experienceEntries.forEach(entry => {
-            const expTitle = entry.querySelector('.experience-title')?.value.trim() || '';
-            const company = entry.querySelector('.experience-company')?.value.trim() || '';
-            const duration = entry.querySelector('.experience-duration')?.value.trim() || '';
-            const desc = entry.querySelector('.experience-description')?.value.trim() || '';
-            if (expTitle || company || duration || desc) {
-                experienceContent.push({
-                    stack: [
-                        { text: expTitle || translations[currentLang]['No Title'], style: 'jobTitle' },
-                        { text: `${company}${company && duration ? ' - ' : ''}${duration}`, style: 'company' },
-                        desc ? { text: desc, style: 'description' } : null
-                    ].filter(Boolean),
-                    margin: [0, 0, 0, 5] // Margin between experience items
-                });
-            }
-        });
-    }
-
-    const educationContent = [];
-    const educationEntries = document.querySelectorAll('#education-input .education-entry');
-    const hasFilledEducation = Array.from(educationEntries).some(e => Array.from(e.querySelectorAll('input')).some(input => input.value.trim()));
-    if (hasFilledEducation) {
-        educationContent.push({ text: translations[currentLang]['Education'], style: 'sectionTitle' });
-        educationEntries.forEach(entry => {
-            const degree = entry.querySelector('.education-degree')?.value.trim() || '';
-            const institution = entry.querySelector('.education-institution')?.value.trim() || '';
-            const duration = entry.querySelector('.education-duration')?.value.trim() || '';
-            if (degree || institution || duration) {
-                educationContent.push({
-                    stack: [
-                        { text: degree || translations[currentLang]['No Degree'], style: 'jobTitle' },
-                        { text: `${institution}${institution && duration ? ' - ' : ''}${duration}`, style: 'company' }
-                    ].filter(Boolean),
-                    margin: [0, 0, 0, 5] // Margin between education items
-                });
-            }
-        });
-    }
-
-    const skillsContent = [];
-    const skillInputs = document.querySelectorAll('#skills-input .skill-item-input');
-    const filledSkills = Array.from(skillInputs).map(input => input.value.trim()).filter(skill => skill);
-    if (filledSkills.length > 0) {
-        skillsContent.push({ text: translations[currentLang]['Skills'], style: 'sectionTitle' });
-        skillsContent.push({
-            ul: filledSkills.map(skill => ({
-                text: (isArabic ? '\u2022  ' : '\u2022  ') + skill, // إضافة نقطة يدوياً
-                style: 'listItem',
-            })),
-            margin: [0, 0, 0, 5],
-            listType: 'none', // إزالة النقاط الافتراضية لـ pdfmake
-            columnCount: (filledSkills.length > 5 && selectedTemplateCategory === 'normal') ? 2 : 1
-        });
-    }
-
-    const languagesContent = [];
-    const languageInputs = document.querySelectorAll('#languages-input .language-item-input');
-    const filledLanguages = Array.from(languageInputs).map(input => input.value.trim()).filter(lang => lang);
-    if (filledLanguages.length > 0) {
-        languagesContent.push({ text: translations[currentLang]['Languages'], style: 'sectionTitle' });
-        languagesContent.push({
-            ul: filledLanguages.map(lang => ({
-                text: (isArabic ? '\u2022  ' : '\u2022  ') + lang, // إضافة نقطة يدوياً
-                style: 'listItem',
-            })),
-            margin: [0, 0, 0, 5],
-            listType: 'none' // إزالة النقاط الافتراضية لـ pdfmake
-        });
-    }
-
-    const referencesContent = [];
-    const referenceEntries = document.querySelectorAll('#references-input .reference-entry');
-    const hasFilledReferences = Array.from(referenceEntries).some(e => Array.from(e.querySelectorAll('input')).some(input => input.value.trim()));
-    if (hasFilledReferences) {
-        referencesContent.push({ text: translations[currentLang]['References'], style: 'sectionTitle' });
-        referenceEntries.forEach(entry => {
-            const refName = entry.querySelector('.reference-name')?.value.trim() || '';
-            const position = entry.querySelector('.reference-position')?.value.trim() || '';
-            const phoneNum = entry.querySelector('.reference-phone')?.value.trim() || '';
-            const refEmailVal = entry.querySelector('.reference-email')?.value.trim() || ''; // Renamed
-            if (refName || position || phoneNum || refEmailVal) {
-                referencesContent.push({
-                    stack: [
-                        { text: refName || translations[currentLang]['No Name'], style: 'referenceName' },
-                        position ? { text: position, style: 'referenceDetail' } : null,
-                        phoneNum ? { text: phoneNum, style: 'referenceDetail' } : null,
-                        refEmailVal ? { text: refEmailVal, style: 'referenceDetail' } : null
-                    ].filter(Boolean),
-                    margin: [0, 0, 0, 5] // Margin between reference items
-                });
-            }
-        });
-    }
-
-    let docContent = [];
-    const watermarkText = translations[currentLang]['Watermark Preview Text'];
-
-    // بناء محتوى الرأس بناءً على القالب المختار
-    let headerBlock;
-    if (selectedTemplateCategory === 'normal') {
-        let headerAlignment = isArabic ? 'right' : 'left';
-        if (selectedTemplate === 3) { // Normal Template 3 (centered header in HTML)
-            headerAlignment = 'center';
-        }
-
-        headerBlock = {
-            columns: [
-                profilePicBase64 ? { image: `data:image/jpeg;base64,${profilePicBase64}`, width: 80, height: 80, alignment: headerAlignment, margin: isArabic ? [0, 0, 10, 0] : [0, 0, 10, 0] } : null,
-                {
-                    width: '*',
-                    stack: [
-                        { text: name, style: 'header', alignment: headerAlignment },
-                        { text: title, style: 'subHeader', alignment: headerAlignment },
-                        // التأكد من أن contactItems.map يعيد مصفوفة حتى لو كانت فارغة
-                        contactItems.length > 0 ? {
-                            columns: contactItems.map(item => ({
-                                text: item.text,
-                                style: 'text',
-                                margin: [0, 0, 5, 0],
-                                alignment: headerAlignment
-                            })),
-                            alignment: headerAlignment,
-                            margin: [0, 5, 0, 0]
-                        } : null
-                    ].filter(Boolean),
-                    alignment: headerAlignment
-                }
-            ].filter(Boolean),
-            margin: [0, 0, 0, 20]
-        };
-        docContent.push(headerBlock);
-        docContent.push(...objectiveContent);
-        docContent.push(...experienceContent);
-        docContent.push(...educationContent);
-        docContent.push(...skillsContent);
-        docContent.push(...languagesContent);
-        docContent.push(...referencesContent);
-
-    } else { // Standard, AST, Professional layouts
-        const sidebarItems = [
-            profilePicBase64 ? { image: `data:image/jpeg;base64,${profilePicBase64}`, width: 80, height: 80, alignment: 'center', margin: [0, 0, 0, 15] } : null,
-            contactItems.length > 0 ? {
-                stack: [
-                    { text: translations[currentLang]['Contact Info'], style: 'sectionTitle', alignment: 'center' },
-                    {
-                        columns: contactItems.map(item => ({ // استخدام columns هنا
-                            text: item.text,
-                            style: 'text',
-                            alignment: 'center',
-                            margin: [0, 2]
-                        })),
-                    }
-                ].filter(Boolean),
-                margin: [0, 0, 0, 15]
-            } : null,
-            ...skillsContent,
-            ...languagesContent,
-            ...referencesContent
-        ].filter(Boolean);
-
-        const mainItems = [
-            { text: name, style: 'header', alignment: isArabic ? 'right' : 'left' },
-            { text: title, style: 'subHeader', alignment: isArabic ? 'right' : 'left', margin: [0, 0, 0, 15] },
-            ...objectiveContent,
-            ...experienceContent,
-            ...educationContent
-        ].filter(Boolean); // فلترة العناصر الفارغة
-
-        if (selectedTemplateCategory === 'professional') {
-            // Professional Header (top bar)
-            const professionalHeaderContent = [
-                profilePicBase64 && (selectedTemplate === 1 || selectedTemplate === 2) ? { image: `data:image/jpeg;base64,${profilePicBase64}`, width: 80, height: 80, alignment: 'center', margin: [0, 0, 0, 10] } : null,
-                { text: name, style: 'header', alignment: 'center', color: '#fff' },
-                { text: title, style: 'subHeader', alignment: 'center', color: '#ced4da' },
-                contactItems.length > 0 ? {
-                    columns: contactItems.map(item => ({
-                        text: item.text,
-                        style: 'text',
-                        color: '#fff',
-                        alignment: 'center',
-                        margin: [0, 0, 5, 0]
-                    })),
-                    alignment: 'center',
-                    margin: [0, 10, 0, 0]
-                } : null
-            ].filter(Boolean);
-
-            docContent.push({
-                stack: professionalHeaderContent,
-                background: '#343a40', // لون خلفية الرأس الاحترافي
-                color: '#f8f9fa', // لون النص في الرأس
-                padding: [20, 20, 20, 20],
-                margin: [-40, -40, -40, 0] // لملء عرض الصفحة
-            });
-
-            // Two-column layout below the header
-            docContent.push({
-                columns: isArabic ? [
-                    { width: '*', stack: mainItems, alignment: 'right' },
-                    {
-                        width: 100, // عرض العمود الجانبي
-                        stack: sidebarItems,
-                        alignment: 'right',
-                        // خلفية العمود الجانبي الاحترافي باستخدام fillColor
-                        background: '#343a40', // لون خلفية العمود الجانبي
-                        color: '#f8f9fa', // لون النص في العمود الجانبي
-                        margin: [0,0,0,0],
-                        padding: [10,10,10,10]
-                    }
-                ] : [
-                    {
-                        width: 100, // عرض العمود الجانبي
-                        stack: sidebarItems,
-                        alignment: 'left',
-                        // خلفية العمود الجانبي الاحترافي باستخدام fillColor
-                        background: '#343a40', // لون خلفية العمود الجانبي
-                        color: '#f8f9fa', // لون النص في العمود الجانبي
-                        margin: [0,0,0,0],
-                        padding: [10,10,10,10]
-                    },
-                    { width: '*', stack: mainItems, alignment: 'left' }
-                ],
-                columnGap: 15,
-                margin: [0, 20, 0, 0] // هامش أسفل الرأس
-            });
-
-        } else { // Standard and AST layouts
-            docContent.push({
-                columns: isArabic ? [
-                    { width: '*', stack: mainItems, alignment: 'right' },
-                    {
-                        width: 100, // عرض العمود الجانبي
-                        stack: sidebarItems,
-                        alignment: 'right',
-                        // خلفية العمود الجانبي القياسي/AST باستخدام fillColor
-                        background: '#e9ecef', // لون خلفية العمود الجانبي
-                        color: '#212529', // لون النص في العمود الجانبي
-                        margin: [0,0,0,0],
-                        padding: [10,10,10,10]
-                    }
-                ] : [
-                    {
-                        width: 100, // عرض العمود الجانبي
-                        stack: sidebarItems,
-                        alignment: 'left',
-                        // خلفية العمود الجانبي القياسي/AST باستخدام fillColor
-                        background: '#e9ecef', // لون خلفية العمود الجانبي
-                        color: '#212529', // لون النص في العمود الجانبي
-                        margin: [0,0,0,0],
-                        padding: [10,10,10,10]
-                    },
-                    { width: '*', stack: mainItems, alignment: 'left' }
-                ],
-                columnGap: 15
-            });
-        }
-    }
-
+    // تعريف المستند
     const docDefinition = {
         content: docContent,
         styles: styles,
         defaultStyle: {
             font: defaultFont,
-            alignment: isArabic ? 'right' : 'left',
-            // Set line height for better readability
-            lineHeight: 1.2
+            fontSize: 12,
+            lineHeight: 1.4
         },
-        // Page setup
-        pageMargins: [40, 40, 40, 40], // Left, Top, Right, Bottom margins (approx 10mm)
-        // Watermark for preview
-        watermark: addWatermark ? { text: watermarkText, style: 'watermark', opacity: 0.1 } : null,
-        // RTL support for the entire document
-        // This is crucial for correct text flow and list item positioning in Arabic
-        // Note: pdfmake's RTL support might still have nuances depending on font and complex layouts.
-        // It's recommended to test thoroughly.
-        rtl: isArabic
+        rtl: isArabic,
+        pageMargins: [40, 60, 40, 60],
+        watermark: addWatermark ? { text: watermarkText, opacity: 0.1 } : null
     };
 
     return docDefinition;
 }
-
 
 // --- CV Content Generation (generateCV, selectTemplate, handleProfilePicChange, add/remove fields, populateWithTestData) ---
 // This function remains largely the same as it's for HTML preview, not PDF generation.
