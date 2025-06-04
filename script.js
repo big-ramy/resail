@@ -1464,7 +1464,6 @@ async function getCVDocumentDefinition(addWatermark) {
         },
         pageMargins: [40, 40, 40, 40], // Left, Top, Right, Bottom margins (approx 10mm)
         watermark: addWatermark ? { text: watermarkText, style: 'watermark', opacity: 0.1 } : null,
-        rtl: isArabic // Crucial for correct text flow and list item positioning in Arabic
     };
 
     return docDefinition;
