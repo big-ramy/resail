@@ -867,15 +867,16 @@ async function getCVDocumentDefinition(addWatermark) {
     const title = document.getElementById('title-input')?.value.trim() || '';
     const emailVal = document.getElementById('email-input')?.value.trim() || '';
     const phone = document.getElementById('phone-input')?.value.trim() || '';
-    const website = document.getElementById('website-input')?.value.trim() || '';
+    // تغيير 'website' إلى 'location' إذا كان المقصود هو الموقع الجغرافي
+    const location = document.getElementById('website-input')?.value.trim() || ''; // تم تغيير الاسم هنا
     const objective = document.getElementById('objective-input')?.value.trim() || '';
 
     let profilePicBase64 = null;
     if (profilePicDataUrl) {
         try {
-            // pdfmake requires base64 without the "data:image/jpeg;base64," prefix.
-            // But it also handles it if it's there. Let's ensure it's a clean base64.
-            profilePicBase64 = profilePicDataUrl.split(',')[1] ? profilePicDataUrl : null;
+            // pdfmake يمكنه التعامل مع بادئة "data:image/jpeg;base64," بشكل مباشر.
+            // لذا، نستخدم profilePicDataUrl مباشرة.
+            profilePicBase64 = profilePicDataUrl;
         } catch (e) {
             console.error("Error processing profile picture for PDFMake:", e);
             profilePicBase64 = null;
@@ -953,14 +954,13 @@ async function getCVDocumentDefinition(addWatermark) {
             alignment: isArabic ? 'right' : 'left',
             font: defaultFont
         },
-        skillTag: { // Style for simulating skill tags
+        skillTag: { // Style for simulating skill tags (applied to table cells)
             fontSize: isArabic ? 10 : 9,
-            margin: [0, 2, 5, 2],
-            color: '#212121',
-            background: '#e9ecef', // Background color for the tag
+            color: '#212121', // Text color for the tag
             alignment: 'center',
             bold: false,
-            font: defaultFont
+            font: defaultFont,
+            // Padding and fillColor will be set at the table cell level
         },
         watermark: {
             fontSize: 60,
@@ -974,20 +974,22 @@ async function getCVDocumentDefinition(addWatermark) {
 
     // Helper to create a section with title and content
     const createSection = (titleKey, contentArray) => {
-        if (!contentArray || contentArray.length === 0) return []; // Return empty if no content
+        // Return empty array if contentArray is empty or null, so section doesn't appear
+        if (!contentArray || contentArray.length === 0 || contentArray.every(item => !item)) return [];
         return [
             { text: translations[currentLang][titleKey], style: 'sectionTitle' },
-            ...contentArray
+            { stack: contentArray, margin: [0, 0, 0, 10] } // Wrap content in a stack for consistent margin
         ];
     };
 
     // Helper for contact info
     const getContactInfoContent = () => {
         const items = [];
-        // Using Unicode characters for icons
+        // Using Unicode characters for icons to ensure display in PDFMake
+        // Order of icon and text is important for RTL display
         if (emailVal) items.push({ text: (isArabic ? '\u2709 ' : '\u2709 ') + emailVal, style: 'text', alignment: isArabic ? 'right' : 'left' });
         if (phone) items.push({ text: (isArabic ? '\u260E ' : '\u260E ') + phone, style: 'text', alignment: isArabic ? 'right' : 'left' });
-        if (website) items.push({ text: (isArabic ? '\u1F310 ' : '\u1F310 ') + website, style: 'text', alignment: isArabic ? 'right' : 'left' });
+        if (location) items.push({ text: (isArabic ? '\u1F310 ' : '\u1F310 ') + location, style: 'text', alignment: isArabic ? 'right' : 'left' }); // استخدام 'location'
         return items;
     };
 
@@ -1008,7 +1010,8 @@ async function getCVDocumentDefinition(addWatermark) {
                 content.push({ text: `${exp.company}${exp.company && exp.duration ? ' - ' : ''}${exp.duration}`, style: 'company' });
             }
             if (exp.description) {
-                content.push({ text: exp.description, style: 'description' });
+                // Replace newlines with \n for pdfMake
+                content.push({ text: exp.description.replace(/\n/g, '\n'), style: 'description' });
             }
             return { stack: content, margin: [0, 0, 0, 10] };
         });
@@ -1033,60 +1036,63 @@ async function getCVDocumentDefinition(addWatermark) {
         });
     };
 
-    // Helper for skills (as tags)
+    // Helper for skills (simulating tags with background color using a table)
     const getSkillsContent = () => {
         const skillInputs = document.querySelectorAll('#skills-input .skill-item-input');
         const filledSkills = Array.from(skillInputs).map(input => input.value.trim()).filter(skill => skill);
 
         if (filledSkills.length === 0) return [];
 
-        // Simulate tags using text blocks with background and padding
-        const skillTags = filledSkills.map(skill => ({
-            text: skill,
-            style: 'skillTag',
-            margin: [0, 2, 5, 2], // margin for spacing between tags
-            // For background and padding, pdfMake uses fillColor and specific padding properties
-            // This is a common way to simulate blocks/tags
-            border: [false, false, false, false], // No border by default
-            // To add background and padding, you'd typically use a table or a column with a single cell
-            // For simplicity, let's just list them and apply basic styling.
-            // True "tag" visual requires more complex pdfMake structures like tables with single cells.
-            // For now, let's just list them with a bullet.
-            // A more advanced approach would be:
-            // {
-            //     canvas: [
-            //         { type: 'rect', x: 0, y: 0, w: textWidth, h: textHeight, r: 5, fillColor: '#e9ecef' }
-            //     ],
-            //     text: skill,
-            //     color: '#212121',
-            //     margin: [0, 2, 5, 2],
-            //     alignment: 'center'
-            // }
-            // This is complex and requires measuring text width.
-            // For now, let's use simple list items.
-        }));
+        const skillTableBody = [];
+        let currentRow = [];
+        const maxCols = 3; // Maximum columns for skills, adjust as needed
+        const cellPadding = [4, 2, 4, 2]; // [left, top, right, bottom] padding for each skill "tag"
 
-        // For skills, let's try to arrange them in columns if there are many, or as a simple list.
-        // pdfMake's `columns` can be used for this.
-        const skillItems = filledSkills.map(skill => ({
-            text: skill,
-            style: 'listItem',
-            margin: [0, 0, 0, 5]
-        }));
+        for (const skill of filledSkills) {
+            currentRow.push({
+                text: skill,
+                style: 'skillTag',
+                fillColor: '#e9ecef', // Background color for the tag
+                // No explicit border, pdfMake will draw default if layout is not 'noBorders'
+                // Padding is applied directly to the cell
+                padding: cellPadding
+            });
 
+            if (currentRow.length === maxCols) {
+                skillTableBody.push(currentRow);
+                currentRow = [];
+            }
+        }
+        if (currentRow.length > 0) { // Add any remaining skills
+            skillTableBody.push(currentRow);
+        }
 
         return [
             { text: translations[currentLang]['Skills'], style: 'sectionTitle' },
             {
-                ul: skillItems, // Use ul for list items
-                margin: [0, 0, 0, 10],
-                listType: 'none', // Remove default bullets if you add custom ones
-                // For multiple columns, you'd use columns: [[...], [...]]
-                // For simplicity, we'll keep it as a single column list for now.
-                // If you need multi-column, you'll need to calculate distribution.
+                table: {
+                    // Define widths for columns, 'auto' will size them based on content
+                    // '*' will take remaining space, 'auto' will size to content
+                    // For tags, 'auto' is usually good, or fixed widths if you want strict columns
+                    widths: Array(maxCols).fill('auto'),
+                    body: skillTableBody,
+                    // Optional: remove default table borders for a cleaner "tag" look
+                    layout: {
+                        hLineWidth: function(i, node) { return 0; },
+                        vLineWidth: function(i, node) { return 0; },
+                        hLineColor: function(i, node) { return null; },
+                        vLineColor: function(i, node) { return null; },
+                        paddingLeft: function(i, node) { return 0; },
+                        paddingRight: function(i, node) { return 0; },
+                        paddingTop: function(i, node) { return 0; },
+                        paddingBottom: function(i, node) { return 0; },
+                    }
+                },
+                margin: [0, 0, 0, 10]
             }
         ];
     };
+
 
     // Helper for languages
     const getLanguagesContent = () => {
@@ -1100,10 +1106,12 @@ async function getCVDocumentDefinition(addWatermark) {
             {
                 ul: filledLanguages.map(lang => ({
                     text: lang,
-                    style: 'listItem'
+                    style: 'listItem',
+                    // Add a custom bullet if needed, pdfMake's ul automatically adds bullets
+                    // If you want a specific bullet, use text: '\u2022 ' + lang
                 })),
                 margin: [0, 0, 0, 10],
-                listType: 'none'
+                // listType: 'none' // Remove if you want default bullets, or use if custom bullet is added in text
             }
         ];
     };
@@ -1140,32 +1148,33 @@ async function getCVDocumentDefinition(addWatermark) {
     const watermarkText = translations[currentLang]['Watermark Preview Text'];
 
     // Build content based on selected template category
-    const commonMainContent = [
+    const mainContentSections = [
         ...createSection('Career Objective', objective ? [{ text: objective, style: 'text' }] : []),
         ...createSection('Work Experience', getExperienceItems()),
         ...createSection('Education', getEducationItems()),
-    ];
+    ].filter(Boolean); // Filter out empty sections
 
-    const commonSidebarContent = [
+    // Sidebar content (will be used in multi-column layouts)
+    const sidebarSections = [
         profilePicBase64 ? {
-            image: `data:image/jpeg;base64,${profilePicBase64}`,
+            image: profilePicBase64, // Use direct base64 string
             width: 80,
             height: 80,
             alignment: 'center',
             margin: [0, 0, 0, 15]
         } : null,
         ...createSection('Contact Info', getContactInfoContent()),
-        ...getSkillsContent(), // Skills are now generated as a section
-        ...getLanguagesContent(), // Languages are now generated as a section
-        ...getReferencesContent() // References are now generated as a section
-    ].filter(Boolean); // Filter out nulls
+        ...getSkillsContent(),
+        ...getLanguagesContent(),
+        ...getReferencesContent()
+    ].filter(Boolean); // Filter out nulls/empty sections
 
     switch (`${selectedTemplateCategory}-${selectedTemplate}`) {
         case 'normal-1': // Normal Template 1 (Full Width)
             docContent.push({
                 columns: [
                     profilePicBase64 ? {
-                        image: `data:image/jpeg;base64,${profilePicBase64}`,
+                        image: profilePicBase64,
                         width: 80,
                         height: 80,
                         alignment: isArabic ? 'right' : 'left',
@@ -1177,12 +1186,13 @@ async function getCVDocumentDefinition(addWatermark) {
                             { text: name, style: 'header', alignment: isArabic ? 'right' : 'left' },
                             { text: title, style: 'subHeader', alignment: isArabic ? 'right' : 'left' },
                             {
+                                // Contact info as inline text or columns
                                 columns: getContactInfoContent().map(item => ({
                                     text: item.text,
                                     alignment: isArabic ? 'right' : 'left',
                                     width: 'auto',
                                     margin: [0, 0, 5, 0],
-                                    color: '#0056b3' // Specific color for contact info in this template
+                                    color: '#e9ecef' // Header text color
                                 })),
                                 columnGap: 10,
                                 margin: [0, 5, 0, 0],
@@ -1198,7 +1208,7 @@ async function getCVDocumentDefinition(addWatermark) {
                 color: '#e9ecef', // Header text color
                 padding: [20, 20, 20, 20]
             });
-            docContent.push(...commonMainContent);
+            docContent.push(...mainContentSections);
             docContent.push(...getSkillsContent()); // Add skills as a separate section
             docContent.push(...getLanguagesContent()); // Add languages as a separate section
             docContent.push(...getReferencesContent()); // Add references as a separate section
@@ -1212,13 +1222,13 @@ async function getCVDocumentDefinition(addWatermark) {
                         stack: [
                             { text: name, style: 'header', alignment: 'right' },
                             { text: title, style: 'subHeader', alignment: 'right', color: '#007bff' },
-                            ...commonMainContent
+                            ...mainContentSections
                         ],
                         margin: [10, 0, 0, 0] // Margin to left of main content
                     },
                     { // Sidebar (left for RTL)
                         width: 150, // Fixed width for sidebar
-                        stack: commonSidebarContent.map(item => {
+                        stack: sidebarSections.map(item => {
                             // Override alignment for sidebar items to be centered
                             if (item.style && item.style.alignment) item.style.alignment = 'center';
                             if (item.columns) { // For contact info columns
@@ -1227,6 +1237,8 @@ async function getCVDocumentDefinition(addWatermark) {
                             if (item.ul) { // For skills/languages lists
                                 item.ul.forEach(li => li.alignment = 'center');
                             }
+                            // Ensure colors are applied for sidebar content if needed
+                            if (item.style && item.style.color) item.color = '#212121'; // Default sidebar text color
                             return item;
                         }),
                         margin: [0, 0, 10, 0], // Margin to right of sidebar
@@ -1237,7 +1249,7 @@ async function getCVDocumentDefinition(addWatermark) {
                 ] : [ // LTR layout
                     { // Sidebar (left for LTR)
                         width: 150,
-                        stack: commonSidebarContent.map(item => {
+                        stack: sidebarSections.map(item => {
                             if (item.style && item.style.alignment) item.style.alignment = 'center';
                             if (item.columns) {
                                 item.columns.forEach(col => col.alignment = 'center');
@@ -1245,6 +1257,7 @@ async function getCVDocumentDefinition(addWatermark) {
                             if (item.ul) {
                                 item.ul.forEach(li => li.alignment = 'center');
                             }
+                            if (item.style && item.style.color) item.color = '#212121';
                             return item;
                         }),
                         margin: [0, 0, 10, 0],
@@ -1257,7 +1270,7 @@ async function getCVDocumentDefinition(addWatermark) {
                         stack: [
                             { text: name, style: 'header', alignment: 'left' },
                             { text: title, style: 'subHeader', alignment: 'left', color: '#007bff' },
-                            ...commonMainContent
+                            ...mainContentSections
                         ],
                         margin: [10, 0, 0, 0]
                     }
@@ -1271,7 +1284,7 @@ async function getCVDocumentDefinition(addWatermark) {
                 // Professional Header
                 stack: [
                     profilePicBase64 ? {
-                        image: `data:image/jpeg;base64,${profilePicBase64}`,
+                        image: profilePicBase64,
                         width: 80,
                         height: 80,
                         alignment: 'center',
@@ -1302,12 +1315,12 @@ async function getCVDocumentDefinition(addWatermark) {
                 columns: isArabic ? [
                     { // Main Content (right for RTL)
                         width: '*',
-                        stack: commonMainContent,
+                        stack: mainContentSections,
                         margin: [10, 0, 0, 0]
                     },
                     { // Sidebar (left for RTL)
                         width: 120, // Smaller sidebar for professional look
-                        stack: commonSidebarContent.map(item => {
+                        stack: sidebarSections.map(item => {
                             if (item.style && item.style.alignment) item.style.alignment = 'center';
                             if (item.columns) {
                                 item.columns.forEach(col => col.alignment = 'center');
@@ -1315,6 +1328,8 @@ async function getCVDocumentDefinition(addWatermark) {
                             if (item.ul) {
                                 item.ul.forEach(li => li.alignment = 'center');
                             }
+                            // Set specific color for sidebar text in Professional template
+                            if (item.style && item.style.color) item.color = '#212121'; // Default sidebar text color
                             return item;
                         }),
                         margin: [0, 0, 10, 0],
@@ -1325,7 +1340,7 @@ async function getCVDocumentDefinition(addWatermark) {
                 ] : [ // LTR layout
                     { // Sidebar (left for LTR)
                         width: 120,
-                        stack: commonSidebarContent.map(item => {
+                        stack: sidebarSections.map(item => {
                             if (item.style && item.style.alignment) item.style.alignment = 'center';
                             if (item.columns) {
                                 item.columns.forEach(col => col.alignment = 'center');
@@ -1333,6 +1348,7 @@ async function getCVDocumentDefinition(addWatermark) {
                             if (item.ul) {
                                 item.ul.forEach(li => li.alignment = 'center');
                             }
+                            if (item.style && item.style.color) item.color = '#212121';
                             return item;
                         }),
                         margin: [0, 0, 10, 0],
@@ -1342,7 +1358,7 @@ async function getCVDocumentDefinition(addWatermark) {
                     },
                     { // Main Content (right for LTR)
                         width: '*',
-                        stack: commonMainContent,
+                        stack: mainContentSections,
                         margin: [10, 0, 0, 0]
                     }
                 ],
@@ -1359,13 +1375,13 @@ async function getCVDocumentDefinition(addWatermark) {
                         stack: [
                             { text: name, style: 'header', alignment: 'right' },
                             { text: title, style: 'subHeader', alignment: 'right', color: '#00acc1' },
-                            ...commonMainContent
+                            ...mainContentSections
                         ],
                         margin: [10, 0, 0, 0]
                     },
                     { // Sidebar (left for RTL)
                         width: 150,
-                        stack: commonSidebarContent.map(item => {
+                        stack: sidebarSections.map(item => {
                             if (item.style && item.style.alignment) item.style.alignment = 'center';
                             if (item.columns) {
                                 item.columns.forEach(col => col.alignment = 'center');
@@ -1385,7 +1401,7 @@ async function getCVDocumentDefinition(addWatermark) {
                 ] : [ // LTR layout
                     { // Sidebar (left for LTR)
                         width: 150,
-                        stack: commonSidebarContent.map(item => {
+                        stack: sidebarSections.map(item => {
                             if (item.style && item.style.alignment) item.style.alignment = 'center';
                             if (item.columns) {
                                 item.columns.forEach(col => col.alignment = 'center');
@@ -1406,7 +1422,7 @@ async function getCVDocumentDefinition(addWatermark) {
                         stack: [
                             { text: name, style: 'header', alignment: 'left' },
                             { text: title, style: 'subHeader', alignment: 'left', color: '#00acc1' },
-                            ...commonMainContent
+                            ...mainContentSections
                         ],
                         margin: [10, 0, 0, 0]
                     }
@@ -1434,7 +1450,7 @@ async function getCVDocumentDefinition(addWatermark) {
                     }
                 ].filter(Boolean)
             });
-            docContent.push(...commonMainContent);
+            docContent.push(...mainContentSections);
             docContent.push(...getSkillsContent());
             docContent.push(...getLanguagesContent());
             docContent.push(...getReferencesContent());
