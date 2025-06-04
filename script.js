@@ -859,9 +859,9 @@ async function getPDFMakeBase64(addWatermark = true) {
  */
 async function getCVDocumentDefinition(addWatermark) {
     const isArabic = currentLang === 'ar';
-    // استخدام المفتاح الذي تم تخزين الخط به في pdfMake.vfs
-    // تأكد من أن 'Tajawal' هنا يطابق الاسم الذي استخدمته في pdfMake.fonts
-    const defaultFont = isArabic ? 'Tajawal' : 'Roboto'; // أو 'Amiri' أو 'NotoNaskhArabic'
+    // استخدام خط Amiri إذا كانت اللغة عربية، وإلا Roboto
+    // تأكد من أنك قمت بتضمين خطوط Amiri Regular و Bold بصيغة Base64 بشكل صحيح في pdfMake.vfs
+    const defaultFont = isArabic ? 'Amiri' : 'Roboto';
 
     const name = document.getElementById('name-input')?.value.trim() || '';
     const title = document.getElementById('title-input')?.value.trim() || '';
@@ -886,14 +886,14 @@ async function getCVDocumentDefinition(addWatermark) {
             fontSize: isArabic ? 24 : 22,
             bold: true,
             margin: [0, 0, 0, 10],
-            // alignment: isArabic ? 'right' : 'left', // Removed
+            alignment: isArabic ? 'right' : 'left', // إعادة تفعيل المحاذاة الصريحة
             font: defaultFont
         },
         subHeader: {
             fontSize: isArabic ? 16 : 14,
             bold: false,
             margin: [0, 0, 0, 5],
-            // alignment: isArabic ? 'right' : 'left', // Removed
+            alignment: isArabic ? 'right' : 'left', // إعادة تفعيل المحاذاة الصريحة
             color: '#007bff',
             font: defaultFont
         },
@@ -901,7 +901,7 @@ async function getCVDocumentDefinition(addWatermark) {
             fontSize: isArabic ? 14 : 12,
             bold: true,
             margin: [0, 15, 0, 5],
-            // alignment: isArabic ? 'right' : 'left', // Removed
+            alignment: isArabic ? 'right' : 'left', // إعادة تفعيل المحاذاة الصريحة
             color: '#007bff',
             decoration: 'underline',
             decorationColor: '#007bff',
@@ -909,13 +909,13 @@ async function getCVDocumentDefinition(addWatermark) {
         },
         text: {
             fontSize: isArabic ? 11 : 10,
-            // alignment: isArabic ? 'right' : 'left', // Removed
+            alignment: isArabic ? 'right' : 'left', // إعادة تفعيل المحاذاة الصريحة
             margin: [0, 0, 0, 2],
             font: defaultFont
         },
         listItem: {
             fontSize: isArabic ? 11 : 10,
-            // alignment: isArabic ? 'right' : 'left', // Removed
+            alignment: isArabic ? 'right' : 'left', // إعادة تفعيل المحاذاة الصريحة
             margin: [0, 0, 0, 2],
             font: defaultFont
         },
@@ -923,38 +923,38 @@ async function getCVDocumentDefinition(addWatermark) {
             fontSize: isArabic ? 12 : 11,
             bold: true,
             margin: [0, 5, 0, 2],
-            // alignment: isArabic ? 'right' : 'left', // Removed
+            alignment: isArabic ? 'right' : 'left', // إعادة تفعيل المحاذاة الصريحة
             font: defaultFont
         },
         company: {
             fontSize: isArabic ? 10 : 9,
             margin: [0, 0, 0, 2],
-            // alignment: isArabic ? 'right' : 'left', // Removed
+            alignment: isArabic ? 'right' : 'left', // إعادة تفعيل المحاذاة الصريحة
             font: defaultFont
         },
         description: {
             fontSize: isArabic ? 10 : 9,
             margin: [0, 0, 0, 5],
-            // alignment: isArabic ? 'right' : 'left', // Removed
+            alignment: isArabic ? 'right' : 'left', // إعادة تفعيل المحاذاة الصريحة
             font: defaultFont
         },
         referenceName: {
             fontSize: isArabic ? 11 : 10,
             bold: true,
             margin: [0, 5, 0, 2],
-            // alignment: isArabic ? 'right' : 'left', // Removed
+            alignment: isArabic ? 'right' : 'left', // إعادة تفعيل المحاذاة الصريحة
             font: defaultFont
         },
         referenceDetail: {
             fontSize: isArabic ? 10 : 9,
             margin: [0, 0, 0, 2],
-            // alignment: isArabic ? 'right' : 'left', // Removed
+            alignment: isArabic ? 'right' : 'left', // إعادة تفعيل المحاذاة الصريحة
             font: defaultFont
         },
         skillTag: { 
             fontSize: isArabic ? 10 : 9,
             color: '#212121',
-            alignment: 'center', // Keep center alignment as it's not direction-dependent
+            alignment: 'center', 
             bold: false,
             font: defaultFont
         },
@@ -972,7 +972,7 @@ async function getCVDocumentDefinition(addWatermark) {
     const createSection = (titleKey, contentArray) => {
         if (!contentArray || contentArray.length === 0 || contentArray.every(item => !item)) return [];
         return [
-            { text: translations[currentLang][titleKey], style: 'sectionTitle' },
+            { text: translations[currentLang][titleKey], style: 'sectionTitle', textDirection: isArabic ? 'rtl' : 'ltr' }, // تحديد اتجاه النص للعنوان
             { stack: contentArray, margin: [0, 0, 0, 10] }
         ];
     };
@@ -980,9 +980,11 @@ async function getCVDocumentDefinition(addWatermark) {
     // Helper for contact info
     const getContactInfoContent = () => {
         const items = [];
-        if (emailVal) items.push({ text: (isArabic ? '\u2709 ' : '\u2709 ') + emailVal, style: 'text' /* alignment removed */ });
-        if (phone) items.push({ text: (isArabic ? '\u260E ' : '\u260E ') + phone, style: 'text' /* alignment removed */ });
-        if (website) items.push({ text: (isArabic ? '\u1F310 ' : '\u1F310 ') + website, style: 'text' /* alignment removed */ });
+        // استخدام Unicode characters for icons to ensure display in PDFMake
+        // Order of icon and text is important for RTL display
+        if (emailVal) items.push({ text: (isArabic ? '\u2709 ' : '\u2709 ') + emailVal, style: 'text', textDirection: isArabic ? 'rtl' : 'ltr' });
+        if (phone) items.push({ text: (isArabic ? '\u260E ' : '\u260E ') + phone, style: 'text', textDirection: isArabic ? 'rtl' : 'ltr' });
+        if (website) items.push({ text: (isArabic ? '\u1F310 ' : '\u1F310 ') + website, style: 'text', textDirection: isArabic ? 'rtl' : 'ltr' });
         return items;
     };
 
@@ -997,13 +999,13 @@ async function getCVDocumentDefinition(addWatermark) {
 
         return experienceArray.map(exp => {
             const content = [
-                { text: exp.title || translations[currentLang]['No Title'], style: 'jobTitle' },
+                { text: exp.title || translations[currentLang]['No Title'], style: 'jobTitle', textDirection: isArabic ? 'rtl' : 'ltr' },
             ];
             if (exp.company || exp.duration) {
-                content.push({ text: `${exp.company}${exp.company && exp.duration ? ' - ' : ''}${exp.duration}`, style: 'company' });
+                content.push({ text: `${exp.company}${exp.company && exp.duration ? ' - ' : ''}${exp.duration}`, style: 'company', textDirection: isArabic ? 'rtl' : 'ltr' });
             }
             if (exp.description) {
-                content.push({ text: exp.description.replace(/\n/g, '\n'), style: 'description' });
+                content.push({ text: exp.description.replace(/\n/g, '\n'), style: 'description', textDirection: isArabic ? 'rtl' : 'ltr' });
             }
             return { stack: content, margin: [0, 0, 0, 10] };
         });
@@ -1019,10 +1021,10 @@ async function getCVDocumentDefinition(addWatermark) {
 
         return educationArray.map(edu => {
             const content = [
-                { text: edu.degree || translations[currentLang]['No Degree'], style: 'jobTitle' },
+                { text: edu.degree || translations[currentLang]['No Degree'], style: 'jobTitle', textDirection: isArabic ? 'rtl' : 'ltr' },
             ];
             if (edu.institution || edu.duration) {
-                content.push({ text: `${edu.institution}${edu.institution && edu.duration ? ' - ' : ''}${edu.duration}`, style: 'company' });
+                content.push({ text: `${edu.institution}${edu.institution && edu.duration ? ' - ' : ''}${edu.duration}`, style: 'company', textDirection: isArabic ? 'rtl' : 'ltr' });
             }
             return { stack: content, margin: [0, 0, 0, 10] };
         });
@@ -1046,7 +1048,8 @@ async function getCVDocumentDefinition(addWatermark) {
                 style: 'skillTag',
                 fillColor: '#e9ecef', 
                 border: [false, false, false, false], 
-                padding: cellPadding
+                padding: cellPadding,
+                textDirection: isArabic ? 'rtl' : 'ltr' // تحديد اتجاه النص للخلية
             };
             currentRow.push(skillCell);
 
@@ -1055,16 +1058,15 @@ async function getCVDocumentDefinition(addWatermark) {
                 currentRow = [];
             }
         }
-        // FIX: Ensure the last row is filled with empty cells if it's not full
         while (currentRow.length > 0 && currentRow.length < maxCols) {
-            currentRow.push({}); // Push empty cell object to fill the row
+            currentRow.push({}); 
         }
         if (currentRow.length > 0) {
             skillTableBody.push(currentRow);
         }
 
         return [
-            { text: translations[currentLang]['Skills'], style: 'sectionTitle' },
+            { text: translations[currentLang]['Skills'], style: 'sectionTitle', textDirection: isArabic ? 'rtl' : 'ltr' },
             {
                 table: {
                     widths: Array(maxCols).fill('auto'), 
@@ -1094,11 +1096,12 @@ async function getCVDocumentDefinition(addWatermark) {
         if (filledLanguages.length === 0) return [];
 
         return [
-            { text: translations[currentLang]['Languages'], style: 'sectionTitle' },
+            { text: translations[currentLang]['Languages'], style: 'sectionTitle', textDirection: isArabic ? 'rtl' : 'ltr' },
             {
                 ul: filledLanguages.map(lang => ({
                     text: lang,
                     style: 'listItem',
+                    textDirection: isArabic ? 'rtl' : 'ltr' // تحديد اتجاه النص للقائمة
                 })),
                 margin: [0, 0, 0, 10],
             }
@@ -1112,21 +1115,21 @@ async function getCVDocumentDefinition(addWatermark) {
 
         if (!hasFilledReferences) return [];
 
-        const referencesArray = Array.from(referenceEntries).map(entry => ({
-            name: entry.querySelector('.reference-name')?.value.trim() || '',
-            position: entry.querySelector('.reference-position')?.value.trim() || '',
-            phone: entry.querySelector('.reference-phone')?.value.trim() || '',
-            email: entry.querySelector('.reference-email')?.value.trim() || ''
+        const referencesArray = Array.from(referenceEntries).map(ref => ({
+            name: ref.querySelector('.reference-name')?.value.trim() || '',
+            position: ref.querySelector('.reference-position')?.value.trim() || '',
+            phone: ref.querySelector('.reference-phone')?.value.trim() || '',
+            email: ref.querySelector('.reference-email')?.value.trim() || ''
         })).filter(r => r.name || r.position || r.phone || r.email);
 
         return [
-            { text: translations[currentLang]['References'], style: 'sectionTitle' },
+            { text: translations[currentLang]['References'], style: 'sectionTitle', textDirection: isArabic ? 'rtl' : 'ltr' },
             ...referencesArray.map(ref => ({
                 stack: [
-                    { text: ref.name || translations[currentLang]['No Name'], style: 'referenceName' },
-                    ref.position ? { text: ref.position, style: 'referenceDetail' } : null,
-                    ref.phone ? { text: ref.phone, style: 'referenceDetail' } : null,
-                    ref.email ? { text: ref.email, style: 'referenceDetail' } : null
+                    { text: ref.name || translations[currentLang]['No Name'], style: 'referenceName', textDirection: isArabic ? 'rtl' : 'ltr' },
+                    ref.position ? { text: ref.position, style: 'referenceDetail', textDirection: isArabic ? 'rtl' : 'ltr' } : null,
+                    ref.phone ? { text: ref.phone, style: 'referenceDetail', textDirection: isArabic ? 'rtl' : 'ltr' } : null,
+                    ref.email ? { text: ref.email, style: 'referenceDetail', textDirection: isArabic ? 'rtl' : 'ltr' } : null
                 ].filter(Boolean),
                 margin: [0, 0, 0, 5]
             }))
@@ -1138,7 +1141,7 @@ async function getCVDocumentDefinition(addWatermark) {
 
     // Build content based on selected template category
     const mainContentSections = [
-        ...createSection('Career Objective', objective ? [{ text: objective, style: 'text' }] : []),
+        ...createSection('Career Objective', objective ? [{ text: objective, style: 'text', textDirection: isArabic ? 'rtl' : 'ltr' }] : []),
         ...createSection('Work Experience', getExperienceItems()),
         ...createSection('Education', getEducationItems()),
     ].filter(Boolean);
@@ -1165,28 +1168,29 @@ async function getCVDocumentDefinition(addWatermark) {
                         image: profilePicBase64,
                         width: 80,
                         height: 80,
-                        // alignment: isArabic ? 'right' : 'left', // Removed
+                        alignment: isArabic ? 'right' : 'left', // Keep alignment for image
                         margin: isArabic ? [0, 0, 10, 0] : [0, 0, 10, 0]
                     } : null,
                     {
                         width: '*',
                         stack: [
-                            { text: name, style: 'header' /* alignment removed */ },
-                            { text: title, style: 'subHeader' /* alignment removed */ },
+                            { text: name, style: 'header', alignment: isArabic ? 'right' : 'left', textDirection: isArabic ? 'rtl' : 'ltr' },
+                            { text: title, style: 'subHeader', alignment: isArabic ? 'right' : 'left', textDirection: isArabic ? 'rtl' : 'ltr' },
                             {
                                 columns: getContactInfoContent().map(item => ({
                                     text: item.text,
-                                    // alignment: isArabic ? 'right' : 'left', // Removed
+                                    alignment: isArabic ? 'right' : 'left',
                                     width: 'auto',
                                     margin: [0, 0, 5, 0],
-                                    color: '#e9ecef'
+                                    color: '#e9ecef',
+                                    textDirection: isArabic ? 'rtl' : 'ltr' // تحديد اتجاه النص لأعمدة معلومات الاتصال
                                 })),
                                 columnGap: 10,
                                 margin: [0, 5, 0, 0],
-                                // alignment: isArabic ? 'right' : 'left' // Removed
+                                alignment: isArabic ? 'right' : 'left' // تحديد اتجاه محاذاة الأعمدة
                             }
                         ].filter(Boolean),
-                        // alignment: isArabic ? 'right' : 'left' // Removed
+                        alignment: isArabic ? 'right' : 'left' // تحديد اتجاه محاذاة الـ stack
                     }
                 ].filter(Boolean),
                 columnGap: 20,
@@ -1207,8 +1211,8 @@ async function getCVDocumentDefinition(addWatermark) {
                     { // Main Content (right for RTL)
                         width: '*',
                         stack: [
-                            { text: name, style: 'header' /* alignment removed */ },
-                            { text: title, style: 'subHeader' /* alignment removed */, color: '#007bff' },
+                            { text: name, style: 'header', alignment: 'right', textDirection: 'rtl' },
+                            { text: title, style: 'subHeader', alignment: 'right', color: '#007bff', textDirection: 'rtl' },
                             ...mainContentSections
                         ],
                         margin: [10, 0, 0, 0]
@@ -1216,14 +1220,21 @@ async function getCVDocumentDefinition(addWatermark) {
                     { // Sidebar (left for RTL)
                         width: 150,
                         stack: sidebarSections.map(item => {
-                            // if (item.style && item.style.alignment) item.style.alignment = 'center'; // Removed
+                            // إعادة تفعيل المحاذاة المركزية للعناصر في الشريط الجانبي
+                            if (item.style && item.style.alignment) item.style.alignment = 'center';
                             if (item.columns) {
-                                item.columns.forEach(col => col.alignment = 'center'); // Keep center for contact info in sidebar
+                                item.columns.forEach(col => col.alignment = 'center');
                             }
                             if (item.ul) {
-                                item.ul.forEach(li => li.alignment = 'center'); // Keep center for lists in sidebar
+                                item.ul.forEach(li => li.alignment = 'center');
                             }
                             if (item.style && item.style.color) item.color = '#212121';
+                            // إضافة textDirection لكل عنصر نصي داخل الشريط الجانبي
+                            if (item.text) item.textDirection = 'rtl';
+                            if (item.stack) item.stack.forEach(subItem => { if (subItem.text) subItem.textDirection = 'rtl'; });
+                            if (item.ul) item.ul.forEach(li => { if (li.text) li.textDirection = 'rtl'; });
+                            if (item.columns) item.columns.forEach(col => { if (col.text) col.textDirection = 'rtl'; });
+
                             return item;
                         }),
                         margin: [0, 0, 10, 0],
@@ -1235,7 +1246,7 @@ async function getCVDocumentDefinition(addWatermark) {
                     { // Sidebar (left for LTR)
                         width: 150,
                         stack: sidebarSections.map(item => {
-                            // if (item.style && item.style.alignment) item.style.alignment = 'center'; // Removed
+                            if (item.style && item.style.alignment) item.style.alignment = 'center';
                             if (item.columns) {
                                 item.columns.forEach(col => col.alignment = 'center');
                             }
@@ -1243,6 +1254,11 @@ async function getCVDocumentDefinition(addWatermark) {
                                 item.ul.forEach(li => li.alignment = 'center');
                             }
                             if (item.style && item.style.color) item.color = '#212121';
+                            // إضافة textDirection لكل عنصر نصي داخل الشريط الجانبي
+                            if (item.text) item.textDirection = 'ltr';
+                            if (item.stack) item.stack.forEach(subItem => { if (subItem.text) subItem.textDirection = 'ltr'; });
+                            if (item.ul) item.ul.forEach(li => { if (li.text) li.textDirection = 'ltr'; });
+                            if (item.columns) item.columns.forEach(col => { if (col.text) col.textDirection = 'ltr'; });
                             return item;
                         }),
                         margin: [0, 0, 10, 0],
@@ -1253,8 +1269,8 @@ async function getCVDocumentDefinition(addWatermark) {
                     { // Main Content (right for LTR)
                         width: '*',
                         stack: [
-                            { text: name, style: 'header' /* alignment removed */ },
-                            { text: title, style: 'subHeader' /* alignment removed */, color: '#007bff' },
+                            { text: name, style: 'header', alignment: 'left', textDirection: 'ltr' },
+                            { text: title, style: 'subHeader', alignment: 'left', color: '#007bff', textDirection: 'ltr' },
                             ...mainContentSections
                         ],
                         margin: [10, 0, 0, 0]
@@ -1275,19 +1291,20 @@ async function getCVDocumentDefinition(addWatermark) {
                         alignment: 'center', // Keep center alignment for profile pic
                         margin: [0, 0, 0, 10]
                     } : null,
-                    { text: name, style: 'header', alignment: 'center', color: '#fff' }, // Keep center alignment for name
-                    { text: title, style: 'subHeader', alignment: 'center', color: '#ced4da' }, // Keep center alignment for title
+                    { text: name, style: 'header', alignment: 'center', color: '#fff', textDirection: isArabic ? 'rtl' : 'ltr' },
+                    { text: title, style: 'subHeader', alignment: 'center', color: '#ced4da', textDirection: isArabic ? 'rtl' : 'ltr' },
                     {
                         columns: getContactInfoContent().map(item => ({
                             text: item.text,
-                            alignment: 'center', // Keep center alignment for contact info
+                            alignment: 'center',
                             width: 'auto',
                             color: '#fff',
-                            margin: [0, 0, 5, 0]
+                            margin: [0, 0, 5, 0],
+                            textDirection: isArabic ? 'rtl' : 'ltr'
                         })),
                         columnGap: 10,
                         margin: [0, 10, 0, 0],
-                        alignment: 'center' // Keep center alignment for contact info columns container
+                        alignment: 'center'
                     }
                 ].filter(Boolean),
                 background: '#004085',
@@ -1306,7 +1323,7 @@ async function getCVDocumentDefinition(addWatermark) {
                     { // Sidebar (left for RTL)
                         width: 120,
                         stack: sidebarSections.map(item => {
-                            // if (item.style && item.style.alignment) item.style.alignment = 'center'; // Removed
+                            if (item.style && item.style.alignment) item.style.alignment = 'center';
                             if (item.columns) {
                                 item.columns.forEach(col => col.alignment = 'center');
                             }
@@ -1314,6 +1331,11 @@ async function getCVDocumentDefinition(addWatermark) {
                                 item.ul.forEach(li => li.alignment = 'center');
                             }
                             if (item.style && item.style.color) item.color = '#212121';
+                            // إضافة textDirection لكل عنصر نصي داخل الشريط الجانبي
+                            if (item.text) item.textDirection = 'rtl';
+                            if (item.stack) item.stack.forEach(subItem => { if (subItem.text) subItem.textDirection = 'rtl'; });
+                            if (item.ul) item.ul.forEach(li => { if (li.text) li.textDirection = 'rtl'; });
+                            if (item.columns) item.columns.forEach(col => { if (col.text) col.textDirection = 'rtl'; });
                             return item;
                         }),
                         margin: [0, 0, 10, 0],
@@ -1325,7 +1347,7 @@ async function getCVDocumentDefinition(addWatermark) {
                     { // Sidebar (left for LTR)
                         width: 120,
                         stack: sidebarSections.map(item => {
-                            // if (item.style && item.style.alignment) item.style.alignment = 'center'; // Removed
+                            if (item.style && item.style.alignment) item.style.alignment = 'center';
                             if (item.columns) {
                                 item.columns.forEach(col => col.alignment = 'center');
                             }
@@ -1333,6 +1355,11 @@ async function getCVDocumentDefinition(addWatermark) {
                                 item.ul.forEach(li => li.alignment = 'center');
                             }
                             if (item.style && item.style.color) item.color = '#212121';
+                            // إضافة textDirection لكل عنصر نصي داخل الشريط الجانبي
+                            if (item.text) item.textDirection = 'ltr';
+                            if (item.stack) item.stack.forEach(subItem => { if (subItem.text) subItem.textDirection = 'ltr'; });
+                            if (item.ul) item.ul.forEach(li => { if (li.text) li.textDirection = 'ltr'; });
+                            if (item.columns) item.columns.forEach(col => { if (col.text) col.textDirection = 'ltr'; });
                             return item;
                         }),
                         margin: [0, 0, 10, 0],
@@ -1357,8 +1384,8 @@ async function getCVDocumentDefinition(addWatermark) {
                     { // Main Content (right for RTL)
                         width: '*',
                         stack: [
-                            { text: name, style: 'header' /* alignment removed */ },
-                            { text: title, style: 'subHeader' /* alignment removed */, color: '#00acc1' },
+                            { text: name, style: 'header', alignment: 'right', textDirection: 'rtl' },
+                            { text: title, style: 'subHeader', alignment: 'right', color: '#00acc1', textDirection: 'rtl' },
                             ...mainContentSections
                         ],
                         margin: [10, 0, 0, 0]
@@ -1366,7 +1393,7 @@ async function getCVDocumentDefinition(addWatermark) {
                     { // Sidebar (left for RTL)
                         width: 150,
                         stack: sidebarSections.map(item => {
-                            // if (item.style && item.style.alignment) item.style.alignment = 'center'; // Removed
+                            if (item.style && item.style.alignment) item.style.alignment = 'center';
                             if (item.columns) {
                                 item.columns.forEach(col => col.alignment = 'center');
                             }
@@ -1374,6 +1401,11 @@ async function getCVDocumentDefinition(addWatermark) {
                                 item.ul.forEach(li => li.alignment = 'center');
                             }
                             item.color = '#ffffff';
+                            // إضافة textDirection لكل عنصر نصي داخل الشريط الجانبي
+                            if (item.text) item.textDirection = 'rtl';
+                            if (item.stack) item.stack.forEach(subItem => { if (subItem.text) subItem.textDirection = 'rtl'; });
+                            if (item.ul) item.ul.forEach(li => { if (li.text) li.textDirection = 'rtl'; });
+                            if (item.columns) item.columns.forEach(col => { if (col.text) col.textDirection = 'rtl'; });
                             return item;
                         }),
                         margin: [0, 0, 10, 0],
@@ -1385,7 +1417,7 @@ async function getCVDocumentDefinition(addWatermark) {
                     { // Sidebar (left for LTR)
                         width: 150,
                         stack: sidebarSections.map(item => {
-                            // if (item.style && item.style.alignment) item.style.alignment = 'center'; // Removed
+                            if (item.style && item.style.alignment) item.style.alignment = 'center';
                             if (item.columns) {
                                 item.columns.forEach(col => col.alignment = 'center');
                             }
@@ -1393,6 +1425,11 @@ async function getCVDocumentDefinition(addWatermark) {
                                 item.ul.forEach(li => li.alignment = 'center');
                             }
                             item.color = '#ffffff';
+                            // إضافة textDirection لكل عنصر نصي داخل الشريط الجانبي
+                            if (item.text) item.textDirection = 'ltr';
+                            if (item.stack) item.stack.forEach(subItem => { if (subItem.text) subItem.textDirection = 'ltr'; });
+                            if (item.ul) item.ul.forEach(li => { if (li.text) li.textDirection = 'ltr'; });
+                            if (item.columns) item.columns.forEach(col => { if (col.text) col.textDirection = 'ltr'; });
                             return item;
                         }),
                         margin: [0, 0, 10, 0],
@@ -1403,8 +1440,8 @@ async function getCVDocumentDefinition(addWatermark) {
                     { // Main Content (right for LTR)
                         width: '*',
                         stack: [
-                            { text: name, style: 'header' /* alignment removed */ },
-                            { text: title, style: 'subHeader' /* alignment removed */, color: '#00acc1' },
+                            { text: name, style: 'header', alignment: 'left', textDirection: 'ltr' },
+                            { text: title, style: 'subHeader', alignment: 'left', color: '#00acc1', textDirection: 'ltr' },
                             ...mainContentSections
                         ],
                         margin: [10, 0, 0, 0]
@@ -1423,13 +1460,11 @@ async function getCVDocumentDefinition(addWatermark) {
                     {
                         columns: getContactInfoContent().map(item => ({
                             text: item.text,
-                            // alignment: isArabic ? 'right' : 'left', // Removed
                             width: 'auto',
                             margin: [0, 0, 5, 0]
                         })),
                         columnGap: 10,
                         margin: [0, 5, 0, 10],
-                        // alignment: isArabic ? 'right' : 'left' // Removed
                     }
                 ].filter(Boolean)
             });
@@ -1445,7 +1480,6 @@ async function getCVDocumentDefinition(addWatermark) {
         styles: styles,
         defaultStyle: {
             font: defaultFont,
-            // alignment: isArabic ? 'right' : 'left', // Removed from defaultStyle
             lineHeight: 1.2
         },
         pageMargins: [40, 40, 40, 40], // Left, Top, Right, Bottom margins (approx 10mm)
@@ -1455,7 +1489,6 @@ async function getCVDocumentDefinition(addWatermark) {
 
     return docDefinition;
 }
-
 
 
 
