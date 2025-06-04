@@ -861,20 +861,18 @@ async function getCVDocumentDefinition(addWatermark) {
     const isArabic = currentLang === 'ar';
     // استخدام المفتاح الذي تم تخزين الخط به في pdfMake.vfs
     // تأكد من أن 'Tajawal' هنا يطابق الاسم الذي استخدمته في pdfMake.fonts
-    const defaultFont = isArabic ? 'Tajawal' : 'Roboto';
+    const defaultFont = isArabic ? 'Tajawal' : 'Roboto'; // أو 'Amiri' أو 'NotoNaskhArabic'
 
     const name = document.getElementById('name-input')?.value.trim() || '';
     const title = document.getElementById('title-input')?.value.trim() || '';
     const emailVal = document.getElementById('email-input')?.value.trim() || '';
     const phone = document.getElementById('phone-input')?.value.trim() || '';
-    const website = document.getElementById('website-input')?.value.trim() || ''; // التأكد من استخدام 'website' هنا
+    const website = document.getElementById('website-input')?.value.trim() || ''; 
     const objective = document.getElementById('objective-input')?.value.trim() || '';
 
     let profilePicBase64 = null;
     if (profilePicDataUrl) {
         try {
-            // pdfmake يمكنه التعامل مع بادئة "data:image/jpeg;base64," بشكل مباشر.
-            // لذا، نستخدم profilePicDataUrl مباشرة.
             profilePicBase64 = profilePicDataUrl;
         } catch (e) {
             console.error("Error processing profile picture for PDFMake:", e);
@@ -953,7 +951,7 @@ async function getCVDocumentDefinition(addWatermark) {
             alignment: isArabic ? 'right' : 'left',
             font: defaultFont
         },
-        skillTag: { // Style for simulating skill tags (will be applied to text blocks)
+        skillTag: { 
             fontSize: isArabic ? 10 : 9,
             color: '#212121',
             alignment: 'center',
@@ -972,22 +970,19 @@ async function getCVDocumentDefinition(addWatermark) {
 
     // Helper to create a section with title and content
     const createSection = (titleKey, contentArray) => {
-        // Return empty array if contentArray is empty or null, so section doesn't appear
         if (!contentArray || contentArray.length === 0 || contentArray.every(item => !item)) return [];
         return [
             { text: translations[currentLang][titleKey], style: 'sectionTitle' },
-            { stack: contentArray, margin: [0, 0, 0, 10] } // Wrap content in a stack for consistent margin
+            { stack: contentArray, margin: [0, 0, 0, 10] }
         ];
     };
 
     // Helper for contact info
     const getContactInfoContent = () => {
         const items = [];
-        // Using Unicode characters for icons to ensure display in PDFMake
-        // Order of icon and text is important for RTL display
         if (emailVal) items.push({ text: (isArabic ? '\u2709 ' : '\u2709 ') + emailVal, style: 'text', alignment: isArabic ? 'right' : 'left' });
         if (phone) items.push({ text: (isArabic ? '\u260E ' : '\u260E ') + phone, style: 'text', alignment: isArabic ? 'right' : 'left' });
-        if (website) items.push({ text: (isArabic ? '\u1F310 ' : '\u1F310 ') + website, style: 'text', alignment: isArabic ? 'right' : 'left' }); // استخدام 'website'
+        if (website) items.push({ text: (isArabic ? '\u1F310 ' : '\u1F310 ') + website, style: 'text', alignment: isArabic ? 'right' : 'left' });
         return items;
     };
 
@@ -1008,7 +1003,6 @@ async function getCVDocumentDefinition(addWatermark) {
                 content.push({ text: `${exp.company}${exp.company && exp.duration ? ' - ' : ''}${exp.duration}`, style: 'company' });
             }
             if (exp.description) {
-                // Replace newlines with \n for pdfMake
                 content.push({ text: exp.description.replace(/\n/g, '\n'), style: 'description' });
             }
             return { stack: content, margin: [0, 0, 0, 10] };
@@ -1043,15 +1037,15 @@ async function getCVDocumentDefinition(addWatermark) {
 
         const skillTableBody = [];
         let currentRow = [];
-        const maxCols = 3; // Maximum columns for skills, adjust as needed
-        const cellPadding = [5, 2, 5, 2]; // [left, top, right, bottom] padding for each skill "tag"
+        const maxCols = 3; 
+        const cellPadding = [5, 2, 5, 2];
 
         for (const skill of filledSkills) {
             const skillCell = {
                 text: skill,
                 style: 'skillTag',
-                fillColor: '#e9ecef', // Background color for the tag
-                border: [false, false, false, false], // No border for cells
+                fillColor: '#e9ecef', 
+                border: [false, false, false, false], 
                 padding: cellPadding
             };
             currentRow.push(skillCell);
@@ -1061,11 +1055,11 @@ async function getCVDocumentDefinition(addWatermark) {
                 currentRow = [];
             }
         }
-        // IMPORTANT FIX: Fill the last row with empty cells if it's not full
+        // FIX: Ensure the last row is filled with empty cells if it's not full
         while (currentRow.length > 0 && currentRow.length < maxCols) {
             currentRow.push({}); // Push empty cell object to fill the row
         }
-        if (currentRow.length > 0) { // Add any remaining skills (which might be a partially filled row)
+        if (currentRow.length > 0) {
             skillTableBody.push(currentRow);
         }
 
@@ -1073,7 +1067,7 @@ async function getCVDocumentDefinition(addWatermark) {
             { text: translations[currentLang]['Skills'], style: 'sectionTitle' },
             {
                 table: {
-                    widths: Array(maxCols).fill('auto'), // Auto width for columns
+                    widths: Array(maxCols).fill('auto'), 
                     body: skillTableBody,
                     layout: {
                         hLineWidth: function(i, node) { return 0; },
@@ -1105,11 +1099,8 @@ async function getCVDocumentDefinition(addWatermark) {
                 ul: filledLanguages.map(lang => ({
                     text: lang,
                     style: 'listItem',
-                    // Add a custom bullet if needed, pdfMake's ul automatically adds bullets
-                    // If you want a specific bullet, use text: '\u2022 ' + lang
                 })),
                 margin: [0, 0, 0, 10],
-                // listType: 'none' // Remove if you want default bullets, or use if custom bullet is added in text
             }
         ];
     };
@@ -1150,12 +1141,11 @@ async function getCVDocumentDefinition(addWatermark) {
         ...createSection('Career Objective', objective ? [{ text: objective, style: 'text' }] : []),
         ...createSection('Work Experience', getExperienceItems()),
         ...createSection('Education', getEducationItems()),
-    ].filter(Boolean); // Filter out empty sections
+    ].filter(Boolean);
 
-    // Sidebar content (will be used in multi-column layouts)
     const sidebarSections = [
         profilePicBase64 ? {
-            image: profilePicBase64, // Use direct base64 string
+            image: profilePicBase64,
             width: 80,
             height: 80,
             alignment: 'center',
@@ -1165,7 +1155,7 @@ async function getCVDocumentDefinition(addWatermark) {
         ...getSkillsContent(),
         ...getLanguagesContent(),
         ...getReferencesContent()
-    ].filter(Boolean); // Filter out nulls/empty sections
+    ].filter(Boolean);
 
     switch (`${selectedTemplateCategory}-${selectedTemplate}`) {
         case 'normal-1': // Normal Template 1 (Full Width)
@@ -1189,7 +1179,7 @@ async function getCVDocumentDefinition(addWatermark) {
                                     alignment: isArabic ? 'right' : 'left',
                                     width: 'auto',
                                     margin: [0, 0, 5, 0],
-                                    color: '#e9ecef' // Header text color
+                                    color: '#e9ecef'
                                 })),
                                 columnGap: 10,
                                 margin: [0, 5, 0, 0],
@@ -1201,14 +1191,14 @@ async function getCVDocumentDefinition(addWatermark) {
                 ].filter(Boolean),
                 columnGap: 20,
                 margin: [0, 0, 0, 20],
-                background: '#0056b3', // Header background color
-                color: '#e9ecef', // Header text color
+                background: '#0056b3',
+                color: '#e9ecef',
                 padding: [20, 20, 20, 20]
             });
             docContent.push(...mainContentSections);
-            docContent.push(...getSkillsContent()); // Add skills as a separate section
-            docContent.push(...getLanguagesContent()); // Add languages as a separate section
-            docContent.push(...getReferencesContent()); // Add references as a separate section
+            docContent.push(...getSkillsContent());
+            docContent.push(...getLanguagesContent());
+            docContent.push(...getReferencesContent());
             break;
 
         case 'standard-1': // Standard Template 1 (Sidebar)
@@ -1221,26 +1211,24 @@ async function getCVDocumentDefinition(addWatermark) {
                             { text: title, style: 'subHeader', alignment: 'right', color: '#007bff' },
                             ...mainContentSections
                         ],
-                        margin: [10, 0, 0, 0] // Margin to left of main content
+                        margin: [10, 0, 0, 0]
                     },
                     { // Sidebar (left for RTL)
-                        width: 150, // Fixed width for sidebar
+                        width: 150,
                         stack: sidebarSections.map(item => {
-                            // Override alignment for sidebar items to be centered
                             if (item.style && item.style.alignment) item.style.alignment = 'center';
-                            if (item.columns) { // For contact info columns
+                            if (item.columns) {
                                 item.columns.forEach(col => col.alignment = 'center');
                             }
-                            if (item.ul) { // For skills/languages lists
+                            if (item.ul) {
                                 item.ul.forEach(li => li.alignment = 'center');
                             }
-                            // Ensure colors are applied for sidebar content if needed
-                            if (item.style && item.style.color) item.color = '#212121'; // Default sidebar text color
+                            if (item.style && item.style.color) item.color = '#212121';
                             return item;
                         }),
-                        margin: [0, 0, 10, 0], // Margin to right of sidebar
-                        background: '#e9ecef', // Sidebar background color
-                        color: '#212121', // Sidebar text color
+                        margin: [0, 0, 10, 0],
+                        background: '#e9ecef',
+                        color: '#212121',
                         padding: [10, 10, 10, 10]
                     }
                 ] : [ // LTR layout
@@ -1325,13 +1313,12 @@ async function getCVDocumentDefinition(addWatermark) {
                             if (item.ul) {
                                 item.ul.forEach(li => li.alignment = 'center');
                             }
-                            // Set specific color for sidebar text in Professional template
-                            if (item.style && item.style.color) item.color = '#212121'; // Default sidebar text color
+                            if (item.style && item.style.color) item.color = '#212121';
                             return item;
                         }),
                         margin: [0, 0, 10, 0],
-                        background: '#f8f9fa', // Sidebar background color
-                        color: '#212121', // Sidebar text color
+                        background: '#f8f9fa',
+                        color: '#212121',
                         padding: [10, 10, 10, 10]
                     }
                 ] : [ // LTR layout
@@ -1360,7 +1347,7 @@ async function getCVDocumentDefinition(addWatermark) {
                     }
                 ],
                 columnGap: 20,
-                margin: [0, 20, 0, 0] // Margin below the header
+                margin: [0, 20, 0, 0]
             });
             break;
 
@@ -1386,13 +1373,12 @@ async function getCVDocumentDefinition(addWatermark) {
                             if (item.ul) {
                                 item.ul.forEach(li => li.alignment = 'center');
                             }
-                            // Set specific color for sidebar text in AST template
                             item.color = '#ffffff';
                             return item;
                         }),
                         margin: [0, 0, 10, 0],
-                        background: '#00acc1', // Sidebar background color
-                        color: '#ffffff', // Sidebar text color
+                        background: '#00acc1',
+                        color: '#ffffff',
                         padding: [10, 10, 10, 10]
                     }
                 ] : [ // LTR layout
@@ -1464,10 +1450,12 @@ async function getCVDocumentDefinition(addWatermark) {
         },
         pageMargins: [40, 40, 40, 40], // Left, Top, Right, Bottom margins (approx 10mm)
         watermark: addWatermark ? { text: watermarkText, style: 'watermark', opacity: 0.1 } : null,
+        rtl: isArabic // Crucial for correct text flow and list item positioning in Arabic
     };
 
     return docDefinition;
 }
+
 
 
 
