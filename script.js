@@ -1349,227 +1349,361 @@ function removeField(button) {
  * Generates or updates the HTML content of the CV within the specified target element.
  * @param {HTMLElement} targetElement The DOM element to populate with CV content.
  */
-function generateCV(targetElement) {
-    // console.log(`[generateCV] Called for element: ${targetElement.id}. isCapturingPdf: ${isCapturingPdf}`);
-    if (!targetElement) {
-        console.error("[generateCV] Target element for CV generation is null or undefined!");
+function generateCV() {
+    // Get input elements
+    const nameInput = document.getElementById('name-input');
+    const titleInput = document.getElementById('title-input');
+    const emailInput = document.getElementById('email-input');
+    const phoneInput = document.getElementById('phone-input');
+    const websiteInput = document.getElementById('website-input');
+    const objectiveInput = document.getElementById('objective-input');
+
+    // Ensure cvContainer exists
+    if (!cvContainer) {
+        console.error("CV container not found!");
         return;
     }
 
+    // Determine text direction based on current language
     const isArabic = currentLang === 'ar';
     const direction = isArabic ? 'rtl' : 'ltr';
 
-    // الكلاسات تطبق دائماً على العنصر المستهدف
-    targetElement.className = `${selectedTemplateCategory}-layout template${selectedTemplate}`;
-    targetElement.dir = direction;
-    targetElement.innerHTML = ''; // مسح المحتوى القديم قبل إعادة البناء
+    // Clear previous CV content and set base classes/direction
+    cvContainer.innerHTML = '';
+    cvContainer.className = `${selectedTemplateCategory}-layout template${selectedTemplate}`;
+    cvContainer.dir = direction;
 
-    // جلب البيانات
-    const name = document.getElementById('name-input')?.value.trim() || '';
-    const title = document.getElementById('title-input')?.value.trim() || '';
-    const emailVal = document.getElementById('email-input')?.value.trim() || '';
-    const phone = document.getElementById('phone-input')?.value.trim() || '';
-    const website = document.getElementById('website-input')?.value.trim() || '';
-    const objective = document.getElementById('objective-input')?.value.trim() || '';
+    // Extract values from input fields
+    const name = nameInput ? nameInput.value.trim() : '';
+    const title = titleInput ? titleInput.value.trim() : '';
+    const email = emailInput ? emailInput.value.trim() : '';
+    const phone = phoneInput ? phoneInput.value.trim() : '';
+    const website = websiteInput ? websiteInput.value.trim() : '';
+    const objective = objectiveInput ? objectiveInput.value.trim() : '';
 
-    let profilePicHTML = '';
+    // Extract data from repeatable sections
+    const experienceEntries = Array.from(document.querySelectorAll('#experience-input .experience-entry'));
+    const educationEntries = Array.from(document.querySelectorAll('#education-input .education-entry'));
+    const skillInputs = Array.from(document.querySelectorAll('#skills-input .skill-item-input'));
+    const languageInputs = Array.from(document.querySelectorAll('#languages-input .language-item-input'));
+    const referenceEntries = Array.from(document.querySelectorAll('#references-input .reference-entry'));
+
+    // Profile Picture Element
+    let profilePicElement = null;
     if (profilePicDataUrl) {
-        profilePicHTML = `<img src="${profilePicDataUrl}" class="cv-profile-pic" alt="${translations[currentLang]['Profile Picture']}">`;
+        profilePicElement = document.createElement('img');
+        profilePicElement.className = 'cv-profile-pic';
+        profilePicElement.alt = 'Profile Picture';
+        profilePicElement.src = profilePicDataUrl;
     }
 
-    let contactInfoHTML = '<div class="cv-contact-info">';
-    let hasContactInfo = false;
-    if (emailVal) { contactInfoHTML += `<div class="cv-contact-item"><i class="fas fa-envelope"></i><p>${emailVal}</p></div>`; hasContactInfo = true; }
-    if (phone) { contactInfoHTML += `<div class="cv-contact-item"><i class="fas fa-phone"></i><p>${phone}</p></div>`; hasContactInfo = true; }
-    if (website) { contactInfoHTML += `<div class="cv-contact-item"><i class="fas fa-globe"></i><p>${website}</p></div>`; hasContactInfo = true; }
-    contactInfoHTML += '</div>';
-    if (!hasContactInfo) contactInfoHTML = '';
+    // Contact Info Section
+    let contactInfoDiv = null;
+    if (email || phone || website) {
+        contactInfoDiv = document.createElement('div');
+        contactInfoDiv.className = 'cv-contact-info';
+        if (email) {
+            const item = document.createElement('div');
+            item.className = 'cv-contact-item';
+            item.innerHTML = `<i class="fas fa-envelope"></i><p>${email}</p>`;
+            contactInfoDiv.appendChild(item);
+        }
+        if (phone) {
+            const item = document.createElement('div');
+            item.className = 'cv-contact-item';
+            item.innerHTML = `<i class="fas fa-phone"></i><p>${phone}</p>`;
+            contactInfoDiv.appendChild(item);
+        }
+        if (website) {
+            const item = document.createElement('div');
+            item.className = 'cv-contact-item';
+            item.innerHTML = `<i class="fa fa-location-arrow"></i><p>${website}</p>`;
+            contactInfoDiv.appendChild(item);
+        }
+    }
 
-    const objectiveHTML = objective ? `<div class="cv-section" id="objective"><h3 class="cv-section-title">${translations[currentLang]['Career Objective']}</h3><p>${objective.replace(/\n/g, '<br>')}</p></div>` : '';
+    // Career Objective Section - Always create the section element, but fill content only if objective exists
+    const objectiveSection = document.createElement('div');
+    objectiveSection.className = 'cv-section';
+    objectiveSection.id = 'objective';
+    // Ensure objective is rendered even if empty, to maintain layout consistency
+    objectiveSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Career Objective']}</h3><p>${objective || ''}</p>`;
 
-    let experienceHTML = '';
-    const experienceEntries = document.querySelectorAll('#experience-input .experience-entry');
-    const hasFilledExperience = Array.from(experienceEntries).some(e => Array.from(e.querySelectorAll('input, textarea')).some(input => input.value.trim()));
+    // Work Experience Section - Always create the section, fill list if entries exist
+    const experienceSection = document.createElement('div');
+    experienceSection.className = 'cv-section';
+    experienceSection.id = 'experience';
+    experienceSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Work Experience']}</h3><div id="experience-list"></div>`;
+    const experienceList = experienceSection.querySelector('#experience-list');
+
+    const hasFilledExperience = experienceEntries.some(entry => {
+        const inputs = entry.querySelectorAll('input, textarea');
+        return Array.from(inputs).some(input => input.value.trim());
+    });
+
     if (hasFilledExperience) {
-        experienceHTML = `<div class="cv-section" id="experience"><h3 class="cv-section-title">${translations[currentLang]['Work Experience']}</h3>`;
         experienceEntries.forEach(entry => {
-            const expTitle = entry.querySelector('.experience-title')?.value.trim() || '';
-            const company = entry.querySelector('.experience-company')?.value.trim() || '';
-            const duration = entry.querySelector('.experience-duration')?.value.trim() || '';
-            const desc = entry.querySelector('.experience-description')?.value.trim().replace(/\n/g, '<br>') || '';
-            if (expTitle || company || duration || desc) {
-                 experienceHTML += `<div class="cv-experience-item">
-                                    <h4 class="cv-job-title">${expTitle || translations[currentLang]['No Title']}</h4>
-                                    ${company || duration ? `<h5 class="cv-company">${company}${company && duration ? ' - ' : ''}${duration}</h5>` : ''}
-                                    ${desc ? `<p>${desc}</p>` : ''}
-                                 </div>`;
+            const itemTitle = entry.querySelector('.experience-title').value.trim();
+            const itemCompany = entry.querySelector('.experience-company').value.trim();
+            const itemDuration = entry.querySelector('.experience-duration').value.trim();
+            const itemDescription = entry.querySelector('.experience-description').value.trim();
+
+            if (itemTitle || itemCompany || itemDuration || itemDescription) {
+                const item = document.createElement('div');
+                item.className = 'cv-experience-item';
+                item.innerHTML = `
+                    <h4 class="cv-job-title">${itemTitle || translations[currentLang]['No Title']}</h4>
+                    ${(itemCompany || itemDuration) ? `<h5 class="cv-company">${itemCompany}${(itemCompany && itemDuration) ? ' - ' : ''}${itemDuration}</h5>` : ''}
+                    ${itemDescription ? `<p>${itemDescription}</p>` : ''}
+                `;
+                experienceList.appendChild(item);
             }
         });
-        experienceHTML += '</div>';
     }
 
-    let educationHTML = '';
-    const educationEntries = document.querySelectorAll('#education-input .education-entry');
-    const hasFilledEducation = Array.from(educationEntries).some(e => Array.from(e.querySelectorAll('input')).some(input => input.value.trim()));
+    // Education Section - Always create the section, fill list if entries exist
+    const educationSection = document.createElement('div');
+    educationSection.className = 'cv-section';
+    educationSection.id = 'education';
+    educationSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Education']}</h3><div id="education-list"></div>`;
+    const educationList = educationSection.querySelector('#education-list');
+
+    const hasFilledEducation = educationEntries.some(entry => {
+        const inputs = entry.querySelectorAll('input');
+        return Array.from(inputs).some(input => input.value.trim());
+    });
+
     if (hasFilledEducation) {
-        educationHTML = `<div class="cv-section" id="education"><h3 class="cv-section-title">${translations[currentLang]['Education']}</h3>`;
         educationEntries.forEach(entry => {
-            const degree = entry.querySelector('.education-degree')?.value.trim() || '';
-            const institution = entry.querySelector('.education-institution')?.value.trim() || '';
-            const duration = entry.querySelector('.education-duration')?.value.trim() || '';
-             if (degree || institution || duration) {
-                educationHTML += `<div class="cv-education-item">
-                                    <h4 class="cv-degree">${degree || translations[currentLang]['No Degree']}</h4>
-                                     ${institution || duration ? `<h5 class="cv-institution">${institution}${institution && duration ? ' - ' : ''}${duration}</h5>` : ''}
-                                 </div>`;
+            const itemDegree = entry.querySelector('.education-degree').value.trim();
+            const itemInstitution = entry.querySelector('.education-institution').value.trim();
+            const itemDuration = entry.querySelector('.education-duration').value.trim();
+
+            if (itemDegree || itemInstitution || itemDuration) {
+                const item = document.createElement('div');
+                item.className = 'cv-education-item';
+                item.innerHTML = `
+                    <h4 class="cv-degree">${itemDegree || translations[currentLang]['No Degree']}</h4>
+                    ${(itemInstitution || itemDuration) ? `<h5 class="cv-institution">${itemInstitution}${(itemInstitution && itemDuration) ? ' - ' : ''}${itemDuration}</h5>` : ''}
+                `;
+                educationList.appendChild(item);
             }
         });
-        educationHTML += '</div>';
     }
 
-    let skillsHTML = '';
-    const skillInputs = document.querySelectorAll('#skills-input .skill-item-input');
-    const filledSkills = Array.from(skillInputs).map(input => input.value.trim()).filter(skill => skill);
-    if (filledSkills.length > 0) {
-        const useSingleColumnSkills = (selectedTemplateCategory !== 'normal' && filledSkills.length <= 5 && selectedTemplateCategory !== 'professional') || (selectedTemplateCategory === 'professional' && filledSkills.length <=3) || (selectedTemplateCategory === 'normal');
-        skillsHTML = `<div class="cv-section" id="skills"><h3 class="cv-section-title">${translations[currentLang]['Skills']}</h3><ul class="cv-skill-list ${useSingleColumnSkills ? 'single-column' : ''}">`;
-        filledSkills.forEach(skill => { skillsHTML += `<li class="cv-skill-item">${skill}</li>`; });
-        skillsHTML += '</ul></div>';
+    // Skills Section - Always create the section, fill list if inputs exist
+    const skillsSection = document.createElement('div');
+    skillsSection.className = 'cv-section';
+    skillsSection.id = 'skills';
+    skillsSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Skills']}</h3><ul class="cv-skill-list"></ul>`;
+    const skillsList = skillsSection.querySelector('.cv-skill-list');
+
+    const hasFilledSkills = skillInputs.some(input => input.value.trim());
+    if (hasFilledSkills) {
+        skillInputs.forEach(input => {
+            if (input.value.trim()) {
+                const li = document.createElement('li');
+                li.className = 'cv-skill-item';
+                li.textContent = input.value.trim();
+                skillsList.appendChild(li);
+            }
+        });
     }
 
-    let languagesHTML = '';
-    const languageInputs = document.querySelectorAll('#languages-input .language-item-input');
-    const filledLanguages = Array.from(languageInputs).map(input => input.value.trim()).filter(lang => lang);
-    if (filledLanguages.length > 0) {
-        languagesHTML = `<div class="cv-section" id="languages"><h3 class="cv-section-title">${translations[currentLang]['Languages']}</h3><ul class="cv-language-list">`;
-        filledLanguages.forEach(lang => { languagesHTML += `<li>${lang}</li>`; });
-        languagesHTML += '</ul></div>';
+    // Languages Section - Always create the section, fill list if inputs exist
+    const languagesSection = document.createElement('div');
+    languagesSection.className = 'cv-section';
+    languagesSection.id = 'languages';
+    languagesSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['Languages']}</h3><ul class="cv-language-list"></ul>`;
+    const languagesList = languagesSection.querySelector('.cv-language-list');
+
+    const hasFilledLanguages = languageInputs.some(input => input.value.trim());
+    if (hasFilledLanguages) {
+        languageInputs.forEach(input => {
+            if (input.value.trim()) {
+                const li = document.createElement('li');
+                li.textContent = input.value.trim();
+                languagesList.appendChild(li);
+            }
+        });
     }
-    
-    let referencesHTML = '';
-    const referenceEntries = document.querySelectorAll('#references-input .reference-entry');
-    const hasFilledReferences = Array.from(referenceEntries).some(e => Array.from(e.querySelectorAll('input')).some(input => input.value.trim()));
+
+    // References Section - Always create the section, fill list if entries exist
+    const referencesSection = document.createElement('div');
+    referencesSection.className = 'cv-section';
+    referencesSection.id = 'references';
+    referencesSection.innerHTML = `<h3 class="cv-section-title">${translations[currentLang]['References']}</h3><div id="references-list"></div>`;
+    const referencesList = referencesSection.querySelector('#references-list');
+
+    const hasFilledReferences = referenceEntries.some(entry => {
+        const inputs = entry.querySelectorAll('input');
+        return Array.from(inputs).some(input => input.value.trim());
+    });
+
     if (hasFilledReferences) {
-        referencesHTML = `<div class="cv-section" id="references"><h3 class="cv-section-title">${translations[currentLang]['References']}</h3>`;
         referenceEntries.forEach(entry => {
-            const refName = entry.querySelector('.reference-name')?.value.trim() || '';
-            const position = entry.querySelector('.reference-position')?.value.trim() || '';
-            const phoneNum = entry.querySelector('.reference-phone')?.value.trim() || '';
-            const refEmailVal = entry.querySelector('.reference-email')?.value.trim() || ''; // Renamed
-            if (refName || position || phoneNum || refEmailVal) {
-                referencesHTML += `<div class="cv-reference-item">
-                                    <h4>${refName || translations[currentLang]['No Name']}</h4>
-                                    ${position ? `<p>${position}</p>` : ''}
-                                    ${phoneNum ? `<p>${phoneNum}</p>` : ''}
-                                    ${refEmailVal ? `<p>${refEmailVal}</p>` : ''}
-                                 </div>`;
+            const refName = entry.querySelector('.reference-name').value.trim();
+            const refPosition = entry.querySelector('.reference-position').value.trim();
+            const refPhone = entry.querySelector('.reference-phone').value.trim();
+            const refEmail = entry.querySelector('.reference-email').value.trim();
+
+            if (refName || refPosition || refPhone || refEmail) {
+                const item = document.createElement('div');
+                item.className = 'cv-reference-item';
+                item.innerHTML = `
+                    <h4>${refName || translations[currentLang]['No Name']}</h4>
+                    ${refPosition ? `<p>${refPosition}</p>` : ''}
+                    ${refPhone ? `<p>${refPhone}</p>` : ''}
+                    ${refEmail ? `<p>${refEmail}</p>` : ''}
+                `;
+                referencesList.appendChild(item);
             }
         });
-        referencesHTML += '</div>';
     }
 
-    const cvContentDiv = document.createElement('div');
-    cvContentDiv.className = 'cv-content';
-    cvContentDiv.dir = direction;
+    // Assemble CV structure based on template category
+    let cvStructure = document.createDocumentFragment();
+    const cvContent = document.createElement('div');
+    cvContent.className = 'cv-content';
+    cvContent.dir = direction;
 
     if (selectedTemplateCategory === 'normal') {
-        let headerClass = 'cv-header';
-        if (selectedTemplate === 3 && selectedTemplateCategory === 'normal') headerClass += ' centered';
+        const header = document.createElement('div');
+        header.className = `cv-header ${selectedTemplate === 3 ? 'centered' : ''}`;
+        const textContentContainer = document.createElement('div');
+        textContentContainer.className = 'cv-header-text';
+        textContentContainer.style.flexGrow = '1';
+        const nameTitleBlock = document.createElement('div');
+        nameTitleBlock.innerHTML = `<h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2>`;
+        textContentContainer.appendChild(nameTitleBlock);
+        if (contactInfoDiv) {
+             textContentContainer.appendChild(contactInfoDiv);
+        }
+        if (profilePicElement) {
+            header.appendChild(profilePicElement);
+        }
+        header.appendChild(textContentContainer);
+        cvContent.appendChild(header);
+        cvContent.appendChild(objectiveSection);
+        cvContent.appendChild(experienceSection);
+        cvContent.appendChild(educationSection);
+        cvContent.appendChild(skillsSection);
+        cvContent.appendChild(languagesSection);
+        cvContent.appendChild(referencesSection);
+        cvContent.appendChild(createEndMarker()); // Ensure end marker is present
 
-        cvContentDiv.innerHTML = `
-            <div class="${headerClass}" dir="${direction}">
-                ${profilePicHTML}
-                <div class="cv-header-text" style="flex-grow: 1;">
-                    <h1 class="cv-name">${name}</h1>
-                    <h2 class="cv-title">${title}</h2>
-                    ${contactInfoHTML}
-                </div>
-            </div>
-            ${objectiveHTML}
-            ${experienceHTML}
-            ${educationHTML}
-            ${skillsHTML}
-            ${languagesHTML}
-            ${referencesHTML}
-            ${createEndMarkerHTML()} 
-        `;
-    } else {
-        const layoutDiv = document.createElement('div');
-        layoutDiv.className = (selectedTemplateCategory === 'professional') ? 'cv-professional-layout' : 
-                              (selectedTemplateCategory === 'standard' ? 'cv-two-column-layout' : 'ast-layout');
-        layoutDiv.dir = direction;
+    } else if (selectedTemplateCategory === 'standard' || selectedTemplateCategory === 'professional' || selectedTemplateCategory === 'ast') {
+        const layout = document.createElement('div');
+        if (selectedTemplateCategory === 'standard') {
+             layout.className = 'cv-two-column-layout';
+        } else if (selectedTemplateCategory === 'professional') {
+             layout.className = 'cv-professional-layout';
+        } else if (selectedTemplateCategory === 'ast') {
+             layout.className = 'ast-layout';
+        }
+
+        layout.dir = direction;
 
         const sidebarDiv = document.createElement('div');
         sidebarDiv.className = 'cv-sidebar';
-        sidebarDiv.dir = direction;
-        
         const mainContentDiv = document.createElement('div');
         mainContentDiv.className = 'cv-main-content';
-        mainContentDiv.dir = direction;
 
+        // Add elements to sidebarDiv (always create them)
+        if (profilePicElement) sidebarDiv.appendChild(profilePicElement);
+        sidebarDiv.appendChild(skillsSection);
+        sidebarDiv.appendChild(languagesSection);
+        sidebarDiv.appendChild(referencesSection);
+        // Important: Add an end marker to sidebar as well if it needs to stretch vertically
+        // This helps the sidebar fill its column height in multi-column layouts
+        sidebarDiv.appendChild(createEndMarker());
+
+
+        // Add elements to mainContentDiv (always create them)
         if (selectedTemplateCategory === 'professional') {
-            const professionalHeader = document.createElement('div');
-            professionalHeader.className = 'cv-header professional-layout';
-            professionalHeader.dir = direction;
-            let proHeaderPicHTML = '';
-            // Example: specific templates might place the picture in the header
-            if (profilePicDataUrl && (selectedTemplate === 1 || selectedTemplate === 2 )) { // Customize template numbers
-                proHeaderPicHTML = profilePicHTML;
-            }
-            professionalHeader.innerHTML = `
-                ${proHeaderPicHTML} 
-                <h1 class="cv-name">${name}</h1>
-                <h2 class="cv-title">${title}</h2>
-                ${contactInfoHTML}
-            `;
-            cvContentDiv.appendChild(professionalHeader);
-
-            sidebarDiv.innerHTML = `
-                ${(profilePicDataUrl && !proHeaderPicHTML) ? profilePicHTML : ''}
-                ${skillsHTML}
-                ${languagesHTML}
-                ${referencesHTML}
-                ${createEndMarkerHTML()}
-            `;
-            mainContentDiv.innerHTML = `
-                ${objectiveHTML}
-                ${experienceHTML}
-                ${educationHTML}
-                ${createEndMarkerHTML()}
-            `;
-
-        } else { // Standard and AST
-            sidebarDiv.innerHTML = `
-                ${profilePicHTML}
-                ${contactInfoHTML}
-                ${skillsHTML}
-                ${languagesHTML}
-                ${referencesHTML}
-                ${createEndMarkerHTML()}
-            `;
-            mainContentDiv.innerHTML = `
-                <div class="cv-header two-col-main" dir="${direction}">
-                    <h1 class="cv-name">${name}</h1>
-                    <h2 class="cv-title">${title}</h2>
-                </div>
-                ${objectiveHTML}
-                ${experienceHTML}
-                ${educationHTML}
-                ${createEndMarkerHTML()}
-            `;
-        }
-        
-        if (direction === 'ltr' && (selectedTemplateCategory === 'standard' || selectedTemplateCategory === 'ast')) {
-            layoutDiv.appendChild(mainContentDiv);
-            layoutDiv.appendChild(sidebarDiv);
+            const header = document.createElement('div');
+            header.className = 'cv-header professional-layout';
+            header.innerHTML = `<h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2>`;
+            if (contactInfoDiv) header.appendChild(contactInfoDiv);
+            cvContent.appendChild(header); // Professional header is a separate top-level element
         } else {
-            layoutDiv.appendChild(sidebarDiv);
-            layoutDiv.appendChild(mainContentDiv);
+             const header = document.createElement('div');
+             header.className = 'cv-header two-col-main';
+             header.innerHTML = `<h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2>`;
+             if (contactInfoDiv) header.appendChild(contactInfoDiv);
+             mainContentDiv.appendChild(header); // Standard/AST header is inside main content
         }
-        cvContentDiv.appendChild(layoutDiv);
+
+        mainContentDiv.appendChild(objectiveSection);
+        mainContentDiv.appendChild(experienceSection);
+        mainContentDiv.appendChild(educationSection);
+        // Ensure end marker is present in the main content area to stretch it
+        mainContentDiv.appendChild(createEndMarker());
+
+
+        layout.appendChild(sidebarDiv);
+        layout.appendChild(mainContentDiv);
+        cvContent.appendChild(layout);
+        // No need for a global cvContent end marker if layout is handling it
     }
-    targetElement.appendChild(cvContentDiv);
-    // console.log(`[generateCV] CV HTML structure generated and appended to ${targetElement.id}. InnerHTML length: ${targetElement.innerHTML.length}`);
+
+    cvStructure.appendChild(cvContent);
+    cvContainer.appendChild(cvStructure);
+
+    // Apply direction and text alignment styles
+    const allCVElements = cvContainer.querySelectorAll('*');
+    allCVElements.forEach(element => {
+        element.style.direction = direction;
+        element.style.textAlign = 'inherit';
+        element.style.wordSpacing = 'normal'; // تطبيق تباعد الكلمات العادي على جميع العناصر
+
+        const isLayoutContainer = element.classList.contains('cv-header') ||
+                                  element.classList.contains('cv-two-column-layout') ||
+                                  element.classList.contains('cv-professional-layout') ||
+                                  element.classList.contains('ast-layout') ||
+                                  element.classList.contains('cv-sidebar') ||
+                                  element.classList.contains('cv-main-content') ||
+                                  element.classList.contains('cv-header-text') ||
+                                  element.classList.contains('cv-contact-item');
+
+        if (!isLayoutContainer) {
+            element.style.textAlign = isArabic ? 'right' : 'left';
+        }
+
+        if (element.tagName === 'LI') {
+             element.style.listStylePosition = isArabic ? 'inside' : 'outside';
+        }
+    });
+
+    const elementsWithSpecificAlignment = cvContainer.querySelectorAll('.cv-header.centered *, .cv-sidebar *');
+    elementsWithSpecificAlignment.forEach(el => {
+        if (!el.classList.contains('cv-contact-item')) {
+            el.style.textAlign = 'center';
+        } else {
+            el.style.textAlign = 'center';
+        }
+    });
+
+    const normalHeaderTextContainers = cvContainer.querySelectorAll('.cv-header:not(.centered) .cv-header-text');
+    normalHeaderTextContainers.forEach(container => {
+        container.style.textAlign = direction === 'rtl' ? 'right' : 'left';
+    });
+
+    const contactItems = cvContainer.querySelectorAll('.cv-contact-item');
+    contactItems.forEach(item => {
+        if (!item.closest('.cv-header.centered') && !item.closest('.cv-sidebar')) {
+            item.style.textAlign = direction === 'rtl' ? 'right' : 'left';
+        }
+    });
+
+    const listItemsFinal = cvContainer.querySelectorAll('li');
+    listItemsFinal.forEach(li => {
+        if (li.closest('.cv-sidebar') || li.closest('.cv-header.centered')) {
+            li.style.textAlign = 'center';
+        } else {
+            li.style.textAlign = 'inherit';
+        }
+    });
 }
 
 function createEndMarkerHTML() {
