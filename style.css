@@ -1959,7 +1959,7 @@ body[dir="ltr"] .qr-payment-inputs-scroll { padding-right: 0; padding-left: 15px
     /* هذا يساعد html2pdf.js على معرفة نهاية المحتوى الفعلي لكل عمود/صفحة */
     .cv-end-marker {
         height: 1px !important; /* اجعله صغيرًا جدًا ولكنه موجود */
-        margin-top: auto !important; /* أهم خاصية لدفعه لأسفل في حاوية flex */
+        margin-top: 500px !important; /* أهم خاصية لدفعه لأسفل في حاوية flex */
         page-break-before: always !important; /* تجنب بدء صفحة جديدة من أجله فقط */
         page-break-after: avoid !important; /* تجنب كسر الصفحة بعده بشكل غير ضروري */
         visibility: hidden !important; /* لا يجب أن يكون مرئيًا على الإطلاق */
