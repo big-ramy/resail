@@ -1764,14 +1764,13 @@ body[dir="ltr"] .qr-payment-inputs-scroll { padding-right: 0; padding-left: 15px
     #loading-overlay, /* Loading overlay */
     .language-toggle, /* Language toggle button */
     .progress-container /* Progress bar */
-     {
+    {
         display: none !important;
     }
 
     /* إخفاء كل الصفحات ما عدا صفحة معاينة السيرة الذاتية إذا كانت هي النشطة */
-    /* أو إذا لم تكن هناك صفحة نشطة محددة، يجب أن يخفي كل شيء */
     .page-section:not(#cv-preview-page),
-    .page-section:not(.active-page) { /* إذا لم تكن صفحة المعاينة هي النشطة، لا تطبعها */
+    .page-section:not(.active-page) {
         display: none !important;
     }
 
@@ -1800,24 +1799,23 @@ body[dir="ltr"] .qr-payment-inputs-scroll { padding-right: 0; padding-left: 15px
     #cv-preview-page .d-flex.justify-content-center.mt-4 {
         display: none !important;
     }
-    .remove-field { display: none !important; } /* إخفاء أزرار الحذف الصغيرة */
-
+    .remove-field { display: none !important; }
 
     /* --- تنسيق حاوية السيرة الذاتية الأساسية (A4) للطباعة --- */
     #cv-container {
         display: flex !important;
         flex-direction: column !important;
-        flex-grow: 1 !important;
+        flex-grow: 1 !important; /* ضمان نموها لملء ارتفاع الوالد */
         width: 210mm !important;
-        min-height: 297mm !important; /* أو 296mm إذا كانت هناك مشاكل هوامش */
-        height: auto !important; /* السماح بالنمو لعدة صفحات */
+        min-height: 297mm !important; /* ارتفاع A4 ثابت */
+        height: auto !important; /* السماح بالنمو لمحتوى متعدد الصفحات */
         margin: 0 auto !important; /* توسيط الصفحة في نافذة الطباعة */
         box-shadow: none !important;
         overflow: visible !important; /* هام جداً للسماح للمحتوى بالتجاوز */
         page-break-before: auto !important;
-        page-break-after: auto !important; /* التحكم في فواصل الصفحات يكون على العناصر الداخلية */
+        page-break-after: auto !important;
         page-break-inside: avoid !important; /* تجنب كسر الحاوية الرئيسية نفسها */
-        position: static !important; /* تجاهل أي تموضع مطلق من العرض العادي */
+        position: static !important; /* إعادة ضبط الموضع للطباعة */
         left: auto !important;
         top: auto !important;
         z-index: auto !important;
@@ -1825,37 +1823,44 @@ body[dir="ltr"] .qr-payment-inputs-scroll { padding-right: 0; padding-left: 15px
         max-width: none !important;
         background-color: white !important;
         color: #212529 !important;
-        visibility: visible !important; /* تأكيد أنها مرئية للطباعة */
-        font-size: 10pt; /* حجم خط أساسي للطباعة، يمكن تعديله */
-        line-height: 1.4; /* ارتفاع سطر مناسب للطباعة */
+        visibility: visible !important;
+        font-size: 10pt;
+        line-height: 1.4;
     }
 
+    /* --- تنسيق المحتوى الرئيسي للسيرة الذاتية (cv-content) --- */
+    .cv-content {
+        flex-grow: 1 !important; /* جعل cv-content يملأ الارتفاع المتاح */
+        display: flex !important;
+        flex-direction: column !important;
+        box-sizing: border-box;
+        padding: 0 !important;
+        overflow: visible !important;
+        min-height: 100%; /* ضمان أنها تأخذ الارتفاع الكامل لـ #cv-container */
+    }
 
     /* --- تنسيق التخطيطات متعددة الأعمدة (قياسي، احترافي، AST) --- */
     .cv-two-column-layout,
     .cv-professional-layout,
     .ast-layout {
-        display: flex !important; /* أو grid لـ professional */
-        flex-grow: 1 !important;
+        display: flex !important;
+        flex-grow: 1 !important; /* جعل حاوية التخطيط تملأ الارتفاع المتاح */
         flex-direction: row !important; /* الحفاظ على الأعمدة جنباً إلى جنب */
         gap: 8mm !important; /* فجوة أقل للطباعة */
-        page-break-inside: avoid !important;
-        min-height: calc(297mm - 20mm); /* ارتفاع A4 مطروحًا منه الحشوة العلوية والسفلية لـ #cv-container */
-        height: 100%;
+        page-break-inside: avoid !important; /* محاولة تجنب كسر التخطيط بأكمله */
+        min-height: calc(297mm - 0mm) !important; /* ارتفاع A4 مطروحًا منه حشوة #cv-container إذا كانت 0mm */
+        height: 100%; /* حاسم لجعل flex child يأخذ الارتفاع الكامل */
     }
 
     /* ترتيب الأعمدة الصحيح لـ LTR (الشريط الجانبي على اليسار) */
     .cv-professional-layout[dir="ltr"],
     .ast-layout[dir="ltr"],
     .cv-two-column-layout[dir="ltr"] {
-        /* JavaScript should handle dir attribute. For print, ensure columns are in order.
-           If sidebar is first in DOM, row-reverse makes it left. */
         flex-direction: row-reverse !important;
     }
     .cv-professional-layout[dir="rtl"] {
-        flex-direction: row !important; /* sidebar is second in DOM after main in some templates for RTL grid */
+        flex-direction: row !important;
     }
-
 
     /* مناطق الشبكة في التخطيط الاحترافي (للطباعة) */
     .cv-professional-layout {
@@ -1863,7 +1868,7 @@ body[dir="ltr"] .qr-payment-inputs-scroll { padding-right: 0; padding-left: 15px
         grid-template-rows: auto 1fr !important;
         gap: 8mm !important;
     }
-     .cv-professional-layout[dir="rtl"] {
+    .cv-professional-layout[dir="rtl"] {
         grid-template-columns: 1fr 75mm !important; /* عرض الشريط الجانبي (75mm) */
         grid-template-areas:
             "header header"
@@ -1876,21 +1881,20 @@ body[dir="ltr"] .qr-payment-inputs-scroll { padding-right: 0; padding-left: 15px
             "sidebar main" !important;
     }
 
-
     /* --- الشريط الجانبي والمحتوى الرئيسي --- */
     .cv-sidebar,
     .cv-main-content {
         overflow: visible !important;
-        page-break-inside: avoid !important;
+        page-break-inside: avoid !important; /* حاسم: تجنب كسر المحتوى داخل الأعمدة */
         padding: 8mm !important; /* حشوة داخلية أقل للأعمدة في الطباعة */
         width: auto !important; /* العرض يتم التحكم به من التخطيط الأب */
         flex-shrink: 0 !important;
         box-sizing: border-box;
         display: flex !important;
-        flex-direction: column !important;
+        flex-direction: column !important; /* لضمان تدفق المحتوى داخل الأعمدة عمودياً */
         justify-content: flex-start !important;
-        min-height: 100% !important; /* السماح بالتمدد */
-        height: 100%;
+        min-height: 100% !important; /* حاسم: جعل الأعمدة تمتد لملء ارتفاع الوالد */
+        height: 100%; /* مهم لكي يعمل flex-grow داخلياً */
     }
 
     .cv-two-column-layout .cv-sidebar,
@@ -1901,18 +1905,21 @@ body[dir="ltr"] .qr-payment-inputs-scroll { padding-right: 0; padding-left: 15px
     /* --- الأقسام الداخلية (Objective, Experience, Education, etc.) --- */
     .cv-section {
         margin-bottom: 6mm !important;
-        padding: 5mm !important;
+        padding-bottom: 0 !important; /* إزالة حشوة سفلية لتجنب مسافات إضافية */
+        padding-top: 5mm !important; /* إضافة حشوة علوية لضمان مساحة فوق القسم عند الانتقال لصفحة جديدة */
         background-color: transparent !important;
         box-shadow: none !important;
-        page-break-inside: avoid !important;
+        page-break-inside: avoid !important; /* حاسم: تجنب كسر المحتوى داخل الأقسام */
+        page-break-before: auto !important; /* السماح بكسر الصفحات قبله إذا لزم الأمر */
+        page-break-after: auto !important; /* السماح بكسر الصفحات بعده إذا لزم الأمر */
     }
 
     .cv-section-title {
-        margin-top: 5mm !important; /* أضف مسافة إضافية في الأعلى */
+        margin-top: 5mm !important; /* الحفاظ على هذه المسافة لتباعد متناسق داخل الأقسام */
         margin-bottom: 4mm !important;
         padding-bottom: 2mm !important;
         border-bottom-width: 1px !important;
-        font-size: 1.1em !important; /* تصغير طفيف ليتناسب مع الطباعة */
+        font-size: 1.1em !important;
     }
 
     .cv-experience-item,
@@ -1921,54 +1928,53 @@ body[dir="ltr"] .qr-payment-inputs-scroll { padding-right: 0; padding-left: 15px
         margin-bottom: 3mm !important;
         padding-bottom: 1.5mm !important;
         border-bottom: 0.5px solid #ccc !important;
-        page-break-inside: avoid !important;
+        page-break-inside: avoid !important; /* تجنب كسر العناصر الفردية */
+        page-break-before: auto !important;
+        page-break-after: auto !important;
     }
     .cv-experience-item:last-child,
     .cv-education-item:last-child,
     .cv-reference-item:last-child {
-        border-bottom: none !important; padding-bottom: 0; margin-bottom: 0;
+        border-bottom: none !important;
+        padding-bottom: 0;
+        margin-bottom: 0; /* ضمان عدم وجود مسافة إضافية في نهاية القوائم */
     }
 
     /* --- تحسينات النص واللغة العربية للطباعة --- */
-    body, #cv-container, #cv-container * { /* تطبيق على كل شيء داخل حاوية السيرة الذاتية */
+    body, #cv-container, #cv-container * {
         word-wrap: break-word;
         overflow-wrap: break-word;
-        text-rendering: optimizeLegibility; /* تحسين قراءة الخطوط */
+        text-rendering: optimizeLegibility;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }
 
-    [dir="rtl"] #cv-container p, /* استهداف الفقرات داخل السيرة فقط */
+    [dir="rtl"] #cv-container p,
     [dir="rtl"] #cv-container li,
     [dir="rtl"] #cv-container h1, [dir="rtl"] #cv-container h2, [dir="rtl"] #cv-container h3, [dir="rtl"] #cv-container h4,
     [dir="rtl"] #cv-container .cv-job-title, [dir="rtl"] #cv-container .cv-degree,
     [dir="rtl"] #cv-container .cv-company, [dir="rtl"] #cv-container .cv-institution,
     [dir="rtl"] #cv-container .cv-duration, [dir-rtl"] #cv-container .cv-contact-item p,
     [dir="rtl"] #cv-container .cv-experience-item p, [dir="rtl"] #cv-container .cv-reference-item p {
-        letter-spacing: 0.01em !important; /* تباعد أحرف طفيف جداً أو طبيعي */
-        word-spacing: 0.05em !important;    /* تباعد كلمات طفيف جداً أو طبيعي */
+        letter-spacing: 0.01em !important;
+        word-spacing: 0.05em !important;
         text-align: right !important;
-        line-height: 1.5 !important; /* ارتفاع سطر مناسب */
+        line-height: 1.5 !important;
     }
 
-    /* --- العلامة المائية عند الطباعة (إذا كانت فئة .watermarked مضافة) --- */
-    /* الأنماط العامة لـ #cv-container.watermarked::before يجب أن تكون كافية */
-    /* إذا لم تظهر في الطباعة، قد تحتاج إلى زيادة z-index أو التأكد أنها لا تُزال */
-
     /* --- معالجة الـ End Marker للامتداد إلى نهاية الصفحة --- */
-    /* هذا يساعد html2pdf.js على معرفة نهاية المحتوى الفعلي لكل عمود/صفحة */
     .cv-end-marker {
-        height: 1px !important; /* اجعله صغيرًا جدًا ولكنه موجود */
-        margin-top: 500px !important; /* أهم خاصية لدفعه لأسفل في حاوية flex */
-        page-break-before: always !important; /* تجنب بدء صفحة جديدة من أجله فقط */
-        page-break-after: avoid !important; /* تجنب كسر الصفحة بعده بشكل غير ضروري */
-        visibility: hidden !important; /* لا يجب أن يكون مرئيًا على الإطلاق */
+        height: 1px !important;
+        margin-top: auto !important; /* الخاصية الأهم لدفعه لأسفل في حاوية flex */
+        page-break-before: avoid !important; /* عدم فرض صفحة جديدة للماركر فقط */
+        page-break-after: avoid !important;
+        visibility: hidden !important;
         display: block !important;
     }
 
-    /* Ensure filler also respects page breaks */
     .filler {
         page-break-inside: avoid !important;
         margin-top: auto !important;
     }
 }
+
