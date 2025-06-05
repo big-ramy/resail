@@ -751,16 +751,16 @@ function validateEmail(email) {
  * @returns {Promise<string|null>} Base64 string of the PDF or null if downloaded/error.
  */
 async function captureCVasPDF(cvContainer, downloadPdf = false) {
-    console.log(`[captureCVasPDF V21 - Enhanced Flex & Breaks] بدأت العملية. تنزيل PDF: ${downloadPdf}`);
+    console.log(`[captureCVasPDF V22 - Mobile Off-screen Capture] بدأت العملية. تنزيل PDF: ${downloadPdf}`);
 
     if (!cvContainer) {
-        console.error("[captureCVasPDF V21 - Enhanced Flex & Breaks] لم يتم العثور على عنصر حاوية السيرة الذاتية!");
+        console.error("[captureCVasPDF V22 - Mobile Off-screen Capture] لم يتم العثور على عنصر حاوية السيرة الذاتية!");
         return Promise.reject("CV container not found");
     }
-    console.log("[captureCVasPDF V21 - Enhanced Flex & Breaks] تم العثور على عنصر حاوية السيرة الذاتية:", cvContainer.id);
+    console.log("[captureCVasPDF V22 - Mobile Off-screen Capture] تم العثور على عنصر حاوية السيرة الذاتية:", cvContainer.id);
 
     if (typeof isCapturingPdf !== 'undefined' && isCapturingPdf) {
-        console.warn("[captureCVasPDF V21 - Enhanced Flex & Breaks] عملية الالتقاط قيد التقدم بالفعل. سيتم التخطي.");
+        console.warn("[captureCVasPDF V22 - Mobile Off-screen Capture] عملية الالتقاط قيد التقدم بالفعل. سيتم التخطي.");
         return Promise.reject("Capture in progress");
     }
     if (typeof toggleLoadingOverlay === 'function') {
@@ -769,6 +769,8 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     if (typeof isCapturingPdf !== 'undefined') {
         isCapturingPdf = true;
     }
+
+    const isMobile = isMobileDevice(); // تحديد ما إذا كان الجهاز جوالاً
 
     // --- 1. حفظ الأنماط والحالة الأصلية لعنصر السيرة الذاتية وآبائه ---
     const originalStyles = {
@@ -792,7 +794,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     });
     originalStyles.cvContainer.className = cvContainer.className;
     originalStyles.cvContainer.scrollTop = cvContainer.scrollTop;
-    console.log("[captureCVasPDF V21 - Enhanced Flex & Breaks] تم حفظ الأنماط الأصلية لحاوية السيرة الذاتية.");
+    console.log("[captureCVasPDF V22 - Mobile Off-screen Capture] تم حفظ الأنماط الأصلية لحاوية السيرة الذاتية.");
 
     const cvPreviewArea = document.getElementById('cv-preview-area');
     const cvPreviewPage = document.getElementById('cv-preview-page');
@@ -804,18 +806,18 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
     if (cvPreviewPage) {
         parentPropsToStore.forEach(prop => originalStyles.cvPreviewPage[prop] = getComputedStyle(cvPreviewPage)[prop]);
     }
-    console.log("[captureCVasPDF V21 - Enhanced Flex & Breaks] تم حفظ الأنماط الأصلية للعناصر الأصلية (الآباء).");
+    console.log("[captureCVasPDF V22 - Mobile Off-screen Capture] تم حفظ الأنماط الأصلية للعناصر الأصلية (الآباء).");
 
     const removeButtonsOriginal = Array.from(cvContainer.querySelectorAll('.remove-field'));
     removeButtonsOriginal.forEach(btn => btn.style.display = 'none');
-    console.log("[captureCVasPDF V21 - Enhanced Flex & Breaks] تم إخفاء أزرار الإزالة.");
+    console.log("[captureCVasPDF V22 - Mobile Off-screen Capture] تم إخفاء أزرار الإزالة.");
 
     let captureError = null;
     let watermarkDiv = null;
 
     try {
         // --- 2. تطبيق الأنماط المؤقتة لالتقاط PDF ---
-        console.log("[captureCVasPDF V21 - Enhanced Flex & Breaks] تطبيق الأنماط المؤقتة على حاوية السيرة الذاتية لالتقاط PDF.");
+        console.log("[captureCVasPDF V22 - Mobile Off-screen Capture] تطبيق الأنماط المؤقتة على حاوية السيرة الذاتية لالتقاط PDF.");
 
         document.body.style.overflow = 'hidden';
 
@@ -846,7 +848,8 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
             });
         }
 
-        Object.assign(cvContainer.style, {
+        // الأنماط الخاصة بـ cvContainer للالتقاط
+        const cvContainerCaptureStyles = {
             width: '210mm',
             minHeight: '297mm',
             height: 'auto',
@@ -854,34 +857,46 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
             overflow: 'visible',
             overflowY: 'visible',
             backgroundColor: '#ffffff',
-            position: 'absolute',
-            top: '0',
-            left: '0',
-            right: 'auto',
             margin: '0',
-            zIndex: '-1',
-            transform: 'none',
-            padding: '0mm', // Changed from 10mm to 0mm based on user's previous fix for white borders
             zoom: '1',
             maxWidth: 'none',
             visibility: 'visible',
             boxSizing: 'border-box',
-            // Ensure flex properties are maintained for the main container
             display: 'flex',
             flexDirection: 'column',
             flexGrow: '1'
-        });
+        };
 
+        if (isMobile) {
+            // لنظام الجوال: خارج الشاشة
+            cvContainerCaptureStyles.position = 'absolute';
+            cvContainerCaptureStyles.top = '0';
+            cvContainerCaptureStyles.left = '-9999px'; // أقصى يسار الصفحة
+            cvContainerCaptureStyles.right = 'auto';
+            cvContainerCaptureStyles.zIndex = '-1'; // لضمان أنها لا تتداخل مع أي شيء
+            cvContainerCaptureStyles.transform = 'none'; // تعطيل أي تحويلات قديمة
+        } else {
+            // لنظام سطح المكتب: داخل الشاشة ولكن قد يكون hidden or z-indexed by other logic
+            cvContainerCaptureStyles.position = 'static'; // أو relative حسب الحاجة
+            cvContainerCaptureStyles.top = 'auto';
+            cvContainerCaptureStyles.left = 'auto';
+            cvContainerCaptureStyles.right = 'auto';
+            cvContainerCaptureStyles.zIndex = 'auto';
+            cvContainerCaptureStyles.transform = 'none';
+        }
+
+        Object.assign(cvContainer.style, cvContainerCaptureStyles);
+        
         cvContainer.className = `${selectedTemplateCategory}-layout template${selectedTemplate}`;
         cvContainer.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
-        console.log(`[captureCVasPDF V21 - Enhanced Flex & Breaks] تم ضبط اتجاه حاوية السيرة الذاتية إلى: ${cvContainer.dir}`);
+        console.log(`[captureCVasPDF V22 - Mobile Off-screen Capture] تم ضبط اتجاه حاوية السيرة الذاتية إلى: ${cvContainer.dir}`);
 
         // --- 3. إعادة إنشاء محتوى السيرة الذاتية للالتقاط ---
-        console.log("[captureCVasPDF V21 - Enhanced Flex & Breaks] استدعاء generateCV لتعبئة حاوية السيرة الذاتية الحالية...");
+        console.log("[captureCVasPDF V22 - Mobile Off-screen Capture] استدعاء generateCV لتعبئة حاوية السيرة الذاتية الحالية...");
         generateCV(cvContainer);
 
         if (cvContainer.innerHTML.trim().length === 0) {
-            console.error("[captureCVasPDF V21 - Enhanced Flex & Breaks] cvContainer فارغ بعد generateCV. قد تكون دالة generateCV لا تعمل.");
+            console.error("[captureCVasPDF V22 - Mobile Off-screen Capture] cvContainer فارغ بعد generateCV. قد تكون دالة generateCV لا تعمل.");
             throw new Error("CV content is empty after generation. Cannot capture blank page.");
         }
 
@@ -901,8 +916,8 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
                 textAlign: 'center',
                 pointerEvents: 'none',
                 zIndex: '10000',
-                width: '150%', // Reduced width a bit
-                height: '150%', // Reduced height a bit
+                width: '150%',
+                height: '150%',
                 lineHeight: '1.2',
                 wordBreak: 'break-word',
                 display: 'flex',
@@ -911,22 +926,22 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
                 opacity: '1'
             });
             cvContainer.appendChild(watermarkDiv);
-            console.log("[captureCVasPDF V21 - Enhanced Flex & Breaks] تم إضافة DIV العلامة المائية إلى حاوية السيرة الذاتية للتنزيل المباشر.");
+            console.log("[captureCVasPDF V22 - Mobile Off-screen Capture] تم إضافة DIV العلامة المائية إلى حاوية السيرة الذاتية للتنزيل المباشر.");
         }
 
         // --- 4. الانتظار لضمان اكتمال العرض وتحميل جميع الأصول ---
         cvContainer.offsetHeight; // Force reflow
-        console.log(`[captureCVasPDF V21 - Enhanced Flex & Breaks] ارتفاع تمرير حاوية السيرة الذاتية بعد تعبئة المحتوى: ${cvContainer.scrollHeight}px`);
+        console.log(`[captureCVasPDF V22 - Mobile Off-screen Capture] ارتفاع تمرير حاوية السيرة الذاتية بعد تعبئة المحتوى: ${cvContainer.scrollHeight}px`);
 
         const imagesInCv = Array.from(cvContainer.querySelectorAll('img'));
-        console.log(`[captureCVasPDF V21 - Enhanced Flex & Breaks] تم العثور على ${imagesInCv.length} صورة في حاوية السيرة الذاتية.`);
+        console.log(`[captureCVasPDF V22 - Mobile Off-screen Capture] تم العثور على ${imagesInCv.length} صورة في حاوية السيرة الذاتية.`);
         if (imagesInCv.length > 0) {
             await Promise.all(imagesInCv.map(img => {
                 if (img.complete && img.naturalHeight !== 0 && img.naturalWidth !== 0) return Promise.resolve();
                 return new Promise((resolve) => {
                     img.onload = () => { resolve(); };
                     img.onerror = () => {
-                        console.warn(`[captureCVasPDF V21 - Enhanced Flex & Breaks] فشل تحميل الصورة في حاوية السيرة الذاتية: ${img.src}`);
+                        console.warn(`[captureCVasPDF V22 - Mobile Off-screen Capture] فشل تحميل الصورة في حاوية السيرة الذاتية: ${img.src}`);
                         resolve();
                     };
                     if (img.src && !img.complete) {
@@ -936,33 +951,32 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
                     }
                 });
             }));
-            console.log("[captureCVasPDF V21 - Enhanced Flex & Breaks] تم فحص/تحميل جميع الصور في حاوية السيرة الذاتية.");
+            console.log("[captureCVasPDF V22 - Mobile Off-screen Capture] تم فحص/تحميل جميع الصور في حاوية السيرة الذاتية.");
         }
 
         // انتظار الخطوط المخصصة
         if (typeof FontFaceObserver !== 'undefined' && getComputedStyle(cvContainer).fontFamily) {
             const desiredFontFamilies = getComputedStyle(cvContainer).fontFamily.split(',').map(f => f.trim().replace(/['']/g, ''));
-            console.log(`[captureCVasPDF V21 - Enhanced Flex & Breaks] انتظار تحميل الخطوط: ${desiredFontFamilies.join(', ')}`);
+            console.log(`[captureCVasPDF V22 - Mobile Off-screen Capture] انتظار تحميل الخطوط: ${desiredFontFamilies.join(', ')}`);
             await Promise.all(desiredFontFamilies.map(fontName => {
                 if (fontName && !['sans-serif', 'serif', 'monospace', 'cursive', 'fantasy', 'system-ui', '-apple-system', 'Segoe UI', 'arial', 'helvetica'].includes(fontName.toLowerCase())) {
                     const font = new FontFaceObserver(fontName);
                     return font.load(null, 5000)
-                        .catch(e => console.warn(`[captureCVasPDF V21 - Enhanced Flex & Breaks] فشل تحميل الخط ${fontName}:`, e));
+                        .catch(e => console.warn(`[captureCVasPDF V22 - Mobile Off-screen Capture] فشل تحميل الخط ${fontName}:`, e));
                 }
                 return Promise.resolve();
             }));
-            console.log("[captureCVasPDF V21 - Enhanced Flex & Breaks] تم فحص/تحميل جميع الخطوط المطلوبة.");
+            console.log("[captureCVasPDF V22 - Mobile Off-screen Capture] تم فحص/تحميل جميع الخطوط المطلوبة.");
         }
 
-        await new Promise(resolve => setTimeout(resolve, isMobileDevice() ? 3000 : 1500));
-        console.log("[captureCVasPDF V21 - Enhanced Flex & Breaks] تم الانتظار للرسم النهائي بعد تطبيق الأنماط وتحميل الأصول.");
+        await new Promise(resolve => setTimeout(resolve, isMobile ? 3000 : 1500));
+        console.log("[captureCVasPDF V22 - Mobile Off-screen Capture] تم الانتظار للرسم النهائي بعد تطبيق الأنماط وتحميل الأصول.");
 
         // --- 5. تهيئة html2pdf.js وإعدادات html2canvas ---
-        const isMobile = isMobileDevice();
-        // Scale for mobile might need to be adjusted based on testing, 1 ensures 1:1 pixel rendering, 1.5-2 offers higher quality but impacts performance
-        const scaleFactor = isMobile ? 1.2 : 2; // Slightly increased mobile scale for better quality
+        // Scale for mobile might need to be adjusted based on testing.
+        const scaleFactor = isMobile ? 1.5 : 2; // Increased mobile scale for potentially better quality
         const imageQuality = isMobile ? 0.7 : 0.98; // Slightly increased mobile image quality
-        console.log(`[captureCVasPDF V21 - Enhanced Flex & Breaks] استخدام المقياس: ${scaleFactor}، الجودة: ${imageQuality}. جوال: ${isMobile}`);
+        console.log(`[captureCVasPDF V22 - Mobile Off-screen Capture] استخدام المقياس: ${scaleFactor}، الجودة: ${imageQuality}. جوال: ${isMobile}`);
 
         const pdfOptions = {
             margin: 0,
@@ -984,32 +998,41 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
                 scrollX: 0,
                 scrollY: 0,
                 onclone: (clonedDoc) => {
-                    console.log("[captureCVasPDF V21 - Enhanced Flex & Breaks] تم تشغيل onclone الداخلي لـ html2canvas.");
+                    console.log("[captureCVasPDF V22 - Mobile Off-screen Capture] تم تشغيل onclone الداخلي لـ html2canvas.");
                     const body = clonedDoc.body;
                     body.style.fontFamily = getComputedStyle(cvContainer).fontFamily || 'Tajawal, Arial, sans-serif';
                     body.style.direction = cvContainer.dir;
+                    body.style.overflow = 'hidden'; // Hide overflow in the cloned document body
 
                     const clonedCvElement = clonedDoc.getElementById(cvContainer.id);
                     if (clonedCvElement) {
+                        // Apply the exact computed styles for the cloned element for consistency
                         const computedCvStyles = getComputedStyle(cvContainer);
                         cvPropsToStore.forEach(prop => {
                             clonedCvElement.style[prop] = computedCvStyles[prop];
                         });
-                        // Explicitly apply flex and height properties to cloned CV container
+                        
+                        // Ensure it's correctly positioned for html2canvas to capture it
+                        // This overrides any off-screen positioning for the capture itself
                         Object.assign(clonedCvElement.style, {
-                            display: 'flex',
-                            flexDirection: 'column',
-                            flexGrow: '1',
+                            position: 'relative', // Set to relative or static for proper flow
+                            top: '0',
+                            left: '0',
+                            right: 'auto',
+                            bottom: 'auto',
+                            zIndex: 'auto',
+                            transform: 'none',
+                            // Ensure core dimensions and flex properties are correctly applied in the cloned context
                             width: '210mm',
                             minHeight: '297mm',
-                            height: 'auto', // Keep auto to allow for multi-page content
+                            height: 'auto',
                             padding: '0mm', // Apply 0mm padding explicitly here too
                             boxSizing: 'border-box',
                             margin: '0',
-                            left: '0', top: '0',
-                            right: 'auto', bottom: 'auto',
-                            maxWidth: 'none',
-                            position: 'relative' // Changed to relative for consistency
+                            display: 'flex',
+                            flexDirection: 'column',
+                            flexGrow: '1',
+                            visibility: 'visible'
                         });
                         clonedCvElement.className = cvContainer.className;
                         clonedCvElement.dir = cvContainer.dir;
@@ -1055,7 +1078,8 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
                                 paddingTop: '5mm', // Ensure space at the top of a new section
                                 pageBreakInside: 'avoid',
                                 pageBreakBefore: 'auto',
-                                pageBreakAfter: 'auto'
+                                pageBreakAfter: 'auto',
+                                marginBottom: '6mm' // Re-apply general margin-bottom for spacing between sections
                             });
                         });
                         // Also apply to items within sections
@@ -1068,6 +1092,18 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
                             });
                         });
 
+                        // Ensure end markers are handled correctly in the clone
+                        const clonedEndMarkers = clonedCvElement.querySelectorAll('.cv-end-marker');
+                        clonedEndMarkers.forEach(marker => {
+                            Object.assign(marker.style, {
+                                height: '1px',
+                                marginTop: 'auto', // Important for flex layout
+                                pageBreakBefore: 'avoid',
+                                pageBreakAfter: 'avoid',
+                                visibility: 'hidden',
+                                display: 'block'
+                            });
+                        });
                     }
                     Array.from(clonedDoc.querySelectorAll('.remove-field')).forEach(btn => btn.style.display = 'none');
                 }
@@ -1081,48 +1117,48 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
                 after: '.cv-end-marker'
             }
         };
-        console.log("[captureCVasPDF V21 - Enhanced Flex & Breaks] تم إعداد خيارات html2pdf.");
+        console.log("[captureCVasPDF V22 - Mobile Off-screen Capture] تم إعداد خيارات html2pdf.");
 
         // --- 6. إنشاء ملف PDF ---
-        console.log("[captureCVasPDF V21 - Enhanced Flex & Breaks] بدء إنشاء html2pdf من عنصر حاوية السيرة الذاتية...");
+        console.log("[captureCVasPDF V22 - Mobile Off-screen Capture] بدء إنشاء html2pdf من عنصر حاوية السيرة الذاتية...");
         const worker = html2pdf().from(cvContainer).set(pdfOptions);
 
         if (downloadPdf) {
-            console.log("[captureCVasPDF V21 - Enhanced Flex & Breaks] محاولة حفظ PDF مباشرة...");
+            console.log("[captureCVasPDF V22 - Mobile Off-screen Capture] محاولة حفظ PDF مباشرة...");
             await worker.save();
-            console.log("[captureCVasPDF V21 - Enhanced Flex & Breaks] بدأت عملية حفظ PDF.");
+            console.log("[captureCVasPDF V22 - Mobile Off-screen Capture] بدأت عملية حفظ PDF.");
             return null;
         } else {
-            console.log("[captureCVasPDF V21 - Enhanced Flex & Breaks] محاولة الحصول على PDF كـ blob...");
+            console.log("[captureCVasPDF V22 - Mobile Off-screen Capture] محاولة الحصول على PDF كـ blob...");
             const pdfBlob = await worker.output('blob');
-            console.log(`[captureCVasPDF V21 - Enhanced Flex & Breaks] تم استلام PDF blob. الحجم: ${pdfBlob.size} بايت، النوع: ${pdfBlob.type}`);
+            console.log(`[captureCVasPDF V22 - Mobile Off-screen Capture] تم استلام PDF blob. الحجم: ${pdfBlob.size} بايت، النوع: ${pdfBlob.type}`);
             if (pdfBlob.size < 2048 && pdfBlob.size > 0) {
-                console.warn("[captureCVasPDF V21 - Enhanced Flex & Breaks] حجم PDF blob صغير جدًا، قد يكون فارغًا أو محتواه ضئيلًا.");
+                console.warn("[captureCVasPDF V22 - Mobile Off-screen Capture] حجم PDF blob صغير جدًا، قد يكون فارغًا أو محتواه ضئيلًا.");
             } else if (pdfBlob.size === 0) {
-                console.error("[captureCVasPDF V21 - Enhanced Flex & Breaks] حجم PDF blob صفر. فشل الالتقاط في إنتاج محتوى.");
+                console.error("[captureCVasPDF V22 - Mobile Off-screen Capture] حجم PDF blob صفر. فشل الالتقاط في إنتاج محتوى.");
                 throw new Error("Generated PDF is empty (size 0).");
             }
-            console.log("[captureCVasPDF V21 - Enhanced Flex & Breaks] تحويل blob إلى Base64...");
+            console.log("[captureCVasPDF V22 - Mobile Off-screen Capture] تحويل blob إلى Base64...");
             return await fileToBase64(pdfBlob);
         }
 
     } catch (error) {
         captureError = error;
-        console.error("[captureCVasPDF V21 - Enhanced Flex & Breaks] خطأ حرج أثناء إنشاء PDF:", error, error.stack);
+        console.error("[captureCVasPDF V22 - Mobile Off-screen Capture] خطأ حرج أثناء إنشاء PDF:", error, error.stack);
         alert(translations[currentLang]['Error generating PDF for CV.'] + ` (${error.message || 'Unknown error'})`);
         throw error;
     } finally {
-        console.log("[captureCVasPDF V21 - Enhanced Flex & Breaks] الدخول إلى كتلة finally لاستعادة الأنماط...");
+        console.log("[captureCVasPDF V22 - Mobile Off-screen Capture] الدخول إلى كتلة finally لاستعادة الأنماط...");
 
         document.body.style.overflow = originalStyles.bodyOverflow;
 
         // إزالة العلامة المائية إذا تم إضافتها
         if (watermarkDiv && watermarkDiv.parentElement) {
             watermarkDiv.parentElement.removeChild(watermarkDiv);
-            console.log("[captureCVasPDF V21 - Enhanced Flex & Breaks] تم إزالة العلامة المائية.");
+            console.log("[captureCVasPDF V22 - Mobile Off-screen Capture] تم إزالة العلامة المائية.");
         }
 
-        console.log("[captureCVasPDF V21 - Enhanced Flex & Breaks] استعادة الأنماط الأصلية لحاوية السيرة الذاتية...");
+        console.log("[captureCVasPDF V22 - Mobile Off-screen Capture] استعادة الأنماط الأصلية لحاوية السيرة الذاتية...");
         for (const prop in originalStyles.cvContainer) {
             if (originalStyles.cvContainer.hasOwnProperty(prop)) {
                 if (prop === 'className') {
@@ -1151,12 +1187,12 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         }
 
         removeButtonsOriginal.forEach(btn => btn.style.display = '');
-        console.log("[captureCVasPDF V21 - Enhanced Flex & Breaks] تم استعادة الأنماط الأصلية وأزرار الإزالة.");
+        console.log("[captureCVasPDF V22 - Mobile Off-screen Capture] تم استعادة الأنماط الأصلية وأزرار الإزالة.");
 
         if (document.getElementById('cv-preview-page')?.classList.contains('active-page') ||
             document.getElementById('cv-template-selection-page')?.classList.contains('active-page') ||
             document.getElementById('cv-data-entry-page')?.classList.contains('active-page')) {
-            console.log("[captureCVasPDF V21 - Enhanced Flex & Breaks] إعادة إنشاء السيرة الذاتية للمعاينة على الشاشة (الحاوية الأصلية).");
+            console.log("[captureCVasPDF V22 - Mobile Off-screen Capture] إعادة إنشاء السيرة الذاتية للمعاينة على الشاشة (الحاوية الأصلية).");
             generateCV(cvContainer);
         }
 
@@ -1166,7 +1202,7 @@ async function captureCVasPDF(cvContainer, downloadPdf = false) {
         if (typeof toggleLoadingOverlay === 'function') {
             toggleLoadingOverlay(false);
         }
-        console.log(`[captureCVasPDF V21 - Enhanced Flex & Breaks] انتهت العملية. isCapturingPdf: ${typeof isCapturingPdf !== 'undefined' ? isCapturingPdf : 'N/A'}. الخطأ الذي حدث: ${captureError ? captureError.message : 'لا يوجد'}`);
+        console.log(`[captureCVasPDF V22 - Mobile Off-screen Capture] انتهت العملية. isCapturingPdf: ${typeof isCapturingPdf !== 'undefined' ? isCapturingPdf : 'N/A'}. الخطأ الذي حدث: ${captureError ? captureError.message : 'لا يوجد'}`);
     }
 }
 
