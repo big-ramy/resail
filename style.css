@@ -1807,6 +1807,7 @@ body[dir="ltr"] .qr-payment-inputs-scroll { padding-right: 0; padding-left: 15px
     #cv-container {
         display: flex !important;
         flex-direction: column !important;
+        flex-grow: 1 !important;
         width: 210mm !important;
         min-height: 297mm !important; /* أو 296mm إذا كانت هناك مشاكل هوامش */
         height: auto !important; /* السماح بالنمو لعدة صفحات */
@@ -1829,15 +1830,6 @@ body[dir="ltr"] .qr-payment-inputs-scroll { padding-right: 0; padding-left: 15px
         line-height: 1.4; /* ارتفاع سطر مناسب للطباعة */
     }
 
-    /* --- تنسيق المحتوى الرئيسي للسيرة الذاتية --- */
-    .cv-content {
-        flex-grow: 1 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        box-sizing: border-box;
-        padding: 0 !important; /* الحشوة داخل الأعمدة أو الأقسام */
-        overflow: visible !important;
-    }
 
     /* --- تنسيق التخطيطات متعددة الأعمدة (قياسي، احترافي، AST) --- */
     .cv-two-column-layout,
@@ -1849,6 +1841,7 @@ body[dir="ltr"] .qr-payment-inputs-scroll { padding-right: 0; padding-left: 15px
         gap: 8mm !important; /* فجوة أقل للطباعة */
         page-break-inside: avoid !important;
         min-height: calc(297mm - 20mm); /* ارتفاع A4 مطروحًا منه الحشوة العلوية والسفلية لـ #cv-container */
+        height: 100%;
     }
 
     /* ترتيب الأعمدة الصحيح لـ LTR (الشريط الجانبي على اليسار) */
@@ -1896,7 +1889,8 @@ body[dir="ltr"] .qr-payment-inputs-scroll { padding-right: 0; padding-left: 15px
         display: flex !important;
         flex-direction: column !important;
         justify-content: flex-start !important;
-        min-height: auto !important; /* السماح بالتمدد */
+        min-height: 100% !important; /* السماح بالتمدد */
+        height: 100%;
     }
 
     .cv-two-column-layout .cv-sidebar,
@@ -1907,13 +1901,14 @@ body[dir="ltr"] .qr-payment-inputs-scroll { padding-right: 0; padding-left: 15px
     /* --- الأقسام الداخلية (Objective, Experience, Education, etc.) --- */
     .cv-section {
         margin-bottom: 6mm !important;
-        padding: 0 !important;
+        padding: 5mm !important;
         background-color: transparent !important;
         box-shadow: none !important;
         page-break-inside: avoid !important;
     }
 
     .cv-section-title {
+        margin-top: 5mm !important; /* أضف مسافة إضافية في الأعلى */
         margin-bottom: 4mm !important;
         padding-bottom: 2mm !important;
         border-bottom-width: 1px !important;
@@ -1965,7 +1960,7 @@ body[dir="ltr"] .qr-payment-inputs-scroll { padding-right: 0; padding-left: 15px
     .cv-end-marker {
         height: 1px !important; /* اجعله صغيرًا جدًا ولكنه موجود */
         margin-top: auto !important; /* أهم خاصية لدفعه لأسفل في حاوية flex */
-        page-break-before: avoid !important; /* تجنب بدء صفحة جديدة من أجله فقط */
+        page-break-before: always !important; /* تجنب بدء صفحة جديدة من أجله فقط */
         page-break-after: avoid !important; /* تجنب كسر الصفحة بعده بشكل غير ضروري */
         visibility: hidden !important; /* لا يجب أن يكون مرئيًا على الإطلاق */
         display: block !important;
