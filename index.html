@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-en="Professional CV Builder" data-ar="إنشاء السيرة الذاتية الاحترافية">إنشاء السيرة الذاتية الاحترافية</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="#" data-translate="brand-name">رسائل</a>
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav"
+                aria-controls="navbarNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+            >
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#" onclick="showPage('landing-page')" data-translate="home-link">الرئيسية</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#why-resail" data-translate="features-link">المميزات</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a
+                            class="nav-link dropdown-toggle"
+                            href="#"
+                            id="navbarDropdown"
+                            role="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            data-translate="products-link"
+                        >
+                            المنتجات
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="https://big-ramy.github.io/whatsapp-sender-/" data-translate="product-basic">ارسال واتساب</a></li>
+                             <li><a class="dropdown-item" href="#" onclick="showPage('cv-data-entry-page')" data-translate="product-cv">إنشاء سيرة ذاتية</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about-us" data-translate="about-link">عنا</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact" data-translate="contact-link">اتصل بنا</a>
+                    </li>
+                     <li class="nav-item">
+                        <div class="language-toggle nav-link" onclick="toggleLanguage()">
+                            <span id="currentLangText" data-en="العربية" data-ar="English">English</span>
+                        </div>
+                     </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <header class="site-header">
+        <div class="header-background"></div>
+        <div class="header-content">
+            <h1 class="display-4" data-en="Professional CV Builder" data-ar="أنشئ سيرتك الذاتية الاحترافية بسهولة">أنشئ سيرتك الذاتية الاحترافية بسهولة</h1>
+            <p class="lead" data-en="Create a professional CV that stands out and gets you hired." data-ar="ابرز مهاراتك وخبراتك بتصميم احترافي يلفت الانتباه ويفتح لك أبواب الفرص.">ابرز مهاراتك وخبراتك بتصميم احترافي يلفت الانتباه ويفتح لك أبواب الفرص.</p>
+            <button class="btn btn-primary btn-lg mt-3" id="create-cv-button" onclick="showPage('cv-data-entry-page')" data-en="Create Your CV Now" data-ar="ابدأ في إنشاء سيرتك الذاتية الآن">ابدأ في إنشاء سيرتك الذاتية الآن</button>
+        </div>
+    </header>
+    <div id="loading-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 10000; justify-content: center; align-items: center; flex-direction: column; text-align: center;">
+        <div class="spinner-border text-light" role="status" style="width: 3rem; height: 3rem;"></div>
+        <p style="color: white; margin-top: 15px; font-size: 1.2em;" data-translate-id="loading-cv-text" data-en="Generating CV, please wait..." data-ar="جاري إنشاء السيرة الذاتية، يرجى الانتظار...">جاري إنشاء السيرة الذاتية، يرجى الانتظار...</p>
+    </div>
+    <div id="main-content-area">
+        <div id="landing-page" class="page-section active-page">
+            <section id="why-resail" class="py-5">
+                <div class="container">
+                    <h2 class="text-center mb-5" data-en="Why Resail CV Builder?" data-ar="لماذا نظام رسائل لإنشاء السيرة الذاتية؟">لماذا نظام رسائل لإنشاء السيرة الذاتية؟</h2>
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                        <div class="col">
+                            <div class="feature-card">
+                                <img src="ChatGPT Image May 16, 2025, 04_59_21 AM.png.webp" alt="Easy Data Entry" class="feature-icon mb-3" loading="lazy">
+                                <h3 data-en="Easy Data Entry" data-ar="سهولة إدخال البيانات">سهولة إدخال البيانات</h3>
+                                <p data-en="Intuitive forms to quickly fill in all your information." data-ar="نماذج سهلة وبديهية لملء جميع بياناتك بسرعة ويسر.">نماذج سهلة وبديهية لملء جميع بياناتك بسرعة ويسر.</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="feature-card">
+                                <img src="ChatGPT Image May 16, 2025, 04_58_25 AM.png.webp" alt="Professional Templates" class="feature-icon mb-3" loading="lazy">
+                                <h3 data-en="Diverse and Professional Templates" data-ar="قوالب متنوعة واحترافية">قوالب متنوعة واحترافية</h3>
+                                <p data-en="Choose from many modern and attractive designs to suit your style." data-ar="اختر من بين العديد من التصميمات العصرية والجذابة لتناسب ذوقك ومجالك.">اختر من بين العديد من التصميمات العصرية والجذابة لتناسب ذوقك ومجالك.</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="feature-card">
+                                <img src="ChatGPT Image May 16, 2025, 04_56_19 AM.png.webp" alt="Arabic/English Support" class="feature-icon mb-3">
+                                <h3 data-en="Arabic and English Support" data-ar="دعم كامل للغة العربية والإنجليزية">دعم كامل للغة العربية والإنجليزية</h3>
+                                <p data-en="Create your CV in either Arabic or English with proper formatting." data-ar="أنشئ سيرتك الذاتية بلغتك المفضلة مع ضمان التنسيق الصحيح لكلا الاتجاهين.">أنشئ سيرتك الذاتية بلغتك المفضلة مع ضمان التنسيق الصحيح لكلا الاتجاهين.</p>
+                        </div>
+                        </div>
+                        <div class="col">
+                            <div class="feature-card">
+                                <img src="ChatGPT Image May 16, 2025, 05_09_39 AM.png.webp" alt="Instant Preview" class="feature-icon mb-3" loading="lazy">
+                                <h3 data-en="Instant Preview" data-ar="معاينة فورية">معاينة فورية</h3>
+                                <p data-en="See your CV instantly as you build it, ensuring it looks perfect." data-ar="شاهد شكل سيرتك الذاتية فور إدخال البيانات أو اختيار القالب لتضمن المظهر المثالي.">شاهد شكل سيرتك الذاتية فور إدخال البيانات أو اختيار القالب لتضمن المظهر المثالي.</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="feature-card">
+                                <img src="ChatGPT Image May 16, 2025, 05_02_19 AM.png.webp" alt="Professional PDF Export" class="feature-icon mb-3" loading="lazy">
+                                <h3 data-en="Professional PDF Export" data-ar="تصدير بصيغة PDF عالية الجودة">تصدير بصيغة PDF عالية الجودة</h3>
+                                <p data-en="Download your completed CV as a high-quality PDF file, ready to share." data-ar="احصل على سيرتك الذاتية النهائية كملف PDF احترافي جاهز للطباعة أو المشاركة عبر الإنترنت.">احصل على سيرتك الذاتية النهائية كملف PDF احترافي جاهز للطباعة أو المشاركة عبر الإنترنت.</p>
+                         </div>
+                         </div>
+                        <div class="col">
+                             <div class="feature-card">
+                                 <img src="ChatGPT Image May 16, 2025, 05_07_17 AM.png.webp" alt="Flexible Payment Options" class="feature-icon mb-3" loading="lazy">
+                                 <h3 data-en="Flexible Payment Options" data-ar="خيارات دفع متنوعة وآمنة">خيارات دفع متنوعة وآمنة</h3>
+                                 <p data-en="Pay easily using various methods including PayPal and local options." data-ar="وسائل دفع متعددة تشمل PayPal وخيارات محلية لتسهيل عملية الحصول على سيرتك الذاتية.">وسائل دفع متعددة تشمل PayPal وخيارات محلية لتسهيل عملية الحصول على سيرتك الذاتية.</p>
+                             </div>
+                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="testimonials" class="py-5 bg-light">
+                <div class="container">
+                    <h2 class="text-center mb-5" data-en="Customer Testimonials" data-ar="ماذا قال عملاؤنا عنا؟">ماذا قال عملاؤنا عنا؟</h2>
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="testimonial-card">
+                                <p class="lead mb-3" data-en="“Creating my CV was incredibly easy and fast. The templates are modern and professional. Highly recommended!”" data-ar="«كانت عملية إنشاء سيرتي الذاتية سهلة وسريعة بشكل لا يصدق. القوالب عصرية واحترافية حقًا. أوصي به بشدة!»">«كانت عملية إنشاء سيرتي الذاتية سهلة وسريعة بشكل لا يصدق. القوالب عصرية واحترافية حقًا. أوصي به بشدة!»</p>
+                                <p class="font-weight-bold" data-en="- Sarah Ahmed" data-ar="- سارة أحمد">- سارة أحمد</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                             <div class="testimonial-card">
+                                 <p class="lead mb-3" data-en="“I loved the variety of templates and the instant preview feature. It helped me choose the perfect design for my application.”" data-ar="«أعجبتني حقًا تنوع القوالب وميزة المعاينة الفورية. ساعدني ذلك في اختيار التصميم المثالي لتقديمي.»">«أعجبتني حقًا تنوع القوالب وميزة المعاينة الفورية. ساعدني ذلك في اختيار التصميم المثالي لتقديمي.»</p>
+                                 <p class="font-weight-bold" data-en="- Khalid Hassan" data-ar="- خالد حسن">- خالد حسن</p>
+                             </div>
+                        </div>
+                        </div>
+                </div>
+            </section>
+
+            <section id="about-us" class="py-5 bg-light">
+                <div class="container">
+                    <h2 class="text-center mb-4" data-en="About Resail CV Builder" data-ar="عن نظام رسائل لإنشاء السيرة الذاتية">عن نظام رسائل لإنشاء السيرة الذاتية</h2>
+                    <p class="text-center lead" data-en="Resail is your go-to platform for effortlessly creating professional and impactful CVs. We provide a wide range of modern templates and intuitive tools to help you stand out in the job market with a high-quality PDF resume." data-ar="رسائل هو نظامك المتكامل لإنشاء سير ذاتية احترافية ومؤثرة بسهولة. نقدم مجموعة واسعة من القوالب العصرية والأدوات البديهية لمساعدتك على التميز في سوق العمل بسيرة ذاتية عالية الجودة بصيغة PDF.">رسائل هو نظامك المتكامل لإنشاء سير ذاتية احترافية ومؤثرة بسهولة. نقدم مجموعة واسعة من القوالب العصرية والأدوات البديهية لمساعدتك على التميز في سوق العمل بسيرة ذاتية عالية الجودة بصيغة PDF.</p>
+                    <p class="text-center lead" data-en="Our service focuses on simplifying the CV creation process, offering diverse templates, and ensuring full support for both Arabic and English languages with accurate formatting. Download your ready-to-share PDF CV after a seamless payment process." data-ar="تركز خدمتنا على تبسيط عملية إنشاء السيرة الذاتية، وتقديم قوالب متنوعة، وضمان الدعم الكامل للغتين العربية والإنجليزية بتنسيق دقيق. احصل على سيرتك الذاتية بصيغة PDF جاهزة للمشاركة بعد عملية دفع سلسة.">تركز خدمتنا على تبسيط عملية إنشاء السيرة الذاتية، وتقديم قوالب متنوعة، وضمان الدعم الكامل للغتين العربية والإنجليزية بتنسيق دقيق. احصل على سيرتك الذاتية بصيغة PDF جاهزة للمشاركة بعد عملية دفع سلسة.</p>
+                </div>
+            </section>
+
+            <section id="cv-count" class="py-5">
+                <div class="container text-center">
+                    <h2 class="mb-3" data-en="CVs Generated So Far" data-ar="عدد السير الذاتية التي تم إنشاؤها حتى الآن">عدد السير الذاتية التي تم إنشاؤها حتى الآن</h2>
+                    <p class="display-4 text-primary font-weight-bold">
+                        <span data-en="5000+" data-ar="+٥٠٠٠">+٥٠٠٠</span>
+                    </p>
+                     <p class="lead" data-en="Join thousands who have successfully created their professional CVs." data-ar="انضم إلى آلاف المستخدمين الذين أنشأوا سيرهم الذاتية الاحترافية بنجاح.">انضم إلى آلاف المستخدمين الذين أنشأوا سيرهم الذاتية الاحترافية بنجاح.</p>
+                </div>
+            </section>
+
+            <section id="faq" class="py-5">
+                <div class="container">
+                    <h2 class="text-center mb-5" data-en="Frequently Asked Questions" data-ar="الأسئلة الشائعة">الأسئلة الشائعة</h2>
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8">
+                            <div class="faq-item mb-4 pb-3 border-bottom">
+                                <h4 data-en="How do I create a CV?" data-ar="كيف يمكنني إنشاء سيرة ذاتية؟">كيف يمكنني إنشاء سيرة ذاتية؟</h4>
+                                <p data-en="Simply click on 'Create Your CV Now', fill in your details in the form, choose a template, and preview your CV." data-ar="ما عليك سوى النقر على زر 'ابدأ في إنشاء سيرتك الذاتية الآن'، قم بملء بياناتك في النموذج، اختر القالب المناسب، وقم بمعاينة سيرتك الذاتية.">ما عليك سوى النقر على زر 'ابدأ في إنشاء سيرتك الذاتية الآن'، قم بملء بياناتك في النموذج، اختر القالب المناسب، وقم بمعاينة سيرتك الذاتية.</p>
+                            </div>
+                            <div class="faq-item mb-4 pb-3 border-bottom">
+                                <h4 data-en="Are the templates free?" data-ar="هل القوالب مجانية؟">هل القوالب مجانية؟</h4>
+                                <p data-en="We offer a variety of free and premium templates. Premium templates require a small fee for download." data-ar="نقدم مجموعة متنوعة من القوالب المجانية والمدفوعة. تتطلب القوالب المدفوعة رسماً بسيطاً للتنزيل أو الطباعة.">نقدم مجموعة متنوعة من القوالب المجانية والمدفوعة. تتطلب القوالب المدفوعة رسماً بسيطاً للتنزيل أو الطباعة.</p>
+                            </div>
+                            <div class="faq-item mb-4 pb-3 border-bottom">
+                                <h4 data-en="How do I download my CV?" data-ar="كيف يمكنني تنزيل سيرتي الذاتية؟">كيف يمكنني تنزيل سيرتي الذاتية؟</h4>
+                                <p data-en="After previewing your CV, click on 'Request Download / Print'. You will be guided through the payment process if you selected a premium template, and then you can download the PDF." data-ar="بعد معاينة السيرة الذاتية واختيار القالب، انقر على زر 'طلب تنزيل / طباعة'. سيتم توجيهك لعملية الدفع إذا اخترت قالباً مدفوعاً، وبعدها يمكنك تنزيل الملف بصيغة PDF.">بعد معاينة السيرة الذاتية واختيار القالب، انقر على زر 'طلب تنزيل / طباعة'. سيتم توجيهك لعملية الدفع إذا اخترت قالباً مدفوعاً، وبعدها يمكنك تنزيل الملف بصيغة PDF.</p>
+                            </div>
+                             </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="container my-5" id="contact">
+                <h2 class="section-title" data-translate="Contact Us">تواصل معنا</h2>
+                <p class="text-center" data-translate="For inquiries or support, please contact us via email: ramyheshamamer@gmail.com">
+                للاستفسارات أو الدعم، تواصل عبر البريد الإلكتروني: <strong><a href="mailto:ramyheshamamer@gmail.com">ramyheshamamer@gmail.com</a></strong>
+                </p>
+            </section>
+        </div>
+
+        <div id="cv-data-entry-page" class="page-section">
+            <div class="container py-4">
+                <h2 class="mb-4 text-center" data-en="Enter Your Information" data-ar="أدخل بياناتك">أدخل بياناتك</h2>
+                <div class="row">
+                    <div class="col-md-6">
+                         <div class="form-group">
+                            <label for="name-input" data-en="Full Name" data-ar="الاسم">الاسم</label>
+                            <input type="text" id="name-input" placeholder="أدخل اسمك" data-en-placeholder="Enter your name" oninput="generateCV(cvContainer); updateProgress()">
+                        </div>
+                        <div class="form-group">
+                            <label for="title-input" data-en="Job Title" data-ar="المسمى الوظيفي">المسمى الوظيفي</label>
+                            <input type="text" id="title-input" placeholder="أدخل المسمى الوظيفي" data-en-placeholder="Enter your job title" oninput="generateCV(cvContainer); updateProgress()">
+                        </div>
+                        <div class="form-group">
+                            <label for="email-input" data-en="Email Address" data-ar="البريد الإلكتروني">البريد الإلكتروني</label>
+                            <input type="email" id="email-input" placeholder="أدخل بريدك الإلكتروني" data-en-placeholder="Enter your email address" oninput="generateCV(cvContainer); updateProgress()">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone-input" data-en="Phone Number" data-ar="رقم الهاتف">رقم الهاتف</label>
+                            <input type="text" id="phone-input" placeholder="أدخل رقم هاتفك" data-en-placeholder="Enter your phone number" oninput="generateCV(cvContainer); updateProgress()">
+                        </div>
+                        <div class="form-group">
+                            <label for="website-input" data-en="Website / Portfolio" data-ar="الموقع الشخصي">الموقع الشخصي</label>
+                            <input type="text" id="website-input" placeholder="أدخل موقعك الشخصي" data-en-placeholder="Enter your website or portfolio URL" oninput="generateCV(cvContainer); updateProgress()">
+                        </div>
+                         <div class="form-group">
+                            <label for="profile-pic-input" data-en="Profile Picture" data-ar="الصورة الشخصية">الصورة الشخصية</label>
+                            <input type="file"  id="profile-pic-input" accept="image/*" onchange="handleProfilePicChange(event); updateProgress()">
+                             <small class="form-text text-muted" data-en="Choose a picture to enhance the look of your CV in some templates." data-ar="اختر صورة لتحسين مظهر السيرة الذاتية في بعض النماذج.">اختر صورة لتحسين مظهر السيرة الذاتية في بعض النماذج.</small>
+                        </div>
+
+                    </div>
+                    <div class="col-md-6">
+                         <div class="form-group">
+                            <label for="objective-input" data-en="Career Objective" data-ar="الهدف الوظيفي">الهدف الوظيفي</label>
+                            <textarea id="objective-input" rows="6" placeholder="أدخل هدفك الوظيفي" data-en-placeholder="Enter your career objective" oninput="generateCV(cvContainer); updateProgress()"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label data-en="Work Experience" data-ar="الخبرة العملية">الخبرة العملية</label>
+                            <button type="button" onclick="addExperienceField()" class="btn btn-sm btn-outline-primary" data-en="Add Experience" data-ar="إضافة خبرة">إضافة خبرة</button>
+                             <button type="button" onclick="removeLastExperienceField()" class="btn btn-sm btn-outline-danger" data-en="Remove Last" data-ar="حذف آخر">حذف آخر</button>
+                            <div id="experience-input">
+                                <div class="experience-entry">
+                                    <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
+                                    <input type="text" placeholder="المسمى الوظيفي" data-en-placeholder="Job Title" class="experience-title" oninput="generateCV(cvContainer); updateProgress()">
+                                    <input type="text" placeholder="الشركة" data-en-placeholder="Company" class="experience-company" oninput="generateCV(cvContainer); updateProgress()">
+                                    <input type="text" placeholder="المدة" data-en-placeholder="Duration" class="experience-duration" oninput="generateCV(cvContainer); updateProgress()">
+                                    <textarea placeholder="الوصف" data-en-placeholder="Description" class="experience-description" oninput="generateCV(cvContainer); updateProgress()"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="form-group">
+                            <label data-en="Education" data-ar="المؤهلات العلمية">المؤهلات العلمية</label>
+                            <button type="button" onclick="addEducationField()" class="btn btn-sm btn-outline-primary" data-en="Add Education" data-ar="إضافة مؤهل">إضافة مؤهل</button>
+                            <button type="button" onclick="removeLastEducationField()" class="btn btn-sm btn-outline-danger" data-en="Remove Last" data-ar="حذف آخر">حذف آخر</button>
+                            <div id="education-input">
+                                <div class="education-entry">
+                                     <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
+                                    <input type="text" placeholder="الشهادة" data-en-placeholder="Degree" class="education-degree" oninput="generateCV(cvContainer); updateProgress()">
+                                    <input type="text" placeholder="الجامعة/المعهد" data-en-placeholder="University/Institution" class="education-institution" oninput="generateCV(cvContainer); updateProgress()">
+                                    <input type="text" placeholder="المدة" data-en-placeholder="Duration" class="education-duration" oninput="generateCV(cvContainer); updateProgress()">
+                                </div>
+                            </div>
+                        </div>
+                         <div class="form-group">
+                            <label data-en="Skills" data-ar="المهارات">المهارات</label>
+                            <button type="button" onclick="addSkillField()" class="btn btn-sm btn-outline-primary" data-en="Add Skill" data-ar="إضافة مهارة">إضافة مهارة</button>
+                             <button type="button" onclick="removeLastSkillField()" class="btn btn-sm btn-outline-danger" data-en="Remove Last" data-ar="حذف آخر">حذف آخر</button>
+                            <div id="skills-input">
+                                <div class="skill-entry">
+                                     <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
+                                    <input type="text" placeholder="أدخل مهارة" data-en-placeholder="Enter a skill" class="skill-item-input" oninput="generateCV(cvContainer); updateProgress()"> </div>
+                            </div>
+                        </div>
+                         <div class="form-group">
+                            <label data-en="Languages" data-ar="اللغات">اللغات</label>
+                            <button type="button" onclick="addLanguageField()" class="btn btn-sm btn-outline-primary" data-en="Add Language" data-ar="إضافة لغة">إضافة لغة</button>
+                             <button type="button" onclick="removeLastLanguageField()" class="btn btn-sm btn-outline-danger" data-en="Remove Last" data-ar="حذف آخر">حذف آخر</button>
+                            <div id="languages-input">
+                                <div class="language-entry">
+                                     <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
+                                    <input type="text" placeholder="أدخل لغة" data-en-placeholder="Enter a language" class="language-item-input" oninput="generateCV(cvContainer); updateProgress()"> </div>
+                            </div>
+                        </div>
+                         <div class="form-group">
+                            <label data-en="References" data-ar="المراجع">المراجع</label>
+                            <button type="button" onclick="addReferenceField()" class="btn btn-sm btn-outline-primary" data-en="Add Reference" data-ar="إضافة مرجع">إضافة مرجع</button>
+                             <button type="button" onclick="removeLastReferenceField()" class="btn btn-sm btn-outline-danger" data-en="Remove Last" data-ar="حذف آخر">حذف آخر</button>
+                            <div id="references-input">
+                                <div class="reference-entry">
+                                     <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
+                                    <input type="text" placeholder="الاسم" data-en-placeholder="Name" class="reference-name" oninput="generateCV(cvContainer); updateProgress()">
+                                    <input type="text" placeholder="الموقع" data-en-placeholder="Position" class="reference-position" oninput="generateCV(cvContainer); updateProgress()">
+                                    <input type="text" placeholder="الهاتف" data-en-placeholder="Phone" class="reference-phone" oninput="generateCV(cvContainer); updateProgress()">
+                                    <input type="email" placeholder="البريد" data-en-placeholder="Email" class="reference-email" oninput="generateCV(cvContainer); updateProgress()">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label data-en="Data Completion Progress" data-ar="نسبة إكمال البيانات">نسبة إكمال البيانات</label>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center mt-3">
+                    <button class="btn btn-secondary btn-lg" onclick="showPage('landing-page')" data-en="Back to Home" data-ar="العودة للرئيسية">العودة للرئيسية</button>
+                    <button class="btn btn-primary btn-lg ms-3" onclick="validateAndShowTemplatePage()" data-en="Next: Choose Template" data-ar="التالي: اختر قالب">التالي: اختر قالب</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="cv-template-selection-page" class="page-section">
+            <div class="container py-4">
+                <h2 class="mb-4 text-center" data-en="Choose a CV Template and Preview" data-ar="اختر نموذجًا للسيرة الذاتية والمعاينة">اختر نموذجًا للسيرة الذاتية والمعاينة</h2>
+                <div class="template-preview-container">
+                    <div class="template-category">
+                        <h3 data-en="Normal Templates (Full Width)" data-ar="نماذج عادية (عرض الصفحة)">نماذج عادية (عرض الصفحة)</h3>
+                        <div class="template-previews">
+                            <img src="CV_Image 1.png.webp" class="template-preview selected-template" onclick="selectTemplate(1, 'normal')" alt="Normal Template 1 Preview" data-template-category="normal" data-en-alt="Normal Template 1 Preview" data-ar-alt="معاينة النموذج العادي 1" loading="lazy">
+                            <img src="CV_Image (1).png.webp" class="template-preview" onclick="selectTemplate(2, 'normal')" alt="Normal Template 2 Preview" data-template-category="normal" data-en-alt="Normal Template 2 Preview" data-ar-alt="معاينة النموذج العادي 2" loading="lazy">
+                            <img src="CV_Image (2).png.webp" class="template-preview" onclick="selectTemplate(3, 'normal')" alt="Normal Template 3 Preview" data-template-category="normal" data-en-alt="Normal Template 3 Preview" data-ar-alt="معاينة النموذج العادي 3" loading="lazy">
+                            <img src="CV_Image (3).png.webp" class="template-preview" onclick="selectTemplate(4, 'normal')" alt="Normal Template 4 Preview" data-template-category="normal" data-en-alt="Normal Template 4 Preview" data-ar-alt="معاينة النموذج العادي 4" loading="lazy">
+                            <img src="CV_Image (4).png.webp" class="template-preview" onclick="selectTemplate(5, 'normal')" alt="Normal Template 5 Preview" data-template-category="normal" data-en-alt="Normal Template 5 Preview" data-ar-alt="معاينة النموذج العادي 5" loading="lazy">
+                            <img src="CV_Image (5).png.webp" class="template-preview" onclick="selectTemplate(6, 'normal')" alt="Normal Template 6 Preview" data-template-category="normal" data-en-alt="Normal Template 6 Preview" data-ar-alt="معاينة النموذج العادي 6" loading="lazy">
+                            <img src="CV_Image (6).png.webp" class="template-preview" onclick="selectTemplate(7, 'normal')" alt="Normal Template 7 Preview" data-template-category="normal" data-en-alt="Normal Template 7 Preview" data-ar-alt="معاينة النموذج العادي 7" loading="lazy">
+                            <img src="CV_Image (7).png.webp" class="template-preview" onclick="selectTemplate(8, 'normal')" alt="Normal Template 8 Preview" data-template-category="normal" data-en-alt="Normal Template 8 Preview" data-ar-alt="معاينة النموذج العادي 8" loading="lazy">
+                            <img src="CV_Image (8).png.webp" class="template-preview" onclick="selectTemplate(9, 'normal')" alt="Normal Template 9 Preview" data-template-category="normal" data-en-alt="Normal Template 9 Preview" data-ar-alt="معاينة النموذج العادي 9" loading="lazy">
+                            <img src="CV_Image (9).png.webp" class="template-preview" onclick="selectTemplate(10, 'normal')" alt="Normal Template 10 Preview" data-template-category="normal" data-en-alt="Normal Template 10 Preview" data-ar-alt="معاينة النموذج العادي 10" loading="lazy">
+                            <img src="CV_Image (10).png.webp" class="template-preview" onclick="selectTemplate(11, 'normal')" alt="Normal Template 11 Preview" data-template-category="normal" data-en-alt="Normal Template 11 Preview" data-ar-alt="معاينة النموذج العادي 11" loading="lazy">
+                            <img src="CV_Image (11).png.webp" class="template-preview" onclick="selectTemplate(12, 'normal')" alt="Normal Template 12 Preview" data-template-category="normal" data-en-alt="Normal Template 12 Preview" data-ar-alt="معاينة النموذج العادي 12" loading="lazy">
+                        </div>
+                    </div>
+                    <div class="template-category">
+                        <h3 data-en="Standard Templates (Sidebar)" data-ar="نماذج عادية (قسم جانبي ورئيسي)">نماذج عادية (قسم جانبي ورئيسي)</h3>
+                        <div class="template-previews">
+                            <img src="CV_Image (12).png.webp" class="template-preview" onclick="selectTemplate(1, 'standard')" alt="Standard Template 1 Preview" data-template-category="standard" data-en-alt="Standard Template 1 Preview" data-ar-alt="معاينة النموذج العادي 1 (شريط جانبي)" loading="lazy">
+                            <img src="CV_Image (13).png.webp" class="template-preview" onclick="selectTemplate(2, 'standard')" alt="Standard Template 2 Preview" data-template-category="standard" data-en-alt="Standard Template 2 Preview" data-ar-alt="معاينة النموذج العادي 2 (شريط جانبي)" loading="lazy">
+                            <img src="CV_Image (14).png.webp" class="template-preview" onclick="selectTemplate(3, 'standard')" alt="Standard Template 3 Preview" data-template-category="standard" data-en-alt="Standard Template 3 Preview" data-ar-alt="معاينة النموذج العادي 3 (شريط جانبي)" loading="lazy">
+                            <img src="CV_Image (15).png.webp" class="template-preview" onclick="selectTemplate(4, 'standard')" alt="Standard Template 4 Preview" data-template-category="standard" data-en-alt="Standard Template 4 Preview" data-ar-alt="معاينة النموذج العادي 4 (شريط جانبي)" loading="lazy">
+                            <img src="CV_Image (16).png.webp" class="template-preview" onclick="selectTemplate(5, 'standard')" alt="Standard Template 5 Preview" data-template-category="standard" data-en-alt="Standard Template 5 Preview" data-ar-alt="معاينة النموذج العادي 5 (شريط جانبي)" loading="lazy">
+                            <img src="CV_Image (17).png.webp" class="template-preview" onclick="selectTemplate(6, 'standard')" alt="Standard Template 6 Preview" data-template-category="standard" data-en-alt="Standard Template 6 Preview" data-ar-alt="معاينة النموذج العادي 6 (شريط جانبي)" loading="lazy">
+                            <img src="CV_Image (18).png.webp" class="template-preview" onclick="selectTemplate(7, 'standard')" alt="Standard Template 7 Preview" data-template-category="standard" data-en-alt="Standard Template 7 Preview" data-ar-alt="معاينة النموذج العادي 7 (شريط جانبي)" loading="lazy">
+                            <img src="CV_Image (19).png.webp" class="template-preview" onclick="selectTemplate(8, 'standard')" alt="Standard Template 8 Preview" data-template-category="standard" data-en-alt="Standard Template 8 Preview" data-ar-alt="معاينة النموذج العادي 8 (شريط جانبي)" loading="lazy">
+                            <img src="CV_Image (20).png.webp" class="template-preview" onclick="selectTemplate(9, 'standard')" alt="Standard Template 9 Preview" data-template-category="standard" data-en-alt="Standard Template 9 Preview" data-ar-alt="معاينة النموذج العادي 9 (شريط جانبي)" loading="lazy">
+                            <img src="CV_Image (21).png.webp" class="template-preview" onclick="selectTemplate(10, 'standard')" alt="Standard Template 10 Preview" data-template-category="standard" data-en-alt="Standard Template 10 Preview" data-ar-alt="معاينة النموذج العادي 10 (شريط جانبي)" loading="lazy">
+                            <img src="CV_Image (22).png.webp" class="template-preview" onclick="selectTemplate(11, 'standard')" alt="Standard Template 11 Preview" data-template-category="standard" data-en-alt="Standard Template 11 Preview" data-ar-alt="معاينة النموذج العادي 11 (شريط جانبي)" loading="lazy">
+                            <img src="CV_Image (23).png.webp" class="template-preview" onclick="selectTemplate(12, 'standard')" alt="Standard Template 12 Preview" data-template-category="standard" data-en-alt="Standard Template 12 Preview" data-ar-alt="معاينة النموذج العادي 12 (شريط جانبي)" loading="lazy">
+                        </div>
+                    </div>
+                    <div class="template-category">
+                        <h3 data-en="Professional Templates (Header + Sidebar)" data-ar="نماذج احترافية (رأس وجانبي ورئيسي)">نماذج احترافية (رأس وجانبي ورئيسي)</h3>
+                        <div class="template-previews">
+                            <img src="CV_Image (24).png.webp" class="template-preview" onclick="selectTemplate(1, 'professional')" alt="Professional Template 1 Preview" data-template-category="professional" data-en-alt="Professional Template 1 Preview" data-ar-alt="معاينة النموذج الاحترافي 1" loading="lazy">
+                            <img src="CV_Image (25).png.webp" class="template-preview" onclick="selectTemplate(2, 'professional')" alt="Professional Template 2 Preview" data-template-category="professional" data-en-alt="Professional Template 2 Preview" data-ar-alt="معاينة النموذج الاحترافي 2" loading="lazy">
+                            <img src="CV_Image (26).png.webp" class="template-preview" onclick="selectTemplate(3, 'professional')" alt="Professional Template 3 Preview" data-template-category="professional" data-en-alt="Professional Template 3 Preview" data-ar-alt="معاينة النموذج الاحترافي 3" loading="lazy">
+                            <img src="CV_Image (27).png.webp" class="template-preview" onclick="selectTemplate(4, 'professional')" alt="Professional Template 4 Preview" data-template-category="professional" data-en-alt="Professional Template 4 Preview" data-ar-alt="معاينة النموذج الاحترافي 4" loading="lazy">
+                            <img src="CV_Image (28).png.webp" class="template-preview" onclick="selectTemplate(5, 'professional')" alt="Professional Template 5 Preview" data-template-category="professional" data-en-alt="Professional Template 5 Preview" data-ar-alt="معاينة النموذج الاحترافي 5" loading="lazy">
+                            <img src="CV_Image (29).png.webp" class="template-preview" onclick="selectTemplate(6, 'professional')" alt="Professional Template 6 Preview" data-template-category="professional" data-en-alt="Professional Template 6 Preview" data-ar-alt="معاينة النموذج الاحترافي 6" loading="lazy">
+                            <img src="CV_Image (30).png.webp" class="template-preview" onclick="selectTemplate(7, 'professional')" alt="Professional Template 7 Preview" data-template-category="professional" data-en-alt="Professional Template 7 Preview" data-ar-alt="معاينة النموذج الاحترافي 7" loading="lazy">
+                            <img src="CV_Image (31).png.webp" class="template-preview" onclick="selectTemplate(8, 'professional')" alt="Professional Template 8 Preview" data-template-category="professional" data-en-alt="Professional Template 8 Preview" data-ar-alt="معاينة النموذج الاحترافي 8" loading="lazy">
+                            <img src="CV_Image (32).png.webp" class="template-preview" onclick="selectTemplate(9, 'professional')" alt="Professional Template 9 Preview" data-template-category="professional" data-en-alt="Professional Template 9 Preview" data-ar-alt="معاينة النموذج الاحترافي 9" loading="lazy">
+                            <img src="CV_Image (33).png.webp" class="template-preview" onclick="selectTemplate(10, 'professional')" alt="Professional Template 10 Preview" data-template-category="professional" data-en-alt="Professional Template 10 Preview" data-ar-alt="معاينة النموذج الاحترافي 10" loading="lazy">
+                            <img src="CV_Image (34).png.webp" class="template-preview" onclick="selectTemplate(11, 'professional')" alt="Professional Template 11 Preview" data-template-category="professional" data-en-alt="Professional Template 11 Preview" data-ar-alt="معاينة النموذج الاحترافي 11" loading="lazy">
+                            <img src="CV_Image (35).png.webp" class="template-preview" onclick="selectTemplate(12, 'professional')" alt="Professional Template 12 Preview" data-template-category="professional" data-en-alt="Professional Template 12 Preview" data-ar-alt="معاينة النموذج الاحترافي 12" loading="lazy">
+                        </div>
+                    </div>
+                    <div class="template-category">
+                        <h3 data-en="ATS Supported Templates" data-ar="نماذج داعمة لأنظمة ATS">نماذج داعمة لأنظمة ATS</h3>
+                        <div class="template-previews">
+                            <img src="CV_Image (36).png.webp" class="template-preview" onclick="selectTemplate(1, 'ast')" alt="AST Template 1 Preview" data-template-category="ast" data-en-alt="AST Template 1 Preview" data-ar-alt="معاينة نموذج AST 1" loading="lazy">
+                            <img src="CV_Image (37).png.webp" class="template-preview" onclick="selectTemplate(2, 'ast')" alt="AST Template 2 Preview" data-template-category="ast" data-en-alt="AST Template 2 Preview" data-ar-alt="معاينة نموذج AST 2" loading="lazy">
+                            <img src="CV_Image (38).png.webp" class="template-preview" onclick="selectTemplate(3, 'ast')" alt="AST Template 3 Preview" data-template-category="ast" data-en-alt="AST Template 3 Preview" data-ar-alt="معاينة نموذج AST 3" loading="lazy">
+                            <img src="CV_Image (39).png.webp" class="template-preview" onclick="selectTemplate(4, 'ast')" alt="AST Template 4 Preview" data-template-category="ast" data-en-alt="AST Template 4 Preview" data-ar-alt="معاينة نموذج AST 4" loading="lazy">
+                            <img src="CV_Image (40).png.webp" class="template-preview" onclick="selectTemplate(5, 'ast')" alt="AST Template 5 Preview" data-template-category="ast" data-en-alt="AST Template 5 Preview" data-ar-alt="معاينة نموذج AST 5" loading="lazy">
+                            <img src="CV_Image (41).png.webp" class="template-preview" onclick="selectTemplate(6, 'ast')" alt="AST Template 6 Preview" data-template-category="ast" data-en-alt="AST Template 6 Preview" data-ar-alt="معاينة نموذج AST 6" loading="lazy">
+                            <img src="CV_Image (42).png.webp" class="template-preview" onclick="selectTemplate(7, 'ast')" alt="AST Template 7 Preview" data-template-category="ast" data-en-alt="AST Template 7 Preview" data-ar-alt="معاينة نموذج AST 7" loading="lazy">
+                            <img src="CV_Image (43).png.webp" class="template-preview" onclick="selectTemplate(8, 'ast')" alt="AST Template 8 Preview" data-template-category="ast" data-en-alt="AST Template 8 Preview" data-ar-alt="معاينة نموذج AST 8" loading="lazy">
+                            <img src="CV_Image (44).png.webp" class="template-preview" onclick="selectTemplate(9, 'ast')" alt="AST Template 9 Preview" data-template-category="ast" data-en-alt="AST Template 9 Preview" data-ar-alt="معاينة نموذج AST 9" loading="lazy">
+                            <img src="CV_Image (45).png.webp" class="template-preview" onclick="selectTemplate(10, 'ast')" alt="AST Template 10 Preview" data-template-category="ast" data-en-alt="AST Template 10 Preview" data-ar-alt="معاينة نموذج AST 10" loading="lazy">
+                            <img src="CV_Image (46).png.webp" class="template-preview" onclick="selectTemplate(11, 'ast')" alt="AST Template 11 Preview" data-template-category="ast" data-en-alt="AST Template 11 Preview" data-ar-alt="معاينة نموذج AST 11" loading="lazy">
+                            <img src="CV_Image (47).png.webp" class="template-preview" onclick="selectTemplate(12, 'ast')" alt="AST Template 12 Preview" data-template-category="ast" data-en-alt="AST Template 12 Preview" data-ar-alt="معاينة نموذج AST 12" loading="lazy">
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center mt-3">
+                    <button class="btn btn-secondary btn-lg" onclick="showPage('cv-data-entry-page')" data-en="Back to Data Entry" data-ar="العودة لإدخال البيانات">العودة لإدخال البيانات</button>
+                    <button class="btn btn-primary btn-lg ms-3" onclick="showPage('cv-preview-page')" data-en="Next: Preview CV" data-ar="التالي: معاينة السيرة">التالي: معاينة السيرة</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="cv-preview-page" class="page-section">
+            <div class="container py-4">
+                <h2 class="mb-4 text-center" data-en="Your CV Preview" data-ar="معاينة سيرتك الذاتية">معاينة سيرتك الذاتية</h2>
+                <h5 class="mb-4 text-center" data-en="The on-site preview may differ from the document. Please download the free preview document." data-ar="ربما تختلف المعاينة في الموقع عن المستند الرجاء تنزيل مستند المعاينة المجانية"> ربما تختلف المعاينة في الموقع عن المستند الرجاء تنزيل مستند المعاينة المجانية</h2>
+
+                <div id="cv-preview-area" class="mt-4">
+                    <div id="cv-container" class="normal-layout template1" dir="rtl">
+                        </div>
+                </div>
+                <div class="d-flex justify-content-center mt-4">
+                    <button class="btn btn-secondary btn-lg ms-3" onclick="showPage('cv-template-selection-page')" data-en="Back to Templates" data-ar="العودة للنماذج">العودة للنماذج</button>
+                    <button type="button" class="btn btn-info ms-3" data-translate-id="Download PDF (Direct)">تنزيل PDF (معاينة)</button>
+                    <button type="button" class="btn btn-success ms-3" data-translate-id="Request Download / Print">طلب تنزيل / طباعة</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="payment-options-page" class="page-section">
+            <div class="container py-4 text-center">
+                <h3 class="mb-3" data-translate="choose-payment">اختر وسيلة الدفع</h3>
+                <div class="mb-3">
+                  <input type="text" id="discount-code" class="form-control" placeholder="أدخل كود الخصم (إن وجد)" data-en-placeholder="Enter discount code (if any)" />
+                  <button class="btn btn-secondary w-100 mt-2" onclick="applyDiscountCode()" data-translate="Apply Discount">
+                    تطبيق الخصم
+                  </button>
+                </div>
+                <div class="mb-3">
+                  <h5 id="final-price-text" data-translate="messages">السعر المدفوع: 0 ريال</h5>
+                </div>
+                <div class="d-flex justify-content-around flex-wrap mt-4">
+                  <img src="stcpay.png.webp" alt="STC Pay" style="width: 70px; cursor: pointer; margin:5px;"
+                       onclick="openQrPaymentPage('STC Pay', getDiscountedPrice(), selectedTemplateCategory)" loading="lazy"/>
+                  <img src="alrajhi.png.webp" alt="Al Rajhi" style="width: 70px; height: 28px; cursor: pointer; margin:5px;"
+                       onclick="openQrPaymentPage('Rajhi', getDiscountedPrice(), selectedTemplateCategory)" loading="lazy"/>
+                 <!img src="paypal.png.webp" alt="PayPal" style="width: 70px; cursor: pointer; margin:5px;"
+                       onclick="openQrPaymentPage('PayPal', getDiscountedPrice(), selectedTemplateCategory)" loading="lazy">
+                </div>
+                <div class="d-flex justify-content-center mt-4">
+                    <button class="btn btn-secondary btn-lg ms-3" onclick="showPage('cv-template-selection-page')" data-en="Back to Templates" data-ar="العودة للنماذج">العودة للنماذج</button>
+                    <button class="btn btn-secondary btn-lg" onclick="showPage('landing-page')" data-en="Back to Home" data-ar="العودة للرئيسية">العودة للرئيسية</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="qr-manual-payment-page" class="page-section">
+            <div class="container py-4 text-center">
+                <h3 data-translate="payment">الدفع</h3>
+                <img id="qr-payment-image" src="" alt="QR Code" style="max-width: 200px; margin-bottom: 15px; display:none;" loading="lazy"/>
+                <div id="paypal-button-container" style="display: none; margin-top: 20px;"></div>
+                <div id="manual-payment-form" style="display: none; text-align: initial;">
+                     <p data-translate="payment-note">بعد إتمام الدفع في تطبيق البنك، الرجاء تعبئة البيانات التالية:</p>
+                     <label data-translate="your-name">اسمك:</label>
+                     <input type="text" id="payment-name" class="form-control mb-2" />
+                     <label data-translate="your-email">بريدك الإلكتروني:</label>
+                     <input type="email" id="payment-email" class="form-control mb-2" />
+                     <label data-translate="your-phone">رقم الهاتف:</label>
+                     <input type="tel" id="payment-phone" class="form-control mb-2" />
+                     <label data-translate="messages">السعر المدفوع:</label> <input type="number" id="payment-messages" class="form-control mb-2" readonly />
+                     <label data-translate="attachment">أرفق إيصال الدفع (صورة / PDF):</label>
+                     <input type="file" id="payment-file" accept="image/*,application/pdf" class="form-control mb-3" />
+                 </div>
+                <button class="btn btn-primary w-100" id="submit-payment-proof" style="display:none;" onclick="submitPaymentProof(event)">
+                     <span data-translate="submit">إرسال</span>
+                 </button>
+                <div id="qr-payment-result" style="margin-top:10px; color:green;"></div>
+                <div class="d-flex justify-content-center mt-4">
+                    <button class="btn btn-secondary btn-lg" onclick="showPage('payment-options-page')" data-en="Back to Payment Options" data-ar="العودة لخيارات الدفع">العودة لخيارات الدفع</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<div id="terms-of-service" class="page-section">
+    <div class="container py-4">
+        <h2 class="mb-4 text-center" data-translate="terms-of-service-title">شروط الخدمة</h2>
+        
+        <p data-translate="terms-of-service-intro-p">مرحباً بكم في نظام رسائل لإنشاء السيرة الذاتية. باستخدامك لخدماتنا، فإنك توافق على الالتزام بالشروط والأحكام التالية، والتي تشكل اتفاقية ملزمة بينك وبين "رسائل". يرجى قراءتها بعناية.</p>
+
+        <h4 class="mt-4" data-translate="terms-of-service-h4-1">1. استخدام الخدمة</h4>
+        <p data-translate="terms-of-service-p-1-1">تتيح لك منصة رسائل إنشاء وتصميم السير الذاتية الاحترافية وتصديرها بصيغة PDF. يجب أن تكون جميع البيانات والمعلومات التي تقدمها (بما في ذلك، على سبيل المثال لا الحصر، الاسم، الخبرات، المؤهلات، المهارات) صحيحة ودقيقة وحديثة، وتتحمل أنت وحدك مسؤولية المحتوى الخاص بك. لا يجوز استخدام الخدمة لأي أغراض غير قانونية أو احتيالية أو تشهيرية أو غير مصرح بها.</p>
+        <p data-translate="terms-of-service-p-1-2">نحتفظ بالحق في تعليق أو إنهاء وصولك إلى الخدمة إذا انتهكت أياً من هذه الشروط، أو إذا رأينا أن سلوكك يضر بالخدمة أو المستخدمين الآخرين.</p>
+
+        <h4 class="mt-4" data-translate="terms-of-service-h4-2">2. الملكية الفكرية</h4>
+        <p data-translate="terms-of-service-p-2-1">جميع التصميمات، القوالب، النصوص، الرسومات، الشعارات، الأيقونات، الصور، البرمجيات، وأي محتوى آخر متاح عبر الخدمة ("محتوى الخدمة") هي ملكية فكرية خاصة بـ "رسائل" أو مرخصة لنا، وهي محمية بموجب قوانين حقوق النشر والعلامات التجارية والملكية الفكرية الأخرى. عند استخدامك للخدمة، فإنك تحصل على ترخيص شخصي، غير حصري، غير قابل للتحويل، وقابل للإلغاء لاستخدام السيرة الذاتية التي تنشئها لأغراضك الشخصية أو المهنية فقط.</p>
+        <p data-translate="terms-of-service-p-2-2">لا يجوز لك إعادة بيع أو إعادة إنتاج أو توزيع أو تعديل أو إنشاء أعمال مشتقة أو عرض علني أو أداء علني أو نشر أو نقل أو استغلال أي جزء من محتوى الخدمة أو الخدمة نفسها دون إذن كتابي مسبق من "رسائل".</p>
+
+        <h4 class="mt-4" data-translate="terms-of-service-h4-3">3. الدفع والأسعار</h4>
+        <p data-translate="terms-of-service-p-3-1">تتطلب بعض القوالب والميزات المتقدمة دفع رسوم محددة. تكون جميع الأسعار موضحة بوضوح في صفحة اختيار القوالب أو عند بداية عملية الدفع. تحتفظ "رسائل" بالحق في تعديل الأسعار أو فرض رسوم على ميزات جديدة في أي وقت، مع إخطار مسبق بذلك. جميع المدفوعات تتم عبر بوابات دفع خارجية آمنة (مثل Lemon Squeezy). "رسائل" لا تقوم بتخزين معلومات بطاقة الدفع الخاصة بك.</p>
+        <p data-translate="terms-of-service-p-3-2">جميع المدفوعات غير قابلة للاسترداد إلا في حالات محددة وفقًا لسياسة الاسترداد الخاصة بنا، والتي يمكنك مراجعتها في القسم المخصص لذلك.</p>
+
+        <h4 class="mt-4" data-translate="terms-of-service-h4-4">4. حدود المسؤولية</h4>
+        <p data-translate="terms-of-service-p-4-1">يتم تقديم الخدمة "كما هي" و "حسب توفرها" دون أي ضمانات من أي نوع، صريحة أو ضمنية. نحن لا نضمن دقة أو اكتمال أو صلاحية أو موثوقية أو توفر أي معلومات مقدمة من قبل المستخدمين أو النتائج التي يمكن الحصول عليها من استخدام الخدمة.</p>
+        <p data-translate="terms-of-service-p-4-2">لن تكون "رسائل" مسؤولة، تحت أي ظرف من الظروف، عن أي أضرار مباشرة أو غير مباشرة أو عرضية أو خاصة أو تبعية أو تأديبية، بما في ذلك، على سبيل المثال لا الحصر، خسارة الأرباح، البيانات، أو الاستخدام، تنشأ عن استخدام أو عدم القدرة على استخدام الخدمة.</p>
+
+        <h4 class="mt-4" data-translate="terms-of-service-h4-5">5. التعديلات على الشروط</h4>
+        <p data-translate="terms-of-service-p-5-1">نحتفظ بالحق في تعديل أو تحديث هذه الشروط والأحكام في أي وقت ودون إشعار مسبق. سيتم نشر أي تغييرات على هذه الصفحة، ويعتبر استمرار استخدامك للخدمة بعد نشر التعديلات بمثابة موافقة منك على الشروط المعدلة. يرجى مراجعة هذه الصفحة بانتظام للاطلاع على أي تحديثات.</p>
+
+        <h4 class="mt-4" data-translate="terms-of-service-h4-6">6. القانون المعمول به</h4>
+        <p data-translate="terms-of-service-p-6-1">تخضع هذه الشروط والأحكام وتفسر وفقًا لقوانين المملكة العربية السعودية، وتوافق على الخضوع للاختصاص القضائي الحصري لمحاكم المملكة العربية السعودية لحل أي نزاعات تنشأ عن هذه الشروط أو استخدام الخدمة.</p>
+
+        <h4 class="mt-4" data-translate="terms-of-service-h4-7">7. الاتصال بنا</h4>
+        <p data-translate="terms-of-service-p-7-1">لأي أسئلة أو استفسارات بخصوص شروط الخدمة، يرجى الاتصال بنا عبر البريد الإلكتروني: <a href="mailto:ramyheshamamer@gmail.com">ramyheshamamer@gmail.com</a>.</p>
+        
+        <button class="btn btn-secondary mt-3" onclick="showPage('landing-page')" data-translate="back-to-home">العودة للرئيسية</button>
+    </div>
+</div>
+
+<div id="refund-policy" class="page-section">
+    <div class="container py-4">
+        <h2 class="mb-4 text-center" data-translate="refund-policy-title">سياسة الاسترداد والنزاعات</h2>
+        
+        <p data-translate="refund-policy-intro-p">نحن في "رسائل" نسعى لتقديم خدمة عالية الجودة وضمان رضا عملائنا. نظرًا لطبيعة منتجاتنا الرقمية (السير الذاتية التي يتم إنشاؤها وتنزيلها بصيغة PDF)، فإن سياستنا للاسترداد والنزاعات كالتالي:</p>
+
+        <h4 class="mt-4" data-translate="refund-policy-h4-1">1. المنتجات الرقمية (السير الذاتية بصيغة PDF)</h4>
+        <p data-translate="refund-policy-p-1-1">بمجرد إتمام عملية الدفع ونجاح إنشاء السيرة الذاتية وإرسالها إلى بريدك الإلكتروني (أو توفير رابط التنزيل)، تعتبر الخدمة قد اكتملت بالكامل. ولذلك، لا تتوفر عادةً عمليات استرداد للمبالغ المدفوعة.</p>
+
+        <h4 class="mt-4" data-translate="refund-policy-h4-2">2. حالات الاسترداد الاستثنائية</h4>
+        <p data-translate="refund-policy-p-2-1">قد يتم النظر في طلبات الاسترداد في الحالات الاستثنائية التالية فقط:</p>
+        <ul data-translate="refund-policy-list-1">
+            <li>مشكلة فنية جوهرية: إذا واجهت مشكلة فنية في نظامنا منعتك من إنشاء أو تنزيل السيرة الذاتية بشكل كامل، ولم يتمكن فريق الدعم من حل المشكلة في غضون فترة زمنية معقولة.</li>
+            <li>خطأ فادح في المنتج: إذا كانت السيرة الذاتية التي تم إنشاؤها تحتوي على أخطاء فادحة ناتجة عن خلل في نظامنا (وليس بسبب أخطاء في البيانات المدخلة من قبلك)، ولم نتمكن من تصحيحها.</li>
+            <li>الدفع المكرر: إذا قمت بالدفع لنفس الخدمة عن طريق الخطأ أكثر من مرة.</li>
+        </ul>
+
+        <h4 class="mt-4" data-translate="refund-policy-h4-3">3. عملية طلب الاسترداد</h4>
+        <p data-translate="refund-policy-p-3-1">لتقديم طلب استرداد، يرجى الاتصال بفريق الدعم لدينا عبر البريد الإلكتروني <a href="mailto:ramyheshamamer@gmail.com">ramyheshamamer@gmail.com</a> في غضون 7 أيام من تاريخ الشراء. يجب أن يتضمن طلبك التفاصيل التالية:</p>
+        <ul data-translate="refund-policy-list-2">
+            <li>اسمك الكامل والبريد الإلكتروني المستخدم في الشراء.</li>
+            <li>تاريخ ورقم المعاملة (إن وجد).</li>
+            <li>وصف مفصل للمشكلة التي واجهتها والأسباب التي تدفعك لطلب الاسترداد.</li>
+            <li>أي لقطات شاشة أو مستندات تدعم طلبك.</li>
+        </ul>
+
+        <h4 class="mt-4" data-translate="refund-policy-h4-4">4. مراجعة الطلبات</h4>
+        <p data-translate="refund-policy-p-4-1">سنقوم بمراجعة جميع طلبات الاسترداد بعناية. سيتم إخطارك بالقرار في غضون 5 أيام عمل من استلام طلبك. إذا تمت الموافقة على الاسترداد، فسيتم معالجة المبلغ إلى طريقة الدفع الأصلية خلال 7-14 يوم عمل، اعتمادًا على سياسات معالج الدفع الخاص بك.</p>
+
+        <h4 class="mt-4" data-translate="refund-policy-h4-5">5. حل النزاعات</h4>
+        <p data-translate="refund-policy-p-5-1">نحن نشجعك على الاتصال بنا مباشرة في حال وجود أي مشاكل أو نزاعات قبل اللجوء إلى معالج الدفع أو البنك. نسعى لحل جميع المشكلات بشكل ودي وعادل لضمان رضا عملائنا.</p>
+
+        <button class="btn btn-secondary mt-3" onclick="showPage('landing-page')" data-translate="back-to-home">العودة للرئيسية</button>
+    </div>
+</div>
+
+<div id="privacy-policy" class="page-section">
+    <div class="container py-4">
+        <h2 class="mb-4 text-center" data-translate="privacy-policy-title">سياسة الخصوصية</h2>
+        
+        <p data-translate="privacy-policy-intro-p">نحن في "رسائل" نلتزم بحماية خصوصية بياناتك الشخصية. توضح هذه السياسة كيف نجمع، نستخدم، نحمي، وندير المعلومات التي تقدمها لنا عند استخدام خدماتنا لإنشاء السير الذاتية.</p>
+
+        <h4 class="mt-4" data-translate="privacy-policy-h4-1">1. المعلومات التي نجمعها</h4>
+        <ul data-translate="privacy-policy-list-1">
+            <li><strong>معلومات السيرة الذاتية:</strong> نقوم بجمع المعلومات التي تدخلها مباشرة في نماذج إنشاء السيرة الذاتية، مثل اسمك الكامل، المسمى الوظيفي، عنوان البريد الإلكتروني، رقم الهاتف، الموقع الشخصي/المحفظة، الهدف الوظيفي، تفاصيل الخبرة العملية، المؤهلات العلمية، المهارات، اللغات، والمراجع. إذا قمت بتحميل صورة شخصية، فإننا نقوم بجمعها أيضاً.</li>
+            <li><strong>معلومات الاتصال والدفع:</strong> عند إجراء عملية شراء، نجمع اسمك، بريدك الإلكتروني، ورقم هاتفك. تفاصيل الدفع (مثل أرقام البطاقات الائتمانية) يتم معالجتها مباشرة بواسطة بوابات دفع خارجية آمنة (مثل Lemon Squeezy/Stripe)، ونحن لا نقوم بتخزين هذه المعلومات الحساسة على خوادمنا.</li>
+            <li><strong>بيانات الاستخدام:</strong> قد نجمع معلومات حول كيفية وصولك واستخدامك لخدمتنا، مثل عنوان IP، نوع المتصفح، الصفحات التي زرتها، والوقت المستغرق في كل صفحة. هذه البيانات تُستخدم لتحسين الخدمة ولا ترتبط بشكل مباشر بمعلوماتك الشخصية.</li>
+        </ul>
+
+        <h4 class="mt-4" data-translate="privacy-policy-h4-2">2. كيف نستخدم معلوماتك</h4>
+        <p data-translate="privacy-policy-p-2-1">نستخدم المعلومات التي نجمعها للأغراض التالية:</p>
+        <ul data-translate="privacy-policy-list-2">
+            <li>لتقديم خدمة إنشاء السيرة الذاتية وتخصيصها لك.</li>
+            <li>لمعالجة معاملات الدفع الخاصة بك وتزويدك بالمنتج النهائي (ملف PDF للسيرة الذاتية).</li>
+            <li>لتحسين وتطوير خدماتنا وميزاتنا.</li>
+            <li>للتواصل معك بخصوص استخدامك للخدمة، أو لأغراض الدعم الفني، أو لإرسال تحديثات مهمة.</li>
+            <li>لضمان الامتثال للمتطلبات القانونية والتنظيمية.</li>
+        </ul>
+
+        <h4 class="mt-4" data-translate="privacy-policy-h4-3">3. مشاركة المعلومات</h4>
+        <p data-translate="privacy-policy-p-3-1">نحن لا نبيع، نؤجر، أو نتبادل معلوماتك الشخصية مع أطراف ثالثة لأغراض التسويق. قد نشارك معلوماتك مع:</p>
+        <ul data-translate="privacy-policy-list-3">
+            <li><strong>مقدمي الخدمات الخارجيين:</strong> مثل بوابات الدفع (Lemon Squeezy/Stripe) ومعالجي البريد الإلكتروني، وذلك بالقدر اللازم لتقديم خدماتنا. هؤلاء المقدمون ملزمون بالحفاظ على سرية معلوماتك.</li>
+            <li><strong>الامتثال القانوني:</strong> قد نكشف عن معلوماتك إذا كان ذلك مطلوبًا بموجب القانون أو أمر قضائي، أو لحماية حقوقنا ومصالحنا أو حقوق المستخدمين الآخرين.</li>
+        </ul>
+
+        <h4 class="mt-4" data-translate="privacy-policy-h4-4">4. أمان البيانات</h4>
+        <p data-translate="privacy-policy-p-4-1">نحن نتخذ إجراءات أمنية معقولة ومناسبة لحماية معلوماتك الشخصية من الوصول غير المصرح به، أو التغيير، أو الكشف، أو التدمير. ومع ذلك، يجب أن تدرك أنه لا يوجد نظام نقل بيانات عبر الإنترنت أو تخزين إلكتروني آمن 100%.</p>
+
+        <h4 class="mt-4" data-translate="privacy-policy-h4-5">5. حقوقك</h4>
+        <p data-translate="privacy-policy-p-5-1">يحق لك الوصول إلى بياناتك الشخصية التي نحتفظ بها، وطلب تصحيح أي معلومات غير دقيقة، أو طلب حذف بياناتك. لممارسة هذه الحقوق، يرجى الاتصال بنا عبر البريد الإلكتروني المذكور أدناه.</p>
+
+        <h4 class="mt-4" data-translate="privacy-policy-h4-6">6. التعديلات على سياسة الخصوصية</h4>
+        <p data-translate="privacy-policy-p-6-1">نحتفظ بالحق في تعديل أو تحديث سياسة الخصوصية هذه من وقت لآخر. سيتم نشر أي تغييرات على هذه الصفحة، ويعتبر استمرارك في استخدام الخدمة بعد نشر التعديلات بمثابة موافقة منك على السياسة المعدلة.</p>
+
+        <h4 class="mt-4" data-translate="privacy-policy-h4-7">7. الاتصال بنا</h4>
+        <p data-translate="privacy-policy-p-7-1">لأي أسئلة أو استفسارات بخصوص سياسة الخصوصية، يرجى الاتصال بنا عبر البريد الإلكتروني: <a href="mailto:ramyheshamamer@gmail.com">ramyheshamamer@gmail.com</a>.</p>
+
+        <button class="btn btn-secondary mt-3" onclick="showPage('landing-page')" data-translate="back-to-home">العودة للرئيسية</button>
+    </div>
+</div>
+    <footer class="bg-dark text-white py-4">
+        <div class="container text-center">
+            <ul class="list-inline mb-3">
+                <li class="list-inline-item"><a href="#terms-of-service" onclick="showPage('terms-of-service')" class="text-white text-decoration-none" data-translate="terms-of-service-link">شروط الخدمة</a></li>
+                <li class="list-inline-item mx-3"><a href="#refund-policy" onclick="showPage('refund-policy')" class="text-white text-decoration-none" data-translate="refund-policy-link">سياسة الاسترداد</a></li>
+                <li class="list-inline-item"><a href="#privacy-policy" onclick="showPage('privacy-policy')" class="text-white text-decoration-none" data-translate="privacy-policy-link">سياسة الخصوصية</a></li>
+            </ul>
+            <p>&copy; 2023 <span data-translate="brand-name">رسائل</span>. All rights reserved.</p>
+        </div>
+
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
