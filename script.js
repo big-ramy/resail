@@ -2,6 +2,8 @@
 const translations = {
     "ar": {
         "promo_bar_text": "عرض خاص! استخدم كود <span class='blinking-code'>FIRSTBUY</span> لخصم 25% أو كود <span class='blinking-code'>SAVE10</span> لخصم 10%!",
+        "from-city": "من",
+        "notification-action": "قام للتو بإنشاء سيرته الذاتية!",
         "CV downloaded successfully!": "تم تنزيل السيرة الذاتية بنجاح!", 
         "Professional CV Builder": "إنشاء السيرة الذاتية الاحترافية",
         "brand-name": "رسائل",
@@ -244,6 +246,8 @@ const translations = {
     },
     "en": {
         "promo_bar_text": "Special Offer! Use code <span class='blinking-code'>FIRSTBUY</span> for 25% off or <span class='blinking-code'>SAVE10</span> for 10% off!",
+        "from-city": "from",
+        "notification-action": "just created their CV!",
         "CV downloaded successfully!": "CV downloaded successfully!", // <--- أضف هذا السطر
         "Professional CV Builder": "Professional CV Builder",
         "brand-name": "Resail",
