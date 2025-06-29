@@ -1,6 +1,12 @@
 // --- بداية الملف: translations, global variables, DOMContentLoaded etc. ---
 const translations = {
     "ar": {
+        "image-paths": { // هذا هو الجزء الخاص بمسارات الصور
+            "normal": (id) => `CV templates_ar/${id}.webp`,
+            "standard": (id) => `CV templates_ar/${id}.webp`,
+            "professional": (id) => `CV templates_ar/${id}.webp`,
+            "ast": (id) => `CV templates_ar/${id}.webp`
+        },
         "promo_bar_text": "عرض خاص! استخدم كود <span class='blinking-code'>FIRSTBUY</span> لخصم 25% أو كود <span class='blinking-code'>SAVE10</span> لخصم 10%!",
         "from-city": "من",
         "notification-action": "قام للتو بإنشاء سيرته الذاتية!",
@@ -245,6 +251,13 @@ const translations = {
         "privacy-policy-p-7-1": "لأي أسئلة أو استفسارات بخصوص سياسة الخصوصية، يرجى الاتصال بنا عبر البريد الإلكتروني: <a href=\"mailto:ramyheshamamer@gmail.com\">ramyheshamamer@gmail.com</a>."
     },
     "en": {
+        "image-paths": { // هذا هو الجزء الخاص بمسارات الصور
+            "normal": (id) => `CV templates_en/${id}.webp`,
+            "standard": (id) => `CV templates_en/${id}.webp`,
+            "professional": (id) => `CV templates_en/${id}.webp`,
+            "ast": (id) => `CV templates_en/${id}.webp`
+        },
+    
         "promo_bar_text": "Special Offer! Use code <span class='blinking-code'>FIRSTBUY</span> for 25% off or <span class='blinking-code'>SAVE10</span> for 10% off!",
         "from-city": "from",
         "notification-action": "just created their CV!",
@@ -546,6 +559,8 @@ let salesQueue = [
 let finalPriceToPay = 0; // سيحتفظ بالسعر النهائي بعد الخصم
 let appliedCode = ""; // سيحتفظ بالكود المطبق
 
+
+
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- بداية: الكود الجديد لدفع المحتوى ---
@@ -597,6 +612,21 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+function updateTemplateImageSources() {
+    const templateImages = document.querySelectorAll('.template-preview');
+    console.log("Updating template image sources for language:", currentLang); // Debug
+    templateImages.forEach(img => {
+        const templateId = parseInt(img.getAttribute('data-template-id'));
+        const templateCategory = img.getAttribute('data-template-category');
+        if (!isNaN(templateId) && translations[currentLang]["image-paths"][templateCategory]) {
+            const newSrc = translations[currentLang]["image-paths"][templateCategory](templateId);
+            img.src = newSrc;
+            console.log(`Setting image src for id ${templateId} (${templateCategory}) to: ${newSrc}`); // Debug
+        } else {
+            console.warn(`Could not set src for image. templateId: ${templateId}, category: ${templateCategory}, lang: ${currentLang}`); // Debug
+        }
+    });
+}
 /**
  * تحدد اللغة الأولية للموقع بناءً على لغة المتصفح.
  * إذا كانت لغة المتصفح هي العربية، يتم اختيارها.
@@ -815,6 +845,7 @@ function updateLanguage() {
 
     updateNavbarLinks();
     updatePageContentLanguage();
+    updateTemplateImageSources();
     // إعادة تحميل PayPal SDK عند تغيير اللغة
 
     // **أضف هذا السطر:**
@@ -2556,5 +2587,4 @@ function populateWithTestData() {
     generateCV(cvContainer);
     updateProgress();
 }
-
 
