@@ -7,9 +7,10 @@ const translations = {
             "professional": (id) => `CV templates_ar/${id}.webp`,
             "ast": (id) => `CV templates_ar/${id}.webp`
         },
-        // ترجمات صفحة الدفع (العربية - كما هي تقريباً، مع إضافة العملة كـ "ريال سعودي")
+        // ترجمات صفحة الدفع (العربية)
         "local-payment-title": "الدفع المحلي",
-        "sar-currency": "ريال سعودي", // هنا تظل ريال سعودي للغة العربية
+        "local-payment-desc": "(عبر STC Pay أو تحويل الراجحي)",
+        "sar-currency": "ريال سعودي",
         "click-to-pay": "اختر وسيلتك المفضلة:",
         "international-payment-header": "دولي وآمن",
         "card-payment-title": "الدفع بالبطاقة الائتمانية",
@@ -26,11 +27,15 @@ const translations = {
         "Please select a valid image file.": "الرجاء اختيار ملف صورة صالح.",
         "Image size is too large. Please select an image smaller than {size} megabytes.": "حجم الصورة كبير جداً. الرجاء اختيار صورة أصغر من {size} ميغابايت.",
         "You must have at least one field in this section.": "يجب أن يكون لديك حقل واحد على الأقل في هذا القسم.",
-        // ... (أي ترجمات عربية أخرى موجودة) ...
+        "payment-success": "تم استلام طلبك بنجاح! سيتم إرسال السيرة الذاتية إلى بريدك الإلكتروني قريباً.",
+        "Error processing file.": "حدث خطأ أثناء معالجة الملف.",
+
+
+        // الترجمات العامة المتبقية من الملف الأصلي
         "promo_bar_text": "عرض خاص! استخدم كود <span class='blinking-code'>FIRSTBUY</span> لخصم 25% أو كود <span class='blinking-code'>SAVE10</span> لخصم 10%!",
         "from-city": "من",
         "notification-action": "قام للتو بإنشاء سيرته الذاتية!",
-        "CV downloaded successfully!": "تم تنزيل السيرة الذاتية بنجاح!", 
+        "CV downloaded successfully!": "تم تنزيل السيرة الذاتية بنجاح!",
         "Professional CV Builder": "إنشاء السيرة الذاتية الاحترافية",
         "brand-name": "رسائل",
         "home-link": "الرئيسية",
@@ -40,7 +45,7 @@ const translations = {
         "product-cv": "إنشاء سيرة ذاتية",
         "about-link": "عنا",
         "contact-link": "اتصل بنا",
-        "English": "English", // This will be "العربية" when current lang is English
+        "English": "English",
         "Professional CV Builder_header": "أنشئ سيرتك الذاتية الاحترافية بسهولة",
         "Create a professional CV that stands out and gets you hired.": "ابرز مهاراتك وخبراتك بتصميم احترافي يلفت الانتباه ويفتح لك أبواب الفرص.",
         "Create Your CV Now": "ابدأ في إنشاء سيرتك الذاتية الآن",
@@ -67,7 +72,7 @@ const translations = {
         "Resail is your go-to platform for effortlessly creating professional and impactful CVs. We provide a wide range of modern templates and intuitive tools to help you stand out in the job market with a high-quality PDF resume.": "رسائل هو نظامك المتكامل لإنشاء سير ذاتية احترافية ومؤثرة بسهولة. نقدم مجموعة واسعة من القوالب العصرية والأدوات البديهية لمساعدتك على التميز في سوق العمل بسيرة ذاتية عالية الجودة بصيغة PDF.",
         "Our service focuses on simplifying the CV creation process, offering diverse templates, and ensuring full support for both Arabic and English languages with accurate formatting. Download your ready-to-share PDF CV after a seamless payment process.": "تركز خدمتنا على تبسيط عملية إنشاء السيرة الذاتية، وتقديم قوالب متنوعة، وضمان الدعم الكامل للغتين العربية والإنجليزية بتنسيق دقيق. احصل على سيرتك الذاتية بصيغة PDF جاهزة للمشاركة بعد عملية دفع سلسة.",
         "CVs Generated So Far": "عدد السير الذاتية التي تم إنشاؤها حتى الآن",
-        "+٥٠٠٠": "+٥٠٠٠", // Ensure this stays Arabic if it's a fixed number representation
+        "+٥٠٠٠": "+٥٠٠٠",
         "Join thousands who have successfully created their professional CVs.": "انضم إلى آلاف المستخدمين الذين أنشأوا سيرهم الذاتية الاحترافية بنجاح.",
         "Frequently Asked Questions": "الأسئلة الشائعة",
         "How do I create a CV?": "كيف يمكنني إنشاء سيرة ذاتية؟",
@@ -181,7 +186,7 @@ const translations = {
         "choose-payment": "اختر وسيلة الدفع",
         "Enter discount code (if any)": "أدخل كود الخصم (إن وجد)",
         "Apply Discount": "تطبيق الخصم",
-        "messages": "السعر", // This one is duplicated for price (السعر المدفوع: 0 ريال) and label "messages"
+        "messages": "السعر",
         "payment": "الدفع",
         "payment-note": "بعد إتمام الدفع في تطبيق البنك، الرجاء تعبئة البيانات التالية:",
         "your-name": "اسمك:",
@@ -189,7 +194,7 @@ const translations = {
         "your-phone": "رقم الهاتف:",
         "attachment": "أرفق إيصال الدفع (صورة / PDF):",
         "submit": "إرسال",
-        "Submitting...": "جاري الإرسال...", // <--- أضف هذا
+        "Submitting...": "جاري الإرسال...",
         "Back to Payment Options": "العودة لخيارات الدفع",
         "terms-of-service-title": "شروط الخدمة",
         "terms-of-service-intro-p": "مرحباً بكم في نظام رسائل لإنشاء السيرة الذاتية. باستخدامك لخدماتنا، فإنك توافق على الالتزام بالشروط والأحكام التالية، والتي تشكل اتفاقية ملزمة بينك وبين \"رسائل\". يرجى قراءتها بعناية.",
@@ -210,7 +215,7 @@ const translations = {
         "terms-of-service-h4-6": "6. القانون المعمول به",
         "terms-of-service-p-6-1": "تخضع هذه الشروط والأحكام وتفسر وفقًا لقوانين المملكة العربية السعودية، وتوافق على الخضوع للاختصاص القضائي الحصري لمحاكم المملكة العربية السعودية لحل أي نزاعات تنشأ عن هذه الشروط أو استخدام الخدمة.",
         "terms-of-service-h4-7": "7. الاتصال بنا",
-        "terms-of-service-p-7-1": "لأي أسئلة أو استفسارات بخصوص شروط الخدمة، يرجى الاتصال بنا عبر البريد الإلكتروني: <a href=\"mailto:ramyheshamamer@gmail.com\">ramyheshamamer@gmail.com</a>.",
+        "terms-of-service-p-7-1": "لأي أسئلة أو استفسارات بخصوص شروط الخدمة، يرجى الاتصال بنا عبر البريد الإلكتروني: <strong><a href=\"mailto:ramyheshamamer@gmail.com\">ramyheshamamer@gmail.com</a></strong>.",
         "back-to-home": "العودة للرئيسية",
         "terms-of-service-link": "شروط الخدمة",
         "refund-policy-link": "سياسة الاسترداد",
@@ -268,7 +273,7 @@ const translations = {
         "privacy-policy-h4-6": "6. التعديلات على سياسة الخصوصية",
         "privacy-policy-p-6-1": "نحتفظ بالحق في تعديل أو تحديث سياسة الخصوصية هذه من وقت لآخر. سيتم نشر أي تغييرات على هذه الصفحة، ويعتبر استمرارك في استخدام الخدمة بعد نشر التعديلات بمثابة موافقة منك على السياسة المعدلة.",
         "privacy-policy-h4-7": "7. الاتصال بنا",
-        "privacy-policy-p-7-1": "لأي أسئلة أو استفسارات بخصوص سياسة الخصوصية، يرجى الاتصال بنا عبر البريد الإلكتروني: <a href=\"mailto:ramyheshamamer@gmail.com\">ramyheshamamer@gmail.com</a>."
+        "privacy-policy-p-7-1": "لأي أسئلة أو استفسارات بخصوص سياسة الخصوصية، يرجى الاتصال بنا عبر البريد الإلكتروني: <strong><a href=\"mailto:ramyheshamamer@gmail.com\">ramyheshamamer@gmail.com</a></strong>."
     },
     "en": {
         "image-paths": { // هذا هو الجزء الخاص بمسارات الصور
@@ -279,6 +284,7 @@ const translations = {
         },
         // ترجمات صفحة الدفع (الإنجليزية - مع العملة بالدولار)
         "local-payment-title": "Local Payment",
+        "local-payment-desc": "(via STC Pay or Al Rajhi Transfer)", // هذا مفتاح جديد تم إضافته
         "sar-currency": "USD", // هنا يتم تغيير العملة إلى دولار أمريكي
         "click-to-pay": "Choose your preferred method:",
         "international-payment-header": "International & Secure",
@@ -296,11 +302,14 @@ const translations = {
         "Please select a valid image file.": "Please select a valid image file.",
         "Image size is too large. Please select an image smaller than {size} megabytes.": "Image size is too large. Please select an image smaller than {size} megabytes.",
         "You must have at least one field in this section.": "You must have at least one field in this section.",
-        // ... (أي ترجمات إنجليزية أخرى موجودة) ...
+        "payment-success": "Your request has been successfully received! The CV will be sent to your email shortly.",
+        "Error processing file.": "Error processing file.",
+
+        // الترجمات العامة المتبقية من الملف الأصلي
         "promo_bar_text": "Special Offer! Use code <span class='blinking-code'>FIRSTBUY</span> for 25% off or <span class='blinking-code'>SAVE10</span> for 10% off!",
         "from-city": "from",
         "notification-action": "just created their CV!",
-        "CV downloaded successfully!": "CV downloaded successfully!", // <--- أضف هذا السطر
+        "CV downloaded successfully!": "CV downloaded successfully!",
         "Professional CV Builder": "Professional CV Builder",
         "brand-name": "Resail",
         "home-link": "Home",
@@ -310,7 +319,7 @@ const translations = {
         "product-cv": "CV Builder",
         "about-link": "About Us",
         "contact-link": "Contact Us",
-        "English": "العربية", // This will be "English" when current lang is English
+        "English": "العربية", // هذا هو النص الذي يظهر للتبديل للعربية
         "Professional CV Builder_header": "Build Your Professional CV Easily",
         "Create a professional CV that stands out and gets you hired.": "Showcase your skills and experience with a professional design that grabs attention and opens doors to opportunities.",
         "Create Your CV Now": "Create Your CV Now",
@@ -337,7 +346,7 @@ const translations = {
         "Resail is your go-to platform for effortlessly creating professional and impactful CVs. We provide a wide range of modern templates and intuitive tools to help you stand out in the job market with a high-quality PDF resume.": "Resail is your comprehensive system for easily creating professional and impactful CVs. We offer a wide range of modern templates and intuitive tools to help you stand out in the job market with a high-quality PDF resume.",
         "Our service focuses on simplifying the CV creation process, offering diverse templates, and ensuring full support for both Arabic and English languages with accurate formatting. Download your ready-to-share PDF CV after a seamless payment process.": "Our service focuses on simplifying the CV creation process, offering diverse templates, and ensuring full support for both Arabic and English languages with accurate formatting. Get your PDF CV ready to share after a seamless payment process.",
         "CVs Generated So Far": "CVs Generated So Far",
-        "+٥٠٠٠": "5000+", // Translating the number as well
+        "+٥٠٠٠": "5000+",
         "Join thousands who have successfully created their professional CVs.": "Join thousands who have successfully created their professional CVs.",
         "Frequently Asked Questions": "Frequently Asked Questions",
         "How do I create a CV?": "How do I create a CV?",
@@ -459,7 +468,7 @@ const translations = {
         "your-phone": "Phone Number:",
         "attachment": "Attach payment receipt (image / PDF):",
         "submit": "Submit",
-        "Submitting...": "Submitting...", // <--- أضف هذا
+        "Submitting...": "Submitting...",
         "Back to Payment Options": "Back to Payment Options",
         "terms-of-service-title": "Terms of Service",
         "terms-of-service-intro-p": "Welcome to the Resail CV Builder system. By using our services, you agree to abide by the following terms and conditions, which constitute a binding agreement between you and \"Resail\". Please read them carefully.",
@@ -480,65 +489,7 @@ const translations = {
         "terms-of-service-h4-6": "6. Governing Law",
         "terms-of-service-p-6-1": "These terms and conditions are governed by and construed in accordance with the laws of the Kingdom of Saudi Arabia, and you agree to submit to the exclusive jurisdiction of the courts of the Kingdom of Saudi Arabia to resolve any disputes arising from these terms or the use of the service.",
         "terms-of-service-h4-7": "7. Contact Us",
-        "terms-of-service-p-7-1": "For any questions or inquiries regarding the terms of service, please contact us via email: <a href=\"mailto:ramyheshamamer@gmail.com\">ramyheshamamer@gmail.com</a>.",
-        "back-to-home": "Back to Home",
-        "terms-of-service-link": "Terms of Service",
-        "refund-policy-link": "Refund Policy",
-        "privacy-policy-link": "Privacy Policy",
-        "refund-policy-title": "Refund and Disputes Policy",
-        "refund-policy-intro-p": "At \"Resail\", we strive to provide high-quality service and ensure customer satisfaction. Due to the nature of our digital products (CVs created and downloaded as PDF), our refund and disputes policy is as follows:",
-        "refund-policy-h4-1": "1. Digital Products (PDF CVs)",
-        "refund-policy-p-1-1": "Once the payment process is completed and the CV is successfully created and sent to your email (or download link provided), the service is considered fully completed. Therefore, refunds are generally not available for paid amounts.",
-        "refund-policy-h4-2": "2. Exceptional Refund Cases",
-        "refund-policy-p-2-1": "Refund requests may be considered only in the following exceptional cases:",
-        "refund-policy-list-1": [
-            "<strong>Significant Technical Issue:</strong> If you encountered a technical issue in our system that prevented you from fully creating or downloading the CV, and our support team could not resolve the issue within a reasonable timeframe.",
-            "<strong>Major Product Error:</strong> If the generated CV contains major errors resulting from a defect in our system (and not due to errors in the data entered by you), and we were unable to correct them.",
-            "<strong>Duplicate Payment:</strong> If you accidentally paid for the same service more than once."
-        ],
-        "refund-policy-h4-3": "3. Refund Request Process",
-        "refund-policy-p-3-1": "To submit a refund request, please contact our support team via email <a href=\"mailto:ramyheshamamer@gmail.com\">ramyheshamamer@gmail.com</a> within 7 days of the purchase date. Your request must include the following details:",
-        "refund-policy-list-2": [
-            "Your full name and email used for the purchase.",
-            "Transaction date and number (if any).",
-            "A detailed description of the problem you encountered and the reasons for your refund request.",
-            "Any screenshots or documents supporting your request."
-        ],
-        "refund-policy-h4-4": "4. Review of Requests",
-        "refund-policy-p-4-1": "We will review all refund requests carefully. You will be notified of the decision within 5 business days of receiving your request. If the refund is approved, the amount will be processed to the original payment method within 7-14 business days, depending on your payment processor's policies.",
-        "refund-policy-h4-5": "5. Dispute Resolution",
-        "refund-policy-p-5-1": "We encourage you to contact us directly in case of any issues or disputes before resorting to the payment processor or bank. We strive to resolve all issues amicably and fairly to ensure customer satisfaction.",
-        "privacy-policy-title": "Privacy Policy",
-        "privacy-policy-intro-p": "At \"Resail\", we are committed to protecting the privacy of your personal data. This policy explains how we collect, use, protect, and manage the information you provide to us when using our CV building services.",
-        "privacy-policy-h4-1": "1. Information We Collect",
-        "privacy-policy-list-1": [
-            "<strong>CV Information:</strong> We collect information you directly enter into the CV creation forms, such as your full name, job title, email address, phone number, personal website/portfolio, career objective, work experience details, educational qualifications, skills, languages, and references. If you upload a profile picture, we also collect it.",
-            "<strong>Contact and Payment Information:</strong> When you make a purchase, we collect your name, email, and phone number. Payment details (such as credit card numbers) are processed directly by secure external payment gateways (such as Lemon Squeezy/Stripe), and we do not store this sensitive information on our servers.",
-            "<strong>Usage Data:</strong> We may collect information about how you access and use our service, such as IP address, browser type, pages visited, and time spent on each page. This data is used to improve the service and is not directly linked to your personal information."
-        ],
-        "privacy-policy-h4-2": "2. How We Use Your Information",
-        "privacy-policy-p-2-1": "We use the information we collect for the following purposes:",
-        "privacy-policy-list-2": [
-            "To provide and customize the CV creation service for you.",
-            "To process your payment transactions and provide you with the final product (PDF CV file).",
-            "To improve and develop our services and features.",
-            "To communicate with you regarding your use of the service, for technical support purposes, or to send important updates.",
-            "To ensure compliance with legal and regulatory requirements."
-        ],
-        "privacy-policy-h4-3": "3. Information Sharing",
-        "privacy-policy-p-3-1": "We do not sell, rent, or trade your personal information with third parties for marketing purposes. We may share your information with:",
-        "privacy-policy-list-3": [
-            "<strong>External Service Providers:</strong> Such as payment gateways (Lemon Squeezy/Stripe) and email processors, to the extent necessary to provide our services. These providers are obligated to maintain the confidentiality of your information.",
-            "<strong>Legal Compliance:</strong> We may disclose your information if required by law or court order, or to protect our rights and interests or the rights of other users."
-        ],
-        "privacy-policy-h4-4": "4. Data Security",
-        "privacy-policy-p-4-1": "We take reasonable and appropriate security measures to protect your personal information from unauthorized access, alteration, disclosure, or destruction. However, you should be aware that no internet data transmission or electronic storage system is 100% secure.",
-        "privacy-policy-h4-5": "5. Your Rights",
-        "privacy-policy-p-5-1": "You have the right to access your personal data we hold, request correction of any inaccurate information, or request deletion of your data. To exercise these rights, please contact us via the email address provided below.",
-        "privacy-policy-h4-6": "6. Modifications to Privacy Policy",
-        "privacy-policy-p-6-1": "We reserve the right to modify or update this Privacy Policy from time to time. Any changes will be posted on this page, and your continued use of the service after the modifications are published constitutes your acceptance of the modified policy.",
-        "privacy-policy-h4-7": "7. Contact Us",
-        "privacy-policy-p-7-1": "For any questions or inquiries regarding the privacy policy, please contact us via email: <a href=\"mailto:ramyheshamamer@gmail.com\">ramyheshamamer@gmail.com</a>."
+        "terms-of-service-p-7-1": "For any questions or inquiries regarding the terms of service, please contact us via email: <strong><a href=\"mailto:ramyheshamamer@gmail.com\">ramyheshamamer@gmail.com</a></strong>."
     }
 };
 
@@ -698,41 +649,52 @@ function updateAllPriceDisplays() {
     const category = selectedTemplateCategory;
     if (!category) return;
 
-    // جلب الأسعار الأصلية
-    const priceSourceLocal = (currentLang === 'ar') ? PRICES.local : PRICES.usd_local;
-    const priceSourceLS = (currentLang === 'ar') ? PRICES.lemonSqueezy : PRICES.usd_lemonSqueezy;
+    // تحديد مصدر الأسعار بناءً على اللغة الحالية
+    // نستخدم المفاتيح التي قمنا بتعريفها في PRICES (local/lemonSqueezy للريال، usd_local/usd_lemonSqueezy للدولار)
+    const priceSourceLocal = (currentLang === 'ar') ? PRICES.local : PRICES.usd_local; //
+    const priceSourceLS = (currentLang === 'ar') ? PRICES.lemonSqueezy : PRICES.usd_lemonSqueezy; //
 
-    const originalLocalPrice = priceSourceLocal[category];
-    const originalLsPrice = priceSourceLS[category];
+    const originalLocalPrice = priceSourceLocal[category]; //
+    const originalLsPrice = priceSourceLS[category]; //
 
     // حساب الأسعار النهائية بناءً على نسبة الخصم المطبقة (discountApplied)
-    const finalLocalPrice = Math.max(0, Math.round(originalLocalPrice * (1 - discountApplied / 100)));
-    const finalLsPrice = Math.max(0, Math.round(originalLsPrice * (1 - discountApplied / 100)));
+    const finalLocalPrice = Math.max(0, Math.round(originalLocalPrice * (1 - discountApplied / 100))); //
+    const finalLsPrice = Math.max(0, Math.round(originalLsPrice * (1 - discountApplied / 100))); //
 
     // تحديث واجهة الدفع المحلي
-    const localPriceElement = document.getElementById('local-price-display');
-    if (localPriceElement) {
-        if (discountApplied > 0 && finalLocalPrice < originalLocalPrice) {
-            localPriceElement.innerHTML = `<del style="color: #999; font-size: 0.8em;">${originalLocalPrice}</del> ${finalLocalPrice}`;
+    const localPriceElement = document.getElementById('local-price-display'); //
+    const localCurrencyElement = localPriceElement.nextElementSibling; // العنصر الذي يلي السعر (والذي يحوي العملة)
+    if (localPriceElement) { //
+        if (discountApplied > 0 && finalLocalPrice < originalLocalPrice) { //
+            // عرض السعر الأصلي مشطوباً بجانب السعر الجديد
+            localPriceElement.innerHTML = `<del style="color: #999; font-size: 0.8em;">${originalLocalPrice}</del> ${finalLocalPrice}`; //
         } else {
-            localPriceElement.textContent = originalLocalPrice;
+            localPriceElement.textContent = originalLocalPrice; //
+        }
+        // تحديث رمز العملة بناءً على اللغة
+        if (localCurrencyElement) { //
+            localCurrencyElement.textContent = translations[currentLang]['sar-currency']; //
         }
     }
 
     // تحديث واجهة الدفع عبر Lemon Squeezy
-    const lsPriceElement = document.getElementById('ls-price-display');
-    if (lsPriceElement) {
-        if (discountApplied > 0 && finalLsPrice < originalLsPrice) {
-            lsPriceElement.innerHTML = `<del style="color: #999; font-size: 0.8em;">${originalLsPrice}</del> ${finalLsPrice}`;
+    const lsPriceElement = document.getElementById('ls-price-display'); //
+    const lsCurrencyElement = lsPriceElement.nextElementSibling; // العنصر الذي يلي السعر (والذي يحوي العملة)
+    if (lsPriceElement) { //
+        if (discountApplied > 0 && finalLsPrice < originalLsPrice) { //
+            lsPriceElement.innerHTML = `<del style="color: #999; font-size: 0.8em;">${originalLsPrice}</del> ${finalLsPrice}`; //
         } else {
-            lsPriceElement.textContent = finalLsPrice;
+            lsPriceElement.textContent = originalLsPrice; //
+        }
+        // تحديث رمز العملة بناءً على اللغة
+        if (lsCurrencyElement) { //
+            lsCurrencyElement.textContent = translations[currentLang]['sar-currency']; //
         }
     }
 
     // تحديث المتغير العام الذي سيُستخدم عند الدفع اليدوي
-    finalPriceToPay = finalLocalPrice;
+    finalPriceToPay = finalLocalPrice; //
 }
-
 function toggleSiteHeader(show) {
     if (siteHeaderGlobal) {
         siteHeaderGlobal.style.display = show ? 'flex' : 'none';
