@@ -7,6 +7,24 @@ const translations = {
             "professional": (id) => `CV templates_ar/${id}.webp`,
             "ast": (id) => `CV templates_ar/${id}.webp`
         },
+                "local-payment-title": "Local Payment",
+        "sar-currency": "SAR",
+        "click-to-pay": "Choose your preferred method:",
+        "international-payment-header": "International & Secure",
+        "card-payment-title": "Credit Card Payment",
+        "click-to-pay-ls": "Click for secure payment:",
+        "pay-with-card": "Pay Now",
+
+        // تأكد أيضًا من وجود هذه الترجمات لرسائل التنبيه/الأخطاء التي ذكرتها سابقًا:
+        "Please fill in all fields.": "Please fill in all required fields.",
+        "Please enter a valid email.": "Please enter a valid email address.",
+        "File size exceeds the limit (3MB).": "File size exceeds the 3MB limit.",
+        "Please attach only image or PDF files.": "Please attach only image or PDF files.",
+        "An error occurred while preparing your payment. Please try again or contact support.": "An error occurred while preparing your payment. Please try again or contact support.",
+        "Error, price for this category is undefined.": "Error, price for this category is undefined.",
+        "Please select a valid image file.": "Please select a valid image file.",
+        "Image size is too large. Please select an image smaller than {size} megabytes.": "Image size is too large. Please select an image smaller than {size} megabytes.", // لاحظ {size} للدلالة على متغير
+        "You must have at least one field in this section.": "You must have at least one field in this section.",
         "promo_bar_text": "عرض خاص! استخدم كود <span class='blinking-code'>FIRSTBUY</span> لخصم 25% أو كود <span class='blinking-code'>SAVE10</span> لخصم 10%!",
         "from-city": "من",
         "notification-action": "قام للتو بإنشاء سيرته الذاتية!",
