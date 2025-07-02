@@ -7,24 +7,26 @@ const translations = {
             "professional": (id) => `CV templates_ar/${id}.webp`,
             "ast": (id) => `CV templates_ar/${id}.webp`
         },
-                "local-payment-title": "Local Payment",
-        "sar-currency": "SAR",
-        "click-to-pay": "Choose your preferred method:",
-        "international-payment-header": "International & Secure",
-        "card-payment-title": "Credit Card Payment",
-        "click-to-pay-ls": "Click for secure payment:",
-        "pay-with-card": "Pay Now",
+        // ترجمات صفحة الدفع (العربية - كما هي تقريباً، مع إضافة العملة كـ "ريال سعودي")
+        "local-payment-title": "الدفع المحلي",
+        "sar-currency": "ريال سعودي", // هنا تظل ريال سعودي للغة العربية
+        "click-to-pay": "اختر وسيلتك المفضلة:",
+        "international-payment-header": "دولي وآمن",
+        "card-payment-title": "الدفع بالبطاقة الائتمانية",
+        "click-to-pay-ls": "اضغط للدفع الآمن:",
+        "pay-with-card": "ادفع الآن",
 
-        // تأكد أيضًا من وجود هذه الترجمات لرسائل التنبيه/الأخطاء التي ذكرتها سابقًا:
-        "Please fill in all fields.": "Please fill in all required fields.",
-        "Please enter a valid email.": "Please enter a valid email address.",
-        "File size exceeds the limit (3MB).": "File size exceeds the 3MB limit.",
-        "Please attach only image or PDF files.": "Please attach only image or PDF files.",
-        "An error occurred while preparing your payment. Please try again or contact support.": "An error occurred while preparing your payment. Please try again or contact support.",
-        "Error, price for this category is undefined.": "Error, price for this category is undefined.",
-        "Please select a valid image file.": "Please select a valid image file.",
-        "Image size is too large. Please select an image smaller than {size} megabytes.": "Image size is too large. Please select an image smaller than {size} megabytes.", // لاحظ {size} للدلالة على متغير
-        "You must have at least one field in this section.": "You must have at least one field in this section.",
+        // ترجمات رسائل التنبيه/الأخطاء (العربية)
+        "Please fill in all fields.": "الرجاء ملء جميع الحقول المطلوبة.",
+        "Please enter a valid email.": "الرجاء إدخال عنوان بريد إلكتروني صالح.",
+        "File size exceeds the limit (3MB).": "حجم الملف يتجاوز الحد المسموح به (3 ميجابايت).",
+        "Please attach only image or PDF files.": "الرجاء إرفاق ملفات صور أو PDF فقط.",
+        "An error occurred while preparing your payment. Please try again or contact support.": "حدث خطأ أثناء تحضير عملية الدفع. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
+        "Error, price for this category is undefined.": "حدث خطأ، السعر لهذه الفئة غير محدد.",
+        "Please select a valid image file.": "الرجاء اختيار ملف صورة صالح.",
+        "Image size is too large. Please select an image smaller than {size} megabytes.": "حجم الصورة كبير جداً. الرجاء اختيار صورة أصغر من {size} ميغابايت.",
+        "You must have at least one field in this section.": "يجب أن يكون لديك حقل واحد على الأقل في هذا القسم.",
+        // ... (أي ترجمات عربية أخرى موجودة) ...
         "promo_bar_text": "عرض خاص! استخدم كود <span class='blinking-code'>FIRSTBUY</span> لخصم 25% أو كود <span class='blinking-code'>SAVE10</span> لخصم 10%!",
         "from-city": "من",
         "notification-action": "قام للتو بإنشاء سيرته الذاتية!",
@@ -275,7 +277,26 @@ const translations = {
             "professional": (id) => `CV templates_en/${id}.webp`,
             "ast": (id) => `CV templates_en/${id}.webp`
         },
-    
+        // ترجمات صفحة الدفع (الإنجليزية - مع العملة بالدولار)
+        "local-payment-title": "Local Payment",
+        "sar-currency": "USD", // هنا يتم تغيير العملة إلى دولار أمريكي
+        "click-to-pay": "Choose your preferred method:",
+        "international-payment-header": "International & Secure",
+        "card-payment-title": "Credit Card Payment",
+        "click-to-pay-ls": "Click for secure payment:",
+        "pay-with-card": "Pay Now",
+
+        // ترجمات رسائل التنبيه/الأخطاء (الإنجليزية)
+        "Please fill in all fields.": "Please fill in all required fields.",
+        "Please enter a valid email.": "Please enter a valid email address.",
+        "File size exceeds the limit (3MB).": "File size exceeds the 3MB limit.",
+        "Please attach only image or PDF files.": "Please attach only image or PDF files.",
+        "An error occurred while preparing your payment. Please try again or contact support.": "An error occurred while preparing your payment. Please try again or contact support.",
+        "Error, price for this category is undefined.": "Error, price for this category is undefined.",
+        "Please select a valid image file.": "Please select a valid image file.",
+        "Image size is too large. Please select an image smaller than {size} megabytes.": "Image size is too large. Please select an image smaller than {size} megabytes.",
+        "You must have at least one field in this section.": "You must have at least one field in this section.",
+        // ... (أي ترجمات إنجليزية أخرى موجودة) ...
         "promo_bar_text": "Special Offer! Use code <span class='blinking-code'>FIRSTBUY</span> for 25% off or <span class='blinking-code'>SAVE10</span> for 10% off!",
         "from-city": "from",
         "notification-action": "just created their CV!",
@@ -531,8 +552,11 @@ let selectedPriceToPay = 0;
 let discountApplied = 0;
 const discountCodes = { "SAVE10": 10, "FIRSTBUY": 25, "FREECV": 100 };
 const PRICES = {
-    local: { normal: 29, standard: 55, professional: 75, ast: 75 },
-    lemonSqueezy: { normal: 35, standard: 69, professional: 93, ast: 93 }
+    local: { normal: 29, standard: 55, professional: 75, ast: 75 }, // أسعار بالريال
+    lemonSqueezy: { normal: 35, standard: 69, professional: 93, ast: 93 }, // أسعار بالريال
+    // يمكنك إضافة قسم جديد للأسعار بالدولار إذا أردت تحويلاً حقيقياً
+    usd_local: { normal: 8, standard: 15, professional: 20, ast: 20 }, // أمثلة لأسعار بالدولار
+    usd_lemonSqueezy: { normal: 10, standard: 19, professional: 25, ast: 25 } // أمثلة لأسعار بالدولار
 };
 
 const CHECKOUT_CONFIG = {
@@ -675,8 +699,11 @@ function updateAllPriceDisplays() {
     if (!category) return;
 
     // جلب الأسعار الأصلية
-    const originalLocalPrice = PRICES.local[category];
-    const originalLsPrice = PRICES.lemonSqueezy[category];
+    const priceSourceLocal = (currentLang === 'ar') ? PRICES.local : PRICES.usd_local;
+    const priceSourceLS = (currentLang === 'ar') ? PRICES.lemonSqueezy : PRICES.usd_lemonSqueezy;
+
+    const originalLocalPrice = priceSourceLocal[category];
+    const originalLsPrice = priceSourceLS[category];
 
     // حساب الأسعار النهائية بناءً على نسبة الخصم المطبقة (discountApplied)
     const finalLocalPrice = Math.max(0, Math.round(originalLocalPrice * (1 - discountApplied / 100)));
@@ -686,7 +713,6 @@ function updateAllPriceDisplays() {
     const localPriceElement = document.getElementById('local-price-display');
     if (localPriceElement) {
         if (discountApplied > 0 && finalLocalPrice < originalLocalPrice) {
-            // عرض السعر الأصلي مشطوباً بجانب السعر الجديد
             localPriceElement.innerHTML = `<del style="color: #999; font-size: 0.8em;">${originalLocalPrice}</del> ${finalLocalPrice}`;
         } else {
             localPriceElement.textContent = originalLocalPrice;
@@ -702,7 +728,7 @@ function updateAllPriceDisplays() {
             lsPriceElement.textContent = finalLsPrice;
         }
     }
-    
+
     // تحديث المتغير العام الذي سيُستخدم عند الدفع اليدوي
     finalPriceToPay = finalLocalPrice;
 }
