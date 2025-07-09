@@ -536,7 +536,7 @@ const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'application/pdf'];
 // يجب تحديث هذا بـ IP الخادم الفعلي عند النشر (مثال: 'http://192.168.1.100:3000')
 //const NODE_SERVER_URL = 'https://cv-generator-service-627901029415.asia-east2.run.app';
 //const NODE_SERVER_URL = 'http://localhost:8080';
-const NODE_SERVER_UR = 'https://resail-cv-generator.onrender.com';
+const NODE_SERVER_URL = 'https://resail-cv-generator.onrender.com';
 
 
 // **عنوان URL لتطبيق Google Apps Script الخاص بك (الخاص بمعالجة الدفع فقط)**
