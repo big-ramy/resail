@@ -470,6 +470,9 @@ const translations = {
         "submit": "Submit",
         "Submitting...": "Submitting...",
         "Back to Payment Options": "Back to Payment Options",
+        "terms-of-service-link": "Terms of Service",
+        "refund-policy-link": "Refund Policy",
+        "privacy-policy-link": "privacy policy",
         "terms-of-service-title": "Terms of Service",
         "terms-of-service-intro-p": "Welcome to the Resail CV Builder system. By using our services, you agree to abide by the following terms and conditions, which constitute a binding agreement between you and \"Resail\". Please read them carefully.",
         "terms-of-service-h4-1": "1. Service Use",
@@ -493,6 +496,9 @@ const translations = {
     }
 };
 
+function setUserLanguage(lang) {
+  sessionStorage.setItem('userLang', lang);
+}
 
 // Global variables
 let currentLang = 'ar';
@@ -627,19 +633,35 @@ function updateTemplateImageSources() {
  * لأي لغة أخرى، يتم اختيار الإنجليزية كخيار افتراضي.
  */
 function setInitialLanguage() {
-  // navigator.language يُرجع رمز اللغة (مثال: "ar-SA", "en-US")
-  // نأخذ أول حرفين فقط للتحقق من اللغة الأساسية ("ar", "en")
-  const browserLang = navigator.language.split('-')[0];
+  const userChosenLang = sessionStorage.getItem('userLang');
+  const path = window.location.pathname;
 
-  // إذا كانت لغة المتصفح هي العربية، قم بتعيينها
-  if (browserLang === 'ar') {
-    currentLang = 'ar';
-  } else {
-    // وإلا، اجعل اللغة الافتراضية هي الإنجليزية
-    currentLang = 'en';
+  // 1. إذا كان المستخدم قد اختار لغة بالفعل، استخدمها فورًا
+  if (userChosenLang) {
+    currentLang = userChosenLang;
+    console.log(`Language set to '${currentLang}' from session storage.`);
+    return;
   }
-  
-  console.log(`Initial language set to: ${currentLang} based on browser language.`);
+
+  // 2. إذا لم يكن هناك اختيار مسبق، حدد اللغة بناءً على الصفحة الحالية
+  if (path.endsWith('en.html')) {
+    currentLang = 'en';
+    console.log("Language set to 'en' based on page name (en.html).");
+  } else if (path.endsWith('index.html') || path.endsWith('/')) {
+    // 3. فقط إذا كنا في الصفحة الرئيسية ولم يتم اختيار لغة، تحقق من لغة المتصفح
+    const browserLang = navigator.language.split('-')[0];
+    if (browserLang === 'ar') {
+      currentLang = 'ar';
+      console.log("Language set to 'ar' based on browser language.");
+    } else {
+      // قم بإعادة التوجيه لمرة واحدة فقط إلى الصفحة الإنجليزية
+      console.log("Browser language is not Arabic, redirecting to en.html...");
+      window.location.replace('en.html');
+    }
+  } else {
+    // صفحة غير معروفة، اجعل العربية هي الافتراضية
+    currentLang = 'ar';
+  }
 }
 
 /**
