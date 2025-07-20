@@ -1030,78 +1030,6 @@ body[dir="ltr"] .cv-skill-item {
     overflow: visible !important; /* إبقاء هذا للعرض على الشاشة، الطباعة ستتجاوزه */
 }
 
-/* Sidebar in Standard and AST Layout */
-.cv-two-column-layout .cv-sidebar,
-.ast-layout .cv-sidebar {
-    width: 80mm; /* عرض ثابت للشريط الجانبي */
-    flex-shrink: 0; /* لا تدعه يتقلص */
-    background-color: #e9ecef; /* لون خلفية افتراضي، سيتم تخصيصه */
-    color: #212529;
-}
-
-/* Main Content in Standard and AST Layout */
-.cv-two-column-layout .cv-main-content,
-.ast-layout .cv-main-content {
-    background-color: #fff; /* لون خلفية افتراضي */
-}
-
-/* Sidebar in Professional Layout */
-.cv-professional-layout .cv-sidebar {
-    grid-area: sidebar;
-    background-color: #343a40; /* لون افتراضي داكن للشريط الجانبي الاحترافي */
-    color: #f8f9fa;
-}
-
-/* Main Content in Professional Layout */
-.cv-professional-layout .cv-main-content {
-    grid-area: main;
-    background-color: #fff;
-}
-
-/* --- Specific styles for elements within different layouts --- */
-
-/* Standard/AST Layout Sidebar specifics */
-.cv-two-column-layout .cv-sidebar .cv-profile-pic,
-.ast-layout .cv-sidebar .cv-profile-pic {
-    margin: 0 auto 15px auto; display: block;
-}
-.cv-two-column-layout .cv-sidebar .cv-section-title,
-.ast-layout .cv-sidebar .cv-section-title {
-    color: #6c757d; border-bottom-color: #dee2e6;
-}
-.cv-two-column-layout .cv-sidebar .cv-contact-item i,
-.ast-layout .cv-sidebar .cv-contact-item i { color: #6c757d; }
-
-.cv-two-column-layout .cv-sidebar .cv-skill-item, /* Skills as badges in sidebar */
-.ast-layout .cv-sidebar .cv-skill-item {
-    background-color: #6c757d; color: #f8f9fa; display: block; text-align: center;
-}
-
-/* Standard/AST Layout Main Content specifics */
-.cv-two-column-layout .cv-main-content .cv-header.two-col-main, /* Header within main content */
-.ast-layout .cv-main-content .cv-header.two-col-main {
-    border-bottom-color: #007bff;
-}
-.cv-two-column-layout .cv-main-content .cv-name,
-.ast-layout .cv-main-content .cv-name { color: #212529; }
-.cv-two-column-layout .cv-main-content .cv-title,
-.ast-layout .cv-main-content .cv-title { color: #007bff; }
-.cv-two-column-layout .cv-main-content .cv-section, /* Sections in main content */
-.ast-layout .cv-main-content .cv-section { background-color: #fff; padding: 0; margin-bottom: 8mm; }
-.cv-two-column-layout .cv-main-content .cv-section-title,
-.ast-layout .cv-main-content .cv-section-title { color: #007bff; border-color: #007bff; }
-
-/* Professional Layout Sidebar specifics */
-.cv-professional-layout .cv-sidebar .cv-profile-pic { border-color: #f8f9fa; margin:0 auto 15px auto; display: none;}
-.cv-professional-layout .cv-sidebar .cv-section-title { color: #f8f9fa; border-bottom-color: #6c757d; }
-.cv-professional-layout .cv-sidebar .cv-contact-item i { color: #adb5bd; }
-.cv-professional-layout .cv-sidebar .cv-skill-item { background-color: #495057; color: #fff; display: block; text-align: center;}
-
-/* Professional Layout Main Content specifics */
-.cv-professional-layout .cv-main-content { background-color: #fff; color: #333; }
-.cv-professional-layout .cv-main-content .cv-section { background-color: #fff; padding: 0; margin-bottom: 8mm;}
-.cv-professional-layout .cv-main-content .cv-section-title { color: #007bff; border-color: #007bff; }
-
 
 /* End Marker Style - لضمان امتداد المحتوى وتجاوز الصفحات بشكل صحيح */
 .cv-end-marker {
@@ -1169,6 +1097,12 @@ body[dir="ltr"] .cv-skill-item {
 .normal-layout .cv-section#skills .cv-section-title {
     width: 100%;
     margin-bottom: 5px; /* تقليل المسافة بعد العنوان */
+}
+
+.normal-layout .skills-container.horizontal-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 /* تنسيق حاوية المهارة لتظهر كبطاقة (Tag) */
@@ -1400,7 +1334,23 @@ html[dir="rtl"] .normal-layout.template3 .cv-profile-pic {
 }
 .professional-layout[dir="rtl"] .cv-sidebar { border-radius: 0 8px 8px 0; }
 .professional-layout .cv-main-content { flex-grow: 1; padding: 20px; }
-
+.professional-layout .cv-sidebar .skill-name , .creative-layout .cv-sidebar .skill-name  { background: var(--accent-bg); color: var(--title-text); padding: 5px; display: block; margin-bottom: 8px; text-align: center; border-radius: 10px;}
+.professional-layout .cv-language-list li , .creative-layout .cv-language-list li{ background: var(--accent-bg); color: var(--title-text); padding: 5px; display: block; margin-bottom: 8px; text-align: center; border-radius: 10px;}
+.standard-layout .cv-company,
+.standard-layout .cv-institution,
+.standard-layout .cv-duration,
+.ast-layout .cv-company,
+.ast-layout .cv-institution,
+.ast-layout .cv-duration,
+.professional-layout .cv-company,
+.professional-layout .cv-institution,
+.professional-layout .cv-duration,
+/* --- الإضافة الجديدة للفئة الإبداعية --- */
+.creative-layout .cv-company,
+.creative-layout .cv-institution,
+.creative-layout .cv-duration {
+    color: var(--subtle-text);
+}
 /* ================================================================ */
 /* == قوالب Professional - النسخة النهائية مع كل التصحيحات == */
 /* ================================================================ */
@@ -1428,6 +1378,8 @@ html[dir="rtl"] .normal-layout.template3 .cv-profile-pic {
     border-radius: 20px 0;
 }
 
+
+
 /* --- 3. تحديد مكان الخط بناءً على اتجاه اللغة --- */
 /* للاتجاه من اليمين لليسار (RTL)، يظهر الخط على اليمين */
 html[dir="rtl"] .professional-layout.template1 .cv-sidebar::before {
@@ -1447,11 +1399,11 @@ html[dir="ltr"] .professional-layout.template1 .cv-sidebar::before {
 /* --- القالب 2: تصميم الرأس المركز (الاتصال بالجانب) --- */
 .professional-layout.template2 .cv-header.professional-layout { background: var(--primary-bg); color: var(--header-text); display: flex; flex-direction: column; justify-content: center; text-align: center; }
 .professional-layout.template2 .cv-header.professional-layout .cv-contact-info { display: none; }
-.professional-layout.template2 .cv-sidebar .cv-section[data-section-name="contact-info"] { display: block; }
+.professional-layout.template2 .cv-sidebar .cv-section .cv-contact-info p { display: block; color: var(--title-text); }
 .professional-layout.template2 .cv-sidebar { background: var(--sidebar-bg); }
-.professional-layout.template2 .cv-profile-pic { border-color: var(--primary-bg); }
+.professional-layout.template2 .cv-sidebar .cv-profile-pic { border-color: var(--primary-bg); }
 .professional-layout.template2 .cv-sidebar .cv-section-title { color: var(--title-text); }
-.professional-layout.template2 .cv-sidebar .cv-skill-item { background: var(--accent-bg); }
+.professional-layout.template2 .cv-sidebar .cv-skill-name { background: var(--accent-bg); color: var(--title-text); }
 .professional-layout.template2 .cv-main-content .cv-section-title { color: var(--title-text); border-bottom-color: var(--accent-bg); }
 
 /* --- القالب 3: تصميم الرأس المدمج (الصورة بالرأس) --- */
@@ -1463,6 +1415,77 @@ html[dir="ltr"] .professional-layout.template3 .cv-header.professional-layout .c
 .professional-layout.template3 .cv-sidebar .cv-section-title { color: var(--title-text); }
 .professional-layout.template3 .cv-sidebar .cv-skill-item { background: var(--accent-bg); }
 .professional-layout.template3 .cv-main-content .cv-section-title { color: var(--title-text); border-bottom-color: var(--accent-bg); }
+
+.professional-layout.template3 .cv-header.professional-layout {
+    display: flex;
+    align-items: center; /* محاذاة عمودية في المنتصف */
+    text-align: start; /* محاذاة النص الافتراضية للبداية (يمين في العربي) */
+}
+
+/* --- 2. نضبط هوامش الصورة الشخصية --- */
+/* هذا يضمن وجود مسافة مناسبة بين الصورة والنص */
+.professional-layout.template3 .cv-header.professional-layout .cv-profile-pic {
+    display: block; /* التأكد من أن الصورة معروضة */
+}
+html[dir="rtl"] .professional-layout.template3 .cv-header.professional-layout .cv-profile-pic {
+    margin-left: 20px; /* مسافة على يسار الصورة في العربي */
+    margin-right: 0;
+}
+html[dir="ltr"] .professional-layout.template3 .cv-header.professional-layout .cv-profile-pic {
+    margin-right: 20px; /* مسافة على يمين الصورة في الإنجليزي */
+    margin-left: 0;
+}
+
+/* --- 3. نضمن أن حاوية النص تأخذ المساحة المتبقية --- */
+.professional-layout.template3 .cv-header.professional-layout .cv-details {
+    flex-grow: 1; /* تجعل هذا العنصر يملأ باقي المساحة المتاحة */
+}
+/*========================تصميم المهارات للقالب الاحترافي و AST ===========*/
+
+/* ========================================================== */
+/* ==   نمط المهارات الجديد (Progress Bars) لـ AST & Pro   == */
+/* ========================================================== */
+
+/* --- 1. تنسيق الحاوية الرئيسية للمهارة --- */
+.ast-layout .skill-item-wrapper,
+.professional-layout .skill-item-wrapper {
+    margin-bottom: 12px;
+    /* نتأكد من عدم وجود أي خلفية أو حشوة من الأنماط القديمة */
+    background: none;
+    padding: 0;
+    text-align: start; /* محاذاة النص للبداية (يمين في العربي) */
+}
+
+/* --- 2. تنسيق اسم المهارة (النص) --- */
+.ast-layout .skill-item-wrapper .skill-name,
+.professional-layout .skill-item-wrapper .skill-name {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    background:var(--accent-bg);
+    color: var(--title-text);
+    border-radius: 5px;
+    text-align: center;
+}
+
+/* --- 3. تنسيق شريط التقدم --- */
+.ast-layout .skill-item-wrapper .skill-level-bar,
+.professional-layout .skill-item-wrapper .skill-level-bar {
+    display: block; /* التأكد من أن الشريط ظاهر */
+    width: 100%;
+    height: 8px;
+    background: var(--accent-bg); /* لون الشريط الفارغ */
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+/* --- 4. تنسيق الجزء الممتلئ من شريط التقدم --- */
+.ast-layout .skill-item-wrapper .skill-level-progress,
+.professional-layout .skill-item-wrapper .skill-level-progress {
+    height: 100%;
+    background: var(--title-text); /* لون الشريط الممتلئ هو لون العناوين */
+    border-radius: 4px;
+}
 
 /*===========================================================================*/
 .ast-layout .cv-sidebar {
@@ -1481,9 +1504,10 @@ html[dir="ltr"] .professional-layout.template3 .cv-header.professional-layout .c
 .ast-layout.template1 .cv-sidebar { background: var(--primary-bg); color: var(--header-text); }
 .ast-layout.template1 .cv-profile-pic { border-color: var(--header-text); }
 .ast-layout.template1 .cv-sidebar .cv-section-title { color: var(--header-text); border-bottom-color: var(--sidebar-bg); }
-.ast-layout.template1 .cv-sidebar .cv-contact-item, .ast-layout.template1 .cv-sidebar .cv-language-list li { color: var(--header-text); opacity: 0.9; }
+.ast-layout.template1 .cv-sidebar .cv-contact-item {  color: var(--header-text); opacity: 0.9; margin-bottom: 2mm; }
+.ast-layout.template1 .cv-sidebar .cv-language-list li {  color: var(--title-text); opacity: 0.9; margin-bottom: 8mm; }
 .ast-layout.template1 .cv-sidebar .cv-contact-item i { color: var(--header-text); }
-.ast-layout.template1 .cv-sidebar .cv-skill-item { background: var(--accent-bg); color: var(--title-text); }
+.ast-layout.template1 .cv-sidebar .cv-skill-item { background: var(--accent-bg); color: var(--title-text); border-radius: 10px; }
 /* المحتوى الرئيسي */
 .ast-layout.template1 .cv-main-content .cv-header.two-col-main { border-bottom-color: var(--primary-bg); }
 .ast-layout.template1 .cv-main-content .cv-name { color: var(--title-text); }
@@ -1592,9 +1616,9 @@ html[dir="rtl"] .creative-layout .header-wave {
 
 /* -- تنسيق أشرطة المهارات -- */
 .creative-layout .skill-item-wrapper { margin-bottom: 12px; }
-.creative-layout .skill-name { display: block; margin-bottom: 5px; color: var(--title-text); font-weight: 500; font-size: 0.95em; }
+.creative-layout .skill-name { display: block; background: var(--accent-bg); margin-bottom: 5px; color: var(--title-text); font-weight: 500; font-size: 0.95em; padding: 4mm 10mm; border-radius: 5px;}
 .creative-layout .skill-level-bar { width: 100%; height: 8px; background: var(--accent-bg); border-radius: 4px; overflow: hidden; }
-.creative-layout .skill-level-progress { height: 100%; border-radius: 4px;; }
+.creative-layout .skill-level-progress { height: 100%; border-radius: 4px; background: var(--primary-bg);}
 
 /* -- تنسيقات عامة وتصحيح الظل -- */
 .creative-layout .left-column .cv-section {
@@ -1634,7 +1658,7 @@ html[dir="rtl"] .creative-layout.template1 .header-wave { clip-path: polygon(0 0
 .creative-layout.template1 .cv-profile-pic { border-color: var(--header-text); }
 .creative-layout.template1 .right-column { background: var(--sidebar-bg); padding: 20px; border-radius: 8px; }
 .creative-layout.template1 .cv-section-title { color: var(--title-text); border-bottom-color: var(--accent-bg); }
-.creative-layout.template1 .skill-level-progress { background: var(--header-text); }
+.creative-layout.template1 .skill-level-progress { background: var(--sidebar-bg); }
 .creative-layout.template1 .right-column .cv-contact-item i { color: var(--title-text); }
 
 /* --- القالب 2: تصميم الخط المائل (الهندسي) --- */ 
@@ -1645,13 +1669,16 @@ html[dir="rtl"] .creative-layout.template1 .header-wave { clip-path: polygon(0 0
     position: absolute; top: 0; left: 0; right: 0; height: 200px;
     color: var(--header-text);
 }
+
+.creative-layout.template2 .header-wave .cv-name { margin: 0 0 70px 0;; }
+.creative-layout.template2 .header-wave .cv-title { margin: 0 0 70px 0; }
 .creative-layout.template2 .header-wave .cv-profile-pic { display: none; }
 .creative-layout.template2 .content-columns { margin-top: 0; }
 .creative-layout.template2 .left-column { width: 60%; }
 .creative-layout.template2 .right-column { width: 40%; }
 .creative-layout.template2 .right-column .cv-profile-pic { display: block; width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--primary-bg); margin: -60px auto 20px; position: relative; z-index: 5; }
 .creative-layout.template2 .cv-section-title { color: var(--title-text); border-bottom-color: var(--accent-bg); }
-.creative-layout.template2 .skill-level-progress { background: var(--primary-bg); }
+.creative-layout.template2 .skill-level-progress { background: var(--sidebar-bg); }
 
 /* --- القالب 3: تصميم الموجة العمودية (المبتكر) --- */
 .creative-layout.template3 .cv-content { display: flex; flex-direction: row; padding: 0; }
@@ -2053,6 +2080,31 @@ html[dir="ltr"] .gradient-toggle-wrapper .form-check-input {
     color: var(--subtle-text); /* ربط تفاصيل المرجع (النص الفرعي) بلون النصوص الفرعية */
 }
 
+#palette-selector {
+    padding: 5px;
+}
+.palette-swatch {
+    cursor: pointer;
+    border: 2px solid #dee2e6;
+    padding: 4px;
+    border-radius: 8px;
+    background-color: #fff;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.palette-swatch:hover, .palette-swatch.selected {
+    border-color: var(--title-text, #007bff);
+    transform: scale(1.05);
+}
+.palette-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
 /* ======================= نهاية: تنسيقات لوحة التحكم الجانبية ======================= */
 </style>
 </head>
@@ -2324,8 +2376,8 @@ html[dir="ltr"] .gradient-toggle-wrapper .form-check-input {
                                     <input type="file"  id="profile-pic-input" accept="image/*" onchange="handleProfilePicChange(event); updateProgress()">
                                     <small class="form-text text-muted" data-en="Choose a picture to enhance the look of your CV in some templates." data-ar="اختر صورة لتحسين مظهر السيرة الذاتية في بعض النماذج.">اختر صورة لتحسين مظهر السيرة الذاتية في بعض النماذج.</small>
                                 </div>
-                                <div class="form-group" id="form-navigation-buttons">
-                                    <label data-en="Skills" data-ar="المهارات ">المهارات  </label>
+                                                           <div class="form-group" id="form-navigation-buttons">
+                                    <label data-en="Skills" data-ar="المهارات ">المهارات </label>
                                     <button type="button" onclick="addSkillField()" class="btn btn-sm btn-outline-primary" data-en="Add Skill" data-ar="إضافة مهارة">إضافة مهارة</button>
                                     <button type="button" onclick="removeLastSkillField()" class="btn btn-sm btn-outline-danger" data-en="Remove Last" data-ar="حذف آخر">حذف آخر</button>
                                 <div id="skills-input">
@@ -2406,10 +2458,9 @@ html[dir="ltr"] .gradient-toggle-wrapper .form-check-input {
                                     </div>
                                 </div>
                                 <div class="text-center mt-4">
-                                <button type="button" onclick="addCustomSection()" class="btn btn-outline-success">
-                                    <i class="fas fa-plus-circle"></i>
-                                    <span data-translate="add_custom_section_btn">إضافة قسم مخصص</span>
-                                </button>
+                                    <button type="button" onclick="addCustomSection()" class="btn btn-outline-success">
+                                        <i class="fas fa-plus-circle"></i> إضافة قسم مخصص
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -2504,9 +2555,14 @@ html[dir="ltr"] .gradient-toggle-wrapper .form-check-input {
                                 </div>
                             </div>
 
+                            <div id="palette-container" class="my-3">
+                                <h6 class="text-muted border-bottom pb-2 mb-3" data-translate="color_presets_title">Color Presets</h6>
+                                <div id="palette-selector" class="d-flex flex-wrap gap-2 justify-content-center">
+                                    </div>
+                            </div>
+
                             <div id="color-picker-container" class="text-center my-3 p-3 bg-light border rounded">
                                 <h5 class="mb-3" data-translate="color_customization_title">Customize Template Colors</h5>
-                                
                                 <h6 class="text-muted border-bottom pb-2 mb-3" data-translate="background_colors_title">Background Colors</h6>
                                 <div class="row justify-content-center g-3 mb-3">
                                     <div class="col-12 color-control-component" data-color-name="primary-bg">
@@ -2582,6 +2638,7 @@ html[dir="ltr"] .gradient-toggle-wrapper .form-check-input {
                                     <div class="col-md-6 col-12"><label for="color-picker-subtle-text" class="form-label fw-bold" data-translate="subtle_text_label">Subtle Text</label><input type="color" class="form-control form-control-color w-100" id="color-picker-subtle-text" value="#6c757d"></div>
                                 </div>
                             </div>
+
                             <div class="action-buttons-container">
                                 <button class="btn btn-secondary" onclick="showPage('cv-template-selection-page')" data-translate="Back to Templates">العودة للنماذج</button>
                                 <button type="button" class="btn btn-info ms-3" data-translate-id="Download PDF (Direct)">تنزيل PDF (معاينة)</button>
