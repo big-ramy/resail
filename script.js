@@ -1,2839 +1,3270 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-    <head>
-    <meta charset="UTF-8">
-    <meta name="referrer" content="no-referrer">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Build your professional CV or Resume for free in minutes with Resail. Choose from dozens of modern, ATS-friendly templates to stand out in the job market and land your dream job." />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://big-ramy.github.io/resail/en.html" />
-<meta property="og:title" content="Resail | Free Professional CV Maker & Resume Builder" />
-<meta property="og:description" content="Build your professional CV for free in minutes. Choose from dozens of modern, ATS-friendly templates to stand out and land your dream job." />
-<meta property="og:image" content="https://big-ramy.github.io/resail/social.png" />
-<meta property="og:locale" content="en_US" />
+// --- بداية الملف: translations, global variables, DOMContentLoaded etc. ---
+const translations = {
+    "ar": {
+        "image-paths": { // هذا هو الجزء الخاص بمسارات الصور
+            "normal": (id) => `CV templates_ar/${id}.webp`,
+            "standard": (id) => `CV templates_ar/${id}.webp`,
+            "professional": (id) => `CV templates_ar/${id}.webp`,
+            "ast": (id) => `CV templates_ar/${id}.webp`
+        },
+        // ترجمات صفحة الدفع (العربية)
+        "local-payment-title": "الدفع المحلي",
+        "local-payment-desc": "(عبر STC Pay أو تحويل الراجحي)",
+        "sar-currency": "ريال سعودي",
+        "click-to-pay": "اختر وسيلتك المفضلة:",
+        "international-payment-header": "دولي وآمن",
+        "card-payment-title": "الدفع بالبطاقة الائتمانية",
+        "click-to-pay-ls": "اضغط للدفع الآمن:",
+        "pay-with-card": "ادفع الآن",
+        "select_font_label": "اختر خط السيرة الذاتية:",
+        // ترجمات رسائل التنبيه/الأخطاء (العربية)
+        "Please fill in all fields.": "الرجاء ملء جميع الحقول المطلوبة.",
+        "Please enter a valid email.": "الرجاء إدخال عنوان بريد إلكتروني صالح.",
+        "File size exceeds the limit (3MB).": "حجم الملف يتجاوز الحد المسموح به (3 ميجابايت).",
+        "Please attach only image or PDF files.": "الرجاء إرفاق ملفات صور أو PDF فقط.",
+        "An error occurred while preparing your payment. Please try again or contact support.": "حدث خطأ أثناء تحضير عملية الدفع. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
+        "Error, price for this category is undefined.": "حدث خطأ، السعر لهذه الفئة غير محدد.",
+        "Please select a valid image file.": "الرجاء اختيار ملف صورة صالح.",
+        "Image size is too large. Please select an image smaller than {size} megabytes.": "حجم الصورة كبير جداً. الرجاء اختيار صورة أصغر من {size} ميغابايت.",
+        "You must have at least one field in this section.": "يجب أن يكون لديك حقل واحد على الأقل في هذا القسم.",
+        "payment-success": "تم استلام طلبك بنجاح! سيتم إرسال السيرة الذاتية إلى بريدك الإلكتروني قريباً.",
+        "Error processing file.": "حدث خطأ أثناء معالجة الملف.",
+        "Enter a skill": "أدخل مهارة",
+        //قسم المهارات
+        "Select Level": "اختر المستوى",
+        "Beginner": "مبتدئ",
+        "Intermediate": "متوسط",
+        "Advanced": "متقدم",
+        "Expert": "خبير",
 
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:url" content="https://big-ramy.github.io/resail/en.html" />
-<meta name="twitter:title" content="Resail | Free Professional CV Maker & Resume Builder" />
-<meta name="twitter:description" content="Build your professional CV for free in minutes. Choose from dozens of modern, ATS-friendly templates to stand out and land your dream job." />
-<meta name="twitter:image" content="https://big-ramy.github.io/resail/social.png" />
+        "select_name_font_label": "خط الاسم الرئيسي:",
+        "select_headings_font_label": "خط العناوين:",
+        "select_body_font_label": "خط النص الأساسي:",
 
-<link rel="icon" href="favicon.png" type="image/png" />
-<link rel="apple-touch-icon" href="apple-touch-icon.png" />
-<title>Resail | Free Professional CV Maker & Resume Builder</title>
-<meta name="google-site-verification" content="75q6Tjfrizavn01d0DIInOza03LJD3i2cj8XfD_yApk" />
-    <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "Resail - Professional CV Maker",
-  "operatingSystem": "Web",
-  "applicationCategory": "ProductivityApplication",
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.9",
-    "ratingCount": "5000"
-  },
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "SAR"
-  },
-  "description": "An online tool for creating professional CVs and resumes in both Arabic and English with a variety of modern, ATS-friendly templates.",
-  "url": "https://big-ramy.github.io/resail/"
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [{
-    "@type": "Question",
-    "name": "How do I create a CV with Resail?",
-    "acceptedAnswer": {
-      "@type": "Answer",
-      "text": "Simply click on 'Create Your CV Now', fill in your details, choose a template, and your professional CV will be generated instantly for preview and download."
+        // --- ترجمات لوحة التحكم بالألوان ---
+        "color_customization_title":"تخصيص ألوان القالب",
+        "background_colors_title": "ألوان الخلفيات",
+        "primary_bg_label": "الخلفية الأساسية / الرأس",
+        "sidebar_bg_label": "خلفية العامود الجانبي",
+        "accent_bg_label": "خلفية مميزة / للمهارات",
+        "gradient_label": "متدرج",
+        "text_colors_title": "ألوان النصوص والأيقونات",
+        "header_text_label": "نص الرأس",
+        "title_text_label": "نص العناوين",
+        "body_text_label": "نص المحتوى",
+        "subtle_text_label": "نص فرعي",
+        "gradient_horizontal": "أفقي",
+        "gradient_vertical": "عمودي",
+        "gradient_diagonal": "قطري",
+
+        // الترجمات العامة المتبقية من الملف الأصلي
+        "promo_bar_text": "عرض خاص! استخدم كود <span class='blinking-code'>FIRSTBUY</span> لخصم 25% أو كود <span class='blinking-code'>SAVE10</span> لخصم 10%!",
+        "from-city": "من",
+        "notification-action": "قام للتو بإنشاء سيرته الذاتية!",
+        "CV downloaded successfully!": "تم تنزيل السيرة الذاتية بنجاح!",
+        "Professional CV Builder": "إنشاء السيرة الذاتية الاحترافية",
+        "brand-name": "رسائل",
+        "home-link": "الرئيسية",
+        "features-link": "المميزات",
+        "products-link": "المنتجات",
+        "product-basic": "ارسال واتساب",
+        "product-cv": "إنشاء سيرة ذاتية",
+        "about-link": "عنا",
+        "contact-link": "اتصل بنا",
+        "English": "English",
+        "Professional CV Builder_header": "أنشئ سيرتك الذاتية الاحترافية بسهولة",
+        "Create a professional CV that stands out and gets you hired.": "ابرز مهاراتك وخبراتك بتصميم احترافي يلفت الانتباه ويفتح لك أبواب الفرص.",
+        "Create Your CV Now": "ابدأ في إنشاء سيرتك الذاتية الآن",
+        "loading-cv-text": "جاري إنشاء السيرة الذاتية، يرجى الانتظار...",
+        "Why Resail CV Builder?": "لماذا نظام رسائل لإنشاء السيرة الذاتية؟",
+        "Easy Data Entry": "سهولة إدخال البيانات",
+        "Intuitive forms to quickly fill in all your information.": "نماذج سهلة وبديهية لملء جميع بياناتك بسرعة ويسر.",
+        "Diverse and Professional Templates": "قوالب متنوعة واحترافية",
+        "Choose from many modern and attractive designs to suit your style.": "اختر من بين العديد من التصميمات العصرية والجذابة لتناسب ذوقك ومجالك.",
+        "Arabic and English Support": "دعم كامل للغة العربية والإنجليزية",
+        "Create your CV in either Arabic or English with proper formatting.": "أنشئ سيرتك الذاتية بلغتك المفضلة مع ضمان التنسيق الصحيح لكلا الاتجاهين.",
+        "Instant Preview": "معاينة فورية",
+        "See your CV instantly as you build it, ensuring it looks perfect.": "شاهد شكل سيرتك الذاتية فور إدخال البيانات أو اختيار القالب لتضمن المظهر المثالي.",
+        "Professional PDF Export": "تصدير بصيغة PDF عالية الجودة",
+        "Download your completed CV as a high-quality PDF file, ready to share.": "احصل على سيرتك الذاتية النهائية كملف PDF احترافي جاهز للطباعة أو المشاركة عبر الإنترنت.",
+        "Flexible Payment Options": "خيارات دفع متنوعة وآمنة",
+        "Pay easily using various methods including PayPal and local options.": "وسائل دفع متعددة تشمل PayPal وخيارات محلية لتسهيل عملية الحصول على سيرتك الذاتية.",
+        "Customer Testimonials": "ماذا قال عملاؤنا عنا؟",
+        "“Creating my CV was incredibly easy and fast. The templates are modern and professional. Highly recommended!”": "«كانت عملية إنشاء سيرتي الذاتية سهلة وسريعة بشكل لا يصدق. القوالب عصرية واحترافية حقًا. أوصي به بشدة!»",
+        "- Sarah Ahmed": "- سارة أحمد",
+        "“I loved the variety of templates and the instant preview feature. It helped me choose the perfect design for my application.”": "«أعجبتني حقًا تنوع القوالب وميزة المعاينة الفورية. ساعدني ذلك في اختيار التصميم المثالي لتقديمي.»",
+        "- Khalid Hassan": "- خالد حسن",
+        "About Resail CV Builder": "عن نظام رسائل لإنشاء السيرة الذاتية",
+        "Resail is your go-to platform for effortlessly creating professional and impactful CVs. We provide a wide range of modern templates and intuitive tools to help you stand out in the job market with a high-quality PDF resume.": "رسائل هو نظامك المتكامل لإنشاء سير ذاتية احترافية ومؤثرة بسهولة. نقدم مجموعة واسعة من القوالب العصرية والأدوات البديهية لمساعدتك على التميز في سوق العمل بسيرة ذاتية عالية الجودة بصيغة PDF.",
+        "Our service focuses on simplifying the CV creation process, offering diverse templates, and ensuring full support for both Arabic and English languages with accurate formatting. Download your ready-to-share PDF CV after a seamless payment process.": "تركز خدمتنا على تبسيط عملية إنشاء السيرة الذاتية، وتقديم قوالب متنوعة، وضمان الدعم الكامل للغتين العربية والإنجليزية بتنسيق دقيق. احصل على سيرتك الذاتية بصيغة PDF جاهزة للمشاركة بعد عملية دفع سلسة.",
+        "CVs Generated So Far": "عدد السير الذاتية التي تم إنشاؤها حتى الآن",
+        "+٥٠٠٠": "+٥٠٠٠",
+        "Join thousands who have successfully created their professional CVs.": "انضم إلى آلاف المستخدمين الذين أنشأوا سيرهم الذاتية الاحترافية بنجاح.",
+        "Frequently Asked Questions": "الأسئلة الشائعة",
+        "How do I create a CV?": "كيف يمكنني إنشاء سيرة ذاتية؟",
+        "Simply click on 'Create Your CV Now', fill in your details in the form, choose a template, and preview your CV.": "ما عليك سوى النقر على زر 'ابدأ في إنشاء سيرتك الذاتية الآن'، قم بملء بياناتك في النموذج، اختر القالب المناسب، وقم بمعاينة سيرتك الذاتية.",
+        "Are the templates free?": "هل القوالب مجانية؟",
+        "We offer a variety of free and premium templates. Premium templates require a small fee for download.": "نقدم مجموعة متنوعة من القوالب المجانية والمدفوعة. تتطلب القوالب المدفوعة رسماً بسيطاً للتنزيل أو الطباعة.",
+        "How do I download my CV?": "كيف يمكنني تنزيل سيرتي الذاتية؟",
+        "After previewing your CV, click on 'Request Download / Print'. You will be guided through the payment process if you selected a premium template, and then you can download the PDF.": "بعد معاينة السيرة الذاتية واختيار القالب، انقر على زر 'طلب تنزيل / طباعة'. سيتم توجيهك لعملية الدفع إذا اخترت قالباً مدفوعاً، وبعدها يمكنك تنزيل الملف بصيغة PDF.",
+        "Contact Us": "تواصل معنا",
+        "For inquiries or support, please contact us via email: ramyheshamamer@gmail.com": "للاستفسارات أو الدعم، تواصل عبر البريد الإلكتروني: <strong><a href=\"mailto:ramyheshamamer@gmail.com\">ramyheshamamer@gmail.com</a></strong>",
+        "Enter Your Information": "أدخل بياناتك",
+        "Full Name": "الاسم",
+        "Enter your name": "أدخل اسمك",
+        "Job Title": "المسمى الوظيفي",
+        "Enter your job title": "أدخل المسمى الوظيفي",
+        "Email Address": "البريد الإلكتروني",
+        "Enter your email address": "أدخل بريدك الإلكتروني",
+        "Phone Number": "رقم الهاتف",
+        "Enter your phone number": "أدخل رقم هاتفك",
+        "Website / Portfolio": "الموقع الشخصي",
+        "Enter your website or portfolio URL": "أدخل موقعك الشخصي",
+        "Profile Picture": "الصورة الشخصية",
+        "Choose a picture to enhance the look of your CV in some templates.": "اختر صورة لتحسين مظهر السيرة الذاتية في بعض النماذج.",
+        "Career Objective": "الهدف الوظيفي",
+        "Enter your career objective": "أدخل هدفك الوظيفي",
+        "Work Experience": "الخبرة العملية",
+        "Add Experience": "إضافة خبرة",
+        "Remove Last": "حذف آخر",
+        "Job Title_placeholder": "المسمى الوظيفي",
+        "Company": "الشركة",
+        "Duration": "المدة",
+        "Description": "الوصف",
+        "Education": "المؤهلات العلمية",
+        "Add Education": "إضافة مؤهل",
+        "Degree": "الشهادة",
+        "University/Institution": "الجامعة/المعهد",
+        "custom_section_placeholder": "عنوان القسم الجديد (مثال: المشاريع أو الدورات)",
+        "add_subsection_btn": '<i class="fas fa-plus"></i> إضافة عنوان فرعي',
+        "remove_subsection_title": "حذف العنوان الفرعي",
+        "subsection_title_placeholder": "العنوان الفرعي (مثال: شهادة PMP)",
+        "subsection_desc_placeholder": "الوصف أو التفاصيل المتعلقة بالعنوان الفرعي...",
+        "remove_section_btn": "حذف القسم بالكامل",
+        "confirm_delete_section": "هل أنت متأكد من حذف هذا القسم بالكامل؟",
+        "Skills": "المهارات ",
+        "Add Skill": "إضافة مهارة",
+        "Enter a skill": "أدخل مهارة",
+        "Languages": "اللغات",
+        "Add Language": "إضافة لغة",
+        "Enter a language": "أدخل لغة",
+        "References": "المراجع",
+        "Add Reference": "إضافة مرجع",
+        "Name": "الاسم",
+        "Position": "الموقع",
+        "Phone": "الهاتف",
+        "Email": "البريد",
+        "Data Completion Progress": "نسبة إكمال البيانات",
+        "Back to Home": "العودة للرئيسية",
+        "Next: Choose Template": "التالي: اختر قالب",
+        "Choose a CV Template and Preview": "اختر نموذجًا للسيرة الذاتية والمعاينة",
+        "Normal Templates (Full Width)": "نماذج عادية (عرض الصفحة)",
+        "Normal Template 1 Preview": "معاينة النموذج العادي 1",
+        "Normal Template 2 Preview": "معاينة النموذج العادي 2",
+        "Normal Template 3 Preview": "معاينة النموذج العادي 3",
+        "Normal Template 4 Preview": "معاينة النموذج العادي 4",
+        "Normal Template 5 Preview": "معاينة النموذج العادي 5",
+        "Normal Template 6 Preview": "معاينة النموذج العادي 6",
+        "Normal Template 7 Preview": "معاينة النموذج العادي 7",
+        "Normal Template 8 Preview": "معاينة النموذج العادي 8",
+        "Normal Template 9 Preview": "معاينة النموذج العادي 9",
+        "Normal Template 10 Preview": "معاينة النموذج العادي 10",
+        "Normal Template 11 Preview": "معاينة النموذج العادي 11",
+        "Normal Template 12 Preview": "معاينة النموذج العادي 12",
+        "Standard Templates (Sidebar)": "نماذج عادية (قسم جانبي ورئيسي)",
+        "Standard Template 1 Preview": "معاينة النموذج العادي 1 (شريط جانبي)",
+        "Standard Template 2 Preview": "معاينة النموذج العادي 2 (شريط جانبي)",
+        "Standard Template 3 Preview": "معاينة النموذج العادي 3 (شريط جانبي)",
+        "Standard Template 4 Preview": "معاينة النموذج العادي 4 (شريط جانبي)",
+        "Standard Template 5 Preview": "معاينة النموذج العادي 5 (شريط جانبي)",
+        "Standard Template 6 Preview": "معاينة النموذج العادي 6 (شريط جانبي)",
+        "Standard Template 7 Preview": "معاينة النموذج العادي 7 (شريط جانبي)",
+        "Standard Template 8 Preview": "معاينة النموذج العادي 8 (شريط جانبي)",
+        "Standard Template 9 Preview": "معاينة النموذج العادي 9 (شريط جانبي)",
+        "Standard Template 10 Preview": "معاينة النموذج العادي 10 (شريط جانبي)",
+        "Standard Template 11 Preview": "معاينة النموذج العادي 11 (شريط جانبي)",
+        "Standard Template 12 Preview": "معاينة النموذج العادي 12 (شريط جانبي)",
+        "Professional Templates (Header + Sidebar)": "نماذج احترافية (رأس وجانبي ورئيسي)",
+        "Professional Template 1 Preview": "معاينة النموذج الاحترافي 1",
+        "Professional Template 2 Preview": "معاينة النموذج الاحترافي 2",
+        "Professional Template 3 Preview": "معاينة النموذج الاحترافي 3",
+        "Professional Template 4 Preview": "معاينة النموذج الاحترافي 4",
+        "Professional Template 5 Preview": "معاينة النموذج الاحترافي 5",
+        "Professional Template 6 Preview": "معاينة النموذج الاحترافي 6",
+        "Professional Template 7 Preview": "معاينة النموذج الاحترافي 7",
+        "Professional Template 8 Preview": "معاينة النموذج الاحترافي 8",
+        "Professional Template 9 Preview": "معاينة النموذج الاحترافي 9",
+        "Professional Template 10 Preview": "معاينة النموذج الاحترافي 10",
+        "Professional Template 11 Preview": "معاينة النموذج الاحترافي 11",
+        "Professional Template 12 Preview": "معاينة النموذج الاحترافي 12",
+        "AST Supported Templates": "نماذج داعمة لأنظمة AST",
+        "AST Template 1 Preview": "معاينة نموذج AST 1",
+        "AST Template 2 Preview": "معاينة نموذج AST 2",
+        "AST Template 3 Preview": "معاينة نموذج AST 3",
+        "AST Template 4 Preview": "معاينة نموذج AST 4",
+        "AST Template 5 Preview": "معاينة نموذج AST 5",
+        "AST Template 6 Preview": "معاينة نموذج AST 6",
+        "AST Template 7 Preview": "معاينة نموذج AST 7",
+        "AST Template 8 Preview": "معاينة نموذج AST 8",
+        "AST Template 9 Preview": "معاينة نموذج AST 9",
+        "AST Template 10 Preview": "معاينة نموذج AST 10",
+        "AST Template 11 Preview": "معاينة نموذج AST 11",
+        "AST Template 12 Preview": "معاينة نموذج AST 12",
+        "Back to Data Entry": "العودة لإدخال البيانات",
+        "Next: Preview CV": "التالي: معاينة السيرة",
+        "Your CV Preview": "معاينة سيرتك الذاتية",
+        "Download PDF (Direct)": "تنزيل PDF (معاينة)",
+        "Request Download / Print": "طلب تنزيل / طباعة",
+        "Back to Templates": "العودة للنماذج",
+        "choose-payment": "اختر وسيلة الدفع",
+        "Enter discount code (if any)": "أدخل كود الخصم (إن وجد)",
+        "Apply Discount": "تطبيق الخصم",
+        "messages": "السعر",
+        "payment": "الدفع",
+        "payment-note": "بعد إتمام الدفع في تطبيق البنك، الرجاء تعبئة البيانات التالية:",
+        "your-name": "اسمك:",
+        "your-email": "بريدك الإلكتروني:",
+        "your-phone": "رقم الهاتف:",
+        "attachment": "أرفق إيصال الدفع (صورة / PDF):",
+        "submit": "إرسال",
+        "Submitting...": "جاري الإرسال...",
+        "Back to Payment Options": "العودة لخيارات الدفع",
+        "terms-of-service-title": "شروط الخدمة",
+        "terms-of-service-intro-p": "مرحباً بكم في نظام رسائل لإنشاء السيرة الذاتية. باستخدامك لخدماتنا، فإنك توافق على الالتزام بالشروط والأحكام التالية، والتي تشكل اتفاقية ملزمة بينك وبين \"رسائل\". يرجى قراءتها بعناية.",
+        "terms-of-service-h4-1": "1. استخدام الخدمة",
+        "terms-of-service-p-1-1": "تتيح لك منصة رسائل إنشاء وتصميم السير الذاتية الاحترافية وتصديرها بصيغة PDF. يجب أن تكون جميع البيانات والمعلومات التي تقدمها (بما في ذلك، على سبيل المثال لا الحصر، الاسم، الخبرات، المؤهلات، المهارات) صحيحة ودقيقة وحديثة، وتتحمل أنت وحدك مسؤولية المحتوى الخاص بك. لا يجوز استخدام الخدمة لأي أغراض غير قانونية أو احتيالية أو تشهيرية أو غير مصرح بها.",
+        "terms-of-service-p-1-2": "نحتفظ بالحق في تعليق أو إنهاء وصولك إلى الخدمة إذا انتهكت أياً من هذه الشروط، أو إذا رأينا أن سلوكك يضر بالخدمة أو المستخدمين الآخرين.",
+        "terms-of-service-h4-2": "2. الملكية الفكرية",
+        "terms-of-service-p-2-1": "جميع التصميمات، القوالب، النصوص، الرسومات، الشعارات، الأيقونات، الصور، البرمجيات، وأي محتوى آخر متاح عبر الخدمة (\"محتوى الخدمة\") هي ملكية فكرية خاصة بـ \"رسائل\" أو مرخصة لنا، وهي محمية بموجب قوانين حقوق النشر والعلامات التجارية والملكية الفكرية الأخرى. عند استخدامك للخدمة، فإنك تحصل على ترخيص شخصي، غير حصري، غير قابل للتحويل، وقابل للإلغاء لاستخدام السيرة الذاتية التي تنشئها لأغراضك الشخصية أو المهنية فقط.",
+        "terms-of-service-p-2-2": "لا يجوز لك إعادة بيع أو إعادة إنتاج أو توزيع أو تعديل أو إنشاء أعمال مشتقة أو عرض علني أو أداء علني أو نشر أو نقل أو استغلال أي جزء من محتوى الخدمة أو الخدمة نفسها دون إذن كتابي مسبق من \"رسائل\".",
+        "terms-of-service-h4-3": "3. الدفع والأسعار",
+        "terms-of-service-p-3-1": "تتطلب بعض القوالب والميزات المتقدمة دفع رسوم محددة. تكون جميع الأسعار موضحة بوضوح في صفحة اختيار القوالب أو عند بداية عملية الدفع. تحتفظ \"رسائل\" بالحق في تعديل الأسعار أو فرض رسوم على ميزات جديدة في أي وقت، مع إخطار مسبق بذلك. جميع المدفوعات تتم عبر بوابات دفع خارجية آمنة (مثل Lemon Squeezy). \"رسائل\" لا تقوم بتخزين معلومات بطاقة الدفع الخاصة بك.",
+        "terms-of-service-p-3-2": "جميع المدفوعات غير قابلة للاسترداد إلا في حالات محددة وفقًا لسياسة الاسترداد الخاصة بنا، والتي يمكنك مراجعتها في القسم المخصص لذلك.",
+        "terms-of-service-h4-4": "4. حدود المسؤولية",
+        "terms-of-service-p-4-1": "يتم تقديم الخدمة \"كما هي\" و \"حسب توفرها\" دون أي ضمانات من أي نوع، صريحة أو ضمنية. نحن لا نضمن دقة أو اكتمال أو صلاحية أو موثوقية أو توفر أي معلومات مقدمة من قبل المستخدمين أو النتائج التي يمكن الحصول عليها من استخدام الخدمة.",
+        "terms-of-service-p-4-2": "لن تكون \"رسائل\" مسؤولة، تحت أي ظرف من الظروف، عن أي أضرار مباشرة أو غير مباشرة أو عرضية أو خاصة أو تبعية أو تأديبية، بما في ذلك، على سبيل المثال لا الحصر، خسارة الأرباح، البيانات، أو الاستخدام، تنشأ عن استخدام أو عدم القدرة على استخدام الخدمة.",
+        "terms-of-service-h4-5": "5. التعديلات على الشروط",
+        "terms-of-service-p-5-1": "نحتفظ بالحق في تعديل أو تحديث هذه الشروط والأحكام في أي وقت ودون إشعار مسبق. سيتم نشر أي تغييرات على هذه الصفحة، ويعتبر استمرار استخدامك للخدمة بعد نشر التعديلات بمثابة موافقة منك على الشروط المعدلة. يرجى مراجعة هذه الصفحة بانتظام للاطلاع على أي تحديثات.",
+        "terms-of-service-h4-6": "6. القانون المعمول به",
+        "terms-of-service-p-6-1": "تخضع هذه الشروط والأحكام وتفسر وفقًا لقوانين المملكة العربية السعودية، وتوافق على الخضوع للاختصاص القضائي الحصري لمحاكم المملكة العربية السعودية لحل أي نزاعات تنشأ عن هذه الشروط أو استخدام الخدمة.",
+        "terms-of-service-h4-7": "7. الاتصال بنا",
+        "terms-of-service-p-7-1": "لأي أسئلة أو استفسارات بخصوص شروط الخدمة، يرجى الاتصال بنا عبر البريد الإلكتروني: <strong><a href=\"mailto:ramyheshamamer@gmail.com\">ramyheshamamer@gmail.com</a></strong>.",
+        "back-to-home": "العودة للرئيسية",
+        "terms-of-service-link": "شروط الخدمة",
+        "refund-policy-link": "سياسة الاسترداد",
+        "privacy-policy-link": "سياسة الخصوصية",
+        "refund-policy-title": "سياسة الاسترداد والنزاعات",
+        "refund-policy-intro-p": "نحن في \"رسائل\" نسعى لتقديم خدمة عالية الجودة وضمان رضا عملائنا. نظرًا لطبيعة منتجاتنا الرقمية (السير الذاتية التي يتم إنشاؤها وتنزيلها بصيغة PDF)، فإن سياستنا للاسترداد والنزاعات كالتالي:",
+        "refund-policy-h4-1": "1. المنتجات الرقمية (السير الذاتية بصيغة PDF)",
+        "refund-policy-p-1-1": "بمجرد إتمام عملية الدفع ونجاح إنشاء السيرة الذاتية وإرسالها إلى بريدك الإلكتروني (أو توفير رابط التنزيل)، تعتبر الخدمة قد اكتملت بالكامل. ولذلك، لا تتوفر عادةً عمليات استرداد للمبالغ المدفوعة.",
+        "refund-policy-h4-2": "2. حالات الاسترداد الاستثنائية",
+        "refund-policy-p-2-1": "قد يتم النظر في طلبات الاسترداد في الحالات الاستثنائية التالية فقط:",
+        "refund-policy-list-1": [
+            "<strong>مشكلة فنية جوهرية:</strong> إذا واجهت مشكلة فنية في نظامنا منعتك من إنشاء أو تنزيل السيرة الذاتية بشكل كامل، ولم يتمكن فريق الدعم من حل المشكلة في غضون فترة زمنية معقولة.",
+            "<strong>خطأ فادح في المنتج:</strong> إذا كانت السيرة الذاتية التي تم إنشاؤها تحتوي على أخطاء فادحة ناتجة عن خلل في نظامنا (وليس بسبب أخطاء في البيانات المدخلة من قبلك)، ولم نتمكن من تصحيحها.",
+            "<strong>الدفع المكرر:</strong> إذا قمت بالدفع لنفس الخدمة عن طريق الخطأ أكثر من مرة."
+        ],
+        "refund-policy-h4-3": "3. عملية طلب الاسترداد",
+        "refund-policy-p-3-1": "لتقديم طلب استرداد، يرجى الاتصال بفريق الدعم لدينا عبر البريد الإلكتروني <a href=\"mailto:ramyheshamamer@gmail.com\">ramyheshamamer@gmail.com</a> في غضون 7 أيام من تاريخ الشراء. يجب أن يتضمن طلبك التفاصيل التالية:",
+        "refund-policy-list-2": [
+            "اسمك الكامل والبريد الإلكتروني المستخدم في الشراء.",
+            "تاريخ ورقم المعاملة (إن وجد).",
+            "وصف مفصل للمشكلة التي واجهتها والأسباب التي تدفعك لطلب الاسترداد.",
+            "أي لقطات شاشة أو مستندات تدعم طلبك."
+        ],
+        "refund-policy-h4-4": "4. مراجعة الطلبات",
+        "refund-policy-p-4-1": "سنقوم بمراجعة جميع طلبات الاسترداد بعناية. سيتم إخطارك بالقرار في غضون 5 أيام عمل من استلام طلبك. إذا تمت الموافقة على الاسترداد، فسيتم معالجة المبلغ إلى طريقة الدفع الأصلية خلال 7-14 يوم عمل، اعتمادًا على سياسات معالج الدفع الخاص بك.",
+        "refund-policy-h4-5": "5. حل النزاعات",
+        "refund-policy-p-5-1": "نحن نشجعك على الاتصال بنا مباشرة في حال وجود أي مشاكل أو نزاعات قبل اللجوء إلى معالج الدفع أو البنك. نسعى لحل جميع المشكلات بشكل ودي وعادل لضمان رضا عملائنا.",
+        "privacy-policy-title": "سياسة الخصوصية",
+        "privacy-policy-intro-p": "نحن في \"رسائل\" نلتزم بحماية خصوصية بياناتك الشخصية. توضح هذه السياسة كيف نجمع، نستخدم، نحمي، وندير المعلومات التي تقدمها لنا عند استخدام خدماتنا لإنشاء السير الذاتية.",
+        "privacy-policy-h4-1": "1. المعلومات التي نجمعها",
+        "privacy-policy-list-1": [
+            "<strong>معلومات السيرة الذاتية:</strong> نقوم بجمع المعلومات التي تدخلها مباشرة في نماذج إنشاء السيرة الذاتية، مثل اسمك الكامل، المسمى الوظيفي، عنوان البريد الإلكتروني، رقم الهاتف، الموقع الشخصي/المحفظة، الهدف الوظيفي، تفاصيل الخبرة العملية، المؤهلات العلمية، المهارات، اللغات، والمراجع. إذا قمت بتحميل صورة شخصية، فإننا نقوم بجمعها أيضاً.",
+            "<strong>معلومات الاتصال والدفع:</strong> عند إجراء عملية شراء، نجمع اسمك، بريدك الإلكتروني، ورقم هاتفك. تفاصيل الدفع (مثل أرقام البطاقات الائتمانية) يتم معالجتها مباشرة بواسطة بوابات دفع خارجية آمنة (مثل Lemon Squeezy/Stripe)، ونحن لا نقوم بتخزين هذه المعلومات الحساسة على خوادمنا.",
+            "<strong>بيانات الاستخدام:</strong> قد نجمع معلومات حول كيفية وصولك واستخدامك لخدمتنا، مثل عنوان IP، نوع المتصفح، الصفحات التي زرتها، والوقت المستغرق في كل صفحة. هذه البيانات تُستخدم لتحسين الخدمة ولا ترتبط بشكل مباشر بمعلوماتك الشخصية."
+        ],
+        "privacy-policy-h4-2": "2. كيف نستخدم معلوماتك",
+        "privacy-policy-p-2-1": "نستخدم المعلومات التي نجمعها للأغراض التالية:",
+        "privacy-policy-list-2": [
+            "لتقديم خدمة إنشاء السيرة الذاتية وتخصيصها لك.",
+            "لمعالجة معاملات الدفع الخاصة بك وتزويدك بالمنتج النهائي (ملف PDF للسيرة الذاتية).",
+            "لتحسين وتطوير خدماتنا وميزاتنا.",
+            "للتواصل معك بخصوص استخدامك للخدمة، أو لأغراض الدعم الفني، أو لإرسال تحديثات مهمة.",
+            "لضمان الامتثال للمتطلبات القانونية والتنظيمية."
+        ],
+        "privacy-policy-h4-3": "3. مشاركة المعلومات",
+        "privacy-policy-p-3-1": "نحن لا نبيع، نؤجر، أو نتبادل معلوماتك الشخصية مع أطراف ثالثة لأغراض التسويق. قد نشارك معلوماتك مع:",
+        "privacy-policy-list-3": [
+            "<strong>مقدمي الخدمات الخارجيين:</strong> مثل بوابات الدفع (Lemon Squeezy/Stripe) ومعالجي البريد الإلكتروني، وذلك بالقدر اللازم لتقديم خدماتنا. هؤلاء المقدمون ملزمون بالحفاظ على سرية معلوماتك.",
+            "<strong>الامتثال القانوني:</strong> قد نكشف عن معلوماتك إذا كان ذلك مطلوبًا بموجب القانون أو أمر قضائي، أو لحماية حقوقنا ومصالحنا أو حقوق المستخدمين الآخرين."
+        ],
+        "privacy-policy-h4-4": "4. أمان البيانات",
+        "privacy-policy-p-4-1": "نحن نتخذ إجراءات أمنية معقولة ومناسبة لحماية معلوماتك الشخصية من الوصول غير المصرح به، أو التغيير، أو الكشف، أو التدمير. ومع ذلك، يجب أن تدرك أنه لا يوجد نظام نقل بيانات عبر الإنترنت أو تخزين إلكتروني آمن 100%.",
+        "privacy-policy-h4-5": "5. حقوقك",
+        "privacy-policy-p-5-1": "يحق لك الوصول إلى بياناتك الشخصية التي نحتفظ بها، وطلب تصحيح أي معلومات غير دقيقة، أو طلب حذف بياناتك. لممارسة هذه الحقوق، يرجى الاتصال بنا عبر البريد الإلكتروني المذكور أدناه.",
+        "privacy-policy-h4-6": "6. التعديلات على سياسة الخصوصية",
+        "privacy-policy-p-6-1": "نحتفظ بالحق في تعديل أو تحديث سياسة الخصوصية هذه من وقت لآخر. سيتم نشر أي تغييرات على هذه الصفحة، ويعتبر استمرارك في استخدام الخدمة بعد نشر التعديلات بمثابة موافقة منك على السياسة المعدلة.",
+        "privacy-policy-h4-7": "7. الاتصال بنا",
+        "privacy-policy-p-7-1": "لأي أسئلة أو استفسارات بخصوص سياسة الخصوصية، يرجى الاتصال بنا عبر البريد الإلكتروني: <strong><a href=\"mailto:ramyheshamamer@gmail.com\">ramyheshamamer@gmail.com</a></strong>."
+    },
+    "en": {
+        "image-paths": { // هذا هو الجزء الخاص بمسارات الصور
+            "normal": (id) => `CV templates_en/${id}.webp`,
+            "standard": (id) => `CV templates_en/${id}.webp`,
+            "professional": (id) => `CV templates_en/${id}.webp`,
+            "ast": (id) => `CV templates_en/${id}.webp`
+        },
+        // ترجمات صفحة الدفع (الإنجليزية - مع العملة بالدولار)
+        "local-payment-title": "Local Payment",
+        "local-payment-desc": "(via STC Pay or Al Rajhi Transfer)", // هذا مفتاح جديد تم إضافته
+        "sar-currency": "SAR", 
+        "click-to-pay": "Choose your preferred method:",
+        "international-payment-header": "International & Secure",
+        "card-payment-title": "Credit Card Payment",
+        "click-to-pay-ls": "Click for secure payment:",
+        "pay-with-card": "Pay Now",
+        "select_font_label": "Select CV Font:",
+        "add_custom_section_btn": "Add Custom Section",
+        // ترجمات رسائل التنبيه/الأخطاء (الإنجليزية)
+        "Please fill in all fields.": "Please fill in all required fields.",
+        "Please enter a valid email.": "Please enter a valid email address.",
+        "File size exceeds the limit (3MB).": "File size exceeds the 3MB limit.",
+        "Please attach only image or PDF files.": "Please attach only image or PDF files.",
+        "An error occurred while preparing your payment. Please try again or contact support.": "An error occurred while preparing your payment. Please try again or contact support.",
+        "Error, price for this category is undefined.": "Error, price for this category is undefined.",
+        "Please select a valid image file.": "Please select a valid image file.",
+        "Image size is too large. Please select an image smaller than {size} megabytes.": "Image size is too large. Please select an image smaller than {size} megabytes.",
+        "You must have at least one field in this section.": "You must have at least one field in this section.",
+        "payment-success": "Your request has been successfully received! The CV will be sent to your email shortly.",
+        "Error processing file.": "Error processing file.",
+        //قسم المهارات
+        "Enter a skill": "Enter a skill",
+        "Select Level": "Select Level",
+        "Beginner": "Beginner",
+        "Intermediate": "Intermediate",
+        "Advanced": "Advanced",
+        "Expert": "Expert",
+
+        "select_name_font_label": "Main Name Font:",
+        "select_headings_font_label": "Headings Font:",
+        "select_body_font_label": "Body Text Font:",
+
+        // --- Color Picker Translations ---
+        "color_customization_title":"Customize Template Colors",
+        "background_colors_title": "Background Colors",
+        "primary_bg_label": "Primary BG / Header",
+        "sidebar_bg_label": "Sidebar BG",
+        "accent_bg_label": "Accent / Skills BG",
+        "gradient_label": "Gradient",
+        "text_colors_title": "Text & Icon Colors",
+        "header_text_label": "Header Text",
+        "title_text_label": "Titles Text",
+        "body_text_label": "Body Text",
+        "subtle_text_label": "Subtle Text",
+        "gradient_horizontal": "Horizontal",
+        "gradient_vertical": "Vertical",
+        "gradient_diagonal": "Diagonal",
+
+        // الترجمات العامة المتبقية من الملف الأصلي
+        "promo_bar_text": "Special Offer! Use code <span class='blinking-code'>FIRSTBUY</span> for 25% off or <span class='blinking-code'>SAVE10</span> for 10% off!",
+        "from-city": "from",
+        "notification-action": "just created their CV!",
+        "CV downloaded successfully!": "CV downloaded successfully!",
+        "Professional CV Builder": "Professional CV Builder",
+        "brand-name": "Resail",
+        "home-link": "Home",
+        "features-link": "Features",
+        "products-link": "Products",
+        "product-basic": "WhatsApp Sender",
+        "product-cv": "CV Builder",
+        "about-link": "About Us",
+        "contact-link": "Contact Us",
+        "English": "العربية", // هذا هو النص الذي يظهر للتبديل للعربية
+        "Professional CV Builder_header": "Build Your Professional CV Easily",
+        "Create a professional CV that stands out and gets you hired.": "Showcase your skills and experience with a professional design that grabs attention and opens doors to opportunities.",
+        "Create Your CV Now": "Create Your CV Now",
+        "loading-cv-text": "Generating CV, please wait...",
+        "Why Resail CV Builder?": "Why Resail CV Builder?",
+        "Easy Data Entry": "Easy Data Entry",
+        "Intuitive forms to quickly fill in all your information.": "Intuitive and easy forms to quickly fill in all your information.",
+        "Diverse and Professional Templates": "Diverse and Professional Templates",
+        "Choose from many modern and attractive designs to suit your style.": "Choose from many modern and attractive designs to suit your taste and field.",
+        "Arabic and English Support": "Full Arabic and English Support",
+        "Create your CV in either Arabic or English with proper formatting.": "Create your CV in your preferred language, ensuring correct formatting for both directions.",
+        "Instant Preview": "Instant Preview",
+        "See your CV instantly as you build it, ensuring it looks perfect.": "See your CV instantly as you enter data or choose a template to ensure the perfect look.",
+        "Professional PDF Export": "Professional PDF Export",
+        "Download your completed CV as a high-quality PDF file, ready to share.": "Get your final CV as a professional PDF file, ready for printing or sharing online.",
+        "Flexible Payment Options": "Flexible and Secure Payment Options",
+        "Pay easily using various methods including PayPal and local options.": "Multiple payment methods including PayPal and local options to facilitate the process of getting your CV.",
+        "Customer Testimonials": "What Our Customers Say?",
+        "“Creating my CV was incredibly easy and fast. The templates are modern and professional. Highly recommended!”": "“Creating my CV was incredibly easy and fast. The templates are modern and professional. Highly recommended!”",
+        "- Sarah Ahmed": "- Sarah Ahmed",
+        "“I loved the variety of templates and the instant preview feature. It helped me choose the perfect design for my application.”": "“I loved the variety of templates and the instant preview feature. It helped me choose the perfect design for my application.”",
+        "- Khalid Hassan": "- Khalid Hassan",
+        "About Resail CV Builder": "About Resail CV Builder",
+        "Resail is your go-to platform for effortlessly creating professional and impactful CVs. We provide a wide range of modern templates and intuitive tools to help you stand out in the job market with a high-quality PDF resume.": "Resail is your comprehensive system for easily creating professional and impactful CVs. We offer a wide range of modern templates and intuitive tools to help you stand out in the job market with a high-quality PDF resume.",
+        "Our service focuses on simplifying the CV creation process, offering diverse templates, and ensuring full support for both Arabic and English languages with accurate formatting. Download your ready-to-share PDF CV after a seamless payment process.": "Our service focuses on simplifying the CV creation process, offering diverse templates, and ensuring full support for both Arabic and English languages with accurate formatting. Get your PDF CV ready to share after a seamless payment process.",
+        "CVs Generated So Far": "CVs Generated So Far",
+        "+٥٠٠٠": "5000+",
+        "Join thousands who have successfully created their professional CVs.": "Join thousands who have successfully created their professional CVs.",
+        "Frequently Asked Questions": "Frequently Asked Questions",
+        "How do I create a CV?": "How do I create a CV?",
+        "Simply click on 'Create Your CV Now', fill in your details in the form, choose a template, and preview your CV.": "Simply click on 'Create Your CV Now', fill in your details in the form, choose a template, and preview your CV.",
+        "Are the templates free?": "Are the templates free?",
+        "We offer a variety of free and premium templates. Premium templates require a small fee for download.": "We offer a variety of free and premium templates. Premium templates require a small fee for download or printing.",
+        "How do I download my CV?": "How do I download my CV?",
+        "After previewing your CV, click on 'Request Download / Print'. You will be guided through the payment process if you selected a premium template, and then you can download the PDF.": "After previewing your CV and choosing the template, click on 'Request Download / Print'. You will be guided through the payment process if you selected a premium template, and then you can download the PDF file.",
+        "Contact Us": "Contact Us",
+        "For inquiries or support, please contact us via email: ramyheshamamer@gmail.com": "For inquiries or support, please contact us via email: <strong><a href=\"mailto:ramyheshamamer@gmail.com\">ramyheshamamer@gmail.com</a></strong>",
+        "Enter Your Information": "Enter Your Information",
+        "Full Name": "Full Name",
+        "Enter your name": "Enter your name",
+        "Job Title": "Job Title",
+        "Enter your job title": "Enter your job title",
+        "Email Address": "Email Address",
+        "Enter your email address": "Enter your email address",
+        "Phone Number": "Phone Number",
+        "Enter your phone number": "Enter your phone number",
+        "Website / Portfolio": "Website / Portfolio",
+        "Enter your website or portfolio URL": "Enter your website or portfolio URL",
+        "Profile Picture": "Profile Picture",
+        "Choose a picture to enhance the look of your CV in some templates.": "Choose a picture to enhance the look of your CV in some templates.",
+        "Career Objective": "Career Objective",
+        "Enter your career objective": "Enter your career objective",
+        "Work Experience": "Work Experience",
+        "Add Experience": "Add Experience",
+        "Remove Last": "Remove Last",
+        "Job Title_placeholder": "Job Title",
+        "Company": "Company",
+        "Duration": "Duration",
+        "Description": "Description",
+        "Education": "Education",
+        "Add Education": "Add Education",
+        "Degree": "Degree",
+        "University/Institution": "University/Institution",
+        "custom_section_placeholder": "New Section Title (e.g., Projects or Courses)",
+        "add_subsection_btn": '<i class="fas fa-plus"></i> Add Sub-heading',
+        "remove_subsection_title": "Remove Sub-heading",
+        "subsection_title_placeholder": "Sub-heading (e.g., PMP Certificate)",
+        "subsection_desc_placeholder": "Description or details related to the sub-heading...",
+        "remove_section_btn": "Delete Entire Section",
+        "confirm_delete_section": "Are you sure you want to delete this entire section?",
+        "Skills": "Skills ",
+        "Add Skill": "Add Skill",
+        "Enter a skill": "Enter a skill",
+        "Languages": "Languages",
+        "Add Language": "Add Language",
+        "Enter a language": "Enter a language",
+        "References": "References",
+        "Add Reference": "Add Reference",
+        "Name": "Name",
+        "Position": "Position",
+        "Phone": "Phone",
+        "Email": "Email",
+        "Data Completion Progress": "Data Completion Progress",
+        "Back to Home": "Back to Home",
+        "Next: Choose Template": "Next: Choose Template",
+        "Choose a CV Template and Preview": "Choose a CV Template and Preview",
+        "Normal Templates (Full Width)": "Normal Templates (Full Width)",
+        "Normal Template 1 Preview": "Normal Template 1 Preview",
+        "Normal Template 2 Preview": "Normal Template 2 Preview",
+        "Normal Template 3 Preview": "Normal Template 3 Preview",
+        "Normal Template 4 Preview": "Normal Template 4 Preview",
+        "Normal Template 5 Preview": "Normal Template 5 Preview",
+        "Normal Template 6 Preview": "Normal Template 6 Preview",
+        "Normal Template 7 Preview": "Normal Template 7 Preview",
+        "Normal Template 8 Preview": "Normal Template 8 Preview",
+        "Normal Template 9 Preview": "Normal Template 9 Preview",
+        "Normal Template 10 Preview": "Normal Template 10 Preview",
+        "Normal Template 11 Preview": "Normal Template 11 Preview",
+        "Normal Template 12 Preview": "Normal Template 12 Preview",
+        "Standard Templates (Sidebar)": "Standard Templates (Sidebar)",
+        "Standard Template 1 Preview": "Standard Template 1 Preview",
+        "Standard Template 2 Preview": "Standard Template 2 Preview",
+        "Standard Template 3 Preview": "Standard Template 3 Preview",
+        "Standard Template 4 Preview": "Standard Template 4 Preview",
+        "Standard Template 5 Preview": "Standard Template 5 Preview",
+        "Standard Template 6 Preview": "Standard Template 6 Preview",
+        "Standard Template 7 Preview": "Standard Template 7 Preview",
+        "Standard Template 8 Preview": "Standard Template 8 Preview",
+        "Standard Template 9 Preview": "Standard Template 9 Preview",
+        "Standard Template 10 Preview": "Standard Template 10 Preview",
+        "Standard Template 11 Preview": "Standard Template 11 Preview",
+        "Standard Template 12 Preview": "Standard Template 12 Preview",
+        "Professional Templates (Header + Sidebar)": "Professional Templates (Header + Sidebar)",
+        "Professional Template 1 Preview": "Professional Template 1 Preview",
+        "Professional Template 2 Preview": "Professional Template 2 Preview",
+        "Professional Template 3 Preview": "Professional Template 3 Preview",
+        "Professional Template 4 Preview": "Professional Template 4 Preview",
+        "Professional Template 5 Preview": "Professional Template 5 Preview",
+        "Professional Template 6 Preview": "Professional Template 6 Preview",
+        "Professional Template 7 Preview": "Professional Template 7 Preview",
+        "Professional Template 8 Preview": "Professional Template 8 Preview",
+        "Professional Template 9 Preview": "Professional Template 9 Preview",
+        "Professional Template 10 Preview": "Professional Template 10 Preview",
+        "Professional Template 11 Preview": "Professional Template 11 Preview",
+        "Professional Template 12 Preview": "Professional Template 12 Preview",
+        "AST Supported Templates": "AST Supported Templates",
+        "AST Template 1 Preview": "AST Template 1 Preview",
+        "AST Template 2 Preview": "AST Template 2 Preview",
+        "AST Template 3 Preview": "AST Template 3 Preview",
+        "AST Template 4 Preview": "AST Template 4 Preview",
+        "AST Template 5 Preview": "AST Template 5 Preview",
+        "AST Template 6 Preview": "AST Template 6 Preview",
+        "AST Template 7 Preview": "AST Template 7 Preview",
+        "AST Template 8 Preview": "AST Template 8 Preview",
+        "AST Template 9 Preview": "AST Template 9 Preview",
+        "AST Template 10 Preview": "AST Template 10 Preview",
+        "AST Template 11 Preview": "AST Template 11 Preview",
+        "AST Template 12 Preview": "AST Template 12 Preview",
+        "Back to Data Entry": "Back to Data Entry",
+        "Next: Preview CV": "Next: Preview CV",
+        "Your CV Preview": "Your CV Preview",
+        "Download PDF (Direct)": "Download PDF (Preview)",
+        "Request Download / Print": "Request Download / Print",
+        "Back to Templates": "Back to Templates",
+        "choose-payment": "Choose Payment Method",
+        "Enter discount code (if any)": "Enter discount code (if any)",
+        "Apply Discount": "Apply Discount",
+        "messages": "Price",
+        "payment": "Payment",
+        "payment-note": "After completing the payment in the banking application, please fill in the following details:",
+        "your-name": "Your Name:",
+        "your-email": "Your Email:",
+        "your-phone": "Phone Number:",
+        "attachment": "Attach payment receipt (image / PDF):",
+        "submit": "Submit",
+        "Submitting...": "Submitting...",
+        "Back to Payment Options": "Back to Payment Options",
+        "terms-of-service-link": "Terms of Service",
+        "refund-policy-link": "Refund Policy",
+        "privacy-policy-link": "privacy policy",
+        "terms-of-service-title": "Terms of Service",
+        "terms-of-service-intro-p": "Welcome to the Resail CV Builder system. By using our services, you agree to abide by the following terms and conditions, which constitute a binding agreement between you and \"Resail\". Please read them carefully.",
+        "terms-of-service-h4-1": "1. Service Use",
+        "terms-of-service-p-1-1": "Resail platform allows you to create and design professional CVs and export them as PDF. All data and information you provide (including, but not limited to, name, experience, qualifications, skills) must be accurate, complete, and up-to-date, and you are solely responsible for your content. The service may not be used for any illegal, fraudulent, defamatory, or unauthorized purposes.",
+        "terms-of-service-p-1-2": "We reserve the right to suspend or terminate your access to the service if you violate any of these terms, or if we deem your conduct harmful to the service or other users.",
+        "terms-of-service-h4-2": "2. Intellectual Property",
+        "terms-of-service-p-2-1": "All designs, templates, texts, graphics, logos, icons, images, software, and any other content available through the service (\"Service Content\") are the intellectual property of \"Resail\" or licensed to us, and are protected by copyright, trademark, and other intellectual property laws. By using the service, you obtain a personal, non-exclusive, non-transferable, and revocable license to use the CV you create for your personal or professional purposes only.",
+        "terms-of-service-p-2-2": "You may not resell, reproduce, distribute, modify, create derivative works from, publicly display, publicly perform, publish, transmit, or exploit any part of the Service Content or the service itself without prior written permission from \"Resail\".",
+        "terms-of-service-h4-3": "3. Payment and Pricing",
+        "terms-of-service-p-3-1": "Some templates and advanced features require specific fees. All prices are clearly displayed on the template selection page or at the start of the payment process. \"Resail\" reserves the right to modify prices or impose fees for new features at any time, with prior notice. All payments are made through secure external payment gateways (such as Lemon Squeezy). \"Resail\" does not store your payment card information.",
+        "terms-of-service-p-3-2": "All payments are non-refundable except in specific cases according to our refund policy, which you can review in the dedicated section.",
+        "terms-of-service-h4-4": "4. Limitation of Liability",
+        "terms-of-service-p-4-1": "The service is provided \"as is\" and \"as available\" without warranties of any kind, express or implied. We do not guarantee the accuracy, completeness, validity, reliability, or availability of any information provided by users or the results that can be obtained from using the service.",
+        "terms-of-service-p-4-2": "Under no circumstances shall \"Resail\" be liable for any direct, indirect, incidental, special, consequential, or punitive damages, including, but not limited to, loss of profits, data, or use, arising from the use or inability to use the service.",
+        "terms-of-service-h4-5": "5. Modifications to Terms",
+        "terms-of-service-p-5-1": "We reserve the right to modify or update these terms and conditions at any time without prior notice. Any changes will be posted on this page, and your continued use of the service after the modifications are published constitutes your acceptance of the modified terms. Please review this page regularly for any updates.",
+        "terms-of-service-h4-6": "6. Governing Law",
+        "terms-of-service-p-6-1": "These terms and conditions are governed by and construed in accordance with the laws of the Kingdom of Saudi Arabia, and you agree to submit to the exclusive jurisdiction of the courts of the Kingdom of Saudi Arabia to resolve any disputes arising from these terms or the use of the service.",
+        "terms-of-service-h4-7": "7. Contact Us",
+        "terms-of-service-p-7-1": "For any questions or inquiries regarding the terms of service, please contact us via email: <strong><a href=\"mailto:ramyheshamamer@gmail.com\">ramyheshamamer@gmail.com</a></strong>."
     }
-  },{
-    "@type": "Question",
-    "name": "Is Resail CV builder free?",
-    "acceptedAnswer": {
-      "@type": "Answer",
-      "text": "Resail offers a variety of free and premium templates. You can create and preview your CV for free. Premium templates require a small fee to download the final PDF."
-    }
-  },{
-    "@type": "Question",
-    "name": "How can I download my CV?",
-    "acceptedAnswer": {
-      "@type": "Answer",
-      "text": "After finalizing your CV and selecting a template, you can click on the 'Request Download / Print' button. You will be guided through the payment process for premium templates, after which you can download your high-quality PDF file."
-    }
-  }]
-}
-</script>
-<link rel="alternate" hreflang="ar" href="https://big-ramy.github.io/resail/index.html" />
-<link rel="alternate" hreflang="en" href="https://big-ramy.github.io/resail/en.html" />
-<link rel="alternate" hreflang="x-default" href="https://big-ramy.github.io/resail/en.html" />
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;700&family=Lalezar&family=Markazi+Text:wght@400;700&family=Almarai:wght@400;700&display=swap" rel="stylesheet">
-
-<style id="main-stylesheet">
-    /* General styles */
-body {
-    font-family: "Tajawal", Arial, sans-serif;
-    background-color: #f7f9fc;
-    color: #333;
-    margin: 0;
-    padding: 0;
-    direction: rtl; 
-    text-align: right; 
-    overflow-y: auto; 
-    padding-top: 40px; /* <<< هذا السطر هو الإضافة المهمة */
-}
-
-/* Language direction classes */
-.rtl {
-    direction: rtl;
-    text-align: right;
-    font-family: "Tajawal", sans-serif;
-}
-
-.ltr {
-    direction: ltr;
-    text-align: left;
-    font-family: "Roboto", sans-serif; /* Ensure fonts are loaded */
-}
-
-/* Ensure Bootstrap RTL is applied correctly within components that inherit direction */
-.container, .row, .col-md-6, .col-md-12, .d-flex, .mb-4, .mb-3, .mt-3, .me-2, .ms-auto {
-    direction: inherit;
-    text-align: inherit;
-}
-
-/* Navbar style */
-.navbar {
-    background-color: #ffffff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 1rem 0;
-}
-
-.navbar-brand {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #333 !important;
-}
-
-.navbar-nav .nav-link {
-    color: #555 !important;
-    margin-left: 15px; /* Adjust margin for RTL */
-    margin-right: 0;
-}
-
-body[dir="ltr"] .navbar-nav .nav-link {
-    margin-left: 0;
-    margin-right: 15px; /* Adjust margin for LTR */
-}
-
-.navbar-nav .nav-link:hover {
-    color: #007bff !important;
-}
-
-.dropdown-menu {
-    right: 0; /* Position dropdown on the right for RTL */
-    left: auto;
-    text-align: right; /* Align text right for RTL */
-    border: none;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-body[dir="ltr"] .dropdown-menu {
-    right: auto; /* Position dropdown on the left for LTR */
-    left: 0;
-    text-align: left; /* Align text left for LTR */
-}
-
-.dropdown-item {
-    text-align: inherit; /* Inherit text alignment */
-    padding: 0.5rem 1rem;
-}
-
-.dropdown-item:hover {
-    background-color: #f8f9fa;
-    color: #007bff;
-}
-
-/* Landing Page Styles */
-.site-header { /* هذا هو الهيدر الذي سيتم إخفاؤه عند النقر على "ابدأ" */
-    position: relative;
-    height: 500px;
-    display: flex; /* Keep flex for initial state */
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: white;
-    overflow: hidden;
-    margin-bottom: 40px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.header-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('header-background.jpeg.webp');
-    background-size: cover;
-    background-position: center;
-    filter: brightness(0.5);
-    z-index: 1;
-}
-
-.header-content {
-    position: relative;
-    z-index: 2;
-    padding: 0 20px;
-    opacity: 1;
-    transform: translateY(0);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-}
-
-.site-header h1 {
-    font-size: 3.5em;
-    margin-bottom: 20px;
-    color: white;
-    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.6);
-    font-weight: 700;
-    width: 100%;
-}
-
-.site-header p.lead {
-    font-size: 1.5em;
-    margin-bottom: 30px;
-    color: white;
-}
-
-/* Responsive Adjustments for Header */
-@media (max-width: 768px) {
-    .site-header {
-        height: 300px;
-    }
-    .site-header h1 {
-        font-size: 1.8em;
-    }
-    .site-header p.lead {
-        font-size: 1.2em;
-    }
-    .header-content {
-        gap: 10px;
-    }
-}
-
-/* --- Page/Modal Styles (for the new page-based approach) --- */
-.page-section {
-    display: none;
-    min-height: calc(100vh - 100px); /* Adjust based on navbar/footer height */
-    padding: 20px;
-    background-color: #f7f9fc;
-}
-
-.page-section.active-page {
-    display: block; /* Show the active page */
-}
-
-.page-section .container {
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.popup-box {
-    position: relative;
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    max-width: 95%;
-    width: 100%;
-    min-height: 80vh;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    box-sizing: border-box;
-    margin: 20px auto;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-}
-
-#cv-preview-page .container { /* Styles for the container within #cv-preview-page */
-    width: 100%;
-    max-width: 100%; /* Allow it to be full width */
-    padding: 15px;
-    margin: 10px auto;
-}
-
-/* Style for the new font selector */
-#font-selector-container {
-    background-color: #f8f9fa;
-    padding: 15px;
-    border-radius: 8px;
-    border: 1px solid #dee2e6;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-#qr-manual-payment-page .container { /* Styles for the container within #qr-manual-payment-page */
-    padding: 30px;
-    border-radius: 8px;
-    width: 550px; /* Fixed width for desktop for payment form */
-    max-width: 90vw; /* Responsive max-width */
-    text-align: center;
-    background: white;
-    display: flex;
-    flex-direction: column;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-sizing: border-box;
-    margin: 20px auto;
-}
-
-.popup-close {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    border: none;
-    background: transparent;
-    color: #000;
-    padding: 5px;
-    z-index: 10;
-}
-
-body[dir="ltr"] .popup-close {
-    left: auto;
-    right: 10px;
-}
-
-.popup-close:hover {
-    color: red;
-}
-
-/* --- CV Builder Form Styles --- */
-.form-group {
-    margin-bottom: 1rem;
-}
-
-.form-group label {
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    display: block;
-}
-
-input[type="text"],
-input[type="email"],
-input[type="file"],
-textarea {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ced4da;
-    border-radius: 0.375rem;
-    box-sizing: border-box;
-    margin-bottom: 10px;
-    direction: inherit;
-    text-align: inherit;
-}
-
-textarea {
-    resize: vertical;
-}
-
-.form-group .btn {
-    margin-bottom: 10px;
-    margin-left: 5px;
-    margin-right: 0;
-}
-
-body[dir="ltr"] .form-group .btn {
-    margin-left: 0;
-    margin-right: 5px;
-}
-
-.remove-field {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    background: none;
-    border: none;
-    color: #dc3545;
-    font-size: 1.2em;
-    cursor: pointer;
-    z-index: 1;
-    padding: 5px;
-}
-
-body[dir="ltr"] .remove-field {
-    left: auto;
-    right: 8px;
-}
-
-.remove-field:hover {
-    color: #c82333;
-}
-
-.experience-entry,
-.education-entry,
-.skill-entry,
-.language-entry,
-.reference-entry {
-    border: 1px dashed #ccc;
-    padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 5px;
-    position: relative;
-}
-
-.experience-entry textarea {
-    margin-bottom: 0;
-}
-
-.btn-outline-primary {
-    color: #0d6efd;
-    border-color: #0d6efd;
-    background-color: transparent;
-}
-
-.btn-outline-primary:hover {
-    color: #fff;
-    background-color: #0d6efd;
-    border-color: #0d6efd;
-}
-
-.btn-outline-danger {
-    color: #dc3545;
-    border-color: #dc3545;
-    background-color: transparent;
-}
-
-.btn-outline-danger:hover {
-    color: #fff;
-    background-color: #dc3545;
-    border-color: #dc3545;
-}
-
-/* Progress bar style */
-.progress-container {
-    margin: 1rem 0;
-    height: 15px;
-    background: #e9ecef;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.progress-bar {
-    height: 100%;
-    width: 0%;
-    background: #0d6efd;
-    border-radius: 10px;
-    transition: width 0.3s ease, background-color 0.3s ease;
-    color: #fff;
-    text-align: center;
-    line-height: 15px;
-    font-size: 0.7em;
-}
-
-/* Language toggle style */
-.language-toggle {
-    z-index: 1000;
-    background-color: rgba(255, 255, 255, 0.8);
-    border: 1px solid #ced4da;
-    border-radius: 5px;
-    padding: 5px 10px;
-    cursor: pointer;
-    font-size: 0.9em;
-    user-select: none;
-    transition: background-color 0.3s ease;
-    margin-right: 10px;
-}
-
-
-
-body[dir="ltr"] .language-toggle {
-    margin-right: 0;
-    margin-left: 10px;
-}
-
-.language-toggle:hover {
-    background-color: rgba(240, 240, 240, 0.9);
-}
-
-/* --- Template Preview Styles --- */
-.template-preview-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 30px;
-    overflow-y: auto;
-    max-height: calc(100vh - 250px);
-    padding-right: 15px;
-    box-sizing: border-box;
-}
-
-body[dir="ltr"] .template-preview-container {
-    padding-right: 0;
-    padding-left: 15px;
-}
-
-.template-category {
-    width: 100%;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.template-category h3 {
-    font-size: 1.4em;
-    color: #333;
-    margin-bottom: 15px;
-    border-bottom: 2px solid #0d6efd;
-    display: inline-block;
-    padding-bottom: 5px;
-}
-
-.template-previews {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-}
-
-.template-preview {
-    cursor: pointer;
-    border: 3px solid transparent;
-    transition: all 0.3s ease;
-    width: 300px;
-    height: auto;
-    object-fit: cover;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.template-preview:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-.selected-template {
-    border-color: #0d6efd !important;
-    box-shadow: 0 3px 10px rgba(13, 110, 253, 0.4);
-}
-
-/* --- CV Preview Area and CV Container Styles --- */
-#cv-preview-area { /* هذا هو الـ div الذي يحيط بـ #cv-container في صفحة المعاينة */
-    flex-grow: 1;
-    overflow-y: auto; /* السماح بالتمرير إذا كانت السيرة أطول من الشاشة */
-    max-height: calc(100vh - 200px); /* ارتفاع معقول لمنطقة المعاينة */
-    display: flex;
-    justify-content: center;
-    align-items: flex-start; /* لمحاذاة السيرة في الأعلى إذا كانت أقصر */
-    padding: 20px; /* حشوة حول منطقة المعاينة */
-    background-color: #e9ecef; /* خلفية لمنطقة المعاينة لتمييزها */
-    border-radius: 8px;
-    margin-top: 20px;
-    box-sizing: border-box;
-}
-
-/* --- Base CV Container Styles --- */
-/* هذه الأنماط هي الحالة الافتراضية لـ #cv-container عندما تكون مرئية في #cv-preview-area */
-/* JavaScript (captureCVasPDF) سيقوم بتغيير هذه الأنماط مؤقتًا عند التقاط الـ PDF */
-#cv-container {
-    width: 100%; /* اجعلها تأخذ عرض مناسب داخل #cv-preview-area */
-    max-width: 210mm; /* حد أقصى للعرض لتبدو كـ A4 في المعاينة */
-    min-height: 297mm; /* ارتفاع A4 كحد أدنى للمعاينة، ولكن يمكن أن ينمو */
-    height: auto; /* السماح للارتفاع بالنمو */
-    margin: 0 auto; /* توسيطها في #cv-preview-area */
-    box-sizing: border-box;
-    background: white;
-    color: #212529;
-    box-shadow: 0 0 15px rgba(0,0,0,0.2); /* ظل لتمييزها كورقة */
-    display: flex; /* للسماح بتمدد .cv-content */
-    flex-direction: column; /* لترتيب العناصر الداخلية عمودياً */
-    overflow: hidden; /* إخفاء أي تجاوزات غير متوقعة في وضع المعاينة */
-    /* لا تضع هنا position: absolute; left: -9999px; visibility: hidden; */
-    /* هذه ستتم إدارتها بواسطة JavaScript مؤقتًا */
-    font-family: 'Tajwal', Arial, sans-serif; /* خط افتراضي إذا لم يحدده القالب */
-    line-height: 1.6;
-background: var();
-}
-
-/* Watermark style - يتم التحكم في إضافته عبر JavaScript (.watermarked class) */
-#cv-container.watermarked {
-    position: relative; /* ضروري لتموضع ::before */
-}
-
-#cv-container.watermarked::before {
-    content: var(--watermark-text, "PREVIEW - للعرض فقط"); /* النص يأتي من متغير CSS */
-    position: absolute !important;
-    top: 50% !important;
-    left: 50% !important;
-    width: 200% !important; /* اجعلها كبيرة جداً لتغطي حتى لو امتدت لعدة صفحات */
-    height: 200% !important;
-    transform: translate(-50%, -50%) rotate(-40deg) scale(0.9) !important;
-    font-size: clamp(2em, 8vw, 4.5em) !important; /* حجم خط متجاوب وواضح */
-    color: rgba(0, 0, 0, 0.08) !important; /* لون خفيف جداً لكن مرئي */
-    font-weight: bold !important;
-    text-align: center !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    pointer-events: none !important;
-    z-index: 10000 !important; /* فوق كل محتوى السيرة */
-    line-height: 1.2 !important;
-    word-break: break-word !important;
-    white-space: pre-wrap !important;
-    opacity: 1 !important; /* لا تحتاج شفافية إضافية إذا كان اللون خفيفًا */
-    overflow: hidden; /* لمنع أي تأثير على التخطيط */
-}
-
-
-/* Container for the main CV content (header + layout) */
-.cv-content {
-    flex-grow: 1 !important;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-    padding: 0; /* الحشوة الفعلية تكون في الأقسام أو الأعمدة */
-}
-
-/* CV Header Styles - Enhanced Professionalism */
-.cv-header {
-    display: flex;
-    align-items: center;
-    border-bottom: 2px solid; /* سيتم تخصيص اللون بواسطة القوالب */
-    padding-bottom: 15px; /* تقليل الحشوة قليلاً */
-    margin-bottom: 20px; /* تقليل الهامش قليلاً */
-    box-sizing: border-box;
-    flex-shrink: 0;
-    padding: 10px; /* تقليل الحشوة العامة للهيدر */
-}
-
-.cv-header.centered {
-    justify-content: center;
-    flex-direction: column;
-    text-align: center;
-}
-
-/* Two-column layout header (within main content) */
-.cv-header.two-col-main {
-    border-bottom: 2px solid; /* سيتم تخصيص اللون بواسطة القوالب */
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-    display: block;
-    box-sizing: border-box;
-    flex-shrink: 0;
-}
-
-/* Professional Layout Header (Top Bar) */
-.cv-header.professional-layout {
-    display: block; /* أو grid إذا كان جزءًا من شبكة الـ layout */
-    border-bottom: none;
-    padding-bottom: 0;
-    margin-bottom: 0;
-    color: #f8f9fa; /* لون النص الافتراضي هنا */
-    padding: 20px 30px;
-    text-align: center;
-    box-sizing: border-box;
-    flex-shrink: 0;
-}
-
-.cv-header.professional-layout .cv-name {
-    color: inherit; /* يرث اللون من .cv-header.professional-layout */
-    font-size: 2.8em;
-    margin: 0 0 5px 0;
-    font-weight: 700;
-}
-
-.cv-header.professional-layout .cv-title {
-    color: #ced4da; /* لون أفتح للعنوان الفرعي */
-    font-size: 1.5em;
-    margin: 0 0 15px 0;
-    font-weight: 400;
-}
-
-.cv-header.professional-layout .cv-contact-info {
-    border-top: 1px solid rgba(255, 255, 255, 0.3);
-    padding-top: 15px;
-    margin-top: 15px;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 15px;
-}
-
-.justify-content-around img{
-    width: 100px;
-}
-
-.cv-header.professional-layout .cv-contact-item {
-    justify-content: center;
-    margin-bottom: 0;
-    color: inherit; /* يرث اللون */
-}
-
-.cv-header.professional-layout .cv-contact-item i {
-    color: #adb5bd; /* لون الأيقونات */
-    margin-left: 8px;
-    margin-right: 0;
-}
-
-body[dir="ltr"] .cv-header.professional-layout .cv-contact-item i {
-    margin-left: 0;
-    margin-right: 8px;
-}
-
-/* Profile Picture - Adjusted for better integration */
-.cv-profile-pic {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid; /* سيتم تخصيص اللون بواسطة القوالب */
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-    margin-left: 20px; /* RTL default */
-    flex-shrink: 0;
-}
-
-body[dir="ltr"] .cv-profile-pic {
-    margin-left: 0;
-    margin-right: 20px; /* LTR */
-}
-
-.cv-header:not(.centered):not(.professional-layout) {
-    display: flex;
-    align-items: center;
-}
-
-/* لا حاجة لقواعد اتجاه إضافية هنا إذا كانت القاعدة العامة أعلاه كافية */
-
-.cv-header.centered .cv-profile-pic,
-.cv-header.professional-layout .cv-profile-pic { /* Picture in professional header (if any) */
-    margin: 0 auto 15px auto;
-    display: block;
-}
-
-/* Name and Title */
-.cv-name {
-    font-size: 2.5em; /* حجم اسم كبير وواضح */
-    margin: 0 0 5px 0; /* تقليل الهوامش قليلاً */
-    color: #212529;
-    word-break: break-word;
-    font-weight: 700;
-}
-
-.cv-title {
-    font-size: 1.3em;
-    margin: 0 0 10px 0; /* تقليل الهوامش قليلاً */
-    color: #007bff; /* لون افتراضي للمسمى الوظيفي، سيتم تخصيصه */
-    word-break: break-word;
-    font-weight: 400;
-}
-
-/* Contact Info */
-.cv-contact-info {
-    margin-top: 10px; /* تقليل الهامش العلوي */
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 15px; /* تقليل الفجوات قليلاً */
-    justify-content: inherit; /* يرث من الأب */
-}
-
-.cv-contact-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0; /* لا حاجة لهامش سفلي إذا كان هناك gap */
-    word-break: break-word;
-    white-space: normal;
-    font-size: 0.95em;
-    color: #555;
-}
-
-.cv-contact-item i {
-    margin-left: 8px; /* RTL default */
-    width: 18px;
-    text-align: center;
-    flex-shrink: 0;
-    color: #007bff; /* لون أيقونات افتراضي */
-}
-
-body[dir="ltr"] .cv-contact-item i {
-    margin-left: 0;
-    margin-right: 8px; /* LTR */
-}
-
-.cv-contact-item p {
-    margin: 0;
-}
-
-/* Sections (Objective, Experience, Education, etc.) */
-.cv-section {
-    margin: 0 15px;
-    margin-bottom: 4mm !important; /* استخدام mm للطباعة أفضل */
-    padding: 0 !important; /* إزالة الحشوة من هنا، ستكون في العناصر الداخلية */
-    background-color: transparent; /* شفاف بشكل افتراضي */
-    border-radius: 0; /* لا حاجة لحواف دائرية في الطباعة عادةً */
-    box-sizing: border-box;
-}
-
-.cv-section.no-padding { /* هذه الفئة قد لا تكون ضرورية إذا كان padding:0 هو الافتراضي */
-    padding: 0;
-    background-color: transparent;
-}
-
-.cv-section.no-margin {
-    margin-bottom: 0;
-}
-
-.cv-section-title {
-    font-size: 1.2em; /* حجم مناسب لعناوين الأقسام */
-    font-weight: 600;
-    margin-bottom: 4mm !important;
-    margin-top: 5px !important;
-    padding-bottom: 3mm !important;
-    border-bottom: 1.5px solid; /* خط أنحف قليلاً */
-    color: #007bff; /* لون افتراضي، سيتم تخصيصه */
-}
-
-.cv-sidebar .cv-section-title {
-    text-align: center; /* أغلب القوالب ذات الشريط الجانبي تكون عناوينها متوسطة */
-}
-
-/* Experience and Education Items */
-.cv-experience-item,
-.cv-education-item {
-    margin-bottom: 2mm !important;
-    padding-bottom: 2mm !important;
-    border-bottom: 0.5px solid #dee2e6; /* خط فاصل خفيف جداً */
-    box-sizing: border-box;
-}
-
-
-.cv-experience-item:last-child,
-.cv-education-item:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-    margin-bottom: 0; /* لا حاجة لهامش سفلي للعنصر الأخير في القائمة */
-}
-
-.cv-job-title,
-.cv-degree {
-    font-size: 1.05em;
-    font-weight: bold;
-    margin: 0 0 2mm 0;
-}
-
-.cv-company,
-.cv-institution {
-    color: #6c757d;
-    margin-bottom: 2mm;
-    font-size: 0.95em;
-}
-
-.cv-duration {
-    color: #666;
-    font-size: 0.9em;
-    display: inline-block; /* أو block إذا كان دائماً في سطر جديد */
-    margin-right: 10px; /* RTL default */
-}
-
-body[dir="ltr"] .cv-duration {
-    margin-right: 0;
-    margin-left: 10px; /* LTR */
-}
-
-.cv-experience-item p, /* وصف الخبرة */
-.cv-education-item p { /* أي تفاصيل إضافية للمؤهل */
-    word-break: break-word;
-    white-space: normal; /* أو pre-wrap إذا أردت الحفاظ على الأسطر الجديدة من textarea */
-    line-height: 1.6;
-    font-size: 0.9em; /* حجم خط أصغر قليلاً للوصف */
-    margin-top: 2mm;
-}
-
-/* Skills List */
-.cv-skill-list {
-    column-count: 2; /* افتراضي عمودين، يمكن تغييره بالقوالب */
-    column-gap: 10mm;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.cv-skill-list.single-column {
-    column-count: 1;
-}
-
-.cv-skill-list li { /* هذا النمط لـ li إذا كانت المهارات كقائمة نقطية تقليدية */
-    break-inside: avoid-column;
-    margin-bottom: 2mm;
-    position: relative;
-    padding-right: 15px; /* RTL default */
-}
-/* body[dir="ltr"] .cv-skill-list li { ... } إذا كانت القائمة نقطية */
-
-/* النمط التالي لـ .cv-skill-item إذا كانت المهارات كـ "badges" */
-.cv-skill-item { /* هذا إذا كانت المهارات كـ "tags" أو "badges" */
-    display: inline-block; /* أو block إذا كانت كل مهارة في سطر */
-    background: var(--accent-bg);
-    padding: 5px 10px;
-    border-radius: 15px; /* حواف دائرية للـ badges */
-    margin-bottom: 2mm;
-    margin-left: 2mm; /* RTL default */
-    font-size: 0.9em;
-    color: #212529;
-}
-
-body[dir="ltr"] .cv-skill-item {
-    margin-left: 0;
-    margin-right: 2mm; /* LTR */
-}
-
-/* Languages List */
-.cv-language-list {
-    list-style: none; /* أو disc إذا أردت نقاط */
-    padding: 0;
-    margin: 0;
-}
-
-.cv-language-list li {
-    margin-bottom: 2mm;
-    /* position: relative; padding-right: 15px; إذا كانت بنقاط */
-}
-/* body[dir="ltr"] .cv-language-list li { ... } إذا كانت بنقاط */
-
-/* References List */
-.cv-references-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.cv-reference-item {
-    margin-bottom: 4mm;
-    padding-bottom: 2mm;
-    border-bottom: 0.5px dashed #ccc; /* خط متقطع خفيف */
-}
-
-.cv-reference-item:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-    margin-bottom: 0;
-}
-
-.cv-reference-item h4 { /* اسم المرجع */
-    margin: 0 0 1mm 0;
-    font-size: 1em;
-    font-weight: 600;
-}
-
-.cv-reference-item p { /* تفاصيل المرجع */
-    margin: 0.5mm 0;
-    font-size: 0.9em;
-}
-
-/* Objective text wrapping */
-.cv-section#objective p {
-    word-break: break-word;
-    white-space: normal; /* أو pre-wrap إذا أردت الحفاظ على الأسطر من textarea */
-    line-height: 1.6;
-}
-
-/* --- Two-Column Layouts (Standard, Professional, AST) --- */
-/* هذه هي الحاويات الرئيسية للتخطيطات متعددة الأعمدة */
-.cv-two-column-layout,
-.cv-professional-layout, /* professional-layout قد يستخدم grid أكثر من flex مباشر */
-.ast-layout {
-    flex-grow: 1 !important;
-    display: flex; /* Flex هو الأساس لمعظم التخطيطات ثنائية الأعمدة */
-    gap: 10mm; /* فجوة بين الأعمدة، يمكن تعديلها */
-    /* overflow: hidden; لا نضع overflow:hidden هنا، يجب أن يكون المحتوى مرئيًا بالكامل للطباعة */
-}
-
-/* ترتيب الأعمدة الصحيح لـ RTL/LTR */
-/* Note: script.js may also set dir attribute directly on elements */
-.cv-two-column-layout[dir="rtl"],
-.ast-layout[dir="rtl"] {
-    flex-direction: row; /* الشريط الجانبي (الأول في DOM) سيكون على اليمين */
-}
-
-.cv-two-column-layout[dir="ltr"],
-.ast-layout[dir="ltr"] {
-    flex-direction: row-reverse; /* الشريط الجانبي (الأول في DOM) سيكون على اليسار */
-}
-
-/* Professional Layout uses Grid */
-/* تم تعديل هذا القسم لجعل الشريط الجانبي دائماً على اليسار في معاينة المتصفح */
-.cv-professional-layout {
-    display: grid !important; /* استخدام grid للتخطيط الاحترافي */
-    grid-template-rows: auto 1fr; /* صف للرأس، والباقي للأعمدة */
-    gap: 10mm !important; /* فجوة بين مناطق الشبكة */
-    grid-template-columns: 65mm 1fr; /* الشريط الجانبي على اليسار بعرض 80mm، المحتوى الرئيسي على اليمين لكلا الاتجاهين */
-    grid-template-areas:
-        "header header"
-        "sidebar main";
-}
-
-/* هذا التغيير لا يعتمد على الـ dir، لجعل الشريط الجانبي دائماً على اليسار في المعاينة */
-.cv-professional-layout[dir="rtl"] {
-    grid-template-columns: 80mm 1fr; /* الشريط الجانبي على اليسار بعرض 80mm، المحتوى الرئيسي على اليمين */
-    grid-template-areas:
-        "header header"
-        "sidebar main"; /* sidebar main */
-}
-
-.cv-professional-layout[dir="ltr"] {
-    grid-template-columns: 80mm 1fr; /* الشريط الجانبي على اليسار بعرض 80mm، المحتوى الرئيسي على اليمين */
-    grid-template-areas:
-        "header header"
-        "sidebar main"; /* sidebar main */
-}
-
-
-/* Sidebar and Main Content - common styles */
-.cv-sidebar,
-.cv-main-content {
-    padding: 10mm; /* حشوة داخلية للأعمدة، يمكن تعديلها بالقوالب */
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; /* لضمان بدء المحتوى من الأعلى */
-    flex-grow: 1; /* اسمح لهما بالتمدد لملء المساحة المتاحة */
-    min-height: calc(297mm - 40mm); /* ارتفاع افتراضي لضمان الامتداد (A4 - padding top/bottom of container - header) */
-                                  /* يجب ضبط هذا بعناية، أو الاعتماد على flex-grow */
-    overflow: visible !important; /* إبقاء هذا للعرض على الشاشة، الطباعة ستتجاوزه */
-}
-
-/* Sidebar in Standard and AST Layout */
-.cv-two-column-layout .cv-sidebar,
-.ast-layout .cv-sidebar {
-    width: 80mm; /* عرض ثابت للشريط الجانبي */
-    flex-shrink: 0; /* لا تدعه يتقلص */
-    background-color: #e9ecef; /* لون خلفية افتراضي، سيتم تخصيصه */
-    color: #212529;
-}
-
-/* Main Content in Standard and AST Layout */
-.cv-two-column-layout .cv-main-content,
-.ast-layout .cv-main-content {
-    background-color: #fff; /* لون خلفية افتراضي */
-}
-
-/* Sidebar in Professional Layout */
-.cv-professional-layout .cv-sidebar {
-    grid-area: sidebar;
-    background-color: #343a40; /* لون افتراضي داكن للشريط الجانبي الاحترافي */
-    color: #f8f9fa;
-}
-
-/* Main Content in Professional Layout */
-.cv-professional-layout .cv-main-content {
-    grid-area: main;
-    background-color: #fff;
-}
-
-/* --- Specific styles for elements within different layouts --- */
-
-/* Standard/AST Layout Sidebar specifics */
-.cv-two-column-layout .cv-sidebar .cv-profile-pic,
-.ast-layout .cv-sidebar .cv-profile-pic {
-    margin: 0 auto 15px auto; display: block;
-}
-.cv-two-column-layout .cv-sidebar .cv-section-title,
-.ast-layout .cv-sidebar .cv-section-title {
-    color: #6c757d; border-bottom-color: #dee2e6;
-}
-.cv-two-column-layout .cv-sidebar .cv-contact-item i,
-.ast-layout .cv-sidebar .cv-contact-item i { color: #6c757d; }
-
-.cv-two-column-layout .cv-sidebar .cv-skill-item, /* Skills as badges in sidebar */
-.ast-layout .cv-sidebar .cv-skill-item {
-    background-color: #6c757d; color: #f8f9fa; display: block; text-align: center;
-}
-
-/* Standard/AST Layout Main Content specifics */
-.cv-two-column-layout .cv-main-content .cv-header.two-col-main, /* Header within main content */
-.ast-layout .cv-main-content .cv-header.two-col-main {
-    border-bottom-color: #007bff;
-}
-.cv-two-column-layout .cv-main-content .cv-name,
-.ast-layout .cv-main-content .cv-name { color: #212529; }
-.cv-two-column-layout .cv-main-content .cv-title,
-.ast-layout .cv-main-content .cv-title { color: #007bff; }
-.cv-two-column-layout .cv-main-content .cv-section, /* Sections in main content */
-.ast-layout .cv-main-content .cv-section { background-color: #fff; padding: 0; margin-bottom: 8mm; }
-.cv-two-column-layout .cv-main-content .cv-section-title,
-.ast-layout .cv-main-content .cv-section-title { color: #007bff; border-color: #007bff; }
-
-/* Professional Layout Sidebar specifics */
-.cv-professional-layout .cv-sidebar .cv-profile-pic { border-color: #f8f9fa; margin:0 auto 15px auto; display: none;}
-.cv-professional-layout .cv-sidebar .cv-section-title { color: #f8f9fa; border-bottom-color: #6c757d; }
-.cv-professional-layout .cv-sidebar .cv-contact-item i { color: #adb5bd; }
-.cv-professional-layout .cv-sidebar .cv-skill-item { background-color: #495057; color: #fff; display: block; text-align: center;}
-
-/* Professional Layout Main Content specifics */
-.cv-professional-layout .cv-main-content { background-color: #fff; color: #333; }
-.cv-professional-layout .cv-main-content .cv-section { background-color: #fff; padding: 0; margin-bottom: 8mm;}
-.cv-professional-layout .cv-main-content .cv-section-title { color: #007bff; border-color: #007bff; }
-
-
-/* End Marker Style - لضمان امتداد المحتوى وتجاوز الصفحات بشكل صحيح */
-.cv-end-marker {
-    height: 279mm !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    font-size: 1px !important; /* اجعله غير مرئي تقريباً */
-    line-height: 1px !important;
-    color: transparent !important;
-    background-color: transparent !important;
-    visibility: hidden !important; /* مخفي في العرض العادي */
-    width: 100%;
-    display: block !important;
-    page-break-before: auto !important; /* لا تجبر كسر صفحة قبله إلا إذا لزم الأمر */
-    page-break-inside: avoid !important; /* منع كسر العنصر نفسه */
-    margin-top: auto !important; /* هام: يدفع العنصر لأسفل الـ flex container إذا كان الـ container يستخدم flex */
-    align-self: flex-end !important; /* يدفعه لأسفل عموده إذا كان الـ container يستخدم flex */
-}
-
-
-/* Filler div style (used by JS to help with stretching if needed, less common now with flex-grow) */
-.filler {
-    flex-grow: 1;
-    min-height: 1px;
-    font-size: 1pt;
-    line-height: 1;
-    overflow: hidden;
-    page-break-inside: avoid;
-}
-
-
-/* ========================================================== */
-/* == الفئة العادية (Normal Layout) - 3 تصميمات جديدة == */
-/* ========================================================== */
-
-/* --- 1. تنسيق قائمة اللغات لتظهر بشكل أفقي --- */
-.normal-layout .cv-language-list {
-    display: flex;       /* تفعيل Flexbox للصف الأفقي */
-    flex-wrap: wrap;     /* السماح للعناصر بالنزول لسطر جديد */
-    gap: 8px;            /* مسافة بين العناصر */
-    padding: 0;          /* إزالة الحشوة الافتراضية للقائمة */
-    list-style: none;    /* إزالة النقاط من القائمة */
-}
-
-/* تنسيق كل عنصر لغة ليظهر كبطاقة صغيرة (Tag) */
-.normal-layout .cv-language-list li {
-    background: var(--accent-bg); /* استخدام اللون المميز للخلفية */
-    color: var(--title-text);       /* استخدام لون العناوين للنص لتباين أفضل */
-    padding: 5px 15px;
-    border-radius: 20px;       /* حواف دائرية */
-    font-size: 0.9em;
-    margin-bottom: 0; /* إلغاء الهامش السفلي الافتراضي */
-}
-
-/* --- 2. تنسيق قسم المهارات ليظهر بشكل أفقي --- */
-/* نجعل القسم نفسه حاوية flex */
-.normal-layout .cv-section#skills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: center;
-}
-
-/* نجعل العنوان يأخذ عرض السطر كاملاً لينزل المحتوى تحته */
-.normal-layout .cv-section#skills .cv-section-title {
-    width: 100%;
-    margin-bottom: 5px; /* تقليل المسافة بعد العنوان */
-}
-
-/* تنسيق حاوية المهارة لتظهر كبطاقة (Tag) */
-.normal-layout .skill-item-wrapper {
-    background: var(--accent-bg);
-    color: var(--title-text);
-    padding: 8px 18px;
-    border-radius: 25px;
-    font-size: 0.9em;
-    font-weight: 500;
-}
-
-/* في التنسيق الأفقي، من الأفضل إخفاء شريط المستوى لأنه مخصص للعرض العمودي */
-.normal-layout .skill-item-wrapper .skill-level-bar {
-    display: none;
-}
-
-/* تعديلات بسيطة على اسم المهارة ليتناسب مع الشكل الجديد */
-.normal-layout .skill-item-wrapper .skill-name {
-    margin-bottom: 0;
-    color: inherit; /* يرث اللون من الحاوية الأم */
-}
-/* --- قواعد مشتركة لجميع القوالب العادية --- */
-.normal-layout #cv-container { color: var(--body-text); }
-.normal-layout .cv-header {
-    background: var(--primary-bg);
-    padding: 20px;
-}
-.normal-layout .cv-section-title {
-    color: var(--title-text);
-    border-bottom-color: var(--sidebar-bg);
-}
-.normal-layout .cv-skill-item {
-    background: var(--title-text); /* خلفية المهارات مرتبطة بلون العناوين */
-    color: var(--primary-bg); /* لون نص المهارة معاكس للخلفية لضمان الوضوح */
-}
-.normal-layout .cv-duration, .normal-layout .cv-company, .normal-layout .cv-institution {
-    color: var(--subtle-text); /* لون مختلف للتواريخ والمعلومات الفرعية */
-}
-.normal-layout .cv-experience-item p,
-.normal-layout .cv-language-list li {
-    color: var(--title-text); /* لون موحد للمواضيع واللغات */
-}
-
-/* --- القالب 1: تصميم متوسط وعمودي --- */
-.normal-layout.template1 .cv-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    border-bottom: 5px solid var(--sidebar-bg); /* بوردر سفلي بلون العناوين */
-}
-.normal-layout.template1 .cv-profile-pic {
-    margin-bottom: 15px;
-    border: 4px solid var(--sidebar-bg);
-}
-.normal-layout.template1 .cv-name {
-    color: var(--header-text);
-}
-.normal-layout.template1 .cv-title {
-    color: var(--sidebar-bg); /* لون مختلف كما طلبت */
-}
-.normal-layout.template1 .cv-contact-info {
-    justify-content: center;
-}
-.normal-layout.template1 .cv-contact-item {
-    color: var(--header-text);
-}
-
-.normal-layout.template1 .cv-section#objective p , .cv-job-title , .cv-degree  {color: var(--body-text);}
-.normal-layout.template1 .cv-experience-item p {color: var(--body-text);}
-
-/* --- القالب 2: تصميم أفقي مع بوردر مبتكر --- */
-.normal-layout.template2 .cv-header {
-    display: flex;
-    align-items: center;
-    position: relative; /* ضروري للبوردر المبتكر */
-    border-bottom: none; /* نزيل البوردر العادي */
-}
-/* الخدعة العبقرية: استخدام عنصر زائف لإنشاء البوردر المبتكر */
-.normal-layout.template2 .cv-header::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 15px; /* بوردر بحجم أكبر */
-    background: var(--sidebar-bg);
-    clip-path: polygon(0 0, 80% 0, 100% 100%, 0% 100%); /* شكل القطع */
-    border-bottom-left-radius: 10px; /* انحناء من جهة واحدة */
-}
-html[dir="rtl"] .normal-layout.template2 .cv-header::after {
-    left: auto;
-    right: 0;
-    clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-}
-.normal-layout.template2 .cv-profile-pic {
-    border: 4px solid var(--sidebar-bg);
-    margin-right: 20px;
-}
-html[dir="rtl"] .normal-layout.template2 .cv-profile-pic {
-    margin-right: 0;
-    margin-left: 20px;
-}
-.normal-layout.template2 .cv-name { color: var(--header-text); }
-.normal-layout.template2 .cv-title { color: var(--sidebar-bg); margin-top: -10px; }
-.normal-layout.template2 .cv-contact-item { color: var(--header-text); }
-
-.normal-layout.template2 .cv-section#objective p , .cv-job-title , .cv-degree  {color: var(--body-text);}
-.normal-layout.template2 .cv-experience-item p {color: var(--body-text);}
-
-/* --- القالب 3: تصميم أفقي مع بوردر عادي --- */
-.normal-layout.template3 .cv-header {
-    display: flex;
-    align-items: center;
-    border-bottom: 5px solid var(--sidebar-bg); /* بوردر عادي كما في القالب 1 */
-}
-.normal-layout.template3 .cv-profile-pic {
-    border: 4px solid var(--sidebar-bg);
-    margin-right: 20px;
-}
-html[dir="rtl"] .normal-layout.template3 .cv-profile-pic {
-    margin-right: 0;
-    margin-left: 20px;
-}
-.normal-layout.template3 .cv-name { color: var(--header-text); }
-.normal-layout.template3 .cv-title { color: var(--sidebar-bg); margin-top: -10px; }
-.normal-layout.template3 .cv-contact-item { color: var(--header-text); }
-.normal-layout.template3 .cv-section#objective p , .cv-job-title , .cv-degree  {color: var(--body-text);}
-.normal-layout.template3 .cv-experience-item p {color: var(--body-text);}
-
-/* ========================================================================= */
-/* == قوالب Standard Layout مع تخطيطات مختلفة وربط ألوان صحيح == */
-/* ========================================================================= */
-/* --- القالب 1: تصميم العامود الجانبي الملون (الكلاسيكي) --- */
-.standard-layout.template1 .cv-sidebar {
-    background: var(--primary-bg);
-    color: var(--header-text);
-}
-.standard-layout.template1 .cv-profile-pic { border-color: var(--header-text); }
-.standard-layout.template1 .cv-sidebar .cv-section-title { color: var(--header-text); border-bottom-color: var(--sidebar-bg); }
-.standard-layout.template1 .cv-sidebar .cv-contact-item { color: var(--header-text); opacity: 0.9; }
-.standard-layout.template1 .cv-sidebar .cv-contact-item i { color: var(--header-text); }
-.standard-layout.template1 .cv-sidebar .cv-skill-item { background: var(--accent-bg); color: var(--title-text); }
-.standard-layout.template1 .cv-references-list p {color: var(--header-text);}
-
-.standard-layout .cv-section#objective p, .cv-job-title, .cv-degree {
-    color: var(--body-text);
-}
-
-.standard-layout .cv-duration, .standard-layout .cv-company, .standard-layout .cv-institution {
-    color: var(--subtle-text); /* لون مختلف للتواريخ والمعلومات الفرعية */
-}
-/* المحتوى الرئيسي */
-.standard-layout.template1 .cv-main-content .cv-header.two-col-main { border-bottom-color: var(--primary-bg); }
-.standard-layout.template1 .cv-main-content .cv-name { color: var(--title-text); }
-.standard-layout.template1 .cv-main-content .cv-title { color: var(--subtle-text); }
-.standard-layout.template1 .cv-main-content .cv-section-title { color: var(--title-text); border-bottom-color: var(--accent-bg); }
-.standard-layout.template1 #cv-container, .standard-layout.template1 .cv-main-content p { color: var(--body-text); }
-
-/* --- القالب 2: تصميم الصندوق العلوي البارز --- */
-
-.standard-layout.template2 .cv-sidebar { background: var(--sidebar-bg); color: var(--body-text); }
-.standard-layout.template2 .cv-profile-pic { border-color: var(--primary-bg); }
-.standard-layout.template2 .cv-sidebar .cv-section-title { color: var(--header-text); }
-.standard-layout.template2 .cv-sidebar .cv-contact-item { color: var(--header-text); }
-.standard-layout.template2 .cv-sidebar .cv-skill-item { background: var(--accent-bg); color: var(--title-text); }
-/* المحتوى الرئيسي مع الصندوق العلوي */
-.standard-layout.template2 .cv-main-content .cv-header.two-col-main {
-    background: var(--primary-bg);
-    color: var(--header-text);
-    padding: 20px; margin-bottom: 20px; border-bottom: none;
-}
-.standard-layout.template2 .cv-main-content .cv-header.two-col-main .cv-name,
-.standard-layout.template2 .cv-main-content .cv-header.two-col-main .cv-title { color: var(--header-text); }
-.standard-layout.template2 .cv-main-content .cv-section-title { color: var(--title-text); border-bottom-color: var(--accent-bg); }
-.standard-layout.template2 #cv-container, .standard-layout.template2 .cv-main-content p { color: var(--body-text); }
-/*============== تنسيق المهارات واللغات للفئات القياسية ==========*/
-/* --- 1. نلغي التنسيقات الافتراضية للقوائم --- */
-.standard-layout .cv-language-list,
-.ast-layout .cv-language-list {
-    list-style: none;
-    padding: 0;
-}
-.standard-layout .cv-references-list p, .standard-layout .cv-references-list h4 {color: var(--header-text);}
-.ast-layout .cv-references-list p, .ast-layout .cv-references-list h4 {color: var(--header-text);}
-
-/* --- 2. نطبق التصميم الجديد على كل عنصر (لغة أو مهارة) --- */
-.standard-layout .cv-language-list li,
-.ast-layout .cv-language-list li,
-.standard-layout .skill-item-wrapper,
-.ast-layout .skill-item-wrapper {
-    display: block; /* لضمان الترتيب العمودي */
-    background: var(--accent-bg); /* استخدام اللون المميز للخلفية */
-    padding: 6px 10px;
-    margin-bottom: 8px; /* مسافة بين العناصر */
-    border-radius: 6px; /* حواف دائرية قليلاً */
-    text-align: center; /* توسيط النص داخل البطاقة */
-}
-
-/* --- 3. نضبط لون النص ليكون واضحًا ومتناسقًا --- */
-.standard-layout .cv-language-list li,
-.ast-layout .cv-language-list li,
-.standard-layout .skill-item-wrapper .skill-name,
-.ast-layout .skill-item-wrapper .skill-name {
-    color: var(--title-text); /* استخدام لون العناوين لتباين ووضوح أفضل */
-    font-weight: 500;
-    margin-bottom: 0;
-}
-.standard-layout .cv-language-list li {color: var(--title-text);}
-.ast-layout .cv-language-list li {color: var(--title-text);}
-
-/* --- 4. في هذا التصميم، من الأفضل إخفاء شريط المستوى --- */
-/* لأنه مخصص للعرض مع تفاصيل أكثر، والبطاقة لوحدها كافية */
-.standard-layout .skill-item-wrapper .skill-level-bar,
-.ast-layout .skill-item-wrapper .skill-level-bar {
-    display: none;
-}
-
-/*===============================================================================*/
-
-.professional-layout .cv-sidebar {
-    width: 250px; /* overridden by print styles (80mm) & grid */
-    padding: 20px;
-    flex-shrink: 0;
-    border-radius: 8px 0 0 8px;
-}
-.professional-layout[dir="rtl"] .cv-sidebar { border-radius: 0 8px 8px 0; }
-.professional-layout .cv-main-content { flex-grow: 1; padding: 20px; }
-
-/* ================================================================ */
-/* == قوالب Professional - النسخة النهائية مع كل التصحيحات == */
-/* ================================================================ */
-
-/* --- القالب 1: التصميم التنفيذي (الكلاسيكي) --- */
-.professional-layout.template1 .cv-header.professional-layout { background: var(--primary-bg); color: var(--header-text); text-align: center; }
-.professional-layout.template1 .cv-header.professional-layout .cv-contact-info { justify-content: center; }
-/* --- 1. إعداد الحاوية الرئيسية (العامود الجانبي) --- */
-.professional-layout.template1 .cv-sidebar {
-    position: relative; /* ضروري لتحديد موضع الخط العمودي */
-    background: var(--sidebar-bg); /* لون الخلفية الرئيسي للعامود الجانبي */
-    
-    /* نتأكد من إزالة أي إطارات قديمة لمنع التضارب */
-    border: none;
-}
-
-/* --- 2. إنشاء الخط العمودي المتدرج باستخدام عنصر زائف --- */
-.professional-layout.template1 .cv-sidebar::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 20px; /* عرض أو "سماكة" الخط العمودي */
-    background: var(--primary-bg); /* هنا نضع التدرج اللوني */
-    border-radius: 20px 0;
-}
-
-/* --- 3. تحديد مكان الخط بناءً على اتجاه اللغة --- */
-/* للاتجاه من اليمين لليسار (RTL)، يظهر الخط على اليمين */
-html[dir="rtl"] .professional-layout.template1 .cv-sidebar::before {
-    right: 0;
-    
-}
-
-/* للاتجاه من اليسار لليمين (LTR)، يظهر الخط على اليسار */
-html[dir="ltr"] .professional-layout.template1 .cv-sidebar::before {
-    left: 0;
-}
-.professional-layout.template1 .cv-profile-pic { border-color: var(--primary-bg); }
-.professional-layout.template1 .cv-sidebar .cv-section-title { color: var(--title-text); border-color: var(--title-text); }
-.professional-layout.template1 .cv-sidebar .skill-name { background: var(--accent-bg); color: var(--title-text); padding: 5px; display: block; margin-bottom: 8px; text-align: center; border-radius: 10px;}
-.professional-layout.template1 .cv-main-content .cv-section-title { color: var(--title-text); border-bottom-color: var(--accent-bg); }
-.professional-layout.template1 .cv-language-list li { background: var(--accent-bg); color: var(--title-text); padding: 5px; display: block; margin-bottom: 8px; text-align: center; border-radius: 10px;}
-/* --- القالب 2: تصميم الرأس المركز (الاتصال بالجانب) --- */
-.professional-layout.template2 .cv-header.professional-layout { background: var(--primary-bg); color: var(--header-text); display: flex; flex-direction: column; justify-content: center; text-align: center; }
-.professional-layout.template2 .cv-header.professional-layout .cv-contact-info { display: none; }
-.professional-layout.template2 .cv-sidebar .cv-section[data-section-name="contact-info"] { display: block; }
-.professional-layout.template2 .cv-sidebar { background: var(--sidebar-bg); }
-.professional-layout.template2 .cv-profile-pic { border-color: var(--primary-bg); }
-.professional-layout.template2 .cv-sidebar .cv-section-title { color: var(--title-text); }
-.professional-layout.template2 .cv-sidebar .cv-skill-item { background: var(--accent-bg); }
-.professional-layout.template2 .cv-main-content .cv-section-title { color: var(--title-text); border-bottom-color: var(--accent-bg); }
-
-/* --- القالب 3: تصميم الرأس المدمج (الصورة بالرأس) --- */
-.professional-layout.template3 .cv-header.professional-layout { background: var(--primary-bg); color: var(--header-text); display: flex; align-items: center; justify-content: flex-start; text-align: start; padding: 15px; }
-.professional-layout.template3 .cv-header.professional-layout .cv-profile-pic { display: block; margin-left: 20px; border-color: var(--header-text); }
-html[dir="ltr"] .professional-layout.template3 .cv-header.professional-layout .cv-profile-pic { margin-left: 0; margin-right: 20px; }
-.professional-layout.template3 .cv-sidebar .cv-profile-pic { display: none; }
-.professional-layout.template3 .cv-sidebar { background: var(--sidebar-bg); }
-.professional-layout.template3 .cv-sidebar .cv-section-title { color: var(--title-text); }
-.professional-layout.template3 .cv-sidebar .cv-skill-item { background: var(--accent-bg); }
-.professional-layout.template3 .cv-main-content .cv-section-title { color: var(--title-text); border-bottom-color: var(--accent-bg); }
-
-/*===========================================================================*/
-.ast-layout .cv-sidebar {
-    width: 250px; /* overridden by print (80mm) */
-    padding: 20px;
-    flex-shrink: 0;
-    border-radius: 8px 0 0 8px;
-}
-.ast-layout[dir="rtl"] .cv-sidebar { border-radius: 0 8px 8px 0; }
-.ast-layout .cv-main-content { flex-grow: 1; padding: 20px; }
-
-/* ========================================================================= */
-/* == فئة AST مع 3 تخطيطات مختلفة وربط ألوان كامل == */
-/* ========================================================================= */
-/* --- القالب 1: تصميم العامود الجانبي الكلاسيكي (ATS) --- */
-.ast-layout.template1 .cv-sidebar { background: var(--primary-bg); color: var(--header-text); }
-.ast-layout.template1 .cv-profile-pic { border-color: var(--header-text); }
-.ast-layout.template1 .cv-sidebar .cv-section-title { color: var(--header-text); border-bottom-color: var(--sidebar-bg); }
-.ast-layout.template1 .cv-sidebar .cv-contact-item, .ast-layout.template1 .cv-sidebar .cv-language-list li { color: var(--header-text); opacity: 0.9; }
-.ast-layout.template1 .cv-sidebar .cv-contact-item i { color: var(--header-text); }
-.ast-layout.template1 .cv-sidebar .cv-skill-item { background: var(--accent-bg); color: var(--title-text); }
-/* المحتوى الرئيسي */
-.ast-layout.template1 .cv-main-content .cv-header.two-col-main { border-bottom-color: var(--primary-bg); }
-.ast-layout.template1 .cv-main-content .cv-name { color: var(--title-text); }
-.ast-layout.template1 .cv-main-content .cv-title { color: var(--subtle-text); }
-.ast-layout.template1 .cv-main-content .cv-section-title { color: var(--title-text); border-bottom-color: var(--accent-bg); }
-.ast-layout.template1 #cv-container, .ast-layout.template1 .cv-main-content p { color: var(--body-text); }
-
-/* --- القالب 2: تصميم الخط الفاصل البسيط (ATS) --- */
-.ast-layout.template2 .cv-sidebar, .ast-layout.template2 .cv-main-content { background: transparent; }
-.ast-layout.template2 .cv-two-column-layout { padding: 0; }
-.ast-layout.template2 .cv-sidebar {
-    padding: 10mm;
-    border-left: 8px solid var(--primary-bg);
-    background: var(--sidebar-bg);
-}
-html[dir="rtl"] .ast-layout.template2 .cv-sidebar {
-    padding: 10mm;
-    border-left: 8px solid var(--primary-bg);
-    background: var(--sidebar-bg);
-}
-.ast-layout.template2 .cv-language-list li {
-    margin-bottom: 2mm;
-    background: var(--accent-bg);
-    border-radius: 5px;
-    padding: 5px;
-    color: var(--subtle-text);
-    text-align: center;
-}
-.ast-layout.template2 .cv-sidebar .skill-name {
-    background: var(--accent-bg);
-    color: var(--subtle-text);
-    display: block;
-    text-align: center;
-    margin: 5px;
-    border-radius: 10px;
-}
-
-.ast-layout.template2 .cv-main-content { padding: 10mm; color:var(--body-text) }
-.ast-layout.template2 .cv-profile-pic { border-color: var(--sidebar-bg); }
-.ast-layout.template2 .cv-sidebar .cv-section-title { color: var(--subtle-text); border-bottom-color: var(--sidebar-bg); }
-.ast-layout.template2 .cv-sidebar .cv-contact-item { color: var(--subtle-text); }
-.ast-layout.template2 .cv-sidebar .skill-name { background: var(--accent-bg); color: var(--subtle-text); }
-.ast-layout.template2 .cv-main-content .cv-header.two-col-main { border-bottom-color: var(--sidebar-bg); }
-.ast-layout.template2 .cv-main-content .cv-name { color: var(--title-text); }
-.ast-layout.template2 .cv-main-content .cv-title { color: var(--title-text); }
-.ast-layout.template2 .cv-main-content .cv-section-title { color: var(--accent-bg); border-bottom-color: var(--accent-bg); }
-/* ================================================= */
-/* == Creative Template 1: Flowing Wave (v3) Layout == */
-/* ================================================= */
-
-/* ========================================================== */
-/* == Creative Layout: BASE STRUCTURE (For All Templates) == */
-/* ========================================================== */
-
-/* -- الهيكل العام -- */
-.creative-layout #cv-container {
-    background: #f8f9fa;
-    padding: 0 !important;
-    overflow: hidden;
-}
-.creative-layout .cv-content {
-    display: block;
-}
-
-/* -- الـ Header الموجي -- */
-.creative-layout .header-wave {
-    color: #ffffff;
-    padding: 30px 40px 90px 40px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 25px;
-    clip-path: polygon(0 0, 100% 0, 100% 80%, 0% 100%); /* LTR Default */
-}
-html[dir="rtl"] .creative-layout .header-wave {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 80%); /* RTL Override */
-}
-.creative-layout .header-wave .cv-profile-pic {
-    width: 120px;
-    height: 120px;
-    border: 4px solid rgba(255, 255, 255, 0.8);
-    flex-shrink: 0;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-.creative-layout .header-wave .cv-name { font-size: 2.5em; color: #ffffff; font-weight: 700; }
-.creative-layout .header-wave .cv-title { font-size: 1.4em; color: #ecf0f1; font-weight: 300; }
-
-/* -- تخطيط العمودين -- */
-.creative-layout .content-columns {
-    display: flex;
-    padding: 20px 40px 40px 40px;
-    margin-top: -60px;
-    gap: 30px;
-    position: relative;
-    z-index: 2;
-    background: transparent;
-}
-.creative-layout .left-column {
-    width: 65%;
-    background: #ffffff;
-    padding: 25px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-.creative-layout .right-column { width: 35%; }
-
-/* -- تنسيق أشرطة المهارات -- */
-.creative-layout .skill-item-wrapper { margin-bottom: 12px; }
-.creative-layout .skill-name { display: block; margin-bottom: 5px; color: var(--title-text); font-weight: 500; font-size: 0.95em; }
-.creative-layout .skill-level-bar { width: 100%; height: 8px; background: var(--accent-bg); border-radius: 4px; overflow: hidden; }
-.creative-layout .skill-level-progress { height: 100%; border-radius: 4px;; }
-
-/* -- تنسيقات عامة وتصحيح الظل -- */
-.creative-layout .left-column .cv-section {
-    background: transparent;
-    padding: 0;
-    box-shadow: none;
-    margin-bottom: 25px;
-}
-/* *** هذا هو الإصلاح الرئيسي للظل *** */
-.creative-layout .right-column .cv-section {
-    background: transparent;
-    box-shadow: none !important; /* إزالة الظل من أقسام العمود الأيمن */
-    padding: 0;
-    margin-bottom: 25px;
-}
-.creative-layout .cv-section-title { font-weight: 700; font-size: 1.2em; border-bottom: 2px solid; padding-bottom: 5px; margin-bottom: 20px; }
-.creative-layout .right-column  {
-    display: block;
-    border: 1px;
-    background: border-box;
-    background: #ffffff;
-    border-radius: 5px;
-    margin: 0;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-.creative-layout .right-column .cv-contact-item { color: #34495e; font-size: 0.9em; margin-bottom: 8px; }
-.creative-layout .right-column .cv-contact-item i { width: 20px; }
-
-/* ============================================================= */
-/* == 5. الفئة الإبداعية (Creative) - تصميمات معدلة == */
-/* ============================================================= */
-
-/* --- القالب 1: تصميم الموجة (الكلاسيكي الإبداعي) --- */
-.creative-layout.template1 .header-wave { background: var(--primary-bg); clip-path: polygon(0 0, 100% 0, 100% 85%, 0% 100%); }
-html[dir="rtl"] .creative-layout.template1 .header-wave { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 85%); }
-.creative-layout.template1 .header-wave .cv-name, .creative-layout.template1 .header-wave .cv-title { color: var(--header-text); }
-.creative-layout.template1 .cv-profile-pic { border-color: var(--header-text); }
-.creative-layout.template1 .right-column { background: var(--sidebar-bg); padding: 20px; border-radius: 8px; }
-.creative-layout.template1 .cv-section-title { color: var(--title-text); border-bottom-color: var(--accent-bg); }
-.creative-layout.template1 .skill-level-progress { background: var(--header-text); }
-.creative-layout.template1 .right-column .cv-contact-item i { color: var(--title-text); }
-
-/* --- القالب 2: تصميم الخط المائل (الهندسي) --- */ 
-.creative-layout.template2 .cv-content { position: relative; padding-top: 100px; }
-.creative-layout.template2 .header-wave {
-    background: var(--primary-bg);
-    clip-path: polygon(0 0, 100% 0, 100% 70%, 0 100%);
-    position: absolute; top: 0; left: 0; right: 0; height: 200px;
-    color: var(--header-text);
-}
-.creative-layout.template2 .header-wave .cv-profile-pic { display: none; }
-.creative-layout.template2 .content-columns { margin-top: 0; }
-.creative-layout.template2 .left-column { width: 60%; }
-.creative-layout.template2 .right-column { width: 40%; }
-.creative-layout.template2 .right-column .cv-profile-pic { display: block; width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--primary-bg); margin: -60px auto 20px; position: relative; z-index: 5; }
-.creative-layout.template2 .cv-section-title { color: var(--title-text); border-bottom-color: var(--accent-bg); }
-.creative-layout.template2 .skill-level-progress { background: var(--primary-bg); }
-
-/* --- القالب 3: تصميم الموجة العمودية (المبتكر) --- */
-.creative-layout.template3 .cv-content { display: flex; flex-direction: row; padding: 0; }
-html[dir="ltr"] .creative-layout.template3 .cv-content { flex-direction: row-reverse; }
-.creative-layout.template3 .header-wave { display: none; }
-.creative-layout.template3 .content-columns, .creative-layout.template3 .left-column, .creative-layout.template3 .right-column { display: contents; }
-.creative-layout.template3 .cv-sidebar {
-    width: 85mm; flex-shrink: 0; background: var(--primary-bg); color: var(--header-text);
-    clip-path: polygon(0 0, 100% 0, 85% 100%, 0% 100%); padding: 30px;
-}
-.creative-layout.template3 .skill-level-progress { background: var(--sidebar-bg); }
-html[dir="ltr"] .creative-layout.template3 .cv-sidebar {     width: 85mm;
-    flex-shrink: 0;
-    background: var(--primary-bg);
-    color: var(--header-text);
-    clip-path: polygon(0 0, 100% 0, 85% 100%, 0% 100%);
-    padding: 30px;
-    border-right: 50px solid var(--accent-bg);
-}
-.creative-layout.template3 .cv-main-content { flex-grow: 1; padding: 30px; }
-.creative-layout.template3 .cv-sidebar .cv-header.two-col-main { display: block; border: none; text-align: center; }
-.creative-layout.template3 .cv-sidebar .cv-name, .creative-layout.template3 .cv-sidebar .cv-title, .creative-layout.template3 .cv-sidebar .cv-contact-item { color: var(--header-text); }
-.creative-layout.template3 .cv-sidebar .cv-section-title { color: var(--header-text); border-bottom-color: var(--sidebar-bg); }
-.creative-layout.template3 .cv-main-content .cv-section-title { color: var(--title-text); border-bottom-color: var(--accent-bg); }
-
-
-/* --- Responsive Adjustments for Mobile Screens (On-Screen Preview) --- */
-/* These affect how the CV looks in #cv-preview-area on small screens, */
-/* but should NOT affect the PDF generation if print/capture styles are strong. */
-@media (max-width: 768px) {
-    /* Adjust CV container preview on mobile */
-    #cv-container {
-        min-height: auto; /* اجعل الارتفاع مرنًا أكثر في المعاينة على الجوال */
+};
+
+const CONTROL_VISIBILITY_CONFIG = {
+    // للفئة العادية، نستخدم خلفية أساسية، ولون للهيدر والنصوص
+    'normal': ['primary-bg', 'header-text', 'title-text', 'body-text', 'subtle-text', 'accent-bg'],
+    // للفئة القياسية، نضيف لون خلفية للشريط الجانبي
+    'standard': ['primary-bg', 'sidebar-bg', 'header-text', 'title-text', 'body-text', 'subtle-text', 'accent-bg'],
+    // للفئة الاحترافية، كل الألوان مهمة
+    'professional': ['primary-bg', 'sidebar-bg', 'header-text', 'title-text', 'body-text', 'subtle-text', 'accent-bg'],
+    // فئة AST تشبه الفئة القياسية
+    'ast': ['primary-bg', 'sidebar-bg', 'header-text', 'title-text', 'body-text', 'subtle-text', 'accent-bg'],
+    // الفئة الإبداعية تعتمد بشكل كبير على الألوان
+    'creative': ['primary-bg', 'sidebar-bg', 'header-text', 'title-text', 'body-text', 'subtle-text', 'accent-bg']
+};
+
+// قائمة الخطوط العربية
+const arabicFonts = [
+    { name: 'Tajawal (تجوال)', value: "'Tajawal', sans-serif" },
+    { name: 'Cairo (القاهرة)', value: "'Cairo', sans-serif" },
+    { name: 'Amiri (أميري - كلاسيكي)', value: "'Amiri', serif" },
+    { name: 'Almarai (المراعي)', value: "'Almarai', sans-serif" },
+    { name: 'Markazi Text (مركزي)', value: "'Markazi Text', serif" },
+    { name: 'Lalezar (لاله زار - للعناوين)', value: "'Lalezar', cursive" }
+];
+
+// قائمة الخطوط الإنجليزية
+const englishFonts = [
+    { name: 'Roboto', value: "'Roboto', sans-serif" },
+    { name: 'Lato', value: "'Lato', sans-serif" },
+    { name: 'Montserrat', value: "'Montserrat', sans-serif" },
+    { name: 'Open Sans', value: "'Open Sans', sans-serif" },
+    { name: 'PT Sans', value: "'PT Sans', sans-serif" },
+    { name: 'Playfair Display (Serif)', value: "'Playfair Display', serif" },
+    { name: 'Noto Serif (Serif)', value: "'Noto Serif', serif" }
+];
+
+/**
+ * يقوم بتعبئة قوائم اختيار الخطوط بالخيارات المناسبة (عربية أو إنجليزية) بناءً على اللغة الحالية.
+ */
+function populateFontSelectors() {
+    const isArabic = currentLang === 'ar';
+    const fontList = isArabic ? arabicFonts : englishFonts;
+
+    const selectors = {
+        name: document.getElementById('font-selector-name'),
+        headings: document.getElementById('font-selector-headings'),
+        body: document.getElementById('font-selector-body')
+    };
+
+    // تعبئة كل قائمة منسدلة
+    for (const key in selectors) {
+        const selectElement = selectors[key];
+        if (selectElement) {
+            // مسح الخيارات القديمة
+            selectElement.innerHTML = '';
+            // إضافة الخيارات الجديدة
+            fontList.forEach(font => {
+                const option = document.createElement('option');
+                option.value = font.value;
+                option.textContent = font.name;
+                selectElement.appendChild(option);
+            });
+        }
     }
 
-    /* Stack columns in layouts for mobile preview */
-    .cv-two-column-layout, .ast-layout, .cv-professional-layout {
-        flex-direction: column !important; /* Stack columns */
-        gap: 0 !important; /* No gap when stacked */
-    }
-    .cv-professional-layout { /* Reset grid for stacking */
-        display: flex !important;
-        flex-direction: column !important;
-    }
-    .cv-sidebar, .cv-main-content,
-    .cv-two-column-layout .cv-sidebar, .ast-layout .cv-sidebar,
-    .cv-professional-layout .cv-sidebar,
-    .cv-two-column-layout .cv-main-content, .ast-layout .cv-main-content,
-    .cv-professional-layout .cv-main-content {
-        width: 100% !important; /* Full width when stacked */
-        max-width: 100% !important;
-        padding: 15px !important; /* Padding for stacked view */
-        min-height: auto !important;
-    }
-    .cv-professional-layout .cv-header.professional-layout { /* Ensure professional header is also full width */
-        width: 100% !important;
-    }
+    // تحديد خطوط افتراضية مختلفة لكل عنصر
+    if(selectors.name) selectors.name.value = isArabic ? "'Cairo', sans-serif" : "'Playfair Display', serif";
+    if(selectors.headings) selectors.headings.value = isArabic ? "'Tajawal', sans-serif" : "'Montserrat', sans-serif";
+    if(selectors.body) selectors.body.value = isArabic ? "'Almarai', sans-serif" : "'Roboto', sans-serif";
 
-    /* Font sizes for mobile preview */
-    body, .cv-section, .cv-contact-info, .cv-experience-item, .cv-education-item,
-    .cv-skill-list, .cv-language-list, .cv-reference-item {
-        font-size: 0.9em !important; /* Slightly larger base for mobile readability */
-        line-height: 1.5 !important;
-    }
-    .cv-name { font-size: 1.8em !important; }
-    .cv-title { font-size: 1.1em !important; }
-    .cv-section-title { font-size: 1.2em !important; margin-bottom: 10px !important; padding-bottom: 5px !important; }
-    .cv-contact-item { font-size: 0.9em !important; flex-wrap: wrap; justify-content: center; }
-    .cv-contact-item i { width: 16px !important; height: 16px !important; font-size: 0.9em !important; margin: 0 5px !important; }
-    .cv-profile-pic { width: 100px !important; height: 100px !important; margin: 0 auto 15px auto !important; }
-    .cv-skill-list, .cv-language-list { column-count: 1 !important; text-align: center !important;}
-    .cv-skill-item { margin: 5px auto !important; display: inline-block !important; width: auto; font-size: 0.85em !important;}
+    // تطبيق الخطوط الافتراضية على المعاينة
+    applySelectedFonts();
 }
 
-@media (max-width: 400px) { /* Very small screens */
-    #cv-container { padding: 3mm; }
-    .cv-name { font-size: 1.6em !important; }
-    .cv-title { font-size: 1em !important; }
-    .cv-section-title { font-size: 1.1em !important; }
-    .cv-profile-pic { width: 80px !important; height: 80px !important; }
-    .cv-contact-item { font-size: 0.8em !important; }
-    .cv-job-title, .cv-degree { font-size: 0.95em !important; }
-    .cv-company, .cv-institution, .cv-duration { font-size: 0.85em !important; }
-    .cv-experience-item p { font-size: 0.85em !important; line-height: 1.4 !important; }
-    .cv-skill-item { font-size: 0.8em !important; padding: 4px 8px !important; }
+/**
+ * إعداد زر تبديل اللغة بشكل ديناميكي بناءً على اللغة الحالية.
+ */
+function setupLanguageToggle() {
+    const langToggleButton = document.getElementById('lang-toggle-btn');
+    if (!langToggleButton) return;
+
+    if (currentLang === 'ar') {
+        // إذا كانت الصفحة الحالية عربية، يجب أن يحول الزر إلى الإنجليزية
+        langToggleButton.textContent = 'English';
+        langToggleButton.href = 'en.html';
+        langToggleButton.onclick = () => setUserLanguage('en');
+    } else {
+        // إذا كانت الصفحة الحالية إنجليزية، يجب أن يحول الزر إلى العربية
+        langToggleButton.textContent = 'العربية';
+        langToggleButton.href = 'index.html';
+        langToggleButton.onclick = () => setUserLanguage('ar');
+    }
+}
+
+function setUserLanguage(lang) {
+  sessionStorage.setItem('userLang', lang);
+}
+
+/**
+ * يجمع كل بيانات نموذج السيرة الذاتية ويحفظها في localStorage.
+ */
+function saveCvDataToLocalStorage() {
+    // 1. إنشاء كائن لتخزين كل البيانات
+    const cvData = {
+        name: document.getElementById('name-input')?.value,
+        title: document.getElementById('title-input')?.value,
+        email: document.getElementById('email-input')?.value,
+        phone: document.getElementById('phone-input')?.value,
+        website: document.getElementById('website-input')?.value,
+        objective: document.getElementById('objective-input')?.value,
+        profilePic: profilePicDataUrl, // حفظ الصورة كـ Base64
+        experiences: getExperiencesData(),
+        educations: getEducationsData(),
+        skills: getSkillsData(),
+        languages: getLanguagesData(),
+        references: getReferencesData()
+    };
+
+    // 2. تحويل الكائن إلى نص JSON وحفظه
+    try {
+        localStorage.setItem('resailCvData', JSON.stringify(cvData));
+    } catch (e) {
+        console.error("Error saving to localStorage", e);
+    }
+}
+
+/**
+ * يفحص localStorage عن بيانات محفوظة، وإذا وجدت، يقوم بتعبئة النموذج بها.
+ */
+function loadCvDataFromLocalStorage() {
+    try {
+        const savedDataJSON = localStorage.getItem('resailCvData');
+        if (!savedDataJSON) return; // لا توجد بيانات محفوظة
+
+        const savedData = JSON.parse(savedDataJSON);
+
+        // 1. تعبئة الحقول النصية البسيطة
+        document.getElementById('name-input').value = savedData.name || '';
+        document.getElementById('title-input').value = savedData.title || '';
+        document.getElementById('email-input').value = savedData.email || '';
+        document.getElementById('phone-input').value = savedData.phone || '';
+        document.getElementById('website-input').value = savedData.website || '';
+        document.getElementById('objective-input').value = savedData.objective || '';
+        
+        // 2. استرجاع الصورة الشخصية
+        if (savedData.profilePic) {
+            profilePicDataUrl = savedData.profilePic;
+        }
+
+        // 3. إعادة بناء الحقول الديناميكية (الخبرات، التعليم، إلخ)
+        // مسح الحقول الافتراضية أولاً
+        document.getElementById('experience-input').innerHTML = '';
+        document.getElementById('education-input').innerHTML = '';
+        document.getElementById('skills-input').innerHTML = '';
+        document.getElementById('languages-input').innerHTML = '';
+        document.getElementById('references-input').innerHTML = '';
+
+        // إعادة إنشاء الحقول من البيانات المحفوظة
+        savedData.experiences?.forEach(data => addExperienceField(data));
+        savedData.educations?.forEach(data => addEducationField(data));
+        savedData.skills?.forEach(data => addSkillField(data));
+        savedData.languages?.forEach(data => addLanguageField(data));
+        savedData.references?.forEach(data => addReferenceField(data));
+
+    } catch (e) {
+        console.error("Error loading from localStorage", e);
+        // في حال وجود خطأ، نقوم بمسح البيانات التالفة
+        localStorage.removeItem('resailCvData');
+    }
+}
+
+// Global variables
+let currentLang = 'ar';
+let selectedTemplate = 1;
+let selectedTemplateCategory = 'normal';
+let profilePicDataUrl = null;
+let selectedPriceToPay = 0;
+let discountApplied = 0;
+const discountCodes = { "SAVE10": 10, "FIRSTBUY": 25, "FREECV": 100 };
+const PRICES = {
+    local: { normal: 19, standard: 25, professional: 29, ast: 29 }, // أسعار بالريال
+    lemonSqueezy: { normal: 25, standard: 33, professional: 39, ast: 39 }, // أسعار بالريال
+};
+
+const CHECKOUT_CONFIG = {
+    normal: {
+        link: 'https://resail-cvs.lemonsqueezy.com/buy/bbfff981-9bd9-495c-b1ac-40b013f5b598?enabled=863216'
+    },
+    standard: {
+        link: 'https://resail-cvs.lemonsqueezy.com/buy/a00ef7a0-db54-47cf-9145-4b5c50892b84?enabled=865702'
+    },
+    professional: {
+        link: 'https://resail-cvs.lemonsqueezy.com/buy/fd9e9305-914a-4936-96ed-e308e9ea6460?enabled=865708'
+    },
+    ast: {
+        link: 'https://resail-cvs.lemonsqueezy.com/buy/38ead94f-86f2-4f7e-a6eb-e5887f5f0d47?enabled=865714'
+    }
+};
+
+
+// DOM elements
+let paymentNameInput, paymentEmailInput, paymentPhoneInput, paymentMessagesInput, paymentFileInput, qrPaymentResultDiv, submitPaymentProofButton, cvContainer, siteHeaderGlobal, loadingOverlayGlobal, loadingTextGlobal;
+
+const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
+const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'application/pdf'];
+
+// **عنوان URL لخادم Node.js الخاص بك**
+// يجب تحديث هذا بـ IP الخادم الفعلي عند النشر (مثال: 'http://192.168.1.100:3000')
+//const NODE_SERVER_URL = 'https://cv-generator-service-627901029415.asia-east2.run.app';
+//const NODE_SERVER_URL = 'http://localhost:8080';
+const NODE_SERVER_URL = 'https://resail-cv-generator-f0jc.onrender.com';
+
+
+// **عنوان URL لتطبيق Google Apps Script الخاص بك (الخاص بمعالجة الدفع فقط)**
+const GOOGLE_APPS_SCRIPT_WEB_APP_URL_PAYMENT_PROCESSOR = 'https://script.google.com/macros/s/AKfycbxxkX4jsV4zSz4vR7FcCOhYJmXXuOAt5WrJYgZmhTlmO7dzqXARLM6q_5QNo2KVs8bWww/exec';
+
+// --- دوال إشعارات المبيعات الحية ---
+let salesQueue = [
+    { name: "محمد", city: "الرياض" },
+    { name: "سارة", city: "جدة" },
+    { name: "عبدالرحمن", city: "الدمام" }
+]; // بيانات أولية افتراضية
+
+// في أعلى ملف script.js مع بقية المتغيرات
+let finalPriceToPay = 0; // سيحتفظ بالسعر النهائي بعد الخصم
+let appliedCode = ""; // سيحتفظ بالكود المطبق
+
+
+/**
+ * تطبق الخط المختار من القائمة المنسدلة على حاوية عرض السيرة الذاتية.
+ */
+function applySelectedFonts() {
+    const nameFont = document.getElementById('font-selector-name')?.value;
+    const headingsFont = document.getElementById('font-selector-headings')?.value;
+    const bodyFont = document.getElementById('font-selector-body')?.value;
+    const cvContainer = document.getElementById('cv-container');
+
+    if (!cvContainer || !nameFont || !headingsFont || !bodyFont) return;
+
+    // طريقة فعالة لتطبيق التنسيقات عبر إضافة وسم style مخصص للمعاينه الحية
+    let livePreviewStyle = document.getElementById('live-font-styles');
+    if (!livePreviewStyle) {
+        livePreviewStyle = document.createElement('style');
+        livePreviewStyle.id = 'live-font-styles';
+        document.head.appendChild(livePreviewStyle);
+    }
+
+    // كتابة قواعد CSS مباشرةً لاستهداف العناصر الصحيحة
+    livePreviewStyle.textContent = `
+        /* تطبيق خط النص الأساسي على الحاوية وعناصر الاتصال */
+        #cv-container, #cv-container .cv-contact-item, #cv-container .cv-contact-item * { font-family: ${bodyFont}; }
+        /* تجاوز الخط لاسم الشخص وعنوانه الوظيفي */
+        #cv-container .cv-name, #cv-container .cv-title { font-family: ${nameFont}; }
+        /* تجاوز الخط لعناوين الأقسام */
+        #cv-container .cv-section-title { font-family: ${headingsFont}; }
+    `;
+}
+/**
+ * === الدالة الجديدة: مصدر الحقيقة الوحيد للألوان ===
+ * تقرأ كل الألوان من لوحة التحكم وتعيدها كنص CSS جاهز للاستخدام.
+ */
+function getColorVariablesAsCssText() {
+    let cssText = '#cv-container {'; // نستهدف الحاوية مباشرة لمزيد من القوة
+
+    // 1. جمع ألوان الخلفيات (القابلة للتدرج)
+    document.querySelectorAll('.color-control-component').forEach(component => {
+        const colorName = component.dataset.colorName;
+        const toggle = component.querySelector('.gradient-toggle');
+        let finalValue;
+
+        if (toggle && toggle.checked) {
+            const start = component.querySelector(`#color-picker-${colorName}-start`).value;
+            const end = component.querySelector(`#color-picker-${colorName}-end`).value;
+            const direction = component.querySelector('.gradient-direction').value;
+            finalValue = `linear-gradient(${direction}, ${start}, ${end})`;
+        } else {
+            finalValue = component.querySelector(`#color-picker-${colorName}`).value;
+        }
+        cssText += `--${colorName}: ${finalValue};`;
+    });
+
+    // 2. جمع ألوان النصوص الثابتة
+    cssText += `--header-text: ${document.getElementById('color-picker-header-text').value};`;
+    cssText += `--title-text: ${document.getElementById('color-picker-title-text').value};`;
+    cssText += `--body-text: ${document.getElementById('color-picker-body-text').value};`;
+    cssText += `--subtle-text: ${document.getElementById('color-picker-subtle-text').value};`;
+
+    cssText += '}';
+    return cssText;
+}
+
+/**
+ * يقرأ الألوان المختارة من الواجهة ويطبقها كمتغيرات CSS على حاوية السيرة الذاتية.
+ */
+function applySelectedColors() {
+    let livePreviewStyle = document.getElementById('live-color-styles');
+    if (!livePreviewStyle) {
+        livePreviewStyle = document.createElement('style');
+        livePreviewStyle.id = 'live-color-styles';
+        document.head.appendChild(livePreviewStyle);
+    }
+    // تستدعي الدالة الجديدة وتضع النتيجة في وسم style
+    livePreviewStyle.textContent = getColorVariablesAsCssText();
+}
+
+/**
+ * إعداد وظائف مكونات التحكم بالألوان (التبديل بين اللون الثابت والمتدرج).
+ */
+function setupColorControls() {
+    document.querySelectorAll('.color-control-component').forEach(component => {
+        const toggle = component.querySelector('.gradient-toggle');
+        const solidPicker = component.querySelector('.solid-color-picker');
+        const gradientControls = component.querySelector('.gradient-controls');
+
+        if (toggle && solidPicker && gradientControls) {
+            toggle.addEventListener('change', () => {
+                solidPicker.style.display = toggle.checked ? 'none' : 'block';
+                gradientControls.style.display = toggle.checked ? 'block' : 'none';
+                applySelectedColors(); // أعد تطبيق الألوان عند التبديل
+            });
+        }
+
+        // ربط جميع أدوات الإدخال بدالة التحديث
+        component.querySelectorAll('input[type="color"], select').forEach(input => {
+            input.addEventListener('input', applySelectedColors);
+        });
+    });
 }
 
 
-/* Payment Modal/Page Styles (Mostly Unchanged) */
-#payment-modal .popup-box { text-align: center; padding: 20px; }
-.qr-payment-inputs-scroll { flex-grow: 1; overflow-y: auto; margin-bottom: 20px; box-sizing: border-box; padding-right: 15px; }
-body[dir="ltr"] .qr-payment-inputs-scroll { padding-right: 0; padding-left: 15px; }
-#paypal-button-container { margin-bottom: 20px; width: 100%; display: flex; justify-content: center; }
-#submit-payment-proof { margin-bottom: 10px; }
-#qr-payment-result { margin-top: 10px; }
-#qr-payment-image { max-width: 200px; margin-bottom: 15px; display: none; margin-left: auto; margin-right: auto; }
-#manual-payment-form { margin-top: 20px; display: none; text-align: initial; }
+// --- أضف هذه الدالة الجديدة بالكامل ---
+/**
+ * تتحكم في إظهار أو إخفاء أدوات التحكم في الألوان بناءً على فئة القالب الحالية.
+ */
+function updateColorControlVisibility() {
+    // الحصول على قائمة عناصر التحكم المسموح بها للفئة الحالية
+    const allowedControls = CONTROL_VISIBILITY_CONFIG[selectedTemplateCategory] || [];
 
-/* Section: Why Resail CV Builder (Unchanged) */
-#why-resail { background-color: #fff; }
-.feature-card { text-align: center; padding: 30px; border-radius: 8px; height: 100%; box-shadow: 0 2px 8px rgba(0,0,0,0); transition: transform 0.3s ease, box-shadow 0.3s ease; background-color: #f8f9fa00; }
-.feature-card:hover { transform: translateY(-10px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-.feature-icon { width: 200px; height: 200px; object-fit: contain; border-radius: 15px; filter: drop-shadow(-10px 10px 10px rgba(0,0,0,0.5)); }
-.feature-card h3 { font-size: 1.3em; color: #007bff; margin-bottom: 10px; text-shadow: -10px 10px 10px rgba(0,0,0,0.5); }
-.feature-card p { font-size: 1em; color: #555; line-height: 1.6; }
+    // إخفاء جميع عناصر التحكم أولاً
+    document.querySelectorAll('#color-picker-container [data-control-for]').forEach(control => {
+        control.style.display = 'none';
+    });
 
-/* ==========================================================================
-   ==                  قواعد الطباعة النهائية المبسطة V5                   ==
-   ========================================================================== */
-@media print {
-    /* --- 1. إعدادات الصفحة العامة --- */
-    @page {
-        size: A4;
-        margin: 0;
+    // إظهار عناصر التحكم المسموح بها فقط
+    allowedControls.forEach(controlName => {
+        const controlElement = document.querySelector(`#color-picker-container [data-control-for="${controlName}"]`);
+        if (controlElement) {
+            controlElement.style.display = 'block'; // أو 'flex' إذا كان يستخدم flexbox
+        }
+    });
+}
+
+/**
+ * تتحكم في إظهار أو إخفاء خيار "التدرج" بناءً على فئة القالب الحالية.
+ */
+function updateControlsForCategory() {
+    const cvContainer = document.getElementById('cv-container');
+    if (!cvContainer) return;
+
+    const isAdvancedCategory = cvContainer.classList.contains('professional-layout') ||
+                               cvContainer.classList.contains('ast-layout') ||
+                               cvContainer.classList.contains('creative-layout');
+
+    document.querySelectorAll('.gradient-toggle-wrapper').forEach(wrapper => {
+        wrapper.style.display = isAdvancedCategory ? 'flex' : 'none';
+        
+        // إذا كانت الفئة بسيطة، تأكد من إيقاف التدرج وإعادة الواجهة للحالة الافتراضية
+        if (!isAdvancedCategory) {
+            const toggle = wrapper.querySelector('.gradient-toggle');
+            if (toggle.checked) {
+                toggle.checked = false;
+                // قم بتشغيل حدث "change" يدويًا لتحديث الواجهة
+                toggle.dispatchEvent(new Event('change'));
+            }
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadCvDataFromLocalStorage();
+    updateControlsForCategory();
+    applySelectedColors();
+    setupColorControls();
+
+    // === أضف هذه الأسطر الأربعة هنا لربط ألوان النصوص ===
+    document.getElementById('color-picker-header-text').addEventListener('input', applySelectedColors);
+    document.getElementById('color-picker-title-text').addEventListener('input', applySelectedColors);
+    document.getElementById('color-picker-body-text').addEventListener('input', applySelectedColors);
+    document.getElementById('color-picker-subtle-text').addEventListener('input', applySelectedColors);
+    // =======================================================
+
+    const nameFontSelector = document.getElementById('font-selector-name');
+    const headingsFontSelector = document.getElementById('font-selector-headings');
+    const bodyFontSelector = document.getElementById('font-selector-body');
+
+    if (nameFontSelector) nameFontSelector.addEventListener('change', applySelectedFonts);
+    if (headingsFontSelector) headingsFontSelector.addEventListener('change', applySelectedFonts);
+    if (bodyFontSelector) bodyFontSelector.addEventListener('change', applySelectedFonts);
+
+    document.addEventListener('keydown', function(event) {
+        if ((event.ctrlKey || event.metaKey) && event.key === 'p') {
+            event.preventDefault();
+            console.log("Ctrl+P pressed. Triggering custom print dialog.");
+            window.print();
+        }
+    });
+    // --- بداية: الكود الجديد لدفع المحتوى ---
+    const promoBar = document.getElementById('promo-bar');
+    if (promoBar) {
+        const promoBarHeight = promoBar.offsetHeight;
+        document.body.style.paddingTop = `${promoBarHeight}px`;
     }
 
-    html, body {
-        margin: 0 !important;
-        padding: 0 !important;
-        font-size: 10pt; /* حجم خط أساسي مناسب للطباعة */
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-    }
+    siteHeaderGlobal = document.querySelector('.site-header');
+    loadingOverlayGlobal = document.getElementById('loading-overlay');
+    loadingTextGlobal = document.querySelector('#loading-overlay p[data-translate-id="loading-cv-text"]');
+    cvContainer = document.getElementById('cv-container');
 
-    /* --- 2. فرض الخط الموحد وإزالة الظلال --- */
-    * {
-        font-family: 'Tajawal', Arial, sans-serif !important;
-        box-shadow: none !important;
-        text-shadow: none !important;
-    }
+    paymentNameInput = document.getElementById("payment-name");
+    paymentEmailInput = document.getElementById("payment-email");
+    paymentPhoneInput = document.getElementById("payment-phone");
+    paymentMessagesInput = document.getElementById("payment-messages");
+    paymentFileInput = document.getElementById("payment-file");
+    qrPaymentResultDiv = document.getElementById("qr-payment-result");
+    submitPaymentProofButton = document.getElementById("submit-payment-proof");
+    document.getElementById('lemon-squeezy-btn').addEventListener('click', handleLemonSqueezyPurchase);
 
-    /* --- 3. إخفاء عناصر الواجهة --- */
-    body > nav, body > footer, body > header.site-header, #promo-bar,
-    .page-section:not(.active-page), #cv-preview-page .d-flex {
-        display: none !important;
-    }
-
+        // --- إضافة جديدة: تفعيل زر إزالة الخصم ---
+    document.getElementById('remove-discount-btn').addEventListener('click', (e) => {
+        e.preventDefault(); // لمنع الرابط من القفز لأعلى الصفحة
+        removeDiscount();
+    });
 
     
-    /* --- 4. تنسيق الجدول الذي تم إنشاؤه بالجافا سكريبت --- */
-    .print-layout-table {
-        width: 210mm;
-        height: 297mm; /* إجبار الجدول على ملء الصفحة */
-        border-collapse: collapse;
-        table-layout: fixed;
-    }
-    .print-layout-table .sidebar-cell {
-        width: 80mm;
-        vertical-align: top;
-        padding: 8mm; /* الحشوة الداخلية للعمود */
-    }
-    .print-layout-table .main-cell {
-        vertical-align: top;
-        padding: 8mm; /* الحشوة الداخلية للعمود */
+
+    if (isMobileDevice()) {
+        document.body.classList.add('is-mobile');
+    } else {
+        document.body.classList.add('is-desktop');
     }
 
-    /* --- 5. التحكم في كسر الصفحات --- */
-    .cv-section, .cv-header, .cv-experience-item {
-        page-break-inside: avoid !important;
+    if (submitPaymentProofButton) {
+        submitPaymentProofButton.addEventListener('click', submitPaymentProof);
     }
 
-    .cv-end-marker {
-        margin-top: auto !important; /* أهم خاصية لدفع المحتوى لأعلى وتمديد العمود */
-        height: 1px !important;
-        display: block !important;
-        page-break-inside: avoid !important;
+    setInitialLanguage();
+    initializeDiscountCards(); // <<< أضف هذا السطر
+    populateFontSelectors();
+    startSalesNotifications();
+    updateCounters(); // أضف هذا الاستدعاء
+    updateLanguage();
+    showPage('landing-page');
+    lazyLoadImages();
+    setupColorControls();
+});
+
+function addCustomSection() {
+    const sectionWrapper = document.createElement('div');
+    sectionWrapper.className = 'custom-section-wrapper mb-3 p-3 border rounded';
+
+    // حقل العنوان الرئيسي للقسم
+    const titleInput = document.createElement('input');
+    titleInput.type = 'text';
+    // استخدام الترجمة للنص التوضيحي
+    titleInput.placeholder = translations[currentLang]['custom_section_placeholder'];
+    titleInput.className = 'form-control form-control-lg mb-2 custom-section-title';
+    titleInput.oninput = () => generateCV(document.getElementById('cv-container'));
+
+    // حاوية للمداخل الفرعية
+    const subSectionsContainer = document.createElement('div');
+    subSectionsContainer.className = 'sub-sections-container';
+
+    // الأزرار
+    const buttonContainer = document.createElement('div');
+    buttonContainer.className = 'mt-2';
+
+    // زر لإضافة مدخل فرعي جديد
+    const addSubSectionButton = document.createElement('button');
+    addSubSectionButton.type = 'button';
+    addSubSectionButton.className = 'btn btn-sm btn-outline-primary me-2';
+    // استخدام الترجمة لمحتوى الزر
+    addSubSectionButton.innerHTML = translations[currentLang]['add_subsection_btn'];
+    addSubSectionButton.onclick = function() {
+        const subSectionEntry = document.createElement('div');
+        subSectionEntry.className = 'custom-subsection-entry border p-2 mb-2 rounded position-relative';
+        
+        // استخدام الترجمة داخل innerHTML
+        subSectionEntry.innerHTML = `
+            <button type="button" class="remove-field" onclick="this.parentElement.remove(); generateCV(document.getElementById('cv-container'));" title="${translations[currentLang]['remove_subsection_title']}">&times;</button>
+            <input type="text" class="form-control mb-2 custom-subsection-title" placeholder="${translations[currentLang]['subsection_title_placeholder']}" oninput="generateCV(document.getElementById('cv-container'));">
+            <textarea class="form-control custom-subsection-description" placeholder="${translations[currentLang]['subsection_desc_placeholder']}" rows="3" oninput="generateCV(document.getElementById('cv-container'));"></textarea>
+        `;
+        
+        subSectionsContainer.appendChild(subSectionEntry);
+    };
+
+    // زر لحذف القسم بالكامل
+    const removeSectionButton = document.createElement('button');
+    removeSectionButton.type = 'button';
+    removeSectionButton.className = 'btn btn-sm btn-danger';
+    // استخدام الترجمة لنص الزر
+    removeSectionButton.textContent = translations[currentLang]['remove_section_btn'];
+    removeSectionButton.onclick = function() {
+        // استخدام الترجمة لرسالة التأكيد
+        if (confirm(translations[currentLang]['confirm_delete_section'])) {
+            sectionWrapper.remove();
+            generateCV(document.getElementById('cv-container'));
+        }
+    };
+    
+    buttonContainer.appendChild(addSubSectionButton);
+    buttonContainer.appendChild(removeSectionButton);
+
+    sectionWrapper.appendChild(titleInput);
+    sectionWrapper.appendChild(subSectionsContainer);
+    sectionWrapper.appendChild(buttonContainer);
+    
+    const formNavigationButtons = document.getElementById('form-navigation-buttons');
+    formNavigationButtons.parentNode.insertBefore(sectionWrapper, formNavigationButtons);
+
+    addSubSectionButton.click();
+}
+
+function updateTemplateImageSources() {
+    const templateImages = document.querySelectorAll('.template-preview');
+    console.log("Updating template image sources for language:", currentLang); // Debug
+    templateImages.forEach(img => {
+        const templateId = parseInt(img.getAttribute('data-template-id'));
+        const templateCategory = img.getAttribute('data-template-category');
+        if (!isNaN(templateId) && translations[currentLang]["image-paths"][templateCategory]) {
+            const newSrc = translations[currentLang]["image-paths"][templateCategory](templateId);
+            img.src = newSrc;
+            console.log(`Setting image src for id ${templateId} (${templateCategory}) to: ${newSrc}`); // Debug
+        } else {
+            console.warn(`Could not set src for image. templateId: ${templateId}, category: ${templateCategory}, lang: ${currentLang}`); // Debug
+        }
+    });
+}
+/**
+ * تحدد اللغة الأولية للموقع بناءً على لغة المتصفح.
+ * إذا كانت لغة المتصفح هي العربية، يتم اختيارها.
+ * لأي لغة أخرى، يتم اختيار الإنجليزية كخيار افتراضي.
+ */
+function setInitialLanguage() {
+  const userChosenLang = sessionStorage.getItem('userLang');
+  const path = window.location.pathname;
+
+  // 1. إذا كان المستخدم قد اختار لغة بالفعل، استخدمها فورًا
+  if (userChosenLang) {
+    currentLang = userChosenLang;
+    console.log(`Language set to '${currentLang}' from session storage.`);
+    return;
+  }
+
+  // 2. إذا لم يكن هناك اختيار مسبق، حدد اللغة بناءً على الصفحة الحالية
+  if (path.endsWith('en.html')) {
+    currentLang = 'en';
+    console.log("Language set to 'en' based on page name (en.html).");
+  } else if (path.endsWith('index.html') || path.endsWith('/')) {
+    // 3. فقط إذا كنا في الصفحة الرئيسية ولم يتم اختيار لغة، تحقق من لغة المتصفح
+    const browserLang = navigator.language.split('-')[0];
+    if (browserLang === 'ar') {
+      currentLang = 'ar';
+      console.log("Language set to 'ar' based on browser language.");
+    } else {
+      // قم بإعادة التوجيه لمرة واحدة فقط إلى الصفحة الإنجليزية
+      console.log("Browser language is not Arabic, redirecting to en.html...");
+      window.location.replace('en.html');
     }
-}
-/* Live Sales Notification Styles */
-.sales-notification {
-    position: fixed;
-    bottom: 20px;
-    right: 20px; /* أو left: 20px للغة الإنجليزية */
-    background-color: #fff;
-    color: #333;
-    padding: 15px 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    z-index: 10001;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(20px);
-    transition: all 0.5s ease-in-out;
+  } else {
+    // صفحة غير معروفة، اجعل العربية هي الافتراضية
+    currentLang = 'ar';
+  }
 }
 
-body.ltr .sales-notification {
-    right: auto;
-    left: 20px;
-}
+/**
+ * دالة مركزية لتحديث عرض الأسعار في صفحة الدفع.
+ * تقوم بحساب الأسعار بعد الخصم وعرضها دائماً بالريال السعودي.
+ */
+function updateAllPriceDisplays() {
+    const category = selectedTemplateCategory;
+    if (!category) return;
 
-.sales-notification.show {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
+    // الأسعار بالريال السعودي دائماً
+    const originalLocalPrice = PRICES.local[category];
+    const originalLsPrice = PRICES.lemonSqueezy[category];
 
-/* Discount Card Styles */
-.discount-section {
-    text-align: center;
-    border-top: 1px solid #eee;
-    border-bottom: 1px solid #eee;
-    padding: 20px 0;
-}
-.discount-card {
-    display: flex;
-    align-items: center;
-    background-color: #f8f9fa;
-    border: 2px dashed #0d6efd;
-    border-radius: 10px;
-    padding: 10px 15px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    min-width: 220px;
-}
-.discount-card:hover, .discount-card.selected {
-    border-style: solid;
-    background-color: #e9f3ff;
-    transform: translateY(-3px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-.discount-tag {
-    background-color: #0d6efd;
-    color: white;
-    font-weight: bold;
-    font-size: 1.2em;
-    padding: 10px;
-    border-radius: 8px;
-    margin-left: 15px; /* LTR default */
-}
-html[dir="rtl"] .discount-tag {
-    margin-left: 0;
-    margin-right: 15px;
-}
-.discount-info {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-html[dir="rtl"] .discount-info {
-    align-items: flex-end;
-}
-.discount-info .code-text {
-    font-family: monospace;
-    font-size: 1.1em;
-    color: #333;
-}
-.discount-info small {
-    color: #555;
-}
+    // حساب الأسعار النهائية بناءً على نسبة الخصم المطبقة
+    const finalLocalPrice = Math.max(0, Math.round(originalLocalPrice * (1 - discountApplied / 100)));
+    const finalLsPrice = Math.max(0, Math.round(originalLsPrice * (1 - discountApplied / 100)));
 
-/* Remove Discount Link Style */
-.remove-discount-link {
-    color: #dc3545; /* لون أحمر للإشارة إلى الحذف */
-    text-decoration: underline;
-    font-size: 0.9em;
-    font-weight: bold;
-}
-.remove-discount-link:hover {
-    color: #c82333; /* لون أغمق عند مرور الماوس */
-}
-
-/*
---- Promo Bar Styles (Corrected) ---
-*/
-.promo-bar {
-    background-color: #343a40; /* لون رمادي داكن احترافي */
-    color: #ffffff;
-    text-align: center;
-    position: fixed;   /* تعديل جوهري: استخدام fixed بدلاً من sticky */
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1051;     /* رقم مرتفع جداً ليضمن ظهوره فوق كل شيء */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    height: 40px;      /* تحديد ارتفاع ثابت للشريط */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.promo-bar p {
-    margin: 0;
-    font-weight: 500;
-    font-size: 0.95em;
-}
-
-.blinking-code {
-    animation: blink-animation 2.5s infinite; /* إبطاء الأنيميشن قليلاً */
-    background-color: rgba(255, 193, 7, 0.2); /* خلفية صفراء خفيفة */
-    color: #ffc107; /* لون أصفر للنص */
-    padding: 2px 8px;
-    border-radius: 5px;
-    font-family: monospace;
-    margin: 0 5px;
-    border: 1px solid rgba(255, 193, 7, 0.5);
-}
-
-/* تعريف الأنيميشن (تأثير الوميض) */
-@keyframes blink-animation {
-    50% {
-        background-color: #ffc107; /* وميض أصفر قوي */
-        color: #000;
+    // تحديث واجهة الدفع المحلي
+    const localPriceElement = document.getElementById('local-price-display');
+    const localCurrencyElement = localPriceElement.nextElementSibling;
+    if (localPriceElement) {
+        if (discountApplied > 0 && finalLocalPrice < originalLocalPrice) {
+            // عرض السعر الأصلي مشطوباً بجانب السعر الجديد
+            localPriceElement.innerHTML = `<del style="color: #999; font-size: 0.8em;">${originalLocalPrice}</del> ${finalLocalPrice}`;
+        } else {
+            localPriceElement.textContent = originalLocalPrice;
+        }
+        // تحديث رمز العملة (سيقرأ الآن "SAR" أو "ريال سعودي" بشكل صحيح)
+        if (localCurrencyElement) {
+            localCurrencyElement.textContent = translations[currentLang]['sar-currency'];
+        }
     }
-}
 
-/* ======================= بداية: تنسيقات لوحة التحكم الجانبية ======================= */
-
-/* 1. الحاوية الرئيسية التي تجمع المعاينة والتحكم */
-#preview-wrapper {
-    display: flex;
-    gap: 20px; /* مسافة بين منطقة المعاينة ولوحة التحكم */
-}
-
-/* 2. تحديد اتجاه اللوحة بناءً على اتجاه الصفحة */
-html[dir="rtl"] #preview-wrapper {
-    flex-direction: row; /* العارض على اليسار، التحكم على اليمين */
-}
-html[dir="ltr"] #preview-wrapper {
-    flex-direction: row-reverse; /* العارض على اليمين، التحكم على اليسار */
-}
-
-/* 3. منطقة عرض السيرة الذاتية (لتأخذ المساحة المتبقية) */
-#cv-preview-area {
-    flex-grow: 1; /* اجعل هذا العنصر يملأ المساحة المتاحة */
-    min-width: 0; /* مهم لمنع تجاوز العرض في حاويات flex */
-    max-height: 100%;
-
-}
-
-/* 4. لوحة التحكم الجانبية */
-#controls-sidebar {
-    flex-basis: 320px; /* تحديد عرض ثابت للوحة التحكم */
-    flex-shrink: 0; /* منع اللوحة من الانكماش */
-    display: flex;
-    flex-direction: column; /* جعل العناصر الداخلية تتراص رأسياً */
-    background-color: #ffffff;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    align-self: flex-start; /* اجعل اللوحة تبدأ من الأعلى */
-}
-
-/* 5. حاوية الأزرار في الأسفل */
-.action-buttons-container {
-    margin-top: auto; /* خدعة CSS لدفع الأزرار إلى أسفل اللوحة */
-    padding-top: 20px; /* مسافة بسيطة فوق الأزرار */
-    border-top: 1px solid #e9ecef;
-    display: flex;
-    flex-wrap: wrap; /* السماح للأزرار بالنزول لسطر جديد إذا ضاقت المساحة */
-    justify-content: center; /* توسيط الأزرار */
-    gap: 10px; /* مسافة بين الأزرار */
-}
-
-/* 6. تعديل شكل أدوات التحكم لتناسب العرض الجديد */
-#font-selector-container,
-#color-picker-container {
-    margin-top: 0; /* إزالة الهامش العلوي */
-    width: 100%;
-}
-
-/* 7. التجاوب مع الشاشات الصغيرة (Mobile Responsive) */
-@media (max-width: 992px) {
-    #preview-wrapper {
-        /* اجعل العناصر تتراص فوق بعضها في الشاشات الصغيرة */
-        flex-direction: column !important; 
+    // تحديث واجهة الدفع عبر Lemon Squeezy
+    const lsPriceElement = document.getElementById('ls-price-display');
+    const lsCurrencyElement = lsPriceElement.nextElementSibling;
+    if (lsPriceElement) {
+        if (discountApplied > 0 && finalLsPrice < originalLsPrice) {
+            lsPriceElement.innerHTML = `<del style="color: #999; font-size: 0.8em;">${originalLsPrice}</del> ${finalLsPrice}`;
+        } else {
+            lsPriceElement.textContent = originalLsPrice;
+        }
+        // تحديث رمز العملة
+        if (lsCurrencyElement) {
+            lsCurrencyElement.textContent = translations[currentLang]['sar-currency'];
+        }
     }
-    #controls-sidebar {
-        width: 100%; /* اجعل اللوحة تأخذ عرض الشاشة بالكامل */
-        order: -1; /* اجعل لوحة التحكم تظهر فوق المعاينة */
-        margin-bottom: 20px;
+
+    // تحديث المتغير العام الذي سيُستخدم عند الدفع اليدوي
+    finalPriceToPay = finalLocalPrice;
+}
+function toggleSiteHeader(show) {
+    if (siteHeaderGlobal) {
+        siteHeaderGlobal.style.display = show ? 'flex' : 'none';
     }
 }
 
-.gradient-toggle-wrapper {
-    /* الخاصية الأهم: تمنع نزول النص إلى سطر جديد */
-    white-space: nowrap; 
+function startSalesNotifications() {
+    const notificationElement = document.getElementById('sales-notification');
+    const nameElement = document.getElementById('sales-name');
+    const cityElement = document.getElementById('sales-city');
+
+    if (!notificationElement || !nameElement || !cityElement) return;
+
+    // جلب بيانات حقيقية لتحديث القائمة
+    fetchRecentSales();
+
+    setInterval(() => {
+        if (salesQueue.length === 0) return;
+
+        // اختيار عنصر عشوائي وعرضه
+        const sale = salesQueue[Math.floor(Math.random() * salesQueue.length)];
+        nameElement.textContent = sale.name;
+        cityElement.textContent = sale.city;
+
+        notificationElement.classList.add('show');
+
+        // إخفاء الإشعار بعد 5 ثواني
+        setTimeout(() => {
+            notificationElement.classList.remove('show');
+        }, 5000);
+
+    }, 8000); // عرض إشعار جديد كل 8 ثواني
 }
 
-/* لضمان المحاذاة العمودية الصحيحة للزر مع النص */
-.gradient-toggle-wrapper .form-check-input {
-    vertical-align: middle;
-    margin-left: 0.5em; /* إضافة مسافة بسيطة بعد الزر */
-}
-/* تعديل المسافة للغة الإنجليزية */
-html[dir="ltr"] .gradient-toggle-wrapper .form-check-input {
-    margin-left: 0;
-    margin-right: 0.5em; 
-}
-.gradient-toggle-wrapper .form-check-label {
-    vertical-align: middle;
+async function fetchRecentSales() {
+    try {
+        const response = await fetch(`${GOOGLE_APPS_SCRIPT_WEB_APP_URL_PAYMENT_PROCESSOR}?action=getRecentSales`);
+        const data = await response.json();
+        if (data.status === 'success' && data.sales.length > 0) {
+            salesQueue = data.sales; // تحديث القائمة بالبيانات الحقيقية
+        }
+    } catch (error) {
+        console.error("Could not fetch recent sales:", error);
+    }
 }
 
-/* --- ربط عناصر المراجع --- */
-.cv-reference-item h4 {
-    color: var(--title-text); /* ربط اسم المرجع (العنوان) بلون العناوين الرئيسية */
+function toggleLoadingOverlay(show, messageKey = 'Generating CV, please wait...') {
+    if (loadingOverlayGlobal && loadingTextGlobal) {
+        if (show) {
+            loadingTextGlobal.setAttribute('data-current-key', messageKey);
+            loadingTextGlobal.textContent = translations[currentLang][messageKey] || messageKey;
+            loadingOverlayGlobal.style.display = 'flex';
+            console.log(`[toggleLoadingOverlay] SHOWN with message key: ${messageKey}`);
+        } else {
+            loadingOverlayGlobal.style.display = 'none';
+            loadingTextGlobal.removeAttribute('data-current-key');
+            console.log("[toggleLoadingOverlay] HIDDEN.");
+        }
+    } else {
+        console.error("[toggleLoadingOverlay] loadingOverlayGlobal or loadingTextGlobal is null.");
+    }
 }
 
-.cv-reference-item p {
-    color: var(--subtle-text); /* ربط تفاصيل المرجع (النص الفرعي) بلون النصوص الفرعية */
+function updatePaymentOptionsUI(category) {
+    if (!category || !PRICES.local[category] || !PRICES.lemonSqueezy[category]) {
+        console.error("Invalid category or prices not defined for:", category);
+        return;
+    }
+
+    // جلب عناصر عرض السعر من الـ HTML
+    const localPriceElement = document.getElementById('local-price-display');
+    const lsPriceElement = document.getElementById('ls-price-display');
+
+    // تحديث النصوص بالأسعار الصحيحة
+    if (localPriceElement) {
+        localPriceElement.textContent = PRICES.local[category];
+    }
+    if (lsPriceElement) {
+        lsPriceElement.textContent = PRICES.lemonSqueezy[category];
+    }
 }
 
-/* ======================= نهاية: تنسيقات لوحة التحكم الجانبية ======================= */
-</style>
-</head>
-<body>
+/**
+ * دالة لإلغاء تطبيق أي خصم حالي.
+ */
+function removeDiscount() {
+    // 1. إعادة تعيين متغيرات الخصم العامة
+    discountApplied = 0;
+    appliedCode = "";
+    
+    // 2. مسح قيمة حقل كود الخصم المخفي
+    const codeInput = document.getElementById('discount-code');
+    if (codeInput) codeInput.value = "";
+    
+    // 3. إزالة التحديد من أي بطاقة خصم مختارة
+    document.querySelectorAll('.discount-card.selected').forEach(card => {
+        card.classList.remove('selected');
+    });
+
+    // 4. تحديث عرض الأسعار لتعود إلى قيمتها الأصلية
+    updateAllPriceDisplays();
+    
+    // 5. إخفاء زر "إزالة الخصم" نفسه
+    document.getElementById('remove-discount-container').style.display = 'none';
+}
+
+// ✅ استبدل الدالة القديمة بالكامل بهذه النسخة المبسطة ✅
+function showPage(pageId) {
+    const pages = document.querySelectorAll('.page-section');
+    pages.forEach(page => {
+        page.classList.remove('active-page');
+    });
+
+    const targetPage = document.getElementById(pageId);
+    if (targetPage) {
+        targetPage.classList.add('active-page');
+        window.scrollTo(0, 0);
+        toggleSiteHeader(pageId === 'landing-page');
+
+        updatePageContentLanguage();
+
+        if (pageId === 'cv-data-entry-page') {
+            const nameField = document.getElementById('name-input');
+            if (nameField && !nameField.value.trim()) {
+                populateWithTestData();
+            }
+            generateCV(cvContainer);
+            updateProgress();
+        }
+    } else {
+        console.error(`[showPage] Target page with ID "${pageId}" not found.`);
+    }
+}
+
+function toggleLanguage() {
+    currentLang = currentLang === 'ar' ? 'en' : 'ar';
+    console.log(`[toggleLanguage] Language toggled to: ${currentLang}`);
+    updateLanguage();
+    updateCounters(); 
+    if (cvContainer && (document.getElementById('cv-preview-page').classList.contains('active-page') ||
+                        document.getElementById('cv-template-selection-page').classList.contains('active-page') ||
+                        document.getElementById('cv-data-entry-page').classList.contains('active-page'))) {
+        generateCV(cvContainer);
+    }
+}
+
+function updateLanguage() {
+    const isArabic = currentLang === 'ar';
+    document.documentElement.lang = currentLang;
+    document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
+
+    if (cvContainer) {
+        cvContainer.dir = isArabic ? 'rtl' : 'ltr';
+    }
+
+    document.body.classList.toggle('rtl', isArabic);
+    document.body.classList.toggle('ltr', !isArabic);
+
+    updateNavbarLinks();
+    updatePageContentLanguage();
+    updateTemplateImageSources();
+    // إعادة تحميل PayPal SDK عند تغيير اللغة
+    populateFontSelectors();
+    setupLanguageToggle();
+
+
+    // **أضف هذا السطر:**
+    // قم بإعادة تعبئة البيانات المترجمة إذا كانت في صفحة إدخال البيانات
+    if (document.getElementById('cv-data-entry-page')?.classList.contains('active-page')) {
+         // ستقوم هذه الدالة بإعادة تعبئة الحقول بالبيانات المترجمة
+    }
+}
+
+function updateNavbarLinks() {
+    const links = document.querySelectorAll('nav [data-translate]');
+    links.forEach(link => {
+        const key = link.getAttribute('data-translate');
+        if (translations[currentLang] && translations[currentLang][key] !== undefined) {
+            link.textContent = translations[currentLang][key];
+        }
+    });
+    const langToggleSpan = document.getElementById('currentLangText');
+    if (langToggleSpan) {
+        langToggleSpan.textContent = currentLang === 'ar' ? translations.en.English : translations.ar.العربية;
+    }
+}
+
+// استبدل الدالة بالكامل بهذه النسخة المصححة
+function updatePageContentLanguage() {
+    const isArabic = currentLang === 'ar';
+    const allTranslatableElements = document.querySelectorAll('[data-en], [data-ar], [data-translate-id], [data-translate]');
+
+    if (loadingOverlayGlobal && loadingOverlayGlobal.style.display === 'flex' && loadingTextGlobal) {
+        const currentMessageKey = loadingTextGlobal.getAttribute('data-current-key') || 'Generating CV, please wait...';
+        loadingTextGlobal.textContent = translations[currentLang][currentMessageKey] || currentMessageKey;
+    }
+
+    allTranslatableElements.forEach(element => {
+        let newContent = null;
+        const translateIdKey = element.getAttribute('data-translate-id');
+        const translateKey = element.getAttribute('data-translate');
+
+        if (translateIdKey && translations[currentLang] && translations[currentLang][translateIdKey] !== undefined) {
+            newContent = translations[currentLang][translateIdKey];
+        } else if (translateKey && translations[currentLang] && translations[currentLang][translateKey] !== undefined) {
+            newContent = translations[currentLang][translateKey];
+        } else {
+            const textKeyAttr = isArabic ? element.getAttribute('data-ar') : element.getAttribute('data-en');
+            if (textKeyAttr) {
+                if (translations[currentLang] && translations[currentLang][textKeyAttr] !== undefined) {
+                    newContent = translations[currentLang][textKeyAttr];
+                } else {
+                    newContent = textKeyAttr;
+                }
+            }
+        }
+
+        if (newContent !== null) {
+            if (Array.isArray(newContent) && element.tagName === 'UL') {
+                let listHtml = '';
+                newContent.forEach(itemHtml => {
+                    listHtml += `<li>${itemHtml}</li>`;
+                });
+                element.innerHTML = listHtml;
+            } else if (typeof newContent === 'string') {
+                
+                // --- بداية التعديل الجوهري ---
+                // نستخدم تعبيراً نمطياً للتحقق من وجود أي وسم HTML في النص
+                const containsHtml = /<[a-z][\s\S]*>/i.test(newContent);
+
+                if (containsHtml) {
+                    // إذا كان النص يحتوي على HTML، استخدم innerHTML لتفسيره
+                    element.innerHTML = newContent;
+                } else {
+                    // إذا كان النص عادياً، استخدم textContent (أكثر أماناً)
+                    if (element.tagName !== 'IMG' && element.tagName !== 'INPUT' && element.tagName !== 'TEXTAREA') {
+                        element.textContent = newContent;
+                    }
+                }
+                // --- نهاية التعديل الجوهري ---
+
+            }
+        }
+    });
+
+    // ... باقي أجزاء الدالة (placeholder, alt, links) تبقى كما هي دون تغيير ...
+    const placeholderElements = document.querySelectorAll('[data-en-placeholder], [data-ar-placeholder]');
+    placeholderElements.forEach(element => {
+        const placeholderKey = isArabic ? element.getAttribute('data-ar-placeholder') : element.getAttribute('data-en-placeholder');
+        if (placeholderKey && translations[currentLang] && translations[currentLang][placeholderKey] !== undefined) {
+            element.placeholder = translations[currentLang][placeholderKey];
+        } else if (placeholderKey) {
+            element.placeholder = placeholderKey;
+        }
+    });
+
+    const altElements = document.querySelectorAll('[data-en-alt], [data-ar-alt]');
+    altElements.forEach(element => {
+        if (element.tagName === 'IMG') {
+            const altKey = isArabic ? element.getAttribute('data-ar-alt') : element.getAttribute('data-en-alt');
+            if (altKey && translations[currentLang] && translations[currentLang][altKey] !== undefined) {
+                element.alt = translations[currentLang][altKey];
+            } else if (altKey) {
+                element.alt = altKey;
+            }
+        }
+    });
+
+    const footerLinks = document.querySelectorAll('footer .list-inline-item a');
+    footerLinks.forEach(link => {
+        const key = link.getAttribute('data-translate');
+        if (key && translations[currentLang] && translations[currentLang][key] !== undefined) {
+            link.textContent = translations[currentLang][key];
+        }
+    });
+
+    const contactEmailLinks = document.querySelectorAll('#contact p strong a, #terms-of-service-page a[href^="mailto:"], #refund-policy a[href^="mailto:"], #privacy-policy a[href^="mailto:"]');
+    contactEmailLinks.forEach(link => {
+        let key;
+        if (link.closest('#contact')) {
+            key = 'email-address-contact';
+        } else if (link.closest('#terms-of-service-page')) {
+            key = 'terms-of-service-email-contact';
+        } else if (link.closest('#refund-policy')) {
+            key = 'refund-policy-email-contact';
+        } else if (link.closest('#privacy-policy')) {
+            key = 'privacy-policy-email-contact';
+        }
+        if (key && translations[currentLang] && translations[currentLang][key] !== undefined) {
+            link.textContent = translations[currentLang][key];
+        }
+    });
+
+    if (document.getElementById('payment-options-page')?.classList.contains('active-page')) {
+        updateAllPriceDisplays(); // تم التعديل لاستدعاء الدالة الصحيحة
+    }
+}   
+
+function collectCvData() {
+    // هذه الدالة تجمع كل البيانات من حقول الإدخال وتعيدها ككائن واحد
+    const cvData = {
+        name: document.getElementById('name-input')?.value.trim(),
+        jobTitle: document.getElementById('title-input')?.value.trim(),
+        email: document.getElementById('email-input')?.value.trim(),
+        phone: document.getElementById('phone-input')?.value.trim(),
+        website: document.getElementById('website-input')?.value.trim(),
+        profilePicDataUrl: profilePicDataUrl,
+        objective: document.getElementById('objective-input')?.value.trim(),
+        experiences: getExperiencesData(),
+        educations: getEducationsData(),
+        skills: getSkillsData(),
+        languages: getLanguagesData(),
+        references: getReferencesData(),
+        templateCategory: selectedTemplateCategory,
+        templateNumber: selectedTemplate,
+        language: currentLang,
+        // لا نمرر isPaid هنا، سيتم تحديدها لاحقًا
+        templateCss: getSelectedTemplateCss() // إرسال الـ CSS المحدد
+    };
+    return cvData;
+}
+
+// استبدل الدالة القديمة بالكامل بهذه النسخة المصححة
+async function handleLemonSqueezyPurchase() {
+    toggleLoadingOverlay(true, 'Preparing secure payment...');
+    try {
+        // 1. جمع بيانات السيرة الذاتية
+        const cvData = collectCvData();
+        
+        // 2. استدعاء الخادم لتحضير الجلسة وتخزين البيانات مؤقتاً
+        const prepareResponse = await fetch(`${NODE_SERVER_URL}/api/prepare-checkout`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(cvData)
+        });
+
+        if (!prepareResponse.ok) {
+            const errorText = await prepareResponse.text();
+            throw new Error(`Server failed to prepare session: ${errorText}`);
+        }
+        
+        const { sessionId } = await prepareResponse.json();
+
+        if (!sessionId) {
+            throw new Error('Could not retrieve session ID from the server.');
+        }
+
+        // 3. احصل على رابط الدفع الأساسي من كائن الإعدادات
+        const checkoutConfig = CHECKOUT_CONFIG[selectedTemplateCategory];
+        if (!checkoutConfig || !checkoutConfig.link) {
+            throw new Error('Checkout link for the selected category is not configured.');
+        }
+
+        // --- بداية التعديل: تم إعادة ترتيب هذا الجزء ---
+
+        // 4. أنشئ الرابط أولاً
+        const finalUrl = new URL(checkoutConfig.link);
+        
+        // 5. أضف البيانات الأساسية للرابط (معرف الجلسة، البريد الإلكتروني، الاسم)
+        finalUrl.searchParams.set('checkout[custom][session_id]', sessionId);
+        
+        if (cvData.email) {
+            finalUrl.searchParams.set('checkout[email]', cvData.email);
+        }
+        if (cvData.name) {
+            finalUrl.searchParams.set('checkout[name]', cvData.name);
+        }
+        
+        // 6. الآن، بعد إنشاء الرابط، تحقق من وجود كود خصم وأضفه
+        const codeInput = document.getElementById("discount-code");
+        const code = codeInput ? codeInput.value.trim() : "";
+        if (code) {
+            // هذا السطر الآن يعمل بشكل صحيح لأن finalUrl موجود بالفعل
+            finalUrl.searchParams.set('discount_code', code); // التغيير هنا: من 'discount' إلى 'discount_code'
+        }
+        
+        // --- نهاية التعديل ---
+
+        // 7. وجه المستخدم إلى صفحة الدفع النهائية في Lemon Squeezy
+        console.log('Redirecting to Lemon Squeezy:', finalUrl.toString());
+        window.location.href = finalUrl.toString();
+
+    } catch (error) {
+        console.error('Lemon Squeezy purchase error:', error);
+        alert('An error occurred while preparing your payment. Please try again or contact support.');
+        toggleLoadingOverlay(false);
+    }
+}
+
+
+/**
+ * دالة لجلب وتحديث عداد السير الذاتية وعداد الزوار
+ * مع دعم اللغتين العربية والإنجليزية
+ */
+async function updateCounters() {
+  const cvCounterElement = document.getElementById('cv-counter-span');
+  const visitorCounterElement = document.getElementById('visitor-counter-span');
+
+  // نتأكد من وجود العناصر في الصفحة قبل إرسال الطلب
+  if (!cvCounterElement || !visitorCounterElement) {
+    return;
+  }
+
+  try {
+    // نستخدم نفس رابط الـ Web App لكن مع إضافة معامل 'action'
+    const response = await fetch(`${GOOGLE_APPS_SCRIPT_WEB_APP_URL_PAYMENT_PROCESSOR}?action=getCounters`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+
+    if (data.status === 'success') {
+      // --- بداية التعديل الجوهري ---
+
+      // 1. تحديد لغة تنسيق الأرقام بناءً على متغير اللغة الحالي
+      const locale = currentLang === 'ar' ? 'ar-EG' : 'en-US';
+
+      // 2. تحديث عداد السير الذاتية باستخدام التنسيق الصحيح
+      cvCounterElement.textContent = `+${data.cvCount.toLocaleString(locale)}`;
+
+      // 3. تحديث عداد الزوار باستخدام التنسيق الصحيح
+      visitorCounterElement.textContent = `+${data.visitorCount.toLocaleString(locale)}`;
+      
+      // --- نهاية التعديل الجوهري ---
+    }
+  } catch (error) {
+    console.error('Failed to fetch counters:', error);
+    // في حال فشل الطلب، تبقى الأرقام الافتراضية كما هي
+  }
+}
 
 
 
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container">
-            <a class="navbar-brand" href="#" data-translate="brand-name">رسائل</a>
-            <button
-                class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarNav"
-                aria-controls="navbarNav"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-            >
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#" onclick="showPage('landing-page')" data-translate="home-link">الرئيسية</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#why-resail" data-translate="features-link">المميزات</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a
-                            class="nav-link dropdown-toggle"
-                            href="#"
-                            id="navbarDropdown"
-                            role="button"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                            data-translate="products-link"
-                        >
-                            المنتجات
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="https://big-ramy.github.io/whatsapp-sender-/" data-translate="product-basic">ارسال واتساب</a></li>
-                             <li><a class="dropdown-item" href="#" onclick="showPage('cv-data-entry-page')" data-translate="product-cv">إنشاء سيرة ذاتية</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#about-us" data-translate="about-link">عنا</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#contact" data-translate="contact-link">اتصل بنا</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link language-toggle" id="lang-toggle-btn"></a>
-                    </li>
-                </ul>
-            </div>  
-        </div>
-    </nav>
+function lazyLoadImages() {
+    const lazyImages = document.querySelectorAll('img[data-src]');
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const lazyImage = entry.target;
+                    lazyImage.src = lazyImage.dataset.src;
+                    if (lazyImage.dataset.srcset) {
+                        lazyImage.srcset = lazyImage.dataset.srcset;
+                    }
+                    lazyImage.removeAttribute('data-src');
+                    lazyImage.removeAttribute('data-srcset');
+                    observer.unobserve(lazyImage);
+                }
+            });
+        }, { rootMargin: '0px 0px 200px 0px', threshold: 0.01 });
+        lazyImages.forEach(image => { observer.observe(image); });
+    } else {
+        lazyImages.forEach(image => {
+            image.src = image.dataset.src;
+            if (image.dataset.srcset) { image.srcset = image.dataset.srcset; }
+            image.removeAttribute('data-src');
+            image.removeAttribute('data-srcset');
+        });
+    }
+}
 
-        <div id="promo-bar" class="promo-bar">
-        <p data-translate="promo_bar_text">
-            عرض خاص! استخدم كود <span class="blinking-code">FIRSTBUY</span> لخصم 25% أو كود <span class="blinking-code">SAVE10</span> لخصم 10%!
-        </p>
-    </div>
+/**
+ * ينتقل إلى صفحة اختيار القالب.
+ * تم تعطيل التحقق الصارم للسماح للمستخدم بالانتقال حتى مع وجود البيانات التجريبية.
+ */
+function validateAndShowTemplatePage() {
+    
+    // تم تعطيل التحقق في هذه المرحلة عمداً.
+    // بما أننا نعرض معاينة كاملة باستخدام البيانات التجريبية، يمكن للمستخدم
+    // استعراض القوالب المختلفة ثم العودة لاحقاً لملء بياناته الخاصة.
+    /* const name = document.getElementById('name-input');
+    const title = document.getElementById('title-input');
+    const email = document.getElementById('email-input');
 
-    <header class="site-header">
-        <div class="header-background"></div>
-        <div class="header-content">
-            <h1 class="display-4" data-en="Professional CV Builder" data-ar="أنشئ سيرتك الذاتية الاحترافية بسهولة">أنشئ سيرتك الذاتية الاحترافية بسهولة</h1>
-            <p class="lead" data-en="Create a professional CV that stands out and gets you hired." data-ar="ابرز مهاراتك وخبراتك بتصميم احترافي يلفت الانتباه ويفتح لك أبواب الفرص.">ابرز مهاراتك وخبراتك بتصميم احترافي يلفت الانتباه ويفتح لك أبواب الفرص.</p>
-            <button class="btn btn-primary btn-lg mt-3" id="create-cv-button" onclick="showPage('cv-data-entry-page')" data-en="Create Your CV Now" data-ar="ابدأ في إنشاء سيرتك الذاتية الآن">ابدأ في إنشاء سيرتك الذاتية الآن</button>
-        </div>
-    </header>
-    <div id="loading-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 10000; justify-content: center; align-items: center; flex-direction: column; text-align: center;">
-        <div class="spinner-border text-light" role="status" style="width: 3rem; height: 3rem;"></div>
-        <p style="color: white; margin-top: 15px; font-size: 1.2em;" data-translate-id="loading-cv-text" data-en="Generating CV, please wait..." data-ar="جاري إنشاء السيرة الذاتية، يرجى الانتظار...">جاري إنشاء السيرة الذاتية، يرجى الانتظار...</p>
-    </div>
-    <div id="main-content-area">
-                <div id="landing-page" class="page-section active-page">
-                        <section class="py-5 text-center">
-                            <div class="container">
-                                <h1 class="display-5 fw-bold" data-en="Create Your Professional CV in Minutes" data-ar="أنشئ سيرتك الذاتية الاحترافية في دقائق">أنشئ سيرتك الذاتية الاحترافية في دقائق</h1>
-                                <p class="lead my-4" data-en="With Resail, you can design a standout CV that opens doors to opportunities. Choose from a wide range of templates carefully designed for every career field." data-ar="مع 'رسائل'، يمكنك تصميم سيرة ذاتية مميزة تفتح لك أبواب الفرص. اختر من مجموعة واسعة من القوالب المصممة بعناية لتناسب كل مجال وظيفي.">
-                                    مع "رسائل"، يمكنك تصميم سيرة ذاتية مميزة تفتح لك أبواب الفرص. اختر من مجموعة واسعة من القوالب المصممة بعناية لتناسب كل مجال وظيفي.
-                                </p>
+    if (!name.value.trim() || !title.value.trim() || !email.value.trim()) {
+        // رسالة التنبيه التي تظهر لك
+        alert(translations[currentLang]['Please fill in all fields.'] || 'Please fill in the basic fields (Name, Job Title, Email) before proceeding.');
+        return;
+    }
+    */
+    
+    // الآن، سينتقل مباشرة إلى صفحة القوالب دون إظهار رسالة التنبيه
+    showPage('cv-template-selection-page');
+}
 
-                                <h2 class="h3 mb-4" data-en="The Ideal CV Maker for Your Career" data-ar="أفضل أداة لإنشاء السيرة الذاتية لمسيرتك المهنية">أفضل أداة لإنشاء السيرة الذاتية لمسيرتك المهنية</h2>
-                            
-                                <div class="row text-center">
-                                    <div class="col-md-4">
-                                        <h3 class="h5" data-en="Ease of Use" data-ar="سهولة الاستخدام">سهولة الاستخدام</h3>
-                                        <p data-en="An intuitive interface that allows you to create your CV effortlessly, with no prior design experience needed." data-ar="واجهة بديهية تسمح لك بإنشاء سيرتك الذاتية دون أي عناء أو خبرة سابقة في التصميم.">واجهة بديهية تسمح لك بإنشاء سيرتك الذاتية دون أي عناء أو خبرة سابقة في التصميم.</p>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <h3 class="h5" data-en="Professional Templates" data-ar="نماذج احترافية">نماذج احترافية</h3>
-                                        <p data-en="A diverse collection of modern and attractive templates designed by recruitment experts to ensure the best impression." data-ar="مجموعة متنوعة من نماذج السيرة الذاتية العصرية والجذابة التي صممها خبراء التوظيف لضمان أفضل انطباع.">مجموعة متنوعة من نماذج السيرة الذاتية العصرية والجذابة التي صممها خبراء التوظيف لضمان أفضل انطباع.</p>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <h3 class="h5" data-en="Instant Results" data-ar="نتائج فورية">نتائج فورية</h3>
-                                        <p data-en="Get your CV ready for submission in minutes, and customize it to fit the job you're applying for." data-ar="احصل على سيرة ذاتية جاهزة للتقديم في غضون دقائق، وخصصها لتناسب الوظيفة التي تتقدم لها.">احصل على سيرة ذاتية جاهزة للتقديم في غضون دقائق، وخصصها لتناسب الوظيفة التي تتقدم لها.</p>
-                                    </div>  
-                                </div>
+function initializeDiscountCards() {
+    const discountCards = document.querySelectorAll('.discount-card');
+    const codeInput = document.getElementById('discount-code');
 
-                                <h2 class="h3 mt-5" data-en="Your Go-To CV and Resume Builder" data-ar="موقعك المفضل لعمل CV احترافي">موقعك المفضل لعمل CV احترافي</h2>
-                                <p data-en="Whether you're looking for a simple CV maker, a professional resume builder, or CV design software, Resail is your best choice. We provide a comprehensive experience for designing modern CV templates and helping you write a powerful and effective resume." data-ar="سواء كنت تبحث عن أداة إنشاء سيرة ذاتية بسيطة، أو موقع لعمل CV احترافي، أو برنامج تصميم سيرة ذاتية، فإن 'رسائل' هو خيارك الأفضل. نقدم لك تجربة متكاملة لتصميم نماذج سيرة ذاتية عصرية، ومساعدتك في كتابة سيرة ذاتية قوية وفعالة.">
-                                    سواء كنت تبحث عن **أداة إنشاء سيرة ذاتية** بسيطة، أو **موقع لعمل CV احترافي**، أو **برنامج تصميم سيرة ذاتية**، فإن "رسائل" هو خيارك الأفضل. نقدم لك تجربة متكاملة لتصميم **نماذج سيرة ذاتية** عصرية، ومساعدتك في كتابة **سيرة ذاتية قوية** وفعالة.
-                                </p>
-                            </div>
-                        </section>
+    discountCards.forEach(card => {
+        card.addEventListener('click', () => {
+            // إزالة التحديد من كل البطاقات
+            discountCards.forEach(c => c.classList.remove('selected'));
+            // إضافة التحديد للبطاقة المختارة
+            card.classList.add('selected');
+            
+            const code = card.getAttribute('data-code');
+            codeInput.value = code; // تعبئة الحقل المخفي
+            applyDiscountCode(); // استدعاء دالة تطبيق الخصم
+        });
+    });
+}
 
-                        <section id="why-resail" class="py-5">
-                            <div class="container">
-                                <h2 class="text-center mb-5" data-en="Why Resail CV Builder?" data-ar="لماذا نظام رسائل لإنشاء السيرة الذاتية؟">لماذا نظام رسائل لإنشاء السيرة الذاتية؟</h2>
-                                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                                    <div class="col">
-                                        <div class="feature-card">
-                                            <img src="ChatGPT Image May 16, 2025, 04_59_21 AM.png.webp" alt="Easy Data Entry" class="feature-icon mb-3" loading="lazy">
-                                            <h3 data-en="Easy Data Entry" data-ar="سهولة إدخال البيانات">سهولة إدخال البيانات</h3>
-                                            <p data-en="Intuitive forms to quickly fill in all your information." data-ar="نماذج سهلة وبديهية لملء جميع بياناتك بسرعة ويسر.">نماذج سهلة وبديهية لملء جميع بياناتك بسرعة ويسر.</p>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="feature-card">
-                                            <img src="ChatGPT Image May 16, 2025, 04_58_25 AM.png.webp" alt="Professional Templates" class="feature-icon mb-3" loading="lazy">
-                                            <h3 data-en="Diverse and Professional Templates" data-ar="قوالب متنوعة واحترافية">قوالب متنوعة واحترافية</h3>
-                                            <p data-en="Choose from many modern and attractive designs to suit your style." data-ar="اختر من بين العديد من التصميمات العصرية والجذابة لتناسب ذوقك ومجالك.">اختر من بين العديد من التصميمات العصرية والجذابة لتناسب ذوقك ومجالك.</p>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="feature-card">
-                                            <img src="ChatGPT Image May 16, 2025, 04_56_19 AM.png.webp" alt="Arabic/English Support" class="feature-icon mb-3">
-                                            <h3 data-en="Arabic and English Support" data-ar="دعم كامل للغة العربية والإنجليزية">دعم كامل للغة العربية والإنجليزية</h3>
-                                            <p data-en="Create your CV in either Arabic or English with proper formatting." data-ar="أنشئ سيرتك الذاتية بلغتك المفضلة مع ضمان التنسيق الصحيح لكلا الاتجاهين.">أنشئ سيرتك الذاتية بلغتك المفضلة مع ضمان التنسيق الصحيح لكلا الاتجاهين.</p>
-                                    </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="feature-card">
-                                            <img src="ChatGPT Image May 16, 2025, 05_09_39 AM.png.webp" alt="Instant Preview" class="feature-icon mb-3" loading="lazy">
-                                            <h3 data-en="Instant Preview" data-ar="معاينة فورية">معاينة فورية</h3>
-                                            <p data-en="See your CV instantly as you build it, ensuring it looks perfect." data-ar="شاهد شكل سيرتك الذاتية فور إدخال البيانات أو اختيار القالب لتضمن المظهر المثالي.">شاهد شكل سيرتك الذاتية فور إدخال البيانات أو اختيار القالب لتضمن المظهر المثالي.</p>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="feature-card">
-                                            <img src="ChatGPT Image May 16, 2025, 05_02_19 AM.png.webp" alt="Professional PDF Export" class="feature-icon mb-3" loading="lazy">
-                                            <h3 data-en="Professional PDF Export" data-ar="تصدير بصيغة PDF عالية الجودة">تصدير بصيغة PDF عالية الجودة</h3>
-                                            <p data-en="Download your completed CV as a high-quality PDF file, ready to share." data-ar="احصل على سيرتك الذاتية النهائية كملف PDF احترافي جاهز للطباعة أو المشاركة عبر الإنترنت.">احصل على سيرتك الذاتية النهائية كملف PDF احترافي جاهز للطباعة أو المشاركة عبر الإنترنت.</p>
-                                    </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="feature-card">
-                                            <img src="ChatGPT Image May 16, 2025, 05_07_17 AM.png.webp" alt="Flexible Payment Options" class="feature-icon mb-3" loading="lazy">
-                                            <h3 data-en="Flexible Payment Options" data-ar="خيارات دفع متنوعة وآمنة">خيارات دفع متنوعة وآمنة</h3>
-                                            <p data-en="Pay easily using various methods including PayPal and local options." data-ar="وسائل دفع متعددة تشمل PayPal وخيارات محلية لتسهيل عملية الحصول على سيرتك الذاتية.">وسائل دفع متعددة تشمل PayPal وخيارات محلية لتسهيل عملية الحصول على سيرتك الذاتية.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
+/**
+ * يعالج الضغط على زر "تطبيق الخصم".
+ * يحدّث الأسعار المعروضة ويُظهر رسالة إرشادية للمستخدم.
+ */
+async function applyDiscountCode() {
+    const codeInput = document.getElementById("discount-code");
+    if (!codeInput) return;
+    const code = codeInput.value.trim().toUpperCase();
 
-                        <section id="testimonials" class="py-5 bg-light">
-                            <div class="container">
-                                <h2 class="text-center mb-5" data-en="Customer Testimonials" data-ar="ماذا قال عملاؤنا عنا؟">ماذا قال عملاؤنا عنا؟</h2>
-                                <div class="row">
-                                    <div class="col-md-6 mb-4">
-                                        <div class="testimonial-card">
-                                            <p class="lead mb-3" data-en="“Creating my CV was incredibly easy and fast. The templates are modern and professional. Highly recommended!”" data-ar="«كانت عملية إنشاء سيرتي الذاتية سهلة وسريعة بشكل لا يصدق. القوالب عصرية واحترافية حقًا. أوصي به بشدة!»">«كانت عملية إنشاء سيرتي الذاتية سهلة وسريعة بشكل لا يصدق. القوالب عصرية واحترافية حقًا. أوصي به بشدة!»</p>
-                                            <p class="font-weight-bold" data-en="- Sarah Ahmed" data-ar="- سارة أحمد">- سارة أحمد</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 mb-4">
-                                        <div class="testimonial-card">
-                                            <p class="lead mb-3" data-en="“I loved the variety of templates and the instant preview feature. It helped me choose the perfect design for my application.”" data-ar="«أعجبتني حقًا تنوع القوالب وميزة المعاينة الفورية. ساعدني ذلك في اختيار التصميم المثالي لتقديمي.»">«أعجبتني حقًا تنوع القوالب وميزة المعاينة الفورية. ساعدني ذلك في اختيار التصميم المثالي لتقديمي.»</p>
-                                            <p class="font-weight-bold" data-en="- Khalid Hassan" data-ar="- خالد حسن">- خالد حسن</p>
-                                        </div>
-                                    </div>
-                                    </div>
-                            </div>
-                        </section>
+    if (code && discountCodes[code] !== undefined) {
+        discountApplied = discountCodes[code];
+        appliedCode = code;
+        
+        const alertMessage = currentLang === 'ar' ? 
+            `تم تطبيق كود الخصم "${code}".\n\n- تم تحديث سعر الدفع المحلي.\n- للدفع بالبطاقة، الرجاء إدخال نفس الكود مرة أخرى في صفحة الدفع التالية لتأكيد الخصم.` :
+            `Discount code "${code}" applied.\n\n- The price for local payment has been updated.\n- For card payment, please re-enter the code on the next page to confirm your discount.`;
+        alert(alertMessage);
+        
+        // --- تعديل: إظهار زر الإزالة ---
+        document.getElementById('remove-discount-container').style.display = 'block';
 
-                        <section id="about-us" class="py-5 bg-light">
-                            <div class="container">
-                                <h2 class="text-center mb-4" data-en="About Resail CV Builder" data-ar="عن نظام رسائل لإنشاء السيرة الذاتية">عن نظام رسائل لإنشاء السيرة الذاتية</h2>
-                                <p class="text-center lead" data-en="Resail is your go-to platform for effortlessly creating professional and impactful CVs. We provide a wide range of modern templates and intuitive tools to help you stand out in the job market with a high-quality PDF resume." data-ar="رسائل هو نظامك المتكامل لإنشاء سير ذاتية احترافية ومؤثرة بسهولة. نقدم مجموعة واسعة من القوالب العصرية والأدوات البديهية لمساعدتك على التميز في سوق العمل بسيرة ذاتية عالية الجودة بصيغة PDF.">رسائل هو نظامك المتكامل لإنشاء سير ذاتية احترافية ومؤثرة بسهولة. نقدم مجموعة واسعة من القوالب العصرية والأدوات البديهية لمساعدتك على التميز في سوق العمل بسيرة ذاتية عالية الجودة بصيغة PDF.</p>
-                                <p class="text-center lead" data-en="Our service focuses on simplifying the CV creation process, offering diverse templates, and ensuring full support for both Arabic and English languages with accurate formatting. Download your ready-to-share PDF CV after a seamless payment process." data-ar="تركز خدمتنا على تبسيط عملية إنشاء السيرة الذاتية، وتقديم قوالب متنوعة، وضمان الدعم الكامل للغتين العربية والإنجليزية بتنسيق دقيق. احصل على سيرتك الذاتية بصيغة PDF جاهزة للمشاركة بعد عملية دفع سلسة.">تركز خدمتنا على تبسيط عملية إنشاء السيرة الذاتية، وتقديم قوالب متنوعة، وضمان الدعم الكامل للغتين العربية والإنجليزية بتنسيق دقيق. احصل على سيرتك الذاتية بصيغة PDF جاهزة للمشاركة بعد عملية دفع سلسة.</p>
-                            </div>
-                        </section>
+    } else if (code) {
+        removeDiscount(); // إذا كان الكود خاطئ، قم بإزالة أي خصم سابق
+        alert(currentLang === 'ar' ? 'كود الخصم غير صالح.' : 'Invalid discount code.');
+    } else {
+        removeDiscount(); // إذا كان الحقل فارغاً، قم بإزالة أي خصم سابق
+    }
+    
+    updateAllPriceDisplays();
 
-                        <section id="cv-count" class="py-5">
-                            <div class="container text-center">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <h2 class="mb-3" data-en="CVs Generated So Far" data-ar="عدد السير الذاتية التي تم إنشاؤها حتى الآن">عدد السير الذاتية التي تم إنشاؤها حتى الآن</h2>
-                                        <p class="display-4 text-primary font-weight-bold">
-                                            <span id="cv-counter-span">+٥٠٠٠</span> </p>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <h2 class="mb-3" data-en="Our Visitors" data-ar="زوّارنا">زوّارنا</h2>
-                                        <p class="display-4 text-primary font-weight-bold">
-                                            <span id="visitor-counter-span">+٢٥٠٠٠</span> </p>
-                                    </div>
-                                </div>
-                                <p class="lead mt-4" data-en="Join thousands who have successfully created their professional CVs." data-ar="انضم إلى آلاف المستخدمين الذين أنشأوا سيرهم الذاتية الاحترافية بنجاح.">انضم إلى آلاف المستخدمين الذين أنشأوا سيرهم الذاتية الاحترافية بنجاح.</p>
-                            </div>
-                        </section>
+    // التحقق مما إذا كان السعر أصبح مجانياً بعد التحديث
+    if (finalPriceToPay === 0 && discountApplied > 0) {
+        alert(currentLang === 'ar' ? 'هذه السيرة الذاتية مجانية! سيتم إرسالها إلى بريدك الإلكتروني.' : 'This CV is free! It will be sent to your email shortly.');
+        toggleLoadingOverlay(true, 'Processing your free CV...');
+        try {
+            const pdfData = await generatePdfFromNode(true);
+            if (pdfData && pdfData.base64Pdf) {
+                await sendPaymentDataToAppsScript('Discounted/Free', 0, pdfData.base64Pdf, null);
+                showPage('landing-page');
+            } else {
+                throw new Error("Failed to generate PDF for free CV.");
+            }
+        } catch (error) {
+            console.error("Error processing free CV:", error);
+            alert("Error: " + error.message);
+        } finally {
+            toggleLoadingOverlay(false);
+        }
+    }
+}
 
-                        <section id="faq" class="py-5">
-                            <div class="container">
-                                <h2 class="text-center mb-5" data-en="Frequently Asked Questions" data-ar="الأسئلة الشائعة">الأسئلة الشائعة</h2>
-                                <div class="row justify-content-center">
-                                    <div class="col-lg-8">
-                                        <div class="faq-item mb-4 pb-3 border-bottom">
-                                            <h4 data-en="How do I create a CV?" data-ar="كيف يمكنني إنشاء سيرة ذاتية؟">كيف يمكنني إنشاء سيرة ذاتية؟</h4>
-                                            <p data-en="Simply click on 'Create Your CV Now', fill in your details in the form, choose a template, and preview your CV." data-ar="ما عليك سوى النقر على زر 'ابدأ في إنشاء سيرتك الذاتية الآن'، قم بملء بياناتك في النموذج، اختر القالب المناسب، وقم بمعاينة سيرتك الذاتية.">ما عليك سوى النقر على زر 'ابدأ في إنشاء سيرتك الذاتية الآن'، قم بملء بياناتك في النموذج، اختر القالب المناسب، وقم بمعاينة سيرتك الذاتية.</p>
-                                        </div>
-                                        <div class="faq-item mb-4 pb-3 border-bottom">
-                                            <h4 data-en="Are the templates free?" data-ar="هل القوالب مجانية؟">هل القوالب مجانية؟</h4>
-                                            <p data-en="We offer a variety of free and premium templates. Premium templates require a small fee for download." data-ar="نقدم مجموعة متنوعة من القوالب المجانية والمدفوعة. تتطلب القوالب المدفوعة رسماً بسيطاً للتنزيل أو الطباعة.">نقدم مجموعة متنوعة من القوالب المجانية والمدفوعة. تتطلب القوالب المدفوعة رسماً بسيطاً للتنزيل أو الطباعة.</p>
-                                        </div>
-                                        <div class="faq-item mb-4 pb-3 border-bottom">
-                                            <h4 data-en="How do I download my CV?" data-ar="كيف يمكنني تنزيل سيرتي الذاتية؟">كيف يمكنني تنزيل سيرتي الذاتية؟</h4>
-                                            <p data-en="After previewing your CV, click on 'Request Download / Print'. You will be guided through the payment process if you selected a premium template, and then you can download the PDF." data-ar="بعد معاينة السيرة الذاتية واختيار القالب، انقر على زر 'طلب تنزيل / طباعة'. سيتم توجيهك لعملية الدفع إذا اخترت قالباً مدفوعاً، وبعدها يمكنك تنزيل الملف بصيغة PDF.">بعد معاينة السيرة الذاتية واختيار القالب، انقر على زر 'طلب تنزيل / طباعة'. سيتم توجيهك لعملية الدفع إذا اخترت قالباً مدفوعاً، وبعدها يمكنك تنزيل الملف بصيغة PDF.</p>
-                                        </div>
-                                        </div>
-                                </div>
-                            </div>
-                        </section>
+// --- Payment Related Functions (for UI) ---
+// استبدل هذه الدالة بالكامل
+function openPaymentForCV_appsScript() {
+    // ... الكود الحالي لإعادة تعيين المتغيرات ...
+    discountApplied = 0;
+    appliedCode = "";
+    selectedPriceToPay = PRICES.local[selectedTemplateCategory];
+    finalPriceToPay = selectedPriceToPay;
+    
+    document.querySelectorAll('.discount-card').forEach(c => c.classList.remove('selected'));
+    
+    const codeInput = document.getElementById("discount-code");
+    if (codeInput) codeInput.value = "";
 
-                        <section class="container my-5" id="contact">
-                            <h2 class="section-title" data-translate="Contact Us">تواصل معنا</h2>
-                            <p class="text-center" data-translate="For inquiries or support, please contact us via email: ramyheshamamer@gmail.com">
-                            للاستفسارات أو الدعم، تواصل عبر البريد الإلكتروني: <strong><a href="mailto:ramyheshamamer@gmail.com">ramyheshamamer@gmail.com</a></strong>
-                            </p>
-                        </section>
-                        
-                        <div id="sales-notification" class="sales-notification">
-                            <p><strong id="sales-name"></strong> <span data-translate="from-city">من</span> <strong id="sales-city"></strong> <span data-translate="notification-action">قام للتو بإنشاء سيرته الذاتية!</span></p>
-                        </div>
-                </div>
+    // --- تعديل: التأكد من إخفاء زر الإزالة ---
+    document.getElementById('remove-discount-container').style.display = 'none';
 
-                <div id="cv-data-entry-page" class="page-section">
-                    <div class="container py-4">
-                        <h2 class="mb-4 text-center" data-en="Enter Your Information" data-ar="أدخل بياناتك">أدخل بياناتك</h2>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="name-input" data-en="Full Name" data-ar="الاسم">الاسم</label>
-                                    <input type="text" id="name-input" placeholder="أدخل اسمك" data-en-placeholder="Enter your name" oninput="generateCV(cvContainer); updateProgress()">
-                                </div>
-                                <div class="form-group">
-                                    <label for="title-input" data-en="Job Title" data-ar="المسمى الوظيفي">المسمى الوظيفي</label>
-                                    <input type="text" id="title-input" placeholder="أدخل المسمى الوظيفي" data-en-placeholder="Enter your job title" oninput="generateCV(cvContainer); updateProgress()">
-                                </div>
-                                <div class="form-group">
-                                    <label for="email-input" data-en="Email Address" data-ar="البريد الإلكتروني">البريد الإلكتروني</label>
-                                    <input type="email" id="email-input" placeholder="أدخل بريدك الإلكتروني" data-en-placeholder="Enter your email address" oninput="generateCV(cvContainer); updateProgress()">
-                                </div>
-                                <div class="form-group">
-                                    <label for="phone-input" data-en="Phone Number" data-ar="رقم الهاتف">رقم الهاتف</label>
-                                    <input type="text" id="phone-input" placeholder="أدخل رقم هاتفك" data-en-placeholder="Enter your phone number" oninput="generateCV(cvContainer); updateProgress()">
-                                </div>
-                                <div class="form-group">
-                                    <label for="website-input" data-en="Your City" data-ar="مدينتك">مدينتك </label>
-                                    <input type="text" id="website-input" placeholder="أدخل اسم مدينتك" data-en-placeholder="Enter your City" oninput="generateCV(cvContainer); updateProgress()">
-                                </div>
-                                <div class="form-group">
-                                    <label for="profile-pic-input" data-en="Profile Picture" data-ar="الصورة الشخصية">الصورة الشخصية</label>
-                                    <input type="file"  id="profile-pic-input" accept="image/*" onchange="handleProfilePicChange(event); updateProgress()">
-                                    <small class="form-text text-muted" data-en="Choose a picture to enhance the look of your CV in some templates." data-ar="اختر صورة لتحسين مظهر السيرة الذاتية في بعض النماذج.">اختر صورة لتحسين مظهر السيرة الذاتية في بعض النماذج.</small>
-                                </div>
-                                <div class="form-group" id="form-navigation-buttons">
-                                    <label data-en="Skills" data-ar="المهارات ">المهارات  </label>
-                                    <button type="button" onclick="addSkillField()" class="btn btn-sm btn-outline-primary" data-en="Add Skill" data-ar="إضافة مهارة">إضافة مهارة</button>
-                                    <button type="button" onclick="removeLastSkillField()" class="btn btn-sm btn-outline-danger" data-en="Remove Last" data-ar="حذف آخر">حذف آخر</button>
-                                <div id="skills-input">
-                                    <div class="skill-entry border p-2 mb-2 rounded position-relative">
-                                        <button type="button" class="remove-field" onclick="removeField(this)">&times;</button>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <input type="text" class="form-control skill-item-input" placeholder="أدخل مهارة" data-ar-placeholder="أدخل مهارة" data-en-placeholder="Enter a skill" oninput="generateCV(cvContainer); updateProgress()">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <select class="form-select skill-level-select" onchange="generateCV(cvContainer); updateProgress()">
-                                                    <option value="0" data-ar="اختر المستوى" data-en="Select Level">اختر المستوى</option>
-                                                    <option value="30%" data-ar="مبتدئ" data-en="Beginner">مبتدئ</option>
-                                                    <option value="50%" data-ar="متوسط" data-en="Intermediate">متوسط</option>
-                                                    <option value="75%" data-ar="متقدم" data-en="Advanced">متقدم</option>
-                                                    <option value="100%" data-ar="خبير" data-en="Expert">خبير</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                </div>
-                                <div class="form-group">
-                                    <label data-en="Languages" data-ar="اللغات">اللغات</label>
-                                    <button type="button" onclick="addLanguageField()" class="btn btn-sm btn-outline-primary" data-en="Add Language" data-ar="إضافة لغة">إضافة لغة</button>
-                                    <button type="button" onclick="removeLastLanguageField()" class="btn btn-sm btn-outline-danger" data-en="Remove Last" data-ar="حذف آخر">حذف آخر</button>
-                                    <div id="languages-input">
-                                        <div class="language-entry">
-                                            <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
-                                            <input type="text" placeholder="أدخل لغة" data-en-placeholder="Enter a language" class="language-item-input" oninput="generateCV(cvContainer); updateProgress()"> </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label data-en="References" data-ar="المراجع">المراجع</label>
-                                    <button type="button" onclick="addReferenceField()" class="btn btn-sm btn-outline-primary" data-en="Add Reference" data-ar="إضافة مرجع">إضافة مرجع</button>
-                                    <button type="button" onclick="removeLastReferenceField()" class="btn btn-sm btn-outline-danger" data-en="Remove Last" data-ar="حذف آخر">حذف آخر</button>
-                                    <div id="references-input">
-                                        <div class="reference-entry">
-                                            <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
-                                            <input type="text" placeholder="الاسم" data-en-placeholder="Name" class="reference-name" oninput="generateCV(cvContainer); updateProgress()">
-                                            <input type="text" placeholder="الموقع" data-en-placeholder="Position" class="reference-position" oninput="generateCV(cvContainer); updateProgress()">
-                                            <input type="text" placeholder="الهاتف" data-en-placeholder="Phone" class="reference-phone" oninput="generateCV(cvContainer); updateProgress()">
-                                            <input type="email" placeholder="البريد" data-en-placeholder="Email" class="reference-email" oninput="generateCV(cvContainer); updateProgress()">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="objective-input" data-en="Career Objective" data-ar="الهدف الوظيفي">الهدف الوظيفي</label>
-                                    <textarea id="objective-input" rows="6" placeholder="أدخل هدفك الوظيفي" data-en-placeholder="Enter your career objective" oninput="generateCV(cvContainer); updateProgress()"></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label data-en="Work Experience" data-ar="الخبرة العملية">الخبرة العملية</label>
-                                    <button type="button" onclick="addExperienceField()" class="btn btn-sm btn-outline-primary" data-en="Add Experience" data-ar="إضافة خبرة">إضافة خبرة</button>
-                                    <button type="button" onclick="removeLastExperienceField()" class="btn btn-sm btn-outline-danger" data-en="Remove Last" data-ar="حذف آخر">حذف آخر</button>
-                                    <div id="experience-input">
-                                        <div class="experience-entry">
-                                            <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
-                                            <input type="text" placeholder="المسمى الوظيفي" data-en-placeholder="Job Title" class="experience-title" oninput="generateCV(cvContainer); updateProgress()">
-                                            <input type="text" placeholder="الشركة" data-en-placeholder="Company" class="experience-company" oninput="generateCV(cvContainer); updateProgress()">
-                                            <input type="text" placeholder="المدة" data-en-placeholder="Duration" class="experience-duration" oninput="generateCV(cvContainer); updateProgress()">
-                                            <textarea placeholder="الوصف" data-en-placeholder="Description" class="experience-description" oninput="generateCV(cvContainer); updateProgress()"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label data-en="Education" data-ar="المؤهلات العلمية">المؤهلات العلمية</label>
-                                    <button type="button" onclick="addEducationField()" class="btn btn-sm btn-outline-primary" data-en="Add Education" data-ar="إضافة مؤهل">إضافة مؤهل</button>
-                                    <button type="button" onclick="removeLastEducationField()" class="btn btn-sm btn-outline-danger" data-en="Remove Last" data-ar="حذف آخر">حذف آخر</button>
-                                    <div id="education-input">
-                                        <div class="education-entry">
-                                            <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
-                                            <input type="text" placeholder="الشهادة" data-en-placeholder="Degree" class="education-degree" oninput="generateCV(cvContainer); updateProgress()">
-                                            <input type="text" placeholder="الجامعة/المعهد" data-en-placeholder="University/Institution" class="education-institution" oninput="generateCV(cvContainer); updateProgress()">
-                                            <input type="text" placeholder="المدة" data-en-placeholder="Duration" class="education-duration" oninput="generateCV(cvContainer); updateProgress()">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="text-center mt-4">
-                                <button type="button" onclick="addCustomSection()" class="btn btn-outline-success">
-                                    <i class="fas fa-plus-circle"></i>
-                                    <span data-translate="add_custom_section_btn">إضافة قسم مخصص</span>
-                                </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label data-en="Data Completion Progress" data-ar="نسبة إكمال البيانات">نسبة إكمال البيانات</label>
-                            <div class="progress-container">
-                                <div class="progress-bar" id="progressBar"></div>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-center mt-3">
-                            <button class="btn btn-secondary btn-lg" onclick="showPage('landing-page')" data-en="Back to Home" data-ar="العودة للرئيسية">العودة للرئيسية</button>
-                            <button class="btn btn-primary btn-lg ms-3" onclick="validateAndShowTemplatePage()" data-en="Next: Choose Template" data-ar="التالي: اختر قالب">التالي: اختر قالب</button>
-                        </div>
-                    </div>
-                </div>
+    updateAllPriceDisplays();
+    showPage('payment-options-page');
+}
 
-                <div id="cv-template-selection-page" class="page-section">
-                    <div class="container py-4">
-                        <h2 class="mb-4 text-center" data-en="Choose a CV Template and Preview" data-ar="اختر نموذجًا للسيرة الذاتية والمعاينة">اختر نموذجًا للسيرة الذاتية والمعاينة</h2>
-                        <div class="template-preview-container">
-                            <div class="template-category">
-                                <h3 data-en="Normal Templates (Full Width)" data-ar="نماذج عادية (عرض الصفحة)">نماذج عادية (عرض الصفحة)</h3>
-                                <div class="template-previews">
-                                    <img src="CV templates_ar/1.webp" class="template-preview selected-template" onclick="selectTemplate(1, 'normal')" alt="Normal Template 1 Preview" data-template-category="normal" data-en-alt="Normal Template 1 Preview" data-ar-alt="معاينة النموذج العادي 1" data-template-id="1" loading="lazy">
-                                    <img src="CV templates_ar/2.webp" class="template-preview" onclick="selectTemplate(2, 'normal')" alt="Normal Template 2 Preview" data-template-category="normal" data-en-alt="Normal Template 2 Preview" data-ar-alt="معاينة النموذج العادي 2" data-template-id="2" loading="lazy">
-                                    <img src="CV templates_ar/2.webp" class="template-preview" onclick="selectTemplate(3, 'normal')" alt="Normal Template 3 Preview" data-template-category="normal" data-en-alt="Normal Template 3 Preview" data-ar-alt="معاينة النموذج العادي 3" data-template-id="3" loading="lazy">
-                                </div>
-                            </div>
-                            <div class="template-category">
-                                <h3 data-en="Standard Templates (Sidebar)" data-ar="نماذج عادية (قسم جانبي ورئيسي)">نماذج عادية (قسم جانبي ورئيسي)</h3>
-                                <div class="template-previews">
-                                    <img src="CV templates_ar/13.webp" class="template-preview" onclick="selectTemplate(1, 'standard')" alt="Standard Template 1 Preview" data-template-category="standard" data-en-alt="Standard Template 1 Preview" data-ar-alt="معاينة النموذج العادي 1 (شريط جانبي)" data-template-id="13" loading="lazy">
-                                    <img src="CV templates_ar/14.webp" class="template-preview" onclick="selectTemplate(2, 'standard')" alt="Standard Template 2 Preview" data-template-category="standard" data-en-alt="Standard Template 2 Preview" data-ar-alt="معاينة النموذج العادي 2 (شريط جانبي)" data-template-id="14" loading="lazy">
-                                </div>
-                            </div>
-                            <div class="template-category">
-                                <h3 data-en="StandardX Templates" data-ar="نماذج أساسية اكسترا">نماذج أساسية اكسترا </h3>
-                                <div class="template-previews">
-                                    <img src="CV templates_ar/37.webp" class="template-preview" onclick="selectTemplate(1, 'ast')" alt="AST Template 1 Preview" data-template-category="ast" data-en-alt="AST Template 1 Preview" data-ar-alt="معاينة نموذج AST 1" data-template-id="37" loading="lazy">
-                                    <img src="CV templates_ar/38.webp" class="template-preview" onclick="selectTemplate(2, 'ast')" alt="AST Template 2 Preview" data-template-category="ast" data-en-alt="AST Template 2 Preview" data-ar-alt="معاينة نموذج AST 2" data-template-id="38" loading="lazy">
-                                </div>
-                            </div>
-                            <div class="template-category">
-                                <h3 data-en="Professional Templates (Header + Sidebar)" data-ar="نماذج احترافية (رأس وجانبي ورئيسي)">نماذج احترافية (رأس وجانبي ورئيسي)</h3>
-                                <div class="template-previews">
-                                    <img src="CV templates_ar/25.webp" class="template-preview" onclick="selectTemplate(1, 'professional')" alt="Professional Template 1 Preview" data-template-category="professional" data-en-alt="Professional Template 1 Preview" data-ar-alt="معاينة النموذج الاحترافي 1" data-template-id="25" loading="lazy">
-                                    <img src="CV templates_ar/26.webp" class="template-preview" onclick="selectTemplate(2, 'professional')" alt="Professional Template 2 Preview" data-template-category="professional" data-en-alt="Professional Template 2 Preview" data-ar-alt="معاينة النموذج الاحترافي 2" data-template-id="26" loading="lazy">
-                                    <img src="CV templates_ar/27.webp" class="template-preview" onclick="selectTemplate(3, 'professional')" alt="Professional Template 3 Preview" data-template-category="professional" data-en-alt="Professional Template 3 Preview" data-ar-alt="معاينة النموذج الاحترافي 3" data-template-id="27" loading="lazy">
-                                </div>
-                            </div>
-                                <div class="template-category">
-                                    <h3 data-en="Creative Templates" data-ar="قوالب إبداعية">قوالب إبداعية</h3>
-                                    <div class="template-previews">
-                                        <img src="CV templates_ar/creative-1.webp" class="template-preview" onclick="selectTemplate(1, 'creative')" alt="Creative Template 1" data-template-category="creative" data-template-id="49" loading="lazy">
-                                        <img src="CV templates_ar/creative-2.webp" class="template-preview" onclick="selectTemplate(2, 'creative')" alt="Creative Template 2" data-template-category="creative" data-template-id="50" loading="lazy">
-                                        <img src="CV templates_ar/creative-3.webp" class="template-preview" onclick="selectTemplate(3, 'creative')" alt="Creative Template 3" data-template-category="creative" data-template-id="51" loading="lazy">
-                                    </div>
-                                </div>
-                        </div>
-                        <div class="d-flex justify-content-center mt-3">
-                            <button class="btn btn-secondary btn-lg" onclick="showPage('cv-data-entry-page')" data-en="Back to Data Entry" data-ar="العودة لإدخال البيانات">العودة لإدخال البيانات</button>
-                            <button class="btn btn-primary btn-lg ms-3" onclick="showPage('cv-preview-page')" data-en="Next: Preview CV" data-ar="التالي: معاينة السيرة">التالي: معاينة السيرة</button>
-                        </div>
-                    </div>
-                </div>
+function updatePriceDisplay(discountedPrice) {
+    const finalPriceText = document.getElementById("final-price-text");
+    if (finalPriceText) {
+        const currency = currentLang === 'ar' ? ' ريال' : ' SAR';
+        finalPriceText.textContent = (translations[currentLang]['messages'] || "Price Paid") + ": " + discountedPrice + currency;
+    }
+}
 
-            <div id="cv-preview-page" class="page-section">
-                <div class="container py-4">
-                        <h2 class="mb-4 text-center" data-translate="Your CV Preview">معاينة سيرتك الذاتية</h2>
+function getDiscountedPrice() {
+    if (discountApplied > 0 && discountApplied <= 100) {
+        return Math.max(0, Math.round(selectedPriceToPay * (1 - discountApplied / 100)));
+    }
+    return selectedPriceToPay;
+}
 
-                        <div id="preview-wrapper">
 
-                                <div id="cv-preview-area">
-                                    <div id="cv-container" class="normal-layout template1" dir="rtl">
-                                    </div>
-                        </div>
-                        <div id="controls-sidebar">
-                            <div id="font-selector-container" class="text-center my-3">
-                                <div class="row justify-content-center g-2">
-                                    <div class="col-12">
-                                        <label for="font-selector-name" class="form-label fw-bold" data-translate="select_name_font_label">خط الاسم الرئيسي:</label>
-                                        <select id="font-selector-name" class="form-select"></select>
-                                    </div>
-                                    <div class="col-12">
-                                        <label for="font-selector-headings" class="form-label fw-bold" data-translate="select_headings_font_label">خط العناوين:</label>
-                                        <select id="font-selector-headings" class="form-select"></select>
-                                    </div>
-                                    <div class="col-12">
-                                        <label for="font-selector-body" class="form-label fw-bold" data-translate="select_body_font_label">خط النص الأساسي:</label>
-                                        <select id="font-selector-body" class="form-select"></select>
-                                    </div>
-                                </div>
-                            </div>
+/**
+ * يعالج فتح صفحة الدفع اليدوي (الراجحي أو STC Pay).
+ * هذه الدالة الآن مسؤولة عن حساب السعر النهائي بناءً على كود الخصم المدخل في لحظة الضغط.
+ * @param {string} method - طريقة الدفع المختارة ('Rajhi' أو 'STC Pay').
+ * @param {string} templateCategory - فئة القالب المختار ('normal', 'standard', etc.).
+ */
+function openQrPaymentPage(method, templateCategory) {
+    // 1. جلب السعر الأصلي من كائن الأسعار بناءً على فئة القالب
+    const originalPrice = PRICES.local[templateCategory];
+    if (originalPrice === undefined) {
+        console.error("Price for category not found:", templateCategory);
+        alert("حدث خطأ، السعر لهذه الفئة غير محدد.");
+        return;
+    }
 
-                            <div id="color-picker-container" class="text-center my-3 p-3 bg-light border rounded">
-                                <h5 class="mb-3" data-translate="color_customization_title">Customize Template Colors</h5>
-                                
-                                <h6 class="text-muted border-bottom pb-2 mb-3" data-translate="background_colors_title">Background Colors</h6>
-                                <div class="row justify-content-center g-3 mb-3">
-                                    <div class="col-12 color-control-component" data-color-name="primary-bg">
-                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <label class="form-label fw-bold" data-translate="primary_bg_label">Primary BG / Header</label>
-                                            <div class="form-check form-switch gradient-toggle-wrapper">
-                                                <input class="form-check-input gradient-toggle" type="checkbox">
-                                                <label class="form-check-label" data-translate="gradient_label">Gradient</label>
-                                            </div>
-                                        </div>
-                                        <div class="solid-color-picker"><input type="color" class="form-control form-control-color w-100" id="color-picker-primary-bg" value="#004085"></div>
-                                        <div class="gradient-controls" style="display: none;">
-                                            <div class="input-group mb-1">
-                                                <input type="color" class="form-control form-control-color" id="color-picker-primary-bg-start" value="#004085">
-                                                <input type="color" class="form-control form-control-color" id="color-picker-primary-bg-end" value="#0056b3">
-                                            </div>
-                                            <select class="form-select form-select-sm gradient-direction">
-                                                <option value="to right" data-translate="gradient_horizontal">Horizontal</option>
-                                                <option value="to bottom" data-translate="gradient_vertical">Vertical</option>
-                                                <option value="to bottom right" data-translate="gradient_diagonal">Diagonal</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 color-control-component" data-color-name="sidebar-bg">
-                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <label class="form-label fw-bold" data-translate="sidebar_bg_label">Sidebar BG</label>
-                                            <div class="form-check form-switch gradient-toggle-wrapper">
-                                                <input class="form-check-input gradient-toggle" type="checkbox">
-                                                <label class="form-check-label" data-translate="gradient_label">Gradient</label>
-                                            </div>
-                                        </div>
-                                        <div class="solid-color-picker"><input type="color" class="form-control form-control-color w-100" id="color-picker-sidebar-bg" value="#f8f9fa"></div>
-                                        <div class="gradient-controls" style="display: none;">
-                                            <div class="input-group mb-1">
-                                                <input type="color" class="form-control form-control-color" id="color-picker-sidebar-bg-start" value="#f8f9fa">
-                                                <input type="color" class="form-control form-control-color" id="color-picker-sidebar-bg-end" value="#e9ecef">
-                                            </div>
-                                            <select class="form-select form-select-sm gradient-direction">
-                                                <option value="to right" data-translate="gradient_horizontal">Horizontal</option>
-                                                <option value="to bottom" data-translate="gradient_vertical">Vertical</option>
-                                                <option value="to bottom right" data-translate="gradient_diagonal">Diagonal</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 color-control-component" data-color-name="accent-bg">
-                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <label class="form-label fw-bold" data-translate="accent_bg_label">Accent / Skills BG</label>
-                                            <div class="form-check form-switch gradient-toggle-wrapper">
-                                                <input class="form-check-input gradient-toggle" type="checkbox">
-                                                <label class="form-check-label" data-translate="gradient_label">Gradient</label>
-                                            </div>
-                                        </div>
-                                        <div class="solid-color-picker"><input type="color" class="form-control form-control-color w-100" id="color-picker-accent-bg" value="#e9ecef"></div>
-                                        <div class="gradient-controls" style="display: none;">
-                                            <div class="input-group mb-1">
-                                                <input type="color" class="form-control form-control-color" id="color-picker-accent-bg-start" value="#e9ecef">
-                                                <input type="color" class="form-control form-control-color" id="color-picker-accent-bg-end" value="#ced4da">
-                                            </div>
-                                            <select class="form-select form-select-sm gradient-direction">
-                                                <option value="to right" data-translate="gradient_horizontal">Horizontal</option>
-                                                <option value="to bottom" data-translate="gradient_vertical">Vertical</option>
-                                                <option value="to bottom right" data-translate="gradient_diagonal">Diagonal</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
+    // 2. حساب السعر النهائي مع الخصم في لحظة الضغط
+    const codeInput = document.getElementById("discount-code");
+    const code = codeInput ? codeInput.value.trim().toUpperCase() : "";
+    let finalPrice = originalPrice;
+    let appliedDiscountCode = ""; // سيتم حفظ الكود الفعلي هنا
 
-                                <h6 class="text-muted border-bottom pb-2 mb-3" data-translate="text_colors_title">Text & Icon Colors</h6>
-                                <div class="row g-3">
-                                    <div class="col-md-6 col-12"><label for="color-picker-header-text" class="form-label fw-bold" data-translate="header_text_label">Header Text</label><input type="color" class="form-control form-control-color w-100" id="color-picker-header-text" value="#ffffff"></div>
-                                    <div class="col-md-6 col-12"><label for="color-picker-title-text" class="form-label fw-bold" data-translate="title_text_label">Titles Text</label><input type="color" class="form-control form-control-color w-100" id="color-picker-title-text" value="#004085"></div>
-                                    <div class="col-md-6 col-12"><label for="color-picker-body-text" class="form-label fw-bold" data-translate="body_text_label">Body Text</label><input type="color" class="form-control form-control-color w-100" id="color-picker-body-text" value="#343a40"></div>
-                                    <div class="col-md-6 col-12"><label for="color-picker-subtle-text" class="form-label fw-bold" data-translate="subtle_text_label">Subtle Text</label><input type="color" class="form-control form-control-color w-100" id="color-picker-subtle-text" value="#6c757d"></div>
-                                </div>
-                            </div>
-                            <div class="action-buttons-container">
-                                <button class="btn btn-secondary" onclick="showPage('cv-template-selection-page')" data-translate="Back to Templates">العودة للنماذج</button>
-                                <button type="button" class="btn btn-info ms-3" data-translate-id="Download PDF (Direct)">تنزيل PDF (معاينة)</button>
-                                <button type="button" class="btn btn-success ms-3" data-translate-id="Request Download / Print">طلب تنزيل / طباعة</button>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
+    if (code && discountCodes[code] !== undefined) {
+        const discountPercentage = discountCodes[code];
+        finalPrice = Math.max(0, Math.round(originalPrice * (1 - discountPercentage / 100)));
+        appliedDiscountCode = code; // حفظ الكود الصحيح الذي تم استخدامه
+    }
+
+    // 3. الحصول على عناصر واجهة المستخدم وتجهيزها
+    const qrPaymentImage = document.getElementById("qr-payment-image");
+    const manualPaymentForm = document.getElementById("manual-payment-form");
+    const submitBtn = document.getElementById("submit-payment-proof");
+    const qrPaymentResultDiv = document.getElementById("qr-payment-result");
+
+    // إعادة تعيين الواجهة عند كل فتح
+    if(qrPaymentImage) qrPaymentImage.style.display = "none";
+    if(manualPaymentForm) manualPaymentForm.style.display = "none";
+    if(submitBtn) submitBtn.style.display = "none";
+    if(qrPaymentResultDiv) qrPaymentResultDiv.textContent = '';
+
+    // 4. تعبئة نموذج الدفع اليدوي بالبيانات من الصفحة الرئيسية والسعر المحسوب
+    const mainName = document.getElementById('name-input')?.value.trim();
+    const mainEmail = document.getElementById('email-input')?.value.trim();
+    const mainPhone = document.getElementById('phone-input')?.value.trim();
+
+    if (paymentNameInput) paymentNameInput.value = mainName;
+    if (paymentEmailInput) paymentEmailInput.value = mainEmail;
+    if (paymentPhoneInput) paymentPhoneInput.value = mainPhone;
+    
+    // استخدام السعر النهائي المحسوب لتعبئة حقل السعر
+    if(paymentMessagesInput) paymentMessagesInput.value = finalPrice; 
+
+    // 5. حفظ البيانات الهامة في سمات (attributes) الصفحة لتستخدمها دالة الإرسال لاحقًا
+    const qrManualPaymentPage = document.getElementById('qr-manual-payment-page');
+    if (qrManualPaymentPage) {
+        qrManualPaymentPage.setAttribute("data-payment-method", method);
+        qrManualPaymentPage.setAttribute("data-discount-code", appliedDiscountCode); // حفظ الكود الفعلي
+        qrManualPaymentPage.setAttribute("data-cv-template-category", templateCategory);
+        qrManualPaymentPage.setAttribute("data-price-paid", finalPrice.toString());
+    }
+
+    // 6. عرض رمز QR الصحيح ونموذج الدفع
+    if (method.toLowerCase() === "stc pay" || method.toLowerCase() === "rajhi") {
+        if(qrPaymentImage) {
+            qrPaymentImage.src = (method.toLowerCase() === "stc pay") ? "QRstcpay.png.webp" : "QRalrajhi.png.webp";
+            qrPaymentImage.alt = (method.toLowerCase() === "stc pay") ? "STC Pay QR Code" : "Al Rajhi QR Code";
+            qrPaymentImage.style.display = "block";
+        }
+        if(manualPaymentForm) manualPaymentForm.style.display = "block";
+        if(submitBtn) submitBtn.style.display = "block";
+    }
+
+    // 7. الانتقال إلى صفحة الدفع
+    showPage('qr-manual-payment-page');
+}
+
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+/**
+ * يعالج إرسال إثبات الدفع اليدوي (STC Pay / Al Rajhi).
+ * تم تحديث هذه الدالة بالكامل لإصلاح مشاكل إرسال البيانات.
+ * @param {Event} event - كائن الحدث لمنع السلوك الافتراضي للنموذج.
+ */
+async function submitPaymentProof(event) {
+    event.preventDefault(); // منع أي سلوك افتراضي للنموذج
+
+    const submitButton = document.getElementById("submit-payment-proof");
+    if (submitButton.disabled) {
+        return; // منع الإرسال المتعدد إذا كان الزر معطلاً بالفعل
+    }
+
+    // تعطيل الزر وتغيير نصه لإعطاء مؤشر للمستخدم
+    submitButton.disabled = true;
+    submitButton.innerHTML = `<span class="spinner-border spinner-border-sm"></span> ${translations[currentLang]['Submitting...'] || 'Submitting...'}`;
+    
+    const qrPaymentResultDiv = document.getElementById("qr-payment-result");
+    qrPaymentResultDiv.textContent = ''; // مسح أي رسائل سابقة
+
+    try {
+        // 1. جمع البيانات من نموذج الدفع اليدوي
+        const name = paymentNameInput.value.trim();
+        const email = paymentEmailInput.value.trim();
+        const phoneNumber = paymentPhoneInput.value.trim();
+        const file = paymentFileInput.files[0];
+
+        // 2. جمع البيانات المخزنة في سمات الصفحة (data-attributes)
+        const qrManualPaymentPage = document.getElementById('qr-manual-payment-page');
+        const paymentMethod = qrManualPaymentPage.getAttribute("data-payment-method");
+        const cvTemplateCategory = qrManualPaymentPage.getAttribute("data-cv-template-category");
+        const pricePaid = qrManualPaymentPage.getAttribute("data-price-paid");
+        
+        // --- إصلاح مشكلة كود الخصم ---
+        // قراءة كود الخصم كنص مباشرة من السمة المحفوظة
+        const actualDiscountCodeStr = qrManualPaymentPage.getAttribute("data-discount-code") || 'N/A';
+
+        // 3. التحقق من صحة البيانات المدخلة
+        if (!name || !email || !phoneNumber) {
+            throw new Error(translations[currentLang]['Please fill in all fields.'] || 'Please fill in all required fields.');
+        }
+        if (!validateEmail(email)) {
+            throw new Error(translations[currentLang]['Please enter a valid email.'] || 'Please enter a valid email address.');
+        }
+        if (file) {
+            if (file.size > MAX_FILE_SIZE) {
+                throw new Error(translations[currentLang]['File size exceeds the limit (3MB).'] || 'File size exceeds the 3MB limit.');
+            }
+            if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+                throw new Error(translations[currentLang]['Please attach only image or PDF files.'] || 'Please attach only image or PDF files.');
+            }
+        }
+
+        toggleLoadingOverlay(true, 'Payment processing, please wait...');
+
+        // 4. تحويل ملف الإيصال إلى Base64 (إن وجد)
+        const fileBase64 = file ? await fileToBase64(file) : null;
+
+        // 5. توليد نسخة PDF من السيرة الذاتية (مع علامة مائية لأن الدفع لم تتم الموافقة عليه بعد)
+        const pdfData = await generatePdfFromNode(false); // isPaid: false
+        if (!pdfData || !pdfData.base64Pdf) {
+            throw new Error('Failed to generate CV PDF for submission.');
+        }
+
+        // 6. تجهيز كافة البيانات للإرسال إلى Apps Script
+        const formData = new URLSearchParams();
+        formData.append('name', name);
+        formData.append('email', email);
+        formData.append('phoneNumber', phoneNumber);
+        formData.append('pricePaid', pricePaid);
+        formData.append('paymentMethod', paymentMethod);
+        formData.append('cvTemplateCategory', cvTemplateCategory);
+        formData.append('discountCode', actualDiscountCodeStr); // استخدام الكود النصي الصحيح
+        formData.append('language', currentLang);
+        
+        // --- إصلاح مشكلة بيانات المدينة/الموقع ---
+        // جلب قيمة حقل "الموقع" من الصفحة الرئيسية وإضافتها للطلب
+        const website = document.getElementById('website-input')?.value.trim();
+        formData.append('website', website || '');
+        
+        formData.append('paymentFileBase64', fileBase64 || '');
+        formData.append('paymentFileType', file?.type || '');
+        formData.append('cvPdfFileBase64', pdfData.base64Pdf);
+        formData.append('cvPdfFileName', `CV_Preview_${name.replace(/\s/g, '_')}.pdf`);
+
+        // 7. إرسال الطلب إلى Google Apps Script
+        const response = await fetch(GOOGLE_APPS_SCRIPT_WEB_APP_URL_PAYMENT_PROCESSOR, {
+            method: 'POST',
+            body: formData,
+        });
+
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            qrPaymentResultDiv.style.color = "green";
+            qrPaymentResultDiv.textContent = data.message || (translations[currentLang]["payment-success"]);
+            // لا نُعيد تفعيل الزر هنا لأنه سينتقل لصفحة أخرى بعد 5 ثواني
+            setTimeout(() => { showPage('landing-page'); }, 5000);
+        } else {
+            // إذا فشل الطلب من جهة الخادم، قم برمي خطأ ليتم التقاطه في catch
+            throw new Error(data.error || 'An unknown error occurred on the server.');
+        }
+
+    } catch (err) {
+        // عرض أي خطأ للمستخدم (سواء من التحقق أو من الإرسال)
+        console.error("Error in submitPaymentProof:", err);
+        qrPaymentResultDiv.style.color = "red";
+        qrPaymentResultDiv.textContent = err.message;
+    } finally {
+        // هذا الجزء سيعمل دائمًا، سواء نجح الطلب أم فشل
+        toggleLoadingOverlay(false);
+
+        // إعادة تفعيل الزر فقط في حال حدوث خطأ وبقاء المستخدم في الصفحة
+        if (!qrPaymentResultDiv.textContent.includes("نجاح") && !qrPaymentResultDiv.textContent.includes("Success")) {
+            submitButton.disabled = false;
+            submitButton.innerHTML = translations[currentLang]['submit'] || 'Submit';
+        }
+    }
+}
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = error => reject(error);
+    });
+}
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
+}
+
+function getExperiencesData() {
+    const experiences = [];
+    document.querySelectorAll('#experience-input .experience-entry').forEach(entry => {
+        const title = entry.querySelector('.experience-title')?.value.trim();
+        const company = entry.querySelector('.experience-company')?.value.trim();
+        const duration = entry.querySelector('.experience-duration')?.value.trim();
+        const description = entry.querySelector('.experience-description')?.value.trim();
+        if (title || company || duration || description) {
+            experiences.push({ title, company, duration, description });
+        }
+    });
+    return experiences;
+}
+
+function getEducationsData() {
+    const educations = [];
+    document.querySelectorAll('#education-input .education-entry').forEach(entry => {
+        const degree = entry.querySelector('.education-degree')?.value.trim();
+        const institution = entry.querySelector('.education-institution')?.value.trim();
+        const duration = entry.querySelector('.education-duration')?.value.trim();
+        if (degree || institution || duration) {
+            educations.push({ degree, institution, duration });
+        }
+    });
+    return educations;
+}
+
+function getSkillsData() {
+    const skills = [];
+    document.querySelectorAll('#skills-input .skill-entry').forEach(entry => {
+        
+        // الخطوة 1: ابحث عن حقل إدخال اسم المهارة
+        const nameInput = entry.querySelector('.skill-item-input');
+        
+        // الخطوة 2: *** هذا هو التحقق الأهم الذي كان ناقصاً ***
+        // لا تكمل الكود إلا إذا تم العثور على حقل الإدخال بنجاح
+        if (nameInput) {
+            const name = nameInput.value.trim();
+
+            // تجاهل المهارات الفارغة
+            if (name === '') {
+                return; // يعادل 'continue' في الحلقة
+            }
+
+            // الخطوة 3: ابحث الآن عن قائمة المستوى (إن وجدت)
+            const levelSelect = entry.querySelector('.skill-level-select');
+            let level = '100%'; // قيمة افتراضية للمهارات التي ليس لها مستوى (الحقول القديمة)
+
+            if (levelSelect) {
+                // تجاهل المهارة إذا لم يتم تحديد مستوى
+                if (levelSelect.value === '0') {
+                    return; 
+                }
+                level = levelSelect.value;
+            }
+            
+            // إذا وصلنا إلى هنا، فكل شيء سليم. أضف المهارة.
+            skills.push({ name, level });
+        }
+        // إذا لم يتم العثور على nameInput من الأساس، سيتجاهل الكود هذا الـ entry وينتقل للتالي دون أن ينهار.
+    });
+    return skills;
+}
+
+function getLanguagesData() {
+    const languages = [];
+    document.querySelectorAll('#languages-input .language-item-input').forEach(input => {
+        const lang = input.value.trim();
+        if (lang) {
+            languages.push(lang);
+        }
+    });
+    return languages;
+}
+
+function getReferencesData() {
+    const references = [];
+    document.querySelectorAll('#references-input .reference-entry').forEach(entry => {
+        const name = entry.querySelector('.reference-name')?.value.trim();
+        const position = entry.querySelector('.reference-position')?.value.trim();
+        const phone = entry.querySelector('.reference-phone')?.value.trim();
+        const email = entry.querySelector('.reference-email')?.value.trim();
+        if (name || position || phone || email) {
+            references.push({ name, position, phone, email });
+        }
+    });
+    return references;
+}
+
+function getSelectedTemplateCss() {
+    let cssRules = [];
+    const stylesheets = document.styleSheets;
+
+    // مجموعة شاملة من المحددات العامة والفئات التي يجب تضمينها دائمًا
+    // تشمل عناصر HTML الأساسية، فئات Bootstrap، وفئات الاتجاه
+    const commonSelectors = [
+        'body', 'html', '#cv-container', '.cv-content',
+        '.cv-header', '.cv-name', '.cv-title', '.cv-contact-info', '.cv-contact-item', '.cv-profile-pic',
+        '.cv-section', '.cv-section-title', '.cv-experience-item', '.cv-education-item',
+        '.cv-job-title', '.cv-degree', '.cv-company', '.cv-institution', '.cv-duration',
+        '.cv-skill-list', '.cv-skill-item', '.cv-language-list', '.cv-reference-item',
+        '.cv-table-row', '.cv-two-column-layout', '.cv-professional-layout', '.ast-layout',
+        '.cv-sidebar', '.cv-main-content', '.cv-end-marker', '.filler',
+        'h1', 'h2', 'h3', 'h4', 'h5', 'p', 'ul', 'li', 'img', 'a', 'div', 'span',
+        '.container', '.row', '.col-md-', '.d-flex', '.mb-', '.mt-', '.ms-', '.me-', // Bootstrap
+        '.rtl', '.ltr', // اتجاه اللغة
+        '.remove-field', // لإزالة زر الحذف
+        // أضف أي فئات أو معرفات أخرى تظهر في style.css وتحتاج لتضمينها بشكل عام
+    ];
+
+    // تعبير عادي للتحقق من تطابق المحددات العامة أو أجزاء منها
+    const commonSelectorsRegex = new RegExp(`(^|\\b)(<span class="math-inline">\{commonSelectors\.map\(s \=\> s\.replace\('\.', '\\\\\.'\)\)\.join\('\|'\)\}\)\(\\\\b\|</span>)`);
+
+
+    for (let i = 0; i < stylesheets.length; i++) {
+        try {
+            const rules = stylesheets[i].cssRules || stylesheets[i].rules;
+            if (!rules) continue;
+
+            for (let j = 0; j < rules.length; j++) {
+                const rule = rules[j];
+                let ruleText = rule.cssText;
+
+                // 1. تضمين قواعد @font-face بشكل صريح
+                if (rule.type === CSSRule.FONT_FACE_RULE) {
+                    cssRules.push(ruleText);
+                    continue;
+                }
+
+                // 2. معالجة قواعد @media print / screen بشكل خاص
+                if (rule.type === CSSRule.MEDIA_RULE) {
+                    // تضمين قواعد الطباعة والاستجابة
+                    // هنا نأخذ كل قواعد @media print (خاصة بملف style.css)
+                    // وأيضاً @media screen أو max-width (المهمة لضبط العرض على الشاشة ثم إخفائها)
+                    if (rule.conditionText.includes('print') || rule.conditionText.includes('screen') || rule.conditionText.includes('(max-width:')) {
+                        cssRules.push(ruleText); 
+                    }
+                    continue;
+                }
+
+                // 3. تحليل قواعد CSS العادية
+                const selectorText = rule.selectorText;
+                if (selectorText) {
+                    const templateSpecificSelector = `.<span class="math-inline">\{selectedTemplateCategory\}\-layout\.template</span>{selectedTemplate}`;
+
+                    const isGeneral = commonSelectorsRegex.test(selectorText);
+                    const isTemplateSpecific = selectorText.includes(templateSpecificSelector);
+                    const isCvRelated = selectorText.includes('.cv-'); // فئات تبدأ بـ .cv- (مثل .cv-header)
+
+                    // إذا كان المحدد عاماً جداً، أو خاصاً بالقالب، أو يتعلق بالـ CV
+                    // و لا يكون محددًا لعناصر الواجهة الأمامية التي نريد إخفاءها (مثل .navbar)
+                    // هذا الجزء يتطلب دقة لمنع تضمين CSS غير مرغوب فيه
+                    const isFrontendUI = selectorText.includes('.navbar') || selectorText.includes('.site-header') || selectorText.includes('.page-section:not') || selectorText.includes('.progress-container') || selectorText.includes('.language-toggle');
+
+                    if ((isGeneral || isTemplateSpecific || isCvRelated) && !isFrontendUI) {
+                        cssRules.push(ruleText);
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn(`Could not read CSS rules from stylesheet (possibly CORS issue): ${e.message}`);
+        }
+    }
+
+    // ** قواعد CSS إضافية هنا لتجاوز المشاكل وتأكيد التنسيق للـ PDF **
+    // هذه القواعد ستُضاف دائمًا في نهاية الـ CSS، مما يضمن أنها تطغى على القواعد الأخرى.
+    // وهي حلول لمشاكل محددة في الخطوط، الاتجاه، الهوامش، تخطيط الأعمدة، وإخفاء عناصر العارض.
+    cssRules.push(`
+        /* 1. قواعد أساسية لـ HTML/BODY لتأكيد اتجاه الصفحة والهوامش */
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 210mm !important; /* عرض A4 */
+            min-height: 297mm !important; /* ارتفاع A4 */
+            background: white !important; /* خلفية بيضاء لضمان عدم ظهور خلفية العارض */
+            color: #212529 !important; /* لون نص افتراضي */
+            direction: ${currentLang === 'ar' ? 'rtl' : 'ltr'} !important;
+            text-align: ${currentLang === 'ar' ? 'right' : 'left'} !important;
+            box-sizing: border-box !important;
+            overflow: hidden !important; /* مهم جداً لمنع أي scrollbars في الـ PDF */
+        }
+        body.rtl { direction: rtl !important; text-align: right !important; }
+        body.ltr { direction: ltr !important; text-align: left !important; }
+
+        /* 2. إخفاء جميع عناصر الواجهة الأمامية غير المرغوبة (بشكل شامل) */
+        /* هذه المحددات يجب أن تستهدف عناصر واجهة المستخدم التي قد تظهر في الـ PDF */
+        .site-header, .navbar, .page-section:not(.active-page), .progress-container,
+        .language-toggle, .btn-info, .btn-success, #cv-preview-area,
+        .popup-box, .popup-close, .form-group, .remove-field,
+        .template-preview-container, .template-category, .template-previews,
+        /* أي عناصر أخرى من واجهة المستخدم لديك في الـ HTML لا تريد ظهورها */
+        .d-flex.justify-content-center.mt-4 { /* الأزرار في صفحة المعاينة */
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            max-height: 0 !important;
+            overflow: hidden !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        /* 3. تأكيد تنسيق الـ CV للحاوية الرئيسية */
+        #cv-container {
+            position: relative !important;
+            width: 210mm !important; /* عرض A4 */
+            min-height: 297mm !important; /* ارتفاع A4 */
+            height: auto !important; /* لتسمح بالنمو على عدة صفحات */
+            margin: 0 !important; /* لإزالة أي إزاحة غير مرغوبة */
+            padding: 0 !important; /* الحشوة تكون داخل الأقسام */
+            box-shadow: none !important; /* إزالة أي ظل لحاوية المعاينة */
+            border: none !important; /* إزالة أي حدود لحاوية المعاينة */
+            background: white !important; /* خلفية بيضاء للسيرة الذاتية */
+            color: #212529 !important; /* لون نص افتراضي */
+            overflow: visible !important; /* مهم جداً للسماح بالمحتوى على عدة صفحات */
+            direction: ${currentLang === 'ar' ? 'rtl' : 'ltr'} !important;
+            text-align: ${currentLang === 'ar' ? 'right' : 'left'} !important;
+            box-sizing: border-box !important;
+        }
+
+        /* 4. معالجة الخطوط (ضمان تطبيق Tajawal للعربية) */
+        body, p, span, div, h1, h2, h3, h4, h5, h6, li {
+            font-family: 'Tajawal', sans-serif !important;
+        }
+        /* قواعد الخطوط الخاصة بكل قالب (أضفها هنا أيضاً لتطغى) */
+        .normal-layout.template1 .cv-name, .normal-layout.template1 .cv-title, .normal-layout.template1 .cv-section-title { font-family: 'Roboto', sans-serif !important; }
+        .normal-layout.template2 .cv-name, .normal-layout.template2 .cv-title, .normal-layout.template2 .cv-section-title { font-family: 'Lato', sans-serif !important; }
+        /* ... كرر هذا لجميع القوالب والفئات التي تحدد الخطوط في style.css */
+
+        /* 5. معالجة تخطيط الأعمدة (Standard, Professional, AST) */
+        .cv-two-column-layout, .ast-layout {
+            display: flex !important; /* Use flex for print */
+            flex-direction: var(--print-flex-direction) !important; /* Apply correct flex direction from variable */
+            gap: 10mm !important;
+            page-break-inside: auto !important; /* Allow page breaks here */
+            flex-wrap: nowrap !important; /* Prevent wrapping to next line */
+        }
+        .cv-professional-layout {
+            display: grid !important;
+            grid-template-columns: var(--print-grid-columns) !important; /* Apply grid columns from variable */
+            grid-template-areas: var(--print-grid-areas) !important; /* Apply grid areas from variable */
+            gap: 10mm !important;
+            page-break-inside: auto !important; /* Allow page breaks here */
+        }
+        .cv-sidebar, .cv-main-content {
+            display: flex !important; /* Revert to flex for individual columns */
+            flex-direction: column !important; /* Ensure content stacks vertically within column */
+            vertical-align: top !important; /* Align to top */
+            padding: 8mm !important; /* Inner padding */
+            box-sizing: border-box !important;
+            height: auto !important; /* Allow height to adjust */
+            min-height: 1px !important; /* Smallest possible height */
+            page-break-inside: avoid !important; /* Crucial: prevent breaking content within individual columns */
+            text-align: ${currentLang === 'ar' ? 'right' : 'left'} !important; /* Text alignment within the column */
+        }
+
+        /* 5.1. تحديد عرض الأعمدة (إذا لم يكن في القالب الأصلي) */
+        .cv-two-column-layout .cv-sidebar, .ast-layout .cv-sidebar { width: 80mm !important; flex-shrink: 0 !important; } /* Make sidebar fixed width */
+        .cv-professional-layout .cv-sidebar { width: 80mm !important; flex-shrink: 0 !important; }
+        .cv-main-content { width: auto !important; flex-grow: 1 !important;} /* Main content takes remaining space */
+
+
+        /* 5.2. معالجة Professional Layout (حسب التغييرات في style.css الخاص بك) */
+        /* ملف style.css الخاص بك يحتوي على Professional Layout يجعل الشريط الجانبي على اليسار دائماً */
+        /* سنحافظ على هذا السلوك عند الطباعة */
+        .cv-professional-layout[dir="rtl"], .cv-professional-layout[dir="ltr"] {
+            /* These will be overridden by --print-grid-columns and --print-grid-areas */
+            /* grid-template-columns: 80mm 1fr !important; */
+            /* grid-template-areas: "sidebar main" !important; */
+        }
+        .cv-professional-layout .cv-sidebar { grid-area: sidebar !important; }
+        .cv-professional-layout .cv-main-content { grid-area: main !important; }
+        .cv-professional-layout .cv-header.professional-layout { grid-area: header !important; display: flex !important; flex-direction: column !important; } /* Use flex for header content within grid */
+
+
+        /* 6. تحسينات عامة على العناصر النصية والقوائم */
+        h1, h2, h3, h4, h5, h6, p, li {
+            word-break: break-word !important;
+            white-space: pre-wrap !important; /* للحفاظ على الأسطر الجديدة من textarea */
+            line-height: 1.6 !important;
+            margin: 0 !important; /* لإزالة أي هوامش افتراضية غير مرغوبة */
+            padding: 0 !important;
+        }
+        ul {
+            list-style: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            text-align: ${currentLang === 'ar' ? 'right' : 'left'} !important;
+        }
+        /* إذا كنت تستخدم نقاطاً للقوائم، يمكنك إعادتها يدوياً لـ RTL/LTR */
+        html[dir="rtl"] ul li::before {
+            content: "• " !important; /* نقطة القائمة */
+            color: inherit !important;
+            display: inline-block !important;
+            width: 1em !important;
+            margin-left: 0.5em !important;
+            text-align: left !important;
+        }
+        html[dir="ltr"] ul li::before {
+            content: "• " !important;
+            color: inherit !important;
+            display: inline-block !important;
+            width: 1em !important;
+            margin-right: 0.5em !important;
+            text-align: right !important;
+        }
+        .cv-skill-item, .cv-language-list li {
+            text-align: inherit !important;
+            padding-right: ${currentLang === 'ar' ? '0' : '15px'} !important;
+            padding-left: ${currentLang === 'ar' ? '15px' : '0'} !important;
+        }
+        .cv-contact-item i {
+            margin-left: ${currentLang === 'ar' ? '8px' : '0'} !important;
+            margin-right: ${currentLang === 'ar' ? '0' : '8px'} !important;
+        }
+
+        /* 7. قواعد للطباعة / التوليد التي يجب أن تطغى في سياق الطباعة (مكررة لكن مهمة) */
+        @media print {
+            html, body {
+                margin: 0 !important; padding: 0 !important;
+                width: 210mm !important;
+                min-height: 297mm !important;
+                background: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                direction: ${currentLang === 'ar' ? 'rtl' : 'ltr'} !important;
+                text-align: ${currentLang === 'ar' ? 'right' : 'left'} !important;
+            }
+            #cv-container {
+                box-shadow: none !important;
+                border: none !important;
+                min-height: 297mm !important;
+                height: auto !important;
+                overflow: visible !important;
+                page-break-before: auto !important;
+                page-break-after: auto !important;
+                page-break-inside: auto !important; /* Allow page breaks inside container */
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .cv-section { page-break-inside: avoid !important; }
+            .cv-experience-item, .cv-education-item, .cv-reference-item { page-break-inside: avoid !important; }
+        }
+    `);
+
+    return cssRules.join('\n');
+}
+
+
+/**
+ * =========================================================================
+ * == الدالة النهائية والشاملة التي تعالج كل مشاكل الطباعة بالجافا سكريبت ==
+ * (النسخة النهائية مع نظام الألوان الذكي المحدث)
+ * =========================================================================
+ * @param {boolean} isPaid - هل النسخة مدفوعة وبدون علامة مائية
+ * @returns {Promise<Object|null>} - كائن يحتوي على بيانات الـ PDF أو null
+ */
+async function generatePdfFromNode(isPaid) {
+    toggleLoadingOverlay(true, 'Preparing perfect layout...');
+    try {
+        const tempContainer = document.createElement('div');
+        generateCV(tempContainer);
+        const finalHtml = tempContainer.innerHTML;
+        tempContainer.remove();
+
+        const mainCssText = document.getElementById('main-stylesheet')?.textContent || '';
+        const cvData = collectCvData();
+        const direction = cvData.language === 'ar' ? 'rtl' : 'ltr';
+
+        // === التعديل الرئيسي هنا: استدعاء الدالة الموحدة ===
+        const colorVariablesCSS = getColorVariablesAsCssText();
+        // ===================================================
+
+        const isArabic = currentLang === 'ar';
+        const nameFont = document.getElementById('font-selector-name')?.value || (isArabic ? "'Cairo', sans-serif" : "'Playfair Display', serif");
+        const headingsFont = document.getElementById('font-selector-headings')?.value || (isArabic ? "'Tajawal', sans-serif" : "'Montserrat', sans-serif");
+        const bodyFont = document.getElementById('font-selector-body')?.value || (isArabic ? "'Almarai', sans-serif" : "'Roboto', sans-serif");
+
+        const printCssOverrides = `
+            ${colorVariablesCSS}
+            html, body { margin: 0 !important; padding: 0 !important; background: white !important; font-size: 10pt; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            #cv-container { margin: 0 !important; box-shadow: none !important; border: none !important; }
+            .cv-section, .cv-experience-item, .cv-education-item { page-break-inside: avoid !important; }
+            #cv-container { font-family: ${bodyFont} !important; }
+            #cv-container .cv-name, #cv-container .cv-title { font-family: ${nameFont} !important; }
+            #cv-container .cv-section-title { font-family: ${headingsFont} !important; }
+            
+            /* === إصلاح العلامة المائية لتثبيتها على كل الصفحات === */
+            #cv-container.watermarked::before {
+                position: fixed !important; 
+                top: 50% !important; left: 50% !important;
+                width: 100vw; height: 100vh;
+                transform: translate(-50%, -50%) rotate(-40deg) !important;
+                z-index: 10000 !important;
+            }
+        `;
+
+        const fullPageHtml = `
+            <!DOCTYPE html>
+            <html lang="${cvData.language}" dir="${direction}">
+            <head>
+                <meta charset="UTF-8">
+                <title>CV</title>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+                <link rel="preconnect" href="https://fonts.googleapis.com">
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Cairo:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+                <style>
+                    ${mainCssText}
+                    ${printCssOverrides}
+                </style>
+            </head>
+            <body class="${direction}">
+                 <div id="cv-container" class="${isPaid ? '' : 'watermarked'} ${cvData.templateCategory}-layout template${cvData.templateNumber}" dir="${direction}">
+                    ${finalHtml}
+                 </div>
+            </body>
+            </html>
+        `;
+
+        const response = await fetch(`${NODE_SERVER_URL}/generate-cv`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fullHtml: fullPageHtml }),
+            mode: 'cors'
+        });
+
+        if (!response.ok) throw new Error(await response.text());
+        
+        const pdfData = await response.json();
+        
+        if (pdfData && pdfData.status === 'success') {
+            return pdfData;
+        } else {
+            throw new Error(pdfData.message || "Failed to generate PDF on server.");
+        }
+    } catch (error) {
+        console.error("Error in generatePdfFromNode:", error);
+        alert('An error occurred while preparing the PDF: ' + error.message);
+        return null;
+    } finally {
+        toggleLoadingOverlay(false);
+    }
+}
+
+/**
+ * دالة مساعدة تأخذ الـ HTML النهائي وترسله للخادم.
+ * @param {string} finalHtml - كود HTML للعنصر الجاهز للطباعة.
+ * @param {boolean} isPaid - هل النسخة مدفوعة.
+ * @returns {Promise<Object>}
+ */
+async function sendFinalHtmlToServer(finalHtml, isPaid) {
+    const mainCssText = document.getElementById('main-stylesheet')?.textContent || '';
+    if (!mainCssText) {
+        throw new Error("Critical: Main stylesheet could not be found in the DOM.");
+    }
+    
+    const cvData = collectCvData();
+    const direction = cvData.language === 'ar' ? 'rtl' : 'ltr';
+
+    const fullPageHtml = `
+        <!DOCTYPE html>
+        <html lang="${cvData.language}" dir="${direction}">
+        <head>
+            <meta charset="UTF-8">
+            <title>CV</title>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+            <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+            <style>
+                ${mainCssText}
+            </style>
+        </head>
+        <body class="${direction}">
+             ${finalHtml.replace('class="', `class="${isPaid ? '' : 'watermarked'} `)}
+        </body>
+        </html>
+    `;
+
+    const response = await fetch(`${NODE_SERVER_URL}/generate-cv`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fullHtml: fullPageHtml }),
+        mode: 'cors'
+    });
+
+    if (!response.ok) {
+        const errorBody = await response.json().catch(() => ({ message: 'Server error' }));
+        throw new Error(`Node.js server error: ${response.status} - ${errorBody.message}`);
+    }
+
+    return await response.json();
+}
+/**
+ * دالة مركزية لإرسال بيانات الدفع والـ PDF النهائي إلى Google Apps Script.
+ * هذه الدالة لا تقوم بتوليد الـ PDF بنفسها، بل تستقبله كبيانات جاهزة.
+ * @param {string} paymentMethod - طريقة الدفع (مثال: 'PayPal', 'STC Pay', 'Discounted/Free').
+ * @param {number} pricePaid - المبلغ المدفوع.
+ * @param {string} cvPdfBase64 - بيانات السيرة الذاتية بصيغة Base64 (تم توليدها مسبقاً).
+ * @param {File|null} paymentFile - ملف الإيصال (للدفع اليدوي)، أو null للعمليات التلقائية.
+ */
+async function sendPaymentDataToAppsScript(paymentMethod, pricePaid, cvPdfBase64, paymentFile) {
+    toggleLoadingOverlay(true, 'Payment processing, please wait...');
+
+    try {
+        // 1. جمع بيانات المستخدم الأساسية من حقول الإدخال الرئيسية
+        const name = document.getElementById('name-input')?.value.trim() || 'Unnamed User';
+        const email = document.getElementById('email-input')?.value.trim();
+        const phoneNumber = document.getElementById('phone-input')?.value.trim();
+        const website = document.getElementById('website-input')?.value.trim();
+
+        // 2. التحقق من صحة البيانات الأساسية
+        if (!email || !validateEmail(email)) {
+            // استخدام رسالة خطأ عامة لأن هذه الدالة قد تُستدعى من سياقات مختلفة
+            throw new Error(translations[currentLang]['Please enter a valid email.'] || 'A valid email is required to send your CV.');
+        }
+        
+        if (!cvPdfBase64) {
+            throw new Error('CV PDF data was not provided to the submission function.');
+        }
+
+        // 3. معالجة ملف إيصال الدفع (إن وجد)
+        let paymentFileBase64 = null;
+        if (paymentFile) {
+            // يمكنك إضافة التحقق من حجم ونوع الملف هنا أيضاً كطبقة حماية إضافية
+            if (paymentFile.size > MAX_FILE_SIZE) {
+                throw new Error(translations[currentLang]['File size exceeds the limit (3MB).']);
+            }
+            if (!ALLOWED_FILE_TYPES.includes(paymentFile.type)) {
+                throw new Error(translations[currentLang]['Please attach only image or PDF files.']);
+            }
+            paymentFileBase64 = await fileToBase64(paymentFile);
+        }
+
+        // 4. تجهيز حمولة البيانات (Payload) بتنسيق URLSearchParams
+        const formData = new URLSearchParams();
+        formData.append('name', name);
+        formData.append('email', email);
+        formData.append('phoneNumber', phoneNumber || '');
+        formData.append('website', website || ''); // إرسال بيانات الموقع/المدينة
+        formData.append('pricePaid', pricePaid.toString());
+        formData.append('paymentMethod', paymentMethod);
+        formData.append('cvTemplateCategory', selectedTemplateCategory); // استخدام المتغير العام
+        formData.append('discountCode', appliedCode || 'N/A'); // استخدام المتغير العام للكود المطبق
+        formData.append('language', currentLang); // استخدام المتغير العام
+
+        // بيانات الملفات
+        formData.append('paymentFileBase64', paymentFileBase64 || '');
+        formData.append('paymentFileType', paymentFile?.type || '');
+        formData.append('cvPdfFileBase64', cvPdfBase64); // استخدام بيانات الـ PDF التي تم تمريرها
+        formData.append('cvPdfFileName', `CV_${name.replace(/\s/g, '_')}.pdf`);
+
+        // 5. إرسال الطلب إلى Google Apps Script
+        const response = await fetch(GOOGLE_APPS_SCRIPT_WEB_APP_URL_PAYMENT_PROCESSOR, {
+            method: 'POST',
+            body: formData,
+        });
+
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            alert(data.message || translations[currentLang]["payment-success"]);
+            showPage('landing-page');
+        } else {
+            // إذا فشل الطلب من جهة الخادم، قم برمي خطأ ليتم عرضه
+            throw new Error(data.error || 'An unknown error occurred on the server.');
+        }
+
+    } catch (err) {
+        console.error("Error in sendPaymentDataToAppsScript:", err);
+        // عرض أي خطأ للمستخدم
+        alert((translations[currentLang]["Error processing file."] || "Error: ") + err.message);
+    } finally {
+        // إخفاء شاشة التحميل دائمًا في النهاية
+        toggleLoadingOverlay(false);
+    }
+}
+
+
+// استبدال استدعاءات توليد الـ PDF القديمة في ملف index.html
+// هذا الزر في صفحة المعاينة (تنزيل PDF (مباشر))
+document.querySelector('#cv-preview-page .btn-info.ms-3').onclick = async function() {
+    const pdfData = await generatePdfFromNode(false); // isPaid: false -> مع علامة مائية
+    if (pdfData && pdfData.base64Pdf) {
+        const blob = base64toBlob(pdfData.base64Pdf, 'application/pdf');
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `CV_${document.getElementById('name-input')?.value.replace(/\s/g, '_') || 'ResailCV'}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        alert(translations[currentLang]['CV downloaded successfully!']);
+    } else {
+        // رسالة الخطأ يتم عرضها بالفعل داخل generatePdfFromNode
+    }
+};
+
+// هذا الزر في صفحة المعاينة (طلب تنزيل / طباعة)
+document.querySelector('#cv-preview-page .btn-success.ms-3').onclick = function() {
+    openPaymentForCV_appsScript(); // هذا سيؤدي إلى صفحة خيارات الدفع
+};
+
+
+// دالة مساعدة لتحويل Base64 إلى Blob
+function base64toBlob(base64, type = 'application/octet-stream') {
+    const binStr = atob(base64);
+    const len = binStr.length;
+    const arr = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+        arr[i] = binStr.charCodeAt(i);
+    }
+    return new Blob([arr], { type: type });
+}
+
+
+function selectTemplate(templateNumber, category) {
+    const cvContainer = document.getElementById('cv-container');
+    const previews = document.querySelectorAll('.template-preview-container .template-preview');
+    previews.forEach(preview => preview.classList.remove('selected-template'));
+
+    // --- هذا هو السطر الأهم الذي يجب تعديله ---
+    // بدلاً من .classList.add، نستخدم .className = '' لمسح كل شيء أولاً
+    cvContainer.className = ''; 
+    // ------------------------------------------
+
+    // ثم نضيف الكلاسات الجديدة والنظيفة
+    cvContainer.classList.add(`${category}-layout`, `template${templateNumber}`);
+
+    // الكود التالي يبقى كما هو
+    const selectedPreview = document.querySelector(`.template-preview[data-template-category="${category}"][onclick*="selectTemplate(${templateNumber}, '${category}')"]`);
+    if (selectedPreview) {
+        selectedPreview.classList.add('selected-template');
+    }
+    
+    selectedTemplate = templateNumber;
+    selectedTemplateCategory = category;
+    
+    // الآن، عندما يتم استدعاء هذه الدالة، ستجد الكلاس الصحيح فقط
+    updateControlsForCategory();
+    
+    generateCV(cvContainer);
+    updateColorControlVisibility(); 
+
+}
+/**
+ * يعالج تغيير الصورة الشخصية، يتحقق من حجمها،
+ * ثم يقوم بتصغيرها وضغطها قبل إضافتها للسيرة الذاتية.
+ */
+function handleProfilePicChange(event) {
+    const file = event.target.files[0];
+    const inputElement = event.target;
+
+    if (!file) {
+        profilePicDataUrl = null;
+        generateCV(cvContainer);
+        updateProgress();
+        return;
+    }
+
+    // 1. التحقق من نوع وحجم الملف
+    if (!file.type.startsWith('image/')) {
+        alert(currentLang === 'ar' ? 'الرجاء اختيار ملف صورة صالح.' : 'Please select a valid image file.');
+        inputElement.value = '';
+        return;
+    }
+    if (file.size > MAX_FILE_SIZE) {
+        alert(currentLang === 'ar' ? `حجم الصورة كبير جداً. الرجاء اختيار صورة أصغر من ${MAX_FILE_SIZE / 1024 / 1024} ميغابايت.` : `Image size is too large. Please select an image smaller than ${MAX_FILE_SIZE / 1024 / 1024}MB.`);
+        inputElement.value = '';
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+            // 2. تصغير الصورة باستخدام Canvas
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 400; // أقصى عرض للصورة
+            const MAX_HEIGHT = 400; // أقصى ارتفاع للصورة
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > MAX_WIDTH) {
+                    height *= MAX_WIDTH / width;
+                    width = MAX_WIDTH;
+                }
+            } else {
+                if (height > MAX_HEIGHT) {
+                    width *= MAX_HEIGHT / height;
+                    height = MAX_HEIGHT;
+                }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // 3. تحويل الصورة المصغرة إلى Base64 مع ضغطها (JPEG quality 90%)
+            // استخدام 'image/jpeg' يعطي حجم أصغر بكثير من 'image/png'
+            profilePicDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+
+            // 4. تحديث المعاينة
+            generateCV(cvContainer);
+            updateProgress();
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function addExperienceField(data = null) {
+    const container = document.getElementById('experience-input');
+    if (!container) return;
+    const newEntry = document.createElement('div');
+    newEntry.className = 'experience-entry';
+    newEntry.innerHTML = `
+        <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
+        <input type="text" placeholder="${translations[currentLang]['Job Title_placeholder'] || 'Job Title'}" class="experience-title" oninput="generateCV(cvContainer); updateProgress()">
+        <input type="text" placeholder="${translations[currentLang]['Company'] || 'Company'}" class="experience-company" oninput="generateCV(cvContainer); updateProgress()">
+        <input type="text" placeholder="${translations[currentLang]['Duration'] || 'Duration'}" class="experience-duration" oninput="generateCV(cvContainer); updateProgress()">
+        <textarea placeholder="${translations[currentLang]['Description'] || 'Description'}" class="experience-description" oninput="generateCV(cvContainer); updateProgress()"></textarea>
+    `;
+    container.appendChild(newEntry);
+
+    // الجزء الجديد: ملء البيانات إذا تم توفيرها
+    if (data) {
+        newEntry.querySelector('.experience-title').value = data.title || '';
+        newEntry.querySelector('.experience-company').value = data.company || '';
+        newEntry.querySelector('.experience-duration').value = data.duration || '';
+        newEntry.querySelector('.experience-description').value = data.description || '';
+    }
+}
+
+function removeLastExperienceField() {
+    const experienceInput = document.getElementById('experience-input');
+    if (!experienceInput) return;
+    const entries = experienceInput.querySelectorAll('.experience-entry');
+    if (entries.length > 1) {
+        experienceInput.removeChild(entries[entries.length - 1]);
+        generateCV(cvContainer); updateProgress();
+    } else {
+        alert(translations[currentLang]['You must have at least one field in this section.']);
+    }
+}
+
+function addEducationField(data = null) {
+    const educationInput = document.getElementById('education-input');
+    if (!educationInput) return;
+    const newEntry = document.createElement('div');
+    newEntry.className = 'education-entry';
+    newEntry.innerHTML = `
+         <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
+        <input type="text" placeholder="${translations[currentLang]['Degree'] || 'Degree'}" class="education-degree" oninput="generateCV(cvContainer); updateProgress()">
+        <input type="text" placeholder="${translations[currentLang]['University/Institution'] || 'University/Institution'}" class="education-institution" oninput="generateCV(cvContainer); updateProgress()">
+        <input type="text" placeholder="${translations[currentLang]['Duration'] || 'Duration'}" class="education-duration" oninput="generateCV(cvContainer); updateProgress()">
+    `;
+    educationInput.appendChild(newEntry);
+
+    // الجزء الجديد
+    if (data) {
+        newEntry.querySelector('.education-degree').value = data.degree || '';
+        newEntry.querySelector('.education-institution').value = data.institution || '';
+        newEntry.querySelector('.education-duration').value = data.duration || '';
+    }
+}
+
+// استبدل دالة addSkillField بالكامل
+function addSkillField(data = null) {
+    const skillsInput = document.getElementById('skills-input');
+    if (!skillsInput) return;
+    const newEntry = document.createElement('div');
+    newEntry.className = 'skill-entry border p-2 mb-2 rounded position-relative';
+
+    // قسم لإدخال اسم المهارة والمستوى
+    newEntry.innerHTML = `
+        <button type="button" class="remove-field" onclick="removeField(this)">&times;</button>
+        <div class="row">
+            <div class="col-md-6">
+                <input type="text" class="form-control skill-item-input" placeholder="${translations[currentLang]['Enter a skill'] || 'Enter a skill'}" oninput="generateCV(cvContainer); updateProgress()">
             </div>
-                <div id="payment-options-page" class="page-section">
-                            <div class="container py-4 text-center">
-                                <h3 class="mb-4" data-translate="choose-payment">اختر باقتك وطريقة الدفع</h3>
-                            <div class="discount-section my-4">
-                                <h5 data-en="Available Discounts" data-ar="الخصومات المتاحة">الخصومات المتاحة</h5>
-                            <div class="d-flex justify-content-center gap-3 flex-wrap">
-                                    
-                                    <div class="discount-card" data-code="FIRSTBUY">
-                                        <div class="discount-tag">25%</div>
-                                        <div class="discount-info">
-                                            <strong class="code-text">FIRSTBUY</strong>
-                                            <small data-en="For new customers" data-ar="للمشترين الجدد">للمشترين الجدد</small>
-                                        </div>
-                                        <input type="hidden" id="discount-code" />
-                                    </div>
-
-
-                                    <div class="discount-card" data-code="SAVE10">
-                                        <div class="discount-tag">10%</div>
-                                        <div class="discount-info">
-                                            <strong class="code-text">SAVE10</strong>
-                                            <small data-en="Limited time offer" data-ar="عرض لفترة محدودة">عرض لفترة محدودة</small>
-                                        </div>
-                                    </div>
-                                    <div class="text-center mt-2" id="remove-discount-container" style="display: none;">
-                                        <a href="#" id="remove-discount-btn" class="remove-discount-link" data-en="Remove Discount" data-ar="إزالة الخصم">إزالة الخصم</a>
-                                    </div>
-                                </div>
-                                <input type="hidden" id="discount-code" />
-                            </div>
-                            <div class="row justify-content-center g-4">
-                                <div class="col-md-5">
-                                    <div class="card h-100 shadow-sm">
-                                        <div class="card-body d-flex flex-column">
-                                            <h4 class="card-title" data-translate="local-payment-title">الدفع المحلي</h4>
-                                            <p class="text-muted" data-translate="local-payment-desc">(عبر STC Pay أو تحويل الراجحي)</p>
-                                            
-                                            <p class="card-text fs-4 fw-bold my-3">
-                                                <span id="local-price-display">0</span>
-                                                <span data-translate="sar-currency">ريال سعودي</span>
-                                            </p>
-
-                                            <div class="mt-auto">
-                                                <p class="fw-bold" data-translate="click-to-pay">اختر وسيلتك المفضلة:</p>
-                                                <div class="d-flex justify-content-center flex-wrap">
-                                                    <img src="stcpay.png.webp" alt="STC Pay" style="height: 60px; cursor: pointer; margin:10px;"
-                                                        onclick="openQrPaymentPage('STC Pay', selectedTemplateCategory)" loading="lazy"/>
-                                                    <img src="alrajhi.png.webp" alt="Al Rajhi" style="height: 60px; cursor: pointer; margin:10px;"
-                                                        onclick="openQrPaymentPage('Rajhi', selectedTemplateCategory)" loading="lazy"/>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                    <div class="col-md-5">
-                                        <div class="card h-100 shadow-sm border-primary">
-                                            <div class="card-header bg-primary text-white" data-translate="international-payment-header">دولي وآمن</div>
-                                            <div class="card-body d-flex flex-column">
-                                                <h4 class="card-title" data-translate="card-payment-title">الدفع بالبطاقة الائتمانية</h4>
-                                                <p class="text-muted" data-translate="card-payment-desc">(Visa, MasterCard, etc. via Lemon Squeezy)</p>
-                                                <p class="card-text fs-4 fw-bold my-3 text-primary">
-                                                    <span id="ls-price-display">0</span>
-                                                    <span data-translate="sar-currency">ريال سعودي</span>
-                                                </p>
-                                                
-                                                <div class="mt-auto">
-                                                    <p class="fw-bold" data-translate="click-to-pay-ls">اضغط للدفع الآمن:</p>
-                                                    <button id="lemon-squeezy-btn" class="btn btn-lg btn-primary w-100">
-                                                        <span data-translate="pay-with-card">ادفع الآن</span>
-                                                    </button>
-                                                    <img src="lemonsqueezy-logo.png" alt="Pay with Card (Lemon Squeezy)" id="lemon-squeezy-btn" loading="lazy" style="height: 40px; cursor: pointer; margin:5px;" title="ادفع بالبطاقة الائتمانية عبر Lemon Squeezy">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                            
-                                </div>
-
-                                    <div class="d-flex justify-content-center mt-4">
-                                        <button class="btn btn-secondary btn-lg ms-3" onclick="showPage('cv-template-selection-page')" data-en="Back to Templates" data-ar="العودة للنماذج">العودة للنماذج</button>
-                                        <button class="btn btn-secondary btn-lg" onclick="showPage('landing-page')" data-en="Back to Home" data-ar="العودة للرئيسية">العودة للرئيسية</button>
-                                    </div>
-                                </div>
-                </div>
-
-                <div id="qr-manual-payment-page" class="page-section">
-                        <div class="container py-4 text-center">
-                            <h3 data-translate="payment">الدفع</h3>
-                            <img id="qr-payment-image" src="" alt="QR Code" style="max-width: 200px; margin-bottom: 15px; display:none;" loading="lazy"/>
-                            <div id="paypal-button-container" style="display: none; margin-top: 20px;"></div>
-                            <div id="manual-payment-form" style="display: none; text-align: initial;">
-                                <p data-translate="payment-note">بعد إتمام الدفع في تطبيق البنك، الرجاء تعبئة البيانات التالية:</p>
-                                <label data-translate="your-name">اسمك:</label>
-                                <input type="text" id="payment-name" class="form-control mb-2" />
-                                <label data-translate="your-email">بريدك الإلكتروني:</label>
-                                <input type="email" id="payment-email" class="form-control mb-2" />
-                                <label data-translate="your-phone">رقم الهاتف:</label>
-                                <input type="tel" id="payment-phone" class="form-control mb-2" />
-                                <label data-translate="messages">السعر المدفوع:</label> <input type="number" id="payment-messages" class="form-control mb-2" readonly />
-                                <label data-translate="attachment">أرفق إيصال الدفع (صورة / PDF):</label>
-                                <input type="file" id="payment-file" accept="image/*,application/pdf" class="form-control mb-3" />
-                            </div>
-                            <button class="btn btn-primary w-100" id="submit-payment-proof" style="display:none;" onclick="submitPaymentProof(event)">
-                                <span data-translate="submit">إرسال</span>
-                            </button>
-                            <div id="qr-payment-result" style="margin-top:10px; color:green;"></div>
-                            <div class="d-flex justify-content-center mt-4">
-                                <button class="btn btn-secondary btn-lg" onclick="showPage('payment-options-page')" data-en="Back to Payment Options" data-ar="العودة لخيارات الدفع">العودة لخيارات الدفع</button>
-                            </div>
-                        </div>
-                </div>
-
-                <div id="terms-of-service" class="page-section">
-                    <div class="container py-4">
-                        <h2 class="mb-4 text-center" data-translate="terms-of-service-title">شروط الخدمة</h2>
-                        
-                        <p data-translate="terms-of-service-intro-p">مرحباً بكم في نظام رسائل لإنشاء السيرة الذاتية. باستخدامك لخدماتنا، فإنك توافق على الالتزام بالشروط والأحكام التالية، والتي تشكل اتفاقية ملزمة بينك وبين "رسائل". يرجى قراءتها بعناية.</p>
-
-                        <h4 class="mt-4" data-translate="terms-of-service-h4-1">1. استخدام الخدمة</h4>
-                        <p data-translate="terms-of-service-p-1-1">تتيح لك منصة رسائل إنشاء وتصميم السير الذاتية الاحترافية وتصديرها بصيغة PDF. يجب أن تكون جميع البيانات والمعلومات التي تقدمها (بما في ذلك، على سبيل المثال لا الحصر، الاسم، الخبرات، المؤهلات، المهارات) صحيحة ودقيقة وحديثة، وتتحمل أنت وحدك مسؤولية المحتوى الخاص بك. لا يجوز استخدام الخدمة لأي أغراض غير قانونية أو احتيالية أو تشهيرية أو غير مصرح بها.</p>
-                        <p data-translate="terms-of-service-p-1-2">نحتفظ بالحق في تعليق أو إنهاء وصولك إلى الخدمة إذا انتهكت أياً من هذه الشروط، أو إذا رأينا أن سلوكك يضر بالخدمة أو المستخدمين الآخرين.</p>
-
-                        <h4 class="mt-4" data-translate="terms-of-service-h4-2">2. الملكية الفكرية</h4>
-                        <p data-translate="terms-of-service-p-2-1">جميع التصميمات، القوالب، النصوص، الرسومات، الشعارات، الأيقونات، الصور، البرمجيات، وأي محتوى آخر متاح عبر الخدمة ("محتوى الخدمة") هي ملكية فكرية خاصة بـ "رسائل" أو مرخصة لنا، وهي محمية بموجب قوانين حقوق النشر والعلامات التجارية والملكية الفكرية الأخرى. عند استخدامك للخدمة، فإنك تحصل على ترخيص شخصي، غير حصري، غير قابل للتحويل، وقابل للإلغاء لاستخدام السيرة الذاتية التي تنشئها لأغراضك الشخصية أو المهنية فقط.</p>
-                        <p data-translate="terms-of-service-p-2-2">لا يجوز لك إعادة بيع أو إعادة إنتاج أو توزيع أو تعديل أو إنشاء أعمال مشتقة أو عرض علني أو أداء علني أو نشر أو نقل أو استغلال أي جزء من محتوى الخدمة أو الخدمة نفسها دون إذن كتابي مسبق من "رسائل".</p>
-
-                        <h4 class="mt-4" data-translate="terms-of-service-h4-3">3. الدفع والأسعار</h4>
-                        <p data-translate="terms-of-service-p-3-1">تتطلب بعض القوالب والميزات المتقدمة دفع رسوم محددة. تكون جميع الأسعار موضحة بوضوح في صفحة اختيار القوالب أو عند بداية عملية الدفع. تحتفظ "رسائل" بالحق في تعديل الأسعار أو فرض رسوم على ميزات جديدة في أي وقت، مع إخطار مسبق بذلك. جميع المدفوعات تتم عبر بوابات دفع خارجية آمنة (مثل Lemon Squeezy). "رسائل" لا تقوم بتخزين معلومات بطاقة الدفع الخاصة بك.</p>
-                        <p data-translate="terms-of-service-p-3-2">جميع المدفوعات غير قابلة للاسترداد إلا في حالات محددة وفقًا لسياسة الاسترداد الخاصة بنا، والتي يمكنك مراجعتها في القسم المخصص لذلك.</p>
-
-                        <h4 class="mt-4" data-translate="terms-of-service-h4-4">4. حدود المسؤولية</h4>
-                        <p data-translate="terms-of-service-p-4-1">يتم تقديم الخدمة "كما هي" و "حسب توفرها" دون أي ضمانات من أي نوع، صريحة أو ضمنية. نحن لا نضمن دقة أو اكتمال أو صلاحية أو موثوقية أو توفر أي معلومات مقدمة من قبل المستخدمين أو النتائج التي يمكن الحصول عليها من استخدام الخدمة.</p>
-                        <p data-translate="terms-of-service-p-4-2">لن تكون "رسائل" مسؤولة، تحت أي ظرف من الظروف، عن أي أضرار مباشرة أو غير مباشرة أو عرضية أو خاصة أو تبعية أو تأديبية، بما في ذلك، على سبيل المثال لا الحصر، خسارة الأرباح، البيانات، أو الاستخدام، تنشأ عن استخدام أو عدم القدرة على استخدام الخدمة.</p>
-
-                        <h4 class="mt-4" data-translate="terms-of-service-h4-5">5. التعديلات على الشروط</h4>
-                        <p data-translate="terms-of-service-p-5-1">نحتفظ بالحق في تعديل أو تحديث هذه الشروط والأحكام في أي وقت ودون إشعار مسبق. سيتم نشر أي تغييرات على هذه الصفحة، ويعتبر استمرار استخدامك للخدمة بعد نشر التعديلات بمثابة موافقة منك على الشروط المعدلة. يرجى مراجعة هذه الصفحة بانتظام للاطلاع على أي تحديثات.</p>
-
-                        <h4 class="mt-4" data-translate="terms-of-service-h4-6">6. القانون المعمول به</h4>
-                        <p data-translate="terms-of-service-p-6-1">تخضع هذه الشروط والأحكام وتفسر وفقًا لقوانين المملكة العربية السعودية، وتوافق على الخضوع للاختصاص القضائي الحصري لمحاكم المملكة العربية السعودية لحل أي نزاعات تنشأ عن هذه الشروط أو استخدام الخدمة.</p>
-
-                        <h4 class="mt-4" data-translate="terms-of-service-h4-7">7. الاتصال بنا</h4>
-                        <p data-translate="terms-of-service-p-7-1">لأي أسئلة أو استفسارات بخصوص شروط الخدمة، يرجى الاتصال بنا عبر البريد الإلكتروني: <a href="mailto:ramyheshamamer@gmail.com">ramyheshamamer@gmail.com</a>.</p>
-                        
-                        <button class="btn btn-secondary mt-3" onclick="showPage('landing-page')" data-translate="back-to-home">العودة للرئيسية</button>
-                    </div>
-                </div>
-
-                <div id="refund-policy" class="page-section">
-                    <div class="container py-4">
-                        <h2 class="mb-4 text-center" data-translate="refund-policy-title">سياسة الاسترداد والنزاعات</h2>
-                        
-                        <p data-translate="refund-policy-intro-p">نحن في "رسائل" نسعى لتقديم خدمة عالية الجودة وضمان رضا عملائنا. نظرًا لطبيعة منتجاتنا الرقمية (السير الذاتية التي يتم إنشاؤها وتنزيلها بصيغة PDF)، فإن سياستنا للاسترداد والنزاعات كالتالي:</p>
-
-                        <h4 class="mt-4" data-translate="refund-policy-h4-1">1. المنتجات الرقمية (السير الذاتية بصيغة PDF)</h4>
-                        <p data-translate="refund-policy-p-1-1">بمجرد إتمام عملية الدفع ونجاح إنشاء السيرة الذاتية وإرسالها إلى بريدك الإلكتروني (أو توفير رابط التنزيل)، تعتبر الخدمة قد اكتملت بالكامل. ولذلك، لا تتوفر عادةً عمليات استرداد للمبالغ المدفوعة.</p>
-
-                        <h4 class="mt-4" data-translate="refund-policy-h4-2">2. حالات الاسترداد الاستثنائية</h4>
-                        <p data-translate="refund-policy-p-2-1">قد يتم النظر في طلبات الاسترداد في الحالات الاستثنائية التالية فقط:</p>
-                        <ul data-translate="refund-policy-list-1">
-                            <li>مشكلة فنية جوهرية: إذا واجهت مشكلة فنية في نظامنا منعتك من إنشاء أو تنزيل السيرة الذاتية بشكل كامل، ولم يتمكن فريق الدعم من حل المشكلة في غضون فترة زمنية معقولة.</li>
-                            <li>خطأ فادح في المنتج: إذا كانت السيرة الذاتية التي تم إنشاؤها تحتوي على أخطاء فادحة ناتجة عن خلل في نظامنا (وليس بسبب أخطاء في البيانات المدخلة من قبلك)، ولم نتمكن من تصحيحها.</li>
-                            <li>الدفع المكرر: إذا قمت بالدفع لنفس الخدمة عن طريق الخطأ أكثر من مرة.</li>
-                        </ul>
-
-                        <h4 class="mt-4" data-translate="refund-policy-h4-3">3. عملية طلب الاسترداد</h4>
-                        <p data-translate="refund-policy-p-3-1">لتقديم طلب استرداد، يرجى الاتصال بفريق الدعم لدينا عبر البريد الإلكتروني <a href="mailto:ramyheshamamer@gmail.com">ramyheshamamer@gmail.com</a> في غضون 7 أيام من تاريخ الشراء. يجب أن يتضمن طلبك التفاصيل التالية:</p>
-                        <ul data-translate="refund-policy-list-2">
-                            <li>اسمك الكامل والبريد الإلكتروني المستخدم في الشراء.</li>
-                            <li>تاريخ ورقم المعاملة (إن وجد).</li>
-                            <li>وصف مفصل للمشكلة التي واجهتها والأسباب التي تدفعك لطلب الاسترداد.</li>
-                            <li>أي لقطات شاشة أو مستندات تدعم طلبك.</li>
-                        </ul>
-
-                        <h4 class="mt-4" data-translate="refund-policy-h4-4">4. مراجعة الطلبات</h4>
-                        <p data-translate="refund-policy-p-4-1">سنقوم بمراجعة جميع طلبات الاسترداد بعناية. سيتم إخطارك بالقرار في غضون 5 أيام عمل من استلام طلبك. إذا تمت الموافقة على الاسترداد، فسيتم معالجة المبلغ إلى طريقة الدفع الأصلية خلال 7-14 يوم عمل، اعتمادًا على سياسات معالج الدفع الخاص بك.</p>
-
-                        <h4 class="mt-4" data-translate="refund-policy-h4-5">5. حل النزاعات</h4>
-                        <p data-translate="refund-policy-p-5-1">نحن نشجعك على الاتصال بنا مباشرة في حال وجود أي مشاكل أو نزاعات قبل اللجوء إلى معالج الدفع أو البنك. نسعى لحل جميع المشكلات بشكل ودي وعادل لضمان رضا عملائنا.</p>
-
-                        <button class="btn btn-secondary mt-3" onclick="showPage('landing-page')" data-translate="back-to-home">العودة للرئيسية</button>
-                    </div>
-                </div>
-
-                <div id="privacy-policy" class="page-section">
-                    <div class="container py-4">
-                        <h2 class="mb-4 text-center" data-translate="privacy-policy-title">سياسة الخصوصية</h2>
-                        
-                        <p data-translate="privacy-policy-intro-p">نحن في "رسائل" نلتزم بحماية خصوصية بياناتك الشخصية. توضح هذه السياسة كيف نجمع، نستخدم، نحمي، وندير المعلومات التي تقدمها لنا عند استخدام خدماتنا لإنشاء السير الذاتية.</p>
-
-                        <h4 class="mt-4" data-translate="privacy-policy-h4-1">1. المعلومات التي نجمعها</h4>
-                        <ul data-translate="privacy-policy-list-1">
-                            <li><strong>معلومات السيرة الذاتية:</strong> نقوم بجمع المعلومات التي تدخلها مباشرة في نماذج إنشاء السيرة الذاتية، مثل اسمك الكامل، المسمى الوظيفي، عنوان البريد الإلكتروني، رقم الهاتف، الموقع الشخصي/المحفظة، الهدف الوظيفي، تفاصيل الخبرة العملية، المؤهلات العلمية، المهارات، اللغات، والمراجع. إذا قمت بتحميل صورة شخصية، فإننا نقوم بجمعها أيضاً.</li>
-                            <li><strong>معلومات الاتصال والدفع:</strong> عند إجراء عملية شراء، نجمع اسمك، بريدك الإلكتروني، ورقم هاتفك. تفاصيل الدفع (مثل أرقام البطاقات الائتمانية) يتم معالجتها مباشرة بواسطة بوابات دفع خارجية آمنة (مثل Lemon Squeezy/Stripe)، ونحن لا نقوم بتخزين هذه المعلومات الحساسة على خوادمنا.</li>
-                            <li><strong>بيانات الاستخدام:</strong> قد نجمع معلومات حول كيفية وصولك واستخدامك لخدمتنا، مثل عنوان IP، نوع المتصفح، الصفحات التي زرتها، والوقت المستغرق في كل صفحة. هذه البيانات تُستخدم لتحسين الخدمة ولا ترتبط بشكل مباشر بمعلوماتك الشخصية.</li>
-                        </ul>
-
-                        <h4 class="mt-4" data-translate="privacy-policy-h4-2">2. كيف نستخدم معلوماتك</h4>
-                        <p data-translate="privacy-policy-p-2-1">نستخدم المعلومات التي نجمعها للأغراض التالية:</p>
-                        <ul data-translate="privacy-policy-list-2">
-                            <li>لتقديم خدمة إنشاء السيرة الذاتية وتخصيصها لك.</li>
-                            <li>لمعالجة معاملات الدفع الخاصة بك وتزويدك بالمنتج النهائي (ملف PDF للسيرة الذاتية).</li>
-                            <li>لتحسين وتطوير خدماتنا وميزاتنا.</li>
-                            <li>للتواصل معك بخصوص استخدامك للخدمة، أو لأغراض الدعم الفني، أو لإرسال تحديثات مهمة.</li>
-                            <li>لضمان الامتثال للمتطلبات القانونية والتنظيمية.</li>
-                        </ul>
-
-                        <h4 class="mt-4" data-translate="privacy-policy-h4-3">3. مشاركة المعلومات</h4>
-                        <p data-translate="privacy-policy-p-3-1">نحن لا نبيع، نؤجر، أو نتبادل معلوماتك الشخصية مع أطراف ثالثة لأغراض التسويق. قد نشارك معلوماتك مع:</p>
-                        <ul data-translate="privacy-policy-list-3">
-                            <li><strong>مقدمي الخدمات الخارجيين:</strong> مثل بوابات الدفع (Lemon Squeezy/Stripe) ومعالجي البريد الإلكتروني، وذلك بالقدر اللازم لتقديم خدماتنا. هؤلاء المقدمون ملزمون بالحفاظ على سرية معلوماتك.</li>
-                            <li><strong>الامتثال القانوني:</strong> قد نكشف عن معلوماتك إذا كان ذلك مطلوبًا بموجب القانون أو أمر قضائي، أو لحماية حقوقنا ومصالحنا أو حقوق المستخدمين الآخرين.</li>
-                        </ul>
-
-                        <h4 class="mt-4" data-translate="privacy-policy-h4-4">4. أمان البيانات</h4>
-                        <p data-translate="privacy-policy-p-4-1">نحن نتخذ إجراءات أمنية معقولة ومناسبة لحماية معلوماتك الشخصية من الوصول غير المصرح به، أو التغيير، أو الكشف، أو التدمير. ومع ذلك، يجب أن تدرك أنه لا يوجد نظام نقل بيانات عبر الإنترنت أو تخزين إلكتروني آمن 100%.</p>
-
-                        <h4 class="mt-4" data-translate="privacy-policy-h4-5">5. حقوقك</h4>
-                        <p data-translate="privacy-policy-p-5-1">يحق لك الوصول إلى بياناتك الشخصية التي نحتفظ بها، وطلب تصحيح أي معلومات غير دقيقة، أو طلب حذف بياناتك. لممارسة هذه الحقوق، يرجى الاتصال بنا عبر البريد الإلكتروني المذكور أدناه.</p>
-
-                        <h4 class="mt-4" data-translate="privacy-policy-h4-6">6. التعديلات على سياسة الخصوصية</h4>
-                        <p data-translate="privacy-policy-p-6-1">نحتفظ بالحق في تعديل أو تحديث سياسة الخصوصية هذه من وقت لآخر. سيتم نشر أي تغييرات على هذه الصفحة، ويعتبر استمرارك في استخدام الخدمة بعد نشر التعديلات بمثابة موافقة منك على السياسة المعدلة.</p>
-
-                        <h4 class="mt-4" data-translate="privacy-policy-h4-7">7. الاتصال بنا</h4>
-                        <p data-translate="privacy-policy-p-7-1">لأي أسئلة أو استفسارات بخصوص سياسة الخصوصية، يرجى الاتصال بنا عبر البريد الإلكتروني: <a href="mailto:ramyheshamamer@gmail.com">ramyheshamamer@gmail.com</a>.</p>
-
-                        <button class="btn btn-secondary mt-3" onclick="showPage('landing-page')" data-translate="back-to-home">العودة للرئيسية</button>
-                    </div>
-                </div>
-    </div>
-
-    <footer class="bg-dark text-white py-4">
-        <div class="container text-center">
-            <ul class="list-inline mb-3">
-                <li class="list-inline-item"><a href="#terms-of-service" onclick="showPage('terms-of-service')" class="text-white text-decoration-none" data-translate="terms-of-service-link">شروط الخدمة</a></li>
-                <li class="list-inline-item mx-3"><a href="#refund-policy" onclick="showPage('refund-policy')" class="text-white text-decoration-none" data-translate="refund-policy-link">سياسة الاسترداد</a></li>
-                <li class="list-inline-item"><a href="#privacy-policy" onclick="showPage('privacy-policy')" class="text-white text-decoration-none" data-translate="privacy-policy-link">سياسة الخصوصية</a></li>
-            </ul>
-            <p>&copy; 2023 <span data-translate="brand-name">رسائل</span>. All rights reserved.</p>
+            <div class="col-md-6">
+                <select class="form-select skill-level-select" onchange="generateCV(cvContainer); updateProgress()">
+                    <option value="0">${translations[currentLang]['Select Level'] || 'Select Level'}</option>
+                    <option value="30%">${translations[currentLang]['Beginner'] || 'Beginner'}</option>
+                    <option value="50%">${translations[currentLang]['Intermediate'] || 'Intermediate'}</option>
+                    <option value="75%">${translations[currentLang]['Advanced'] || 'Advanced'}</option>
+                    <option value="100%">${translations[currentLang]['Expert'] || 'Expert'}</option>
+                </select>
+            </div>
         </div>
+    `;
+    skillsInput.appendChild(newEntry);
 
-    </footer>
+    // للتوافق مع البيانات القديمة (اختياري)
+    if (data) {
+        newEntry.querySelector('.skill-item-input').value = data.name || (typeof data === 'string' ? data : '');
+        if(data.level) newEntry.querySelector('.skill-level-select').value = data.level;
+    }
+}
 
-    <script src="script.js"></script>
-</body>
-</html>
+// ولا تنس تعديل دالة جلب بيانات المهارات لتقرأ المستوى أيضاً
+function getSkillsData() {
+    const skills = [];
+    document.querySelectorAll('#skills-input .skill-entry').forEach(entry => {
+        const name = entry.querySelector('.skill-item-input').value.trim();
+        const level = entry.querySelector('.skill-level-select').value;
+        if (name && level !== '0') {
+            skills.push({ name, level });
+        }
+    });
+    return skills;
+}
+
+// وأضف الترجمات الجديدة لكائن translations
+// في قسم ar
+// "Select Level": "اختر المستوى", "Beginner": "مبتدئ", "Intermediate": "متوسط", "Advanced": "متقدم", "Expert": "خبير"
+// في قسم en
+// "Select Level": "Select Level", "Beginner": "Beginner", "Intermediate": "Intermediate", "Advanced": "Advanced", "Expert": "Expert"
+
+function removeLastSkillField() {
+    const skillsInput = document.getElementById('skills-input');
+    if (!skillsInput) return;
+    const entries = skillsInput.querySelectorAll('.skill-entry');
+    // تعديل: نحذف طالما يوجد عنصر واحد على الأقل
+    if (entries.length > 0) {
+        skillsInput.removeChild(entries[entries.length - 1]);
+        generateCV(cvContainer); 
+        updateProgress();
+    }
+}
+
+function removeLastLanguageField() {
+    const languagesInput = document.getElementById('languages-input');
+    if (!languagesInput) return;
+    const entries = languagesInput.querySelectorAll('.language-entry');
+    // تعديل: نحذف طالما يوجد عنصر واحد على الأقل
+    if (entries.length > 0) {
+        languagesInput.removeChild(entries[entries.length - 1]);
+        generateCV(cvContainer); 
+        updateProgress();
+    }
+}
+
+function removeLastReferenceField() {
+    const referencesInput = document.getElementById('references-input');
+    if (!referencesInput) return;
+    const entries = referencesInput.querySelectorAll('.reference-entry');
+    // تعديل: نحذف طالما يوجد عنصر واحد على الأقل
+    if (entries.length > 0) {
+        referencesInput.removeChild(entries[entries.length - 1]);
+        generateCV(cvContainer); 
+        updateProgress();
+    }
+}
+
+function removeField(button) {
+    const entry = button.parentElement;
+    const parentContainer = entry.parentElement;
+    // تعديل: أزلنا الشرط الذي يمنع حذف آخر عنصر
+    parentContainer.removeChild(entry);
+    generateCV(cvContainer); 
+    updateProgress();
+}
+
+function addLanguageField(data = null) {
+    const languagesInput = document.getElementById('languages-input');
+    if (!languagesInput) return;
+    const newEntry = document.createElement('div');
+    newEntry.className = 'language-entry';
+    newEntry.innerHTML = `
+        <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
+        <input type="text" placeholder="${translations[currentLang]['Enter a language'] || 'Enter a language'}" class="language-item-input" oninput="generateCV(cvContainer); updateProgress()">
+    `;
+    languagesInput.appendChild(newEntry);
+    
+    // الجزء الجديد
+    if (data) {
+        newEntry.querySelector('.language-item-input').value = data || '';
+    }
+}
+
+
+function addReferenceField(data = null) {
+    const referencesInput = document.getElementById('references-input');
+    if (!referencesInput) return;
+    const newEntry = document.createElement('div');
+    newEntry.className = 'reference-entry';
+    newEntry.innerHTML = `
+        <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
+        <input type="text" placeholder="${translations[currentLang]['Name'] || 'Name'}" class="reference-name" oninput="generateCV(cvContainer); updateProgress()">
+        <input type="text" placeholder="${translations[currentLang]['Position'] || 'Position'}" class="reference-position" oninput="generateCV(cvContainer); updateProgress()">
+        <input type="text" placeholder="${translations[currentLang]['Phone'] || 'Phone'}" class="reference-phone" oninput="generateCV(cvContainer); updateProgress()">
+        <input type="email" placeholder="${translations[currentLang]['Email'] || 'Email'}" class="reference-email" oninput="generateCV(cvContainer); updateProgress()">
+    `;
+    referencesInput.appendChild(newEntry);
+
+    // الجزء الجديد
+    if (data) {
+        newEntry.querySelector('.reference-name').value = data.name || '';
+        newEntry.querySelector('.reference-position').value = data.position || '';
+        newEntry.querySelector('.reference-phone').value = data.phone || '';
+        newEntry.querySelector('.reference-email').value = data.email || '';
+    }
+}
+
+
+
+/**
+/**
+ * =========================================================================
+ * == دالة generateCV النهائية - مع دعم كامل لهياكل القوالب الإبداعية ==
+ * =========================================================================
+ * @param {HTMLElement} targetElement The DOM element to populate with CV content.
+ */
+
+/**
+ * =========================================================================
+ * == دالة generateCV النهائية - مع إضافة عنصر التمدد (endmarker) ==
+ * =========================================================================
+ * @param {HTMLElement} targetElement The DOM element to populate with CV content.
+ */
+function generateCV(targetElement) {
+    if (!targetElement) {
+        console.error("[generateCV] Target element is null!");
+        return;
+    }
+
+    const isArabic = currentLang === 'ar';
+    const direction = isArabic ? 'rtl' : 'ltr';
+    targetElement.dir = direction;
+    targetElement.innerHTML = ''; // مسح المحتوى القديم
+
+    // --- 1. جمع كل البيانات من النموذج ---
+    const name = document.getElementById('name-input')?.value.trim() || '';
+    const title = document.getElementById('title-input')?.value.trim() || '';
+    const emailVal = document.getElementById('email-input')?.value.trim() || '';
+    const phone = document.getElementById('phone-input')?.value.trim() || '';
+    const website = document.getElementById('website-input')?.value.trim() || '';
+    const objective = document.getElementById('objective-input')?.value.trim() || '';
+
+    // --- 2. بناء أجزاء HTML (لكل الأقسام) ---
+    // === الخطوة 1: استدعاء دالة عنصر التمدد مرة واحدة في البداية ===
+    const endMarkerHTML = createEndMarkerHTML();
+    // ===========================================================
+
+    let profilePicHTML = profilePicDataUrl ? `<img src="${profilePicDataUrl}" class="cv-profile-pic" alt="Profile Picture">` : '';
+
+    let contactInfoHTML = '<div class="cv-contact-info">';
+    if (emailVal) contactInfoHTML += `<div class="cv-contact-item"><i class="fas fa-envelope"></i><p>${emailVal}</p></div>`;
+    if (phone) contactInfoHTML += `<div class="cv-contact-item"><i class="fas fa-phone"></i><p>${phone}</p></div>`;
+    if (website) contactInfoHTML += `<div class="cv-contact-item"><i class="fas fa-map-marker-alt"></i><p>${website}</p></div>`;
+    contactInfoHTML += '</div>';
+
+    const objectiveHTML = objective ? `<div class="cv-section" id="objective"><h3 class="cv-section-title">${translations[currentLang]['Career Objective']}</h3><p>${objective.replace(/\n/g, '<br>')}</p></div>` : '';
+
+    let experienceHTML = '';
+    const experienceEntries = getExperiencesData();
+    if (experienceEntries.length > 0 && experienceEntries.some(e => e.title || e.company)) {
+        experienceHTML = `<div class="cv-section" id="experience"><h3 class="cv-section-title">${translations[currentLang]['Work Experience']}</h3>`;
+        experienceEntries.forEach(entry => {
+            if (entry.title || entry.company) {
+                 experienceHTML += `<div class="cv-experience-item"><h4 class="cv-job-title">${entry.title}</h4><h5 class="cv-company">${entry.company}${entry.company && entry.duration ? ' - ' : ''}${entry.duration}</h5><p>${entry.description.replace(/\n/g, '<br>')}</p></div>`;
+            }
+        });
+        experienceHTML += '</div>';
+    }
+
+    let educationHTML = '';
+    const educationEntries = getEducationsData();
+    if (educationEntries.length > 0 && educationEntries.some(e => e.degree || e.institution)) {
+        educationHTML = `<div class="cv-section" id="education"><h3 class="cv-section-title">${translations[currentLang]['Education']}</h3>`;
+        educationEntries.forEach(entry => {
+             if (entry.degree || entry.institution) {
+                educationHTML += `<div class="cv-education-item"><h4 class="cv-degree">${entry.degree}</h4><h5 class="cv-institution">${entry.institution}${entry.institution && entry.duration ? ' - ' : ''}${entry.duration}</h5></div>`;
+            }
+        });
+        educationHTML += '</div>';
+    }
+    
+    let skillsHTMLWithLevels = '';
+    const skillsWithLevels = getSkillsData();
+    if (skillsWithLevels.length > 0) {
+        skillsHTMLWithLevels = `<div class="cv-section" id="skills"><h3 class="cv-section-title">${translations[currentLang]['Skills']}</h3>`;
+        skillsWithLevels.forEach(skill => {
+            skillsHTMLWithLevels += `<div class="skill-item-wrapper"><span class="skill-name">${skill.name}</span><div class="skill-level-bar"><div class="skill-level-progress" style="width: ${skill.level};"></div></div></div>`;
+        });
+        skillsHTMLWithLevels += '</div>';
+    }
+
+    let languagesHTML = '';
+    const filledLanguages = getLanguagesData();
+    if (filledLanguages.length > 0) {
+        languagesHTML = `<div class="cv-section" id="languages"><h3 class="cv-section-title">${translations[currentLang]['Languages']}</h3><ul class="cv-language-list">`;
+        filledLanguages.forEach(lang => { languagesHTML += `<li>${lang}</li>`; });
+        languagesHTML += '</ul></div>';
+    }
+    
+    let referencesHTML = '';
+    const referenceEntries = getReferencesData();
+    if (referenceEntries.length > 0 && referenceEntries.some(r => r.name)) {
+        referencesHTML = `<div class="cv-section" id="references"><h3 class="cv-section-title">${translations[currentLang]['References']}</h3><div class="cv-references-list">`;
+        referenceEntries.forEach(ref => {
+            if(ref.name) {
+                referencesHTML += `<div class="cv-reference-item"><h4>${ref.name}</h4><p>${ref.position || ''}</p><p>${ref.phone || ''}</p><p>${ref.email || ''}</p></div>`;
+            }
+        });
+        referencesHTML += '</div></div>';
+    }
+
+    // --- 3. بناء الهيكل النهائي بناءً على فئة القالب ---
+    const cvContentDiv = document.createElement('div');
+    cvContentDiv.className = 'cv-content';
+
+    if (selectedTemplateCategory === 'normal') {
+        cvContentDiv.innerHTML = `
+            <div class="cv-header">
+                ${profilePicHTML}
+                <div class="cv-header-text">
+                    <h1 class="cv-name">${name}</h1>
+                    <h2 class="cv-title">${title}</h2>
+                    ${contactInfoHTML}
+                </div>
+            </div>
+            <div class="cv-body-content">
+                ${objectiveHTML}
+                ${experienceHTML}
+                ${educationHTML}
+                ${skillsHTMLWithLevels}
+                ${languagesHTML}
+                ${referencesHTML}
+                ${endMarkerHTML} 
+            </div>`;
+    } 
+    else if (selectedTemplateCategory === 'creative') {
+        if (selectedTemplate == 1) { // تصميم الموجة
+            cvContentDiv.innerHTML = `
+                <div class="header-wave">
+                    ${profilePicHTML}
+                    <div class="header-text"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div>
+                </div>
+                <div class="content-columns">
+                    <div class="left-column">${objectiveHTML}${experienceHTML}${educationHTML}${endMarkerHTML}</div>
+                    <div class="right-column"><div class="cv-section" data-section-name="contact-info">${contactInfoHTML}</div>${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div>
+                </div>`;
+        } else if (selectedTemplate == 2) { // تصميم الخط المائل
+            cvContentDiv.innerHTML = `
+                <div class="header-wave">
+                    <h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2>
+                </div>
+                <div class="content-columns">
+                    <div class="left-column">${objectiveHTML}${experienceHTML}${educationHTML}${endMarkerHTML}</div>
+                    <div class="right-column">${profilePicHTML}<div class="cv-section" data-section-name="contact-info">${contactInfoHTML}</div>${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div>
+                </div>`;
+        } else if (selectedTemplate == 3) { // تصميم الموجة العمودية
+            cvContentDiv.innerHTML = `
+                <div class="cv-sidebar">
+                    <div class="cv-header two-col-main">${profilePicHTML}<h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div>
+                    <div class="cv-section" data-section-name="contact-info">${contactInfoHTML}</div>
+                    ${skillsHTMLWithLevels}${languagesHTML}
+                    ${endMarkerHTML}
+                </div>
+                <div class="cv-main-content">
+                    ${objectiveHTML}
+                    ${experienceHTML}
+                    ${educationHTML}
+                    ${referencesHTML}
+                    ${endMarkerHTML}
+                </div>`;
+        }
+    }
+    else { // الفئات المتبقية (standard, ast, professional)
+        const layoutDiv = document.createElement('div');
+        layoutDiv.className = (selectedTemplateCategory === 'professional') ? 'cv-professional-layout' : 'cv-two-column-layout';
+        
+        const sidebarDiv = document.createElement('div');
+        sidebarDiv.className = 'cv-sidebar';
+        
+        const mainContentDiv = document.createElement('div');
+        mainContentDiv.className = 'cv-main-content';
+
+        if (selectedTemplateCategory === 'professional') {
+            const professionalHeader = document.createElement('div');
+            professionalHeader.className = 'cv-header professional-layout';
+            professionalHeader.innerHTML = `<div class="cv-profile-pic-wrapper">${profilePicHTML}</div><div class="cv-details"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2>${contactInfoHTML}</div>`;
+            cvContentDiv.appendChild(professionalHeader);
+            
+            sidebarDiv.innerHTML = `<div class="cv-profile-pic-wrapper">${profilePicHTML}</div>${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}`;
+            mainContentDiv.innerHTML = objectiveHTML + experienceHTML + educationHTML + endMarkerHTML;
+        } else { // Standard and AST layouts
+            sidebarDiv.innerHTML = profilePicHTML + `<div class="cv-section" data-section-name="contact-info">${contactInfoHTML}</div>` + skillsHTMLWithLevels + languagesHTML + referencesHTML + endMarkerHTML;
+            mainContentDiv.innerHTML = `<div class="cv-header two-col-main"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div>${objectiveHTML}${experienceHTML}${educationHTML}${endMarkerHTML}`;
+        }
+
+        layoutDiv.appendChild(sidebarDiv);
+        layoutDiv.appendChild(mainContentDiv);
+        cvContentDiv.appendChild(layoutDiv);
+    }
+    
+    targetElement.appendChild(cvContentDiv);
+
+    // --- 4. استدعاء دوال التنسيق والتحديث بعد بناء الهيكل ---
+    saveCvDataToLocalStorage();
+    applySelectedFonts();
+    applySelectedColors();
+    updatePicturePlacement(cvContainer);
+
+}
+
+function updatePicturePlacement(cvContainer) {
+    if (!cvContainer) return;
+
+    const profilePic = cvContainer.querySelector('.cv-profile-pic');
+    const header = cvContainer.querySelector('.cv-header.professional-layout');
+    const sidebar = cvContainer.querySelector('.cv-sidebar');
+
+    // إذا لم تكن الصورة أو الحاويات موجودة، لا تفعل شيئًا
+    if (!profilePic || !sidebar) return;
+
+    // الحالة الخاصة: القالب الاحترافي رقم 1
+    if (cvContainer.classList.contains('professional-layout') && cvContainer.classList.contains('template1')) {
+        // إذا كان الرأس موجودًا، انقل الصورة إليه
+        if (header) {
+            header.prepend(profilePic); // prepend تضع الصورة في بداية الرأس
+        }
+    } 
+    // الحالة الافتراضية: أي قالب آخر
+    else {
+        // أعد الصورة إلى مكانها الأصلي في العامود الجانبي
+        sidebar.prepend(profilePic);
+    }
+}
+
+function createEndMarkerHTML() {
+    const endText = translations[currentLang]["End of CV"] || (currentLang === 'ar' ? "نهاية السيرة" : "End of CV");
+    return `<div class="cv-end-marker" style="height: 279mm !important; margin-top:auto !important; visibility: hidden !important; font-size:1px; color:transparent;">${endText}</div>`;
+}
+
+function updateProgress() {
+    const progressBar = document.getElementById('progressBar');
+    if (!progressBar) return;
+
+    const nameInput = document.getElementById('name-input');
+    const titleInput = document.getElementById('title-input');
+    const emailInput = document.getElementById('email-input');
+    const phoneInput = document.getElementById('phone-input');
+    const websiteInput = document.getElementById('website-input');
+    const objectiveInput = document.getElementById('objective-input');
+    const profilePicInput = document.getElementById('profile-pic-input');
+
+    let filledCoreFields = 0;
+    if (nameInput && nameInput.value.trim()) filledCoreFields++;
+    if (titleInput && titleInput.value.trim()) filledCoreFields++;
+    if (emailInput && emailInput.value.trim()) filledCoreFields++;
+    if (phoneInput && phoneInput.value.trim()) filledCoreFields++;
+    if (websiteInput && websiteInput.value.trim()) filledCoreFields++;
+    if (objectiveInput && objectiveInput.value.trim()) filledCoreFields++;
+    if (profilePicInput && profilePicInput.files && profilePicInput.files.length > 0) filledCoreFields++;
+    const totalCoreFields = 7;
+    const coreFieldsWeight = 6;
+
+    const sections = ['experience', 'education', 'skills', 'languages', 'references'];
+    let filledSectionsCount = 0;
+    sections.forEach(sectionId => {
+        const sectionContainer = document.getElementById(`${sectionId}-input`);
+        if (sectionContainer) {
+            const inputs = sectionContainer.querySelectorAll('input, textarea');
+            if (Array.from(inputs).some(input => input.value.trim() !== '')) {
+                filledSectionsCount++;
+            }
+        }
+    });
+    const totalSections = sections.length;
+    const sectionsOverallWeight = 4;
+
+    let currentWeight = 0;
+    if (totalCoreFields > 0) currentWeight += (filledCoreFields / totalCoreFields) * coreFieldsWeight;
+    if (totalSections > 0) currentWeight += (filledSectionsCount / totalSections) * sectionsOverallWeight;
+    
+    const progress = Math.min(100, Math.round(currentWeight * 10));
+
+    progressBar.style.width = `${progress}%`;
+    progressBar.textContent = `${progress}%`;
+    if (progress < 30) progressBar.style.backgroundColor = '#dc3545';
+    else if (progress < 70) progressBar.style.backgroundColor = '#ffc107';
+    else progressBar.style.backgroundColor = '#28a745';
+}
+
+function populateWithTestData() {
+    const nameInput = document.getElementById('name-input');
+    const titleInput = document.getElementById('title-input');
+    const emailInput = document.getElementById('email-input');
+    const phoneInput = document.getElementById('phone-input');
+    const websiteInput = document.getElementById('website-input');
+    const objectiveInput = document.getElementById('objective-input');
+    
+    if(nameInput) nameInput.value = currentLang === 'ar' ? 'أحمد محمد السيد' : 'Ahmed Mohamed Elsayed';
+    if(titleInput) titleInput.value = currentLang === 'ar' ? 'مهندس برمجيات' : 'Software Engineer';
+    if(emailInput) emailInput.value = 'ahmed.elsayed@example.com';
+    if(phoneInput) phoneInput.value = '0501234567';
+    if(websiteInput) websiteInput.value = currentLang === 'ar' ? 'المدينة المنورة' : 'Saudi Arabia';
+    if(objectiveInput) objectiveInput.value = currentLang === 'ar' ? 
+        'مهندس برمجيات ذو خبرة عالية في تطوير تطبيقات الويب والجوال، أبحث عن فرصة للانضمام إلى فريق ديناميكي للمساهمة في بناء حلول تقنية مبتكرة وذات جودة عالية.' :
+        'Highly experienced software engineer in web and mobile application development, seeking an opportunity to join a dynamic team to contribute to building innovative and high-quality technical solutions.';
+
+    // === بداية التعديل المهم هنا ===
+    ['experience', 'education', 'skills', 'languages', 'references'].forEach(type => {
+        const container = document.getElementById(`${type}-input`);
+        if (container) {
+            // أولاً، مسح كل الحقول القديمة الموجودة
+            while (container.firstChild) {
+                container.removeChild(container.firstChild);
+            }
+            
+            // ثانيًا، إضافة العدد المطلوب من الحقول
+            if (type === 'experience') { 
+                addExperienceField(); // نترك حقلين للخبرة كمثال جيد
+                addExperienceField(); 
+            } else if (type === 'education') { 
+                addEducationField(); 
+            } else if (type === 'skills') { 
+                addSkillField(); // إضافة 5 مهارات كمثال
+                addSkillField();
+                addSkillField();
+                addSkillField();
+                addSkillField();
+            } else if (type === 'languages') { 
+                addLanguageField(); // إضافة حقل واحد فقط للغات
+            } else if (type === 'references') { 
+                addReferenceField(); // إضافة حقل واحد فقط للمراجع
+            }
+        }
+    });
+    // === نهاية التعديل المهم هنا ===
+    
+    // ملء الحقول المضافة
+    const expEntries = document.querySelectorAll('#experience-input .experience-entry');
+    if (expEntries[0]) {
+        expEntries[0].querySelector('.experience-title').value = currentLang === 'ar' ? 'مهندس برمجيات أول' : 'Senior Software Engineer';
+        expEntries[0].querySelector('.experience-company').value = currentLang === 'ar' ? 'شركة الحلول المبتكرة' : 'Innovative Solutions Inc.';
+        expEntries[0].querySelector('.experience-duration').value = currentLang === 'ar' ? '2020 - حتى الآن' : '2020 - Present';
+        expEntries[0].querySelector('.experience-description').value = currentLang === 'ar' ? 'قيادة فرق التطوير، تصميم وتنفيذ معماريات البرمجيات، تحسين أداء التطبيقات وتأمينها.' : 'Leading development teams, designing and implementing software architectures, optimizing application performance and security.';
+    }
+    if (expEntries[1]) {
+        expEntries[1].querySelector('.experience-title').value = currentLang === 'ar' ? 'مهندس برمجيات' : 'Software Engineer';
+        expEntries[1].querySelector('.experience-company').value = currentLang === 'ar' ? 'شركة التقنية الرائدة' : 'Leading Tech Co.';
+        expEntries[1].querySelector('.experience-duration').value = currentLang === 'ar' ? '2017 - 2020' : '2017 - 2020';
+        expEntries[1].querySelector('.experience-description').value = currentLang === 'ar' ? 'تطوير وصيانة تطبيقات الويب باستخدام Node.js و React، التعاون مع فريق المنتج لتحسين تجربة المستخدم.' : 'Developed and maintained web applications using Node.js and React, collaborated with the product team to improve user experience.';
+    }
+
+    const eduEntries = document.querySelectorAll('#education-input .education-entry');
+    if (eduEntries[0]) {
+        eduEntries[0].querySelector('.education-degree').value = currentLang === 'ar' ? 'بكالوريوس علوم حاسوب' : 'B.Sc. Computer Science';
+        eduEntries[0].querySelector('.education-institution').value = currentLang === 'ar' ? 'جامعة الملك فهد للبترول والمعادن' : 'King Fahd University of Petroleum & Minerals';
+        eduEntries[0].querySelector('.education-duration').value = currentLang === 'ar' ? '2012 - 2017' : '2012 - 2017';
+    }
+
+    const skillInputsTest = document.querySelectorAll('#skills-input .skill-item-input');
+    if(skillInputsTest[0]) skillInputsTest[0].value = 'JavaScript';
+    if(skillInputsTest[1]) skillInputsTest[1].value = 'React';
+    if(skillInputsTest[2]) skillInputsTest[2].value = 'Node.js';
+    if(skillInputsTest[3]) skillInputsTest[3].value = 'SQL';
+    if(skillInputsTest[4]) skillInputsTest[4].value = currentLang === 'ar' ? 'منهجيات أجايل' : 'Agile Methodologies';
+    
+    const langInputsTest = document.querySelectorAll('#languages-input .language-item-input');
+    if(langInputsTest[0]) langInputsTest[0].value = currentLang === 'ar' ? 'العربية (لغة أم)' : 'Arabic (Native)';
+    
+    const refEntries = document.querySelectorAll('#references-input .reference-entry');
+    if (refEntries[0]) {
+        refEntries[0].querySelector('.reference-name').value = currentLang === 'ar' ? 'الدكتور علي أحمد' : 'Dr. Ali Ahmed';
+        refEntries[0].querySelector('.reference-position').value = currentLang === 'ar' ? 'أستاذ مساعد، جامعة الملك فهد' : 'Assistant Professor, KFUPM';
+        refEntries[0].querySelector('.reference-phone').value = '0551234567';
+        refEntries[0].querySelector('.reference-email').value = 'ali.ahmed@example.com';
+    }
+
+    generateCV(cvContainer);
+    updateProgress();
+}
+
