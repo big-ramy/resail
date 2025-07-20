@@ -656,8 +656,26 @@ function setupLanguageToggle() {
     }
 }
 
+/**
+ * =========================================================================
+ * == دالة setUserLanguage النهائية - مع مسح البيانات عند تغيير اللغة ==
+ * =========================================================================
+ * تحدد لغة المستخدم وتمسح البيانات المحفوظة لضمان عرض بيانات تجريبية جديدة ومترجمة.
+ * @param {string} lang - اللغة الجديدة ('ar' أو 'en').
+ */
 function setUserLanguage(lang) {
-  sessionStorage.setItem('userLang', lang);
+    // 1. الخطوة الأهم: مسح بيانات السيرة الذاتية المحفوظة
+    // هذا يضمن أنه عند تحميل الصفحة الجديدة، لن تجد بيانات قديمة بلغة خاطئة.
+    localStorage.removeItem('resailCvData');
+
+    // 2. تحديد اختيار اللغة الجديد في ذاكرة الجلسة (sessionStorage)
+    // هذا يضمن أن المتصفح سيتذكر اللغة الجديدة خلال هذه الزيارة.
+    sessionStorage.setItem('userLang', lang);
+
+    // 3. إعادة تحميل الصفحة باللغة الجديدة
+    // سيقوم الرابط (href) الموجود على الزر بالانتقال إلى الصفحة الصحيحة.
+    // إذا كنت تريد التأكيد، يمكنك إضافة السطر التالي:
+    // window.location.href = lang === 'ar' ? 'index.html' : 'en.html';
 }
 
 /**
@@ -1105,36 +1123,53 @@ function updateTemplateImageSources() {
  * إذا كانت لغة المتصفح هي العربية، يتم اختيارها.
  * لأي لغة أخرى، يتم اختيار الإنجليزية كخيار افتراضي.
  */
+/**
+ * =========================================================================
+ * == دالة setInitialLanguage النهائية - مع معالجة روبوتات الفهرسة ==
+ * =========================================================================
+ * تحدد اللغة الأولية للموقع مع تجنب إعادة توجيه روبوتات البحث.
+ */
 function setInitialLanguage() {
-  const userChosenLang = sessionStorage.getItem('userLang');
-  const path = window.location.pathname;
+    const userChosenLang = sessionStorage.getItem('userLang');
+    const path = window.location.pathname;
 
-  // 1. إذا كان المستخدم قد اختار لغة بالفعل، استخدمها فورًا
-  if (userChosenLang) {
-    currentLang = userChosenLang;
-    console.log(`Language set to '${currentLang}' from session storage.`);
-    return;
-  }
-
-  // 2. إذا لم يكن هناك اختيار مسبق، حدد اللغة بناءً على الصفحة الحالية
-  if (path.endsWith('en.html')) {
-    currentLang = 'en';
-    console.log("Language set to 'en' based on page name (en.html).");
-  } else if (path.endsWith('index.html') || path.endsWith('/')) {
-    // 3. فقط إذا كنا في الصفحة الرئيسية ولم يتم اختيار لغة، تحقق من لغة المتصفح
-    const browserLang = navigator.language.split('-')[0];
-    if (browserLang === 'ar') {
-      currentLang = 'ar';
-      console.log("Language set to 'ar' based on browser language.");
-    } else {
-      // قم بإعادة التوجيه لمرة واحدة فقط إلى الصفحة الإنجليزية
-      console.log("Browser language is not Arabic, redirecting to en.html...");
-      window.location.replace('en.html');
+    // 1. إذا كان المستخدم قد اختار لغة بالفعل، استخدمها فورًا
+    if (userChosenLang) {
+        currentLang = userChosenLang;
+        return;
     }
-  } else {
-    // صفحة غير معروفة، اجعل العربية هي الافتراضية
-    currentLang = 'ar';
-  }
+
+    // نتحقق من وكيل المستخدم (User Agent) لمعرفة ما إذا كان الزائر روبوتًا
+    const isBot = /bot|googlebo t|crawler|spider|bingbot/i.test(navigator.userAgent);
+
+    if (isBot) {
+        // إذا كان الزائر روبوتًا، نحدد اللغة بناءً على الصفحة الحالية فقط ولا نعيد التوجيه
+        if (path.endsWith('en.html')) {
+            currentLang = 'en';
+        } else {
+            currentLang = 'ar'; // الصفحة الافتراضية (index.html) هي العربية
+        }
+        console.log(`Bot detected. Language set to '${currentLang}' without redirection.`);
+        return;
+    }
+
+
+    // 2. إذا لم يكن الزائر روبوتًا ولم يكن لديه اختيار مسبق، نستمر في المنطق العادي
+    if (path.endsWith('en.html')) {
+        currentLang = 'en';
+    } else if (path.endsWith('index.html') || path.endsWith('/')) {
+        // 3. التحقق من لغة المتصفح للمستخدم الحقيقي فقط
+        const browserLang = navigator.language.split('-')[0];
+        if (browserLang === 'ar') {
+            currentLang = 'ar';
+        } else {
+            // قم بإعادة التوجيه لمرة واحدة فقط إلى الصفحة الإنجليزية
+            window.location.replace('en.html');
+        }
+    } else {
+        // صفحة غير معروفة، اجعل العربية هي الافتراضية
+        currentLang = 'ar';
+    }
 }
 
 /**
