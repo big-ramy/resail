@@ -42,6 +42,7 @@ const translations = {
         "select_body_font_label": "خط النص الأساسي:",
 
         // --- ترجمات لوحة التحكم بالألوان ---
+        "color_presets_titl": "اختر قالب الوان",
         "color_customization_title":"تخصيص ألوان القالب",
         "background_colors_title": "ألوان الخلفيات",
         "primary_bg_label": "الخلفية الأساسية / الرأس",
@@ -135,6 +136,8 @@ const translations = {
         "Add Education": "إضافة مؤهل",
         "Degree": "الشهادة",
         "University/Institution": "الجامعة/المعهد",
+        // ترجمة اضافة قسم مخصص
+        "custome-section": "إضافة قسم مخصص",
         "custom_section_placeholder": "عنوان القسم الجديد (مثال: المشاريع أو الدورات)",
         "add_subsection_btn": '<i class="fas fa-plus"></i> إضافة عنوان فرعي',
         "remove_subsection_title": "حذف العنوان الفرعي",
@@ -351,6 +354,7 @@ const translations = {
         "select_body_font_label": "Body Text Font:",
 
         // --- Color Picker Translations ---
+        "color_presets_titl": "Choose a color template",
         "color_customization_title":"Customize Template Colors",
         "background_colors_title": "Background Colors",
         "primary_bg_label": "Primary BG / Header",
@@ -444,6 +448,7 @@ const translations = {
         "Add Education": "Add Education",
         "Degree": "Degree",
         "University/Institution": "University/Institution",
+        "custome-section": "ِAdd Custome Section",
         "custom_section_placeholder": "New Section Title (e.g., Projects or Courses)",
         "add_subsection_btn": '<i class="fas fa-plus"></i> Add Sub-heading',
         "remove_subsection_title": "Remove Sub-heading",
@@ -576,6 +581,27 @@ const CONTROL_VISIBILITY_CONFIG = {
     // الفئة الإبداعية تعتمد بشكل كبير على الألوان
     'creative': ['primary-bg', 'sidebar-bg', 'header-text', 'title-text', 'body-text', 'subtle-text', 'accent-bg']
 };
+
+const colorPalettes = [
+    // --- 9 لوحات ألوان ثابتة ---
+    { name: 'Ocean Blue', id: 'palette-ocean', isGradient: false, colors: { '--primary-bg': '#0d47a1', '--secondary-bg': '#1976d2', '--sidebar-bg': '#f4f6f8', '--accent-bg': '#bbdefb', '--header-text': '#ffffff', '--title-text': '#0d47a1', '--body-text': '#333333', '--subtle-text': '#5f6368' } },
+    { name: 'Forest Green', id: 'palette-forest', isGradient: false, colors: { '--primary-bg': '#1b5e20', '--secondary-bg': '#388e3c', '--sidebar-bg': '#f5f5f5', '--accent-bg': '#c8e6c9', '--header-text': '#ffffff', '--title-text': '#1b5e20', '--body-text': '#212121', '--subtle-text': '#616161' } },
+    { name: 'Graphite & Amber', id: 'palette-graphite', isGradient: false, colors: { '--primary-bg': '#263238', '--secondary-bg': '#37474f', '--sidebar-bg': '#f5f5f5', '--accent-bg': '#ffecb3', '--header-text': '#ffffff', '--title-text': '#ffab00', '--body-text': '#212121', '--subtle-text': '#757575' } },
+    { name: 'Ruby Red', id: 'palette-ruby', isGradient: false, colors: { '--primary-bg': '#b71c1c', '--secondary-bg': '#d32f2f', '--sidebar-bg': '#fbe9e7', '--accent-bg': '#ffcdd2', '--header-text': '#ffffff', '--title-text': '#b71c1c', '--body-text': '#424242', '--subtle-text': '#757575' } },
+    { name: 'Royal Purple', id: 'palette-purple', isGradient: false, colors: { '--primary-bg': '#4a148c', '--secondary-bg': '#7b1fa2', '--sidebar-bg': '#f3e5f5', '--accent-bg': '#e1bee7', '--header-text': '#ffffff', '--title-text': '#4a148c', '--body-text': '#311b92', '--subtle-text': '#6a1b9a' } },
+    { name: 'Earth Tones', id: 'palette-earth', isGradient: false, colors: { '--primary-bg': '#4e342e', '--secondary-bg': '#6d4c41', '--sidebar-bg': '#efebe9', '--accent-bg': '#d7ccc8', '--header-text': '#ffffff', '--title-text': '#4e342e', '--body-text': '#3e2723', '--subtle-text': '#5d4037' } },
+    { name: 'Slate Blue', id: 'palette-slate', isGradient: false, colors: { '--primary-bg': '#455a64', '--secondary-bg': '#607d8b', '--sidebar-bg': '#eceff1', '--accent-bg': '#cfd8dc', '--header-text': '#ffffff', '--title-text': '#37474f', '--body-text': '#263238', '--subtle-text': '#546e7a' } },
+    { name: 'Teal', id: 'palette-teal', isGradient: false, colors: { '--primary-bg': '#00695c', '--secondary-bg': '#00897b', '--sidebar-bg': '#e0f2f1', '--accent-bg': '#b2dfdb', '--header-text': '#ffffff', '--title-text': '#004d40', '--body-text': '#004d40', '--subtle-text': '#00796b' } },
+    { name: 'Maroon', id: 'palette-maroon', isGradient: false, colors: { '--primary-bg': '#880e4f', '--secondary-bg': '#c2185b', '--sidebar-bg': '#fce4ec', '--accent-bg': '#f8bbd0', '--header-text': '#ffffff', '--title-text': '#880e4f', '--body-text': '#560027', '--subtle-text': '#ad1457' } },
+
+    // --- 6 لوحات ألوان متدرجة ---
+    { name: 'Sunset Fade', id: 'palette-sunset', isGradient: true, colors: { '--primary-bg': 'linear-gradient(to right, #8e2de2, #4a00e0)', '--secondary-bg': '#4a00e0', '--sidebar-bg': '#f3e5f5', '--accent-bg': '#d1c4e9', '--header-text': '#ffffff', '--title-text': '#4a00e0', '--body-text': '#333333', '--subtle-text': '#673ab7' } },
+    { name: 'Oceanic Deep', id: 'palette-oceanic', isGradient: true, colors: { '--primary-bg': 'linear-gradient(to right, #005c97, #363795)', '--secondary-bg': '#005c97', '--sidebar-bg': '#e0f7fa', '--accent-bg': '#b2ebf2', '--header-text': '#ffffff', '--title-text': '#005c97', '--body-text': '#004d40', '--subtle-text': '#00796b' } },
+    { name: 'Mint Fresh', id: 'palette-mint', isGradient: true, colors: { '--primary-bg': 'linear-gradient(to right, #26d0ce, #1a2980)', '--secondary-bg': '#26d0ce', '--sidebar-bg': '#f1f8e9', '--accent-bg': '#dcedc8', '--header-text': '#ffffff', '--title-text': '#1a2980', '--body-text': '#33691e', '--subtle-text': '#558b2f' } },
+    { name: 'Soft Peach', id: 'palette-peach', isGradient: true, colors: { '--primary-bg': 'linear-gradient(to right, #ff9a9e, #fad0c4)', '--secondary-bg': '#ff9a9e', '--sidebar-bg': '#fff5f5', '--accent-bg': '#ffcdd2', '--header-text': '#ffffff', '--title-text': '#e57373', '--body-text': '#bf360c', '--subtle-text': '#f44336' } },
+    { name: 'Lush Green', id: 'palette-lush', isGradient: true, colors: { '--primary-bg': 'linear-gradient(to right, #2e7d32, #c8e6c9)', '--secondary-bg': '#2e7d32', '--sidebar-bg': '#f1f8e9', '--accent-bg': '#a5d6a7', '--header-text': '#ffffff', '--title-text': '#1b5e20', '--body-text': '#2e7d32', '--subtle-text': '#66bb6a' } },
+    { name: 'Night Sky', id: 'palette-night', isGradient: true, colors: { '--primary-bg': 'linear-gradient(to right, #2c3e50, #4c5a65)', '--secondary-bg': '#2c3e50', '--sidebar-bg': '#eceff1', '--accent-bg': '#b0bec5', '--header-text': '#ffffff', '--title-text': '#2c3e50', '--body-text': '#37474f', '--subtle-text': '#546e7a' } }
+];
 
 // قائمة الخطوط العربية
 const arabicFonts = [
@@ -837,19 +863,110 @@ function applySelectedFonts() {
         #cv-container .cv-section-title { font-family: ${headingsFont}; }
     `;
 }
+
 /**
- * === الدالة الجديدة: مصدر الحقيقة الوحيد للألوان ===
+ * =========================================================================
+ * == دالة createPaletteControls النهائية - (تخفي/تظهر البالتات حسب الفئة) ==
+ * =========================================================================
+ */
+function createPaletteControls() {
+    const container = document.getElementById('palette-selector');
+    if (!container) return;
+    container.innerHTML = '';
+
+    // 1. نحدد ما إذا كان يجب إظهار لوحات الألوان المتدرجة
+    const showGradientPalettes = !['normal', 'standard'].includes(selectedTemplateCategory);
+
+    colorPalettes.forEach(palette => {
+        // 2. إذا كانت اللوحة متدرجة والفئة لا تدعمها، نتجاوزها
+        if (palette.isGradient && !showGradientPalettes) {
+            return; // تخطي هذه اللوحة والانتقال إلى التالية
+        }
+
+        // 3. بناء وعرض الأيقونة للوحات المسموح بها فقط
+        const swatch = document.createElement('div');
+        swatch.className = 'palette-swatch';
+        swatch.dataset.paletteId = palette.id;
+        
+        const primaryCircle = `<span class="palette-color" style="background: ${palette.colors['--primary-bg']};"></span>`;
+        const titleCircle = `<span class="palette-color" style="background: ${palette.colors['--title-text']};"></span>`;
+        const accentCircle = `<span class="palette-color" style="background: ${palette.colors['--accent-bg']};"></span>`;
+
+        swatch.innerHTML = `${primaryCircle}${titleCircle}${accentCircle}`;
+        
+        swatch.onclick = () => applyPalette(palette.id);
+        container.appendChild(swatch);
+    });
+}
+
+/**
+ * =========================================================================
+ * == دالة applyPalette النهائية - (تقوم بتحديث الواجهة فقط) ==
+ * =========================================================================
+ * @param {string} paletteId - معرف لوحة الألوان.
+ */
+function applyPalette(paletteId) {
+    const selectedPalette = colorPalettes.find(p => p.id === paletteId);
+    if (!selectedPalette) return;
+
+    const colors = selectedPalette.colors;
+
+    // الخطوة 1: تحديث قيم أدوات التحكم فقط
+    for (const [key, value] of Object.entries(colors)) {
+        const controlName = key.replace('--', '');
+        const component = document.querySelector(`.color-control-component[data-color-name="${controlName}"]`);
+        
+        if (component) { // للألوان القابلة للتدرج
+            const toggle = component.querySelector('.gradient-toggle');
+            const solidPicker = component.querySelector(`#color-picker-${controlName}`);
+            const startPicker = component.querySelector(`#color-picker-${controlName}-start`);
+            const endPicker = component.querySelector(`#color-picker-${controlName}-end`);
+
+            if (typeof value === 'string' && value.startsWith('linear-gradient')) {
+                if (!toggle.checked) toggle.click();
+                const colorValues = value.match(/#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})/g);
+                if (colorValues && colorValues.length >= 2) {
+                    startPicker.value = colorValues[0];
+                    endPicker.value = colorValues[1];
+                }
+            } else {
+                if (toggle.checked) toggle.click();
+                solidPicker.value = value;
+            }
+        } else { // لألوان النصوص الثابتة
+             const textPicker = document.getElementById(`color-picker-${controlName}`);
+             if(textPicker) textPicker.value = value;
+        }
+    }
+    
+    document.querySelectorAll('.palette-swatch').forEach(s => s.classList.remove('selected'));
+    document.querySelector(`.palette-swatch[data-palette-id="${paletteId}"]`).classList.add('selected');
+
+    // الخطوة 2: استدعاء دالة التطبيق الموحدة
+    applySelectedColors();
+}
+
+/**
+ * 3. (تحديث) لإضافة الترجمة اللازمة
+ */
+function updateTranslationsForPalette() {
+     const title = document.querySelector('#palette-container h6');
+     if (title) {
+        title.textContent = translations[currentLang]['color_presets_title'];
+     }
+}
+
+/**
+ * === الدالة النهائية: مصدر الحقيقة الوحيد للألوان ===
  * تقرأ كل الألوان من لوحة التحكم وتعيدها كنص CSS جاهز للاستخدام.
  */
 function getColorVariablesAsCssText() {
-    let cssText = '#cv-container {'; // نستهدف الحاوية مباشرة لمزيد من القوة
-
-    // 1. جمع ألوان الخلفيات (القابلة للتدرج)
+    let cssText = '#cv-container {';
+    // جمع ألوان الخلفيات
     document.querySelectorAll('.color-control-component').forEach(component => {
         const colorName = component.dataset.colorName;
         const toggle = component.querySelector('.gradient-toggle');
         let finalValue;
-
         if (toggle && toggle.checked) {
             const start = component.querySelector(`#color-picker-${colorName}-start`).value;
             const end = component.querySelector(`#color-picker-${colorName}-end`).value;
@@ -860,16 +977,15 @@ function getColorVariablesAsCssText() {
         }
         cssText += `--${colorName}: ${finalValue};`;
     });
-
-    // 2. جمع ألوان النصوص الثابتة
+    // جمع ألوان النصوص
     cssText += `--header-text: ${document.getElementById('color-picker-header-text').value};`;
     cssText += `--title-text: ${document.getElementById('color-picker-title-text').value};`;
     cssText += `--body-text: ${document.getElementById('color-picker-body-text').value};`;
     cssText += `--subtle-text: ${document.getElementById('color-picker-subtle-text').value};`;
-
     cssText += '}';
     return cssText;
 }
+
 
 /**
  * يقرأ الألوان المختارة من الواجهة ويطبقها كمتغيرات CSS على حاوية السيرة الذاتية.
@@ -881,7 +997,6 @@ function applySelectedColors() {
         livePreviewStyle.id = 'live-color-styles';
         document.head.appendChild(livePreviewStyle);
     }
-    // تستدعي الدالة الجديدة وتضع النتيجة في وسم style
     livePreviewStyle.textContent = getColorVariablesAsCssText();
 }
 
@@ -889,6 +1004,7 @@ function applySelectedColors() {
  * إعداد وظائف مكونات التحكم بالألوان (التبديل بين اللون الثابت والمتدرج).
  */
 function setupColorControls() {
+    // ربط الأحداث لمكونات الخلفيات القابلة للتدرج
     document.querySelectorAll('.color-control-component').forEach(component => {
         const toggle = component.querySelector('.gradient-toggle');
         const solidPicker = component.querySelector('.solid-color-picker');
@@ -901,13 +1017,18 @@ function setupColorControls() {
                 applySelectedColors(); // أعد تطبيق الألوان عند التبديل
             });
         }
-
-        // ربط جميع أدوات الإدخال بدالة التحديث
         component.querySelectorAll('input[type="color"], select').forEach(input => {
             input.addEventListener('input', applySelectedColors);
         });
     });
+
+    // ربط الأحداث لأدوات ألوان النصوص الثابتة (هذا الجزء كان ناقصاً)
+    document.getElementById('color-picker-header-text').addEventListener('input', applySelectedColors);
+    document.getElementById('color-picker-title-text').addEventListener('input', applySelectedColors);
+    document.getElementById('color-picker-body-text').addEventListener('input', applySelectedColors);
+    document.getElementById('color-picker-subtle-text').addEventListener('input', applySelectedColors);
 }
+
 
 
 // --- أضف هذه الدالة الجديدة بالكامل ---
@@ -959,6 +1080,7 @@ function updateControlsForCategory() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    createPaletteControls();
     loadCvDataFromLocalStorage();
     updateControlsForCategory();
     applySelectedColors();
@@ -1386,6 +1508,7 @@ function updateLanguage() {
     // إعادة تحميل PayPal SDK عند تغيير اللغة
     populateFontSelectors();
     setupLanguageToggle();
+    updateTranslationsForPalette();
 
 
     // **أضف هذا السطر:**
@@ -2663,7 +2786,7 @@ function selectTemplate(templateNumber, category) {
     
     // الآن، عندما يتم استدعاء هذه الدالة، ستجد الكلاس الصحيح فقط
     updateControlsForCategory();
-    
+    createPaletteControls();
     generateCV(cvContainer);
     updateColorControlVisibility(); 
 
@@ -2957,7 +3080,7 @@ function generateCV(targetElement) {
     targetElement.dir = direction;
     targetElement.innerHTML = ''; // مسح المحتوى القديم
 
-    // --- 1. جمع كل البيانات من النموذج ---
+    // --- 1. جمع البيانات ---
     const name = document.getElementById('name-input')?.value.trim() || '';
     const title = document.getElementById('title-input')?.value.trim() || '';
     const emailVal = document.getElementById('email-input')?.value.trim() || '';
@@ -2965,18 +3088,15 @@ function generateCV(targetElement) {
     const website = document.getElementById('website-input')?.value.trim() || '';
     const objective = document.getElementById('objective-input')?.value.trim() || '';
 
-    // --- 2. بناء أجزاء HTML (لكل الأقسام) ---
-    // === الخطوة 1: استدعاء دالة عنصر التمدد مرة واحدة في البداية ===
+    // --- 2. بناء أجزاء HTML ---
     const endMarkerHTML = createEndMarkerHTML();
-    // ===========================================================
-
     let profilePicHTML = profilePicDataUrl ? `<img src="${profilePicDataUrl}" class="cv-profile-pic" alt="Profile Picture">` : '';
 
-    let contactInfoHTML = '<div class="cv-contact-info">';
+    let contactInfoHTML = `<div class="cv-section" data-section-name="contact-info"><div class="cv-contact-info">`;
     if (emailVal) contactInfoHTML += `<div class="cv-contact-item"><i class="fas fa-envelope"></i><p>${emailVal}</p></div>`;
     if (phone) contactInfoHTML += `<div class="cv-contact-item"><i class="fas fa-phone"></i><p>${phone}</p></div>`;
     if (website) contactInfoHTML += `<div class="cv-contact-item"><i class="fas fa-map-marker-alt"></i><p>${website}</p></div>`;
-    contactInfoHTML += '</div>';
+    contactInfoHTML += '</div></div>';
 
     const objectiveHTML = objective ? `<div class="cv-section" id="objective"><h3 class="cv-section-title">${translations[currentLang]['Career Objective']}</h3><p>${objective.replace(/\n/g, '<br>')}</p></div>` : '';
 
@@ -3003,17 +3123,21 @@ function generateCV(targetElement) {
         });
         educationHTML += '</div>';
     }
-    
+
+    const skillsContainerClass = (selectedTemplateCategory === 'normal') ? 'horizontal-skills' : 'vertical-skills';
+
     let skillsHTMLWithLevels = '';
     const skillsWithLevels = getSkillsData();
     if (skillsWithLevels.length > 0) {
-        skillsHTMLWithLevels = `<div class="cv-section" id="skills"><h3 class="cv-section-title">${translations[currentLang]['Skills']}</h3>`;
+        // 2. نستخدم المتغير الجديد لوضع الكلاس الصحيح في الـ HTML
+        skillsHTMLWithLevels = `<div class="cv-section" id="skills"><h3 class="cv-section-title">${translations[currentLang]['Skills']}</h3><div class="skills-container ${skillsContainerClass}">`;
         skillsWithLevels.forEach(skill => {
             skillsHTMLWithLevels += `<div class="skill-item-wrapper"><span class="skill-name">${skill.name}</span><div class="skill-level-bar"><div class="skill-level-progress" style="width: ${skill.level};"></div></div></div>`;
         });
-        skillsHTMLWithLevels += '</div>';
+        skillsHTMLWithLevels += '</div></div>';
     }
 
+    
     let languagesHTML = '';
     const filledLanguages = getLanguagesData();
     if (filledLanguages.length > 0) {
@@ -3039,63 +3163,19 @@ function generateCV(targetElement) {
     cvContentDiv.className = 'cv-content';
 
     if (selectedTemplateCategory === 'normal') {
-        cvContentDiv.innerHTML = `
-            <div class="cv-header">
-                ${profilePicHTML}
-                <div class="cv-header-text">
-                    <h1 class="cv-name">${name}</h1>
-                    <h2 class="cv-title">${title}</h2>
-                    ${contactInfoHTML}
-                </div>
-            </div>
-            <div class="cv-body-content">
-                ${objectiveHTML}
-                ${experienceHTML}
-                ${educationHTML}
-                ${skillsHTMLWithLevels}
-                ${languagesHTML}
-                ${referencesHTML}
-                ${endMarkerHTML} 
-            </div>`;
+        cvContentDiv.innerHTML = `<div class="cv-header">${profilePicHTML}<div class="cv-header-text"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2>${contactInfoHTML}</div></div><div class="cv-body-content">${objectiveHTML}${experienceHTML}${educationHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div>`;
     } 
     else if (selectedTemplateCategory === 'creative') {
-        if (selectedTemplate == 1) { // تصميم الموجة
-            cvContentDiv.innerHTML = `
-                <div class="header-wave">
-                    ${profilePicHTML}
-                    <div class="header-text"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div>
-                </div>
-                <div class="content-columns">
-                    <div class="left-column">${objectiveHTML}${experienceHTML}${educationHTML}${endMarkerHTML}</div>
-                    <div class="right-column"><div class="cv-section" data-section-name="contact-info">${contactInfoHTML}</div>${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div>
-                </div>`;
-        } else if (selectedTemplate == 2) { // تصميم الخط المائل
-            cvContentDiv.innerHTML = `
-                <div class="header-wave">
-                    <h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2>
-                </div>
-                <div class="content-columns">
-                    <div class="left-column">${objectiveHTML}${experienceHTML}${educationHTML}${endMarkerHTML}</div>
-                    <div class="right-column">${profilePicHTML}<div class="cv-section" data-section-name="contact-info">${contactInfoHTML}</div>${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div>
-                </div>`;
-        } else if (selectedTemplate == 3) { // تصميم الموجة العمودية
-            cvContentDiv.innerHTML = `
-                <div class="cv-sidebar">
-                    <div class="cv-header two-col-main">${profilePicHTML}<h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div>
-                    <div class="cv-section" data-section-name="contact-info">${contactInfoHTML}</div>
-                    ${skillsHTMLWithLevels}${languagesHTML}
-                    ${endMarkerHTML}
-                </div>
-                <div class="cv-main-content">
-                    ${objectiveHTML}
-                    ${experienceHTML}
-                    ${educationHTML}
-                    ${referencesHTML}
-                    ${endMarkerHTML}
-                </div>`;
+        if (selectedTemplate == 1) {
+            cvContentDiv.innerHTML = `<div class="header-wave">${profilePicHTML}<div class="header-text"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div></div><div class="content-columns"><div class="left-column">${objectiveHTML}${experienceHTML}${educationHTML}${referencesHTML}${endMarkerHTML}</div><div class="right-column">${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${endMarkerHTML}</div></div>`;
+        } else if (selectedTemplate == 2) {
+            cvContentDiv.innerHTML = `<div class="header-wave"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div><div class="content-columns"><div class="left-column">${objectiveHTML}${experienceHTML}${educationHTML}${endMarkerHTML}</div><div class="right-column">${profilePicHTML}${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div></div>`;
+        } else if (selectedTemplate == 3) {
+            cvContentDiv.innerHTML = `<div class="cv-sidebar"><div class="cv-header two-col-main">${profilePicHTML}<h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div>${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div><div class="cv-main-content">${objectiveHTML}${experienceHTML}${educationHTML}${endMarkerHTML}</div>`;
         }
     }
-    else { // الفئات المتبقية (standard, ast, professional)
+    // === بداية: الكود المصحح الذي يعالج كل الفئات المتبقية ===
+    else { 
         const layoutDiv = document.createElement('div');
         layoutDiv.className = (selectedTemplateCategory === 'professional') ? 'cv-professional-layout' : 'cv-two-column-layout';
         
@@ -3108,13 +3188,23 @@ function generateCV(targetElement) {
         if (selectedTemplateCategory === 'professional') {
             const professionalHeader = document.createElement('div');
             professionalHeader.className = 'cv-header professional-layout';
-            professionalHeader.innerHTML = `<div class="cv-profile-pic-wrapper">${profilePicHTML}</div><div class="cv-details"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2>${contactInfoHTML}</div>`;
-            cvContentDiv.appendChild(professionalHeader);
             
             sidebarDiv.innerHTML = `<div class="cv-profile-pic-wrapper">${profilePicHTML}</div>${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}`;
             mainContentDiv.innerHTML = objectiveHTML + experienceHTML + educationHTML + endMarkerHTML;
-        } else { // Standard and AST layouts
-            sidebarDiv.innerHTML = profilePicHTML + `<div class="cv-section" data-section-name="contact-info">${contactInfoHTML}</div>` + skillsHTMLWithLevels + languagesHTML + referencesHTML + endMarkerHTML;
+
+            if (selectedTemplate == 2) {
+                const contactSectionForSidebar = `<div class="cv-section" data-section-name="contact-info">${contactInfoHTML}</div>`;
+                sidebarDiv.innerHTML = `<div class="cv-profile-pic-wrapper">${profilePicHTML}</div>${contactSectionForSidebar}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}`;
+                professionalHeader.innerHTML = `<div class="cv-details"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div>`;
+            } else {
+                const contactForHeader = contactInfoHTML.replace('<div class="cv-section" data-section-name="contact-info">', '').replace(/<\/div>$/, '');
+                professionalHeader.innerHTML = `<div class="cv-details"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2>${contactForHeader}</div>`;
+            }
+
+            cvContentDiv.appendChild(professionalHeader);
+        } else { 
+            // هذا الجزء الآن يعالج Standard و AST
+            sidebarDiv.innerHTML = profilePicHTML + contactInfoHTML + skillsHTMLWithLevels + languagesHTML + referencesHTML + endMarkerHTML;
             mainContentDiv.innerHTML = `<div class="cv-header two-col-main"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div>${objectiveHTML}${experienceHTML}${educationHTML}${endMarkerHTML}`;
         }
 
@@ -3122,6 +3212,7 @@ function generateCV(targetElement) {
         layoutDiv.appendChild(mainContentDiv);
         cvContentDiv.appendChild(layoutDiv);
     }
+    // === نهاية: الكود المصحح ===
     
     targetElement.appendChild(cvContentDiv);
 
@@ -3130,9 +3221,12 @@ function generateCV(targetElement) {
     applySelectedFonts();
     applySelectedColors();
     updatePicturePlacement(cvContainer);
-
 }
 
+
+/**
+ * تحديث مكان الصورة الشخصية بشكل ديناميكي بناءً على القالب المختار.
+ */
 function updatePicturePlacement(cvContainer) {
     if (!cvContainer) return;
 
@@ -3140,21 +3234,26 @@ function updatePicturePlacement(cvContainer) {
     const header = cvContainer.querySelector('.cv-header.professional-layout');
     const sidebar = cvContainer.querySelector('.cv-sidebar');
 
-    // إذا لم تكن الصورة أو الحاويات موجودة، لا تفعل شيئًا
-    if (!profilePic || !sidebar) return;
+    if (!profilePic) return; // إذا لم تكن هناك صورة، لا تفعل شيئًا
 
-    // الحالة الخاصة: القالب الاحترافي رقم 1
-    if (cvContainer.classList.contains('professional-layout') && cvContainer.classList.contains('template1')) {
-        // إذا كان الرأس موجودًا، انقل الصورة إليه
-        if (header) {
-            header.prepend(profilePic); // prepend تضع الصورة في بداية الرأس
+    // --- منطق جديد للتحكم في مكان الصورة ---
+    if (cvContainer.classList.contains('professional-layout')) {
+        const headerDetails = header?.querySelector('.cv-details');
+        const sidebarPicWrapper = sidebar?.querySelector('.cv-profile-pic-wrapper');
+
+        if (!headerDetails || !sidebarPicWrapper) return;
+
+        // === التصحيح الرئيسي هنا ===
+        // تحقق مما إذا كان القالب هو 1 أو 3
+        if (cvContainer.classList.contains('template1') || cvContainer.classList.contains('template3')) {
+            // القالبان 1 و 3: الصورة يجب أن تكون في الرأس
+            headerDetails.insertAdjacentElement('beforebegin', profilePic);
+        } else {
+            // القالب 2 (والافتراضي): الصورة يجب أن تكون في العامود الجانبي
+            sidebarPicWrapper.appendChild(profilePic);
         }
-    } 
-    // الحالة الافتراضية: أي قالب آخر
-    else {
-        // أعد الصورة إلى مكانها الأصلي في العامود الجانبي
-        sidebar.prepend(profilePic);
     }
+    // لا حاجة لـ else، لأن القوالب الأخرى تبني الصورة في مكانها الصحيح
 }
 
 function createEndMarkerHTML() {
