@@ -1411,7 +1411,7 @@ html[dir="ltr"] .professional-layout.template1 .cv-sidebar::before {
 .professional-layout.template3 .cv-header.professional-layout { background: var(--primary-bg); color: var(--header-text); display: flex; align-items: center; justify-content: flex-start; text-align: start; padding: 15px; }
 .professional-layout.template3 .cv-header.professional-layout .cv-profile-pic { display: block; margin-left: 20px; border-color: var(--header-text); }
 html[dir="ltr"] .professional-layout.template3 .cv-header.professional-layout .cv-profile-pic { margin-left: 0; margin-right: 20px; }
-.professional-layout.template3 .cv-sidebar .cv-profile-pic { display: none; }
+.professional-layout.template3 .cv-sidebar .cv-profile-pic { display: block; }
 .professional-layout.template3 .cv-sidebar { background: var(--sidebar-bg); }
 .professional-layout.template3 .cv-sidebar .cv-section-title { color: var(--title-text); }
 .professional-layout.template3 .cv-sidebar .cv-skill-item { background: var(--accent-bg); }
@@ -1670,6 +1670,9 @@ html[dir="rtl"] .creative-layout.template1 .header-wave { clip-path: polygon(0 0
     position: absolute; top: 0; left: 0; right: 0; height: 200px;
     color: var(--header-text);
 }
+
+.creative-layout.template2 .header-wave .cv-name { margin: 0 0 70px 0;; }
+.creative-layout.template2 .header-wave .cv-title { margin: 0 0 70px 0; }
 .creative-layout.template2 .header-wave .cv-profile-pic { display: none; }
 .creative-layout.template2 .content-columns { margin-top: 0; }
 .creative-layout.template2 .left-column { width: 60%; }
@@ -1695,6 +1698,11 @@ html[dir="ltr"] .creative-layout.template3 .cv-sidebar {     width: 85mm;
     clip-path: polygon(0 0, 100% 0, 85% 100%, 0% 100%);
     padding: 30px;
     border-right: 50px solid var(--accent-bg);
+}
+
+html[dir="rtl"] .creative-layout.template3 .cv-sidebar {
+    border-left: 50px solid var(--accent-bg); /* تطبيق البوردر على اليسار */
+    border-right: none; /* التأكد من عدم وجود بوردر على اليمين */
 }
 .creative-layout.template3 .cv-main-content { flex-grow: 1; padding: 30px; }
 .creative-layout.template3 .cv-sidebar .cv-header.two-col-main { display: block; border: none; text-align: center; }
@@ -1792,6 +1800,25 @@ body[dir="ltr"] .qr-payment-inputs-scroll { padding-right: 0; padding-left: 15px
         size: A4;
         margin: 0;
     }
+
+    .professional-layout.template3 .cv-header.professional-layout .cv-profile-pic {
+        display: block !important; /* أمر صريح بإظهار الصورة داخل الهيدر */
+    }
+
+    /* --- 2. إصلاح هبوط الهيدر في القالب الإبداعي 2 --- */
+    .creative-layout.template2 .cv-content {
+        position: static !important; /* إلغاء التموضع النسبي */
+        padding-top: 0 !important;   /* إلغاء المساحة العلوية غير الضرورية للطباعة */
+    }
+    .creative-layout.template2 .header-wave {
+        position: static !important; /* إلغاء التموضع المطلق وجعله يتدفق بشكل طبيعي */
+        height: auto !important;      /* السماح للارتفاع بأن يكون طبيعياً */
+        margin-bottom: 20px !important; /* إضافة هامش سفلي لفصل الهيدر عن المحتوى */
+    }
+    .creative-layout.template2 .right-column .cv-profile-pic {
+        margin-top: 20px !important; /* تعديل هامش الصورة ليتناسب مع التدفق الجديد */
+    }
+
 
     html, body {
         margin: 0 !important;
