@@ -786,8 +786,8 @@ let selectedPriceToPay = 0;
 let discountApplied = 0;
 const discountCodes = { "SAVE10": 10, "FIRSTBUY": 25, "FREECV": 100 };
 const PRICES = {
-    local: { normal: 19, standard: 25, professional: 29, ast: 29 }, // أسعار بالريال
-    lemonSqueezy: { normal: 25, standard: 33, professional: 39, ast: 39 }, // أسعار بالريال
+    local: { normal: 19, standard: 25, professional: 29, ast: 29, creative: 33 }, // أسعار بالريال
+    lemonSqueezy: { normal: 25, standard: 33, professional: 39, ast: 39 , creative: 45 }, // أسعار بالريال
 };
 
 const CHECKOUT_CONFIG = {
@@ -802,6 +802,9 @@ const CHECKOUT_CONFIG = {
     },
     ast: {
         link: 'https://resail-cvs.lemonsqueezy.com/buy/38ead94f-86f2-4f7e-a6eb-e5887f5f0d47?enabled=865714'
+    },
+    creative: {
+    link: 'https://resail-cvs.lemonsqueezy.com/buy/c78cce0d-171e-49ff-86dd-5288509cdadc'
     }
 };
 
