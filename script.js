@@ -1150,6 +1150,7 @@ document.addEventListener('DOMContentLoaded', () => {
         submitPaymentProofButton.addEventListener('click', submitPaymentProof);
     }
 
+    setInitialLanguage();
     initializeDiscountCards(); // <<< أضف هذا السطر
     populateFontSelectors();
     startSalesNotifications();
