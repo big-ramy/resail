@@ -1244,57 +1244,41 @@ function updateTemplateImageSources() {
     });
 }
 /**
- * تحدد اللغة الأولية للموقع بناءً على لغة المتصفح.
- * إذا كانت لغة المتصفح هي العربية، يتم اختيارها.
- * لأي لغة أخرى، يتم اختيار الإنجليزية كخيار افتراضي.
- */
-/**
  * =========================================================================
- * == دالة setInitialLanguage النهائية - مع معالجة روبوتات الفهرسة ==
+ * == دالة setInitialLanguage المعدلة - بدون إعادة توجيه تلقائية للمستخدم ==
  * =========================================================================
- * تحدد اللغة الأولية للموقع مع تجنب إعادة توجيه روبوتات البحث.
+ * تحدد اللغة الأولية للموقع بناءً على الـ URL أو اختيار المستخدم السابق،
+ * وتتجاهل لغة المتصفح تمامًا لتجنب إعادة التوجيه التلقائي.
  */
 function setInitialLanguage() {
     const userChosenLang = sessionStorage.getItem('userLang');
     const path = window.location.pathname;
 
-    // 1. إذا كان المستخدم قد اختار لغة بالفعل، استخدمها فورًا
+    // 1. إذا كان المستخدم قد اختار لغة بالفعل (من الزر مثلاً)، استخدمها فورًا
     if (userChosenLang) {
         currentLang = userChosenLang;
         return;
     }
 
-    // نتحقق من وكيل المستخدم (User Agent) لمعرفة ما إذا كان الزائر روبوتًا
-    const isBot = /bot|googlebo t|crawler|spider|bingbot/i.test(navigator.userAgent);
-
-    if (isBot) {
-        // إذا كان الزائر روبوتًا، نحدد اللغة بناءً على الصفحة الحالية فقط ولا نعيد التوجيه
-        if (path.endsWith('en.html')) {
-            currentLang = 'en';
-        } else {
-            currentLang = 'ar'; // الصفحة الافتراضية (index.html) هي العربية
-        }
-        console.log(`Bot detected. Language set to '${currentLang}' without redirection.`);
-        return;
-    }
-
-
-    // 2. إذا لم يكن الزائر روبوتًا ولم يكن لديه اختيار مسبق، نستمر في المنطق العادي
+    // 2. تحديد اللغة بناءً على الـ URL الحالي فقط
+    // إذا كانت الصفحة تنتهي بـ 'en.html'، تكون اللغة إنجليزية
     if (path.endsWith('en.html')) {
         currentLang = 'en';
-    } else if (path.endsWith('index.html') || path.endsWith('/')) {
-        // 3. التحقق من لغة المتصفح للمستخدم الحقيقي فقط
-        const browserLang = navigator.language.split('-')[0];
-        if (browserLang === 'ar') {
-            currentLang = 'ar';
-        } else {
-            // قم بإعادة التوجيه لمرة واحدة فقط إلى الصفحة الإنجليزية
-            window.location.replace('en.html');
-        }
-    } else {
-        // صفحة غير معروفة، اجعل العربية هي الافتراضية
+    }
+    // إذا كانت الصفحة هي الصفحة الرئيسية (index.html أو المسار الجذري '/'), تكون اللغة عربية
+    else if (path.endsWith('index.html') || path.endsWith('/')) {
         currentLang = 'ar';
     }
+    // في أي حالة أخرى (مثلاً، إذا كان URL غير متوقع)، اجعل اللغة عربية كافتراضي
+    else {
+        currentLang = 'ar';
+    }
+
+    // 3. (اختياري) إذا كنت تريد حفظ هذه اللغة الافتراضية في sessionStorage
+    // لمنع إعادة الحساب عند كل تحميل للصفحة لنفس الجلسة
+    sessionStorage.setItem('userLang', currentLang);
+
+    console.log(`[setInitialLanguage] Language set to: ${currentLang}`);
 }
 
 /**
