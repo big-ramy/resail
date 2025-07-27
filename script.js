@@ -2550,8 +2550,14 @@ async function generatePdfFromNode(isPaid) {
             html, body { margin: 0 !important; padding: 0 !important; background: white !important; font-size: 10pt; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             #cv-container { margin: 0 !important; box-shadow: none !important; border: none !important; }
             .cv-experience-item, .cv-education-item { page-break-inside: avoid !important; }
-            .cv-main-content-area, .cv-sidebar-content {
-                padding: 5mm !important; /* سيضيف 5mm من كل الجهات (أعلى، أسفل، يمين، يسار) */
+            .cv-main-content-area > .cv-section:first-child,
+            .cv-sidebar-content > .cv-section:first-child {
+                margin-top: 5mm !important; /* إضافة هامش علوي للقسم الأول فقط */
+            }
+
+            .cv-main-content-area > .cv-section:last-child,
+            .cv-sidebar-content > .cv-section:last-child {
+                margin-bottom: 5mm !important; /* إضافة هامش سفلي للقسم الأخير فقط */
             }
             #cv-container { font-family: ${bodyFont} !important; }
             #cv-container .cv-name, #cv-container .cv-title { font-family: ${nameFont} !important; }
