@@ -2589,9 +2589,12 @@ async function generatePdfFromNode(isPaid) {
 
         const printCssOverrides = `
             ${colorVariablesCSS}
+            @page {
+                margin: 10mm !important; /* يترك هامش 5mm من كل الجهات: أعلى، أسفل، يمين، يسار */
+            }
             html, body { margin: 0 !important; padding: 0 !important; background: white !important; font-size: 10pt; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             #cv-container { margin: 0 !important; box-shadow: none !important; border: none !important; }
-            .cv-experience-item, .cv-education-item, .skill-item-wrapper, .cv-reference-item, .cv-language-list  { page-break-inside: avoid !important; margin-top: 30mm !important;}
+            .cv-experience-item, .cv-education-item, .skill-item-wrapper, .cv-reference-item, .cv-language-list  { page-break-inside: avoid !important;}
             #cv-container { font-family: ${bodyFont} !important; }
             #cv-container .cv-name, #cv-container .cv-title { font-family: ${nameFont} !important; }
             #cv-container .cv-section-title { font-family: ${headingsFont} !important; }
