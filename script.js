@@ -721,7 +721,8 @@ function saveCvDataToLocalStorage() {
         educations: getEducationsData(),
         skills: getSkillsData(),
         languages: getLanguagesData(),
-        references: getReferencesData()
+        references: getReferencesData(),
+        customSections: getCustomSectionsData()
     };
 
     // 2. تحويل الكائن إلى نص JSON وحفظه
@@ -769,6 +770,47 @@ function loadCvDataFromLocalStorage() {
         savedData.skills?.forEach(data => addSkillField(data));
         savedData.languages?.forEach(data => addLanguageField(data));
         savedData.references?.forEach(data => addReferenceField(data));
+        if (savedData.customSections && savedData.customSections.length > 0) {
+            const formNavigationButtons = document.getElementById('form-navigation-buttons');
+
+            savedData.customSections.forEach(sectionData => {
+                const sectionWrapper = document.createElement('div');
+                sectionWrapper.className = 'custom-section-wrapper mb-3 p-3 border rounded';
+
+                const titleInput = document.createElement('input');
+                titleInput.type = 'text';
+                titleInput.placeholder = translations[currentLang]['custom_section_placeholder'];
+                titleInput.className = 'form-control form-control-lg mb-2 custom-section-title';
+                titleInput.value = sectionData.title;
+                titleInput.oninput = () => generateCV(document.getElementById('cv-container'));
+                
+                const subSectionsContainer = document.createElement('div');
+                subSectionsContainer.className = 'sub-sections-container';
+
+                sectionData.subSections.forEach(subData => {
+                    const subSectionEntry = document.createElement('div');
+                    subSectionEntry.className = 'custom-subsection-entry border p-2 mb-2 rounded position-relative';
+                    subSectionEntry.innerHTML = `
+                        <button type="button" class="remove-field" onclick="this.parentElement.remove(); generateCV(document.getElementById('cv-container'));" title="${translations[currentLang]['remove_subsection_title']}">&times;</button>
+                        <input type="text" class="form-control mb-2 custom-subsection-title" placeholder="${translations[currentLang]['subsection_title_placeholder']}" value="${subData.title || ''}" oninput="generateCV(document.getElementById('cv-container'));">
+                        <textarea class="form-control custom-subsection-description" placeholder="${translations[currentLang]['subsection_desc_placeholder']}" rows="3" oninput="generateCV(document.getElementById('cv-container'));">${subData.description || ''}</textarea>
+                    `;
+                    subSectionsContainer.appendChild(subSectionEntry);
+                });
+
+                const buttonContainer = document.createElement('div');
+                buttonContainer.className = 'mt-2';
+                // ... (يمكنك إعادة بناء الأزرار هنا بنفس طريقة دالة addCustomSection)
+
+                sectionWrapper.appendChild(titleInput);
+                sectionWrapper.appendChild(subSectionsContainer);
+                sectionWrapper.appendChild(buttonContainer); // أضف حاوية الأزرار
+                
+                if (formNavigationButtons) {
+                   formNavigationButtons.parentNode.insertBefore(sectionWrapper, formNavigationButtons);
+                }
+            });
+        }
 
     } catch (e) {
         console.error("Error loading from localStorage", e);
