@@ -2600,27 +2600,10 @@ async function generatePdfFromNode(isPaid) {
                 page-break-after: avoid !important;
             }
             
-            /* 2. الخدعة الرئيسية: نضيف مساحة فارغة شفافة في بداية المحتوى الرئيسي */
-            .cv-main-content::before,
-            .cv-sidebar::before {
-                content: '';
-                display: block;
-                height: 10mm; /* هذا هو ارتفاع الهامش الذي نريده */
+            .cv-main-content-area,
+            .cv-sidebar-content {
+                padding-top: 15mm !important;
             }
-
-            /* 3. نقوم بإلغاء تأثير هذه المساحة في الصفحة الأولى فقط */
-            /* هذا يسحب المحتوى الرئيسي للأعلى بمقدار 5mm ليغطي المساحة الفارغة */
-            .cv-main-content,
-            .cv-sidebar {
-                margin-top: -10mm;
-            }
-
-            /* 4. نلغي الهامش العلوي من القسم الأول لضمان المحاذاة الصحيحة */
-             .cv-main-content> .cv-section:first-child,
-             .cv-sidebar> .cv-section:first-child{
-                margin-top: 0 !important;
-             }
-
             
             /* === إصلاح العلامة المائية لتثبيتها على كل الصفحات === */
             #cv-container.watermarked::before {
