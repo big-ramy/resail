@@ -2223,6 +2223,40 @@ function getReferencesData() {
     return references;
 }
 
+/**
+ * يجمع بيانات جميع الأقسام المخصصة من نموذج الإدخال.
+ * @returns {Array} - مصفوفة من كائنات الأقسام المخصصة.
+ */
+function getCustomSectionsData() {
+    const sections = [];
+    document.querySelectorAll('.custom-section-wrapper').forEach(sectionWrapper => {
+        const sectionTitle = sectionWrapper.querySelector('.custom-section-title')?.value.trim();
+        
+        // تجاهل القسم بالكامل إذا كان عنوانه الرئيسي فارغًا
+        if (!sectionTitle) return;
+
+        const subSections = [];
+        sectionWrapper.querySelectorAll('.custom-subsection-entry').forEach(subSectionEntry => {
+            const subTitle = subSectionEntry.querySelector('.custom-subsection-title')?.value.trim();
+            const description = subSectionEntry.querySelector('.custom-subsection-description')?.value.trim();
+            
+            // أضف القسم الفرعي فقط إذا كان يحتوي على عنوان أو وصف
+            if (subTitle || description) {
+                subSections.push({ title: subTitle, description: description });
+            }
+        });
+
+        // أضف القسم الرئيسي فقط إذا كان يحتوي على أقسام فرعية ذات محتوى
+        if (subSections.length > 0) {
+            sections.push({
+                title: sectionTitle,
+                subSections: subSections
+            });
+        }
+    });
+    return sections;
+}
+
 function getSelectedTemplateCss() {
     let cssRules = [];
     const stylesheets = document.styleSheets;
@@ -2515,7 +2549,10 @@ async function generatePdfFromNode(isPaid) {
             ${colorVariablesCSS}
             html, body { margin: 0 !important; padding: 0 !important; background: white !important; font-size: 10pt; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             #cv-container { margin: 0 !important; box-shadow: none !important; border: none !important; }
-            .cv-section, .cv-experience-item, .cv-education-item { page-break-inside: avoid !important; }
+            .cv-experience-item, .cv-education-item { page-break-inside: avoid !important; }
+            .cv-main-content-area, .cv-sidebar-content {
+                padding: 5mm !important; /* سيضيف 5mm من كل الجهات (أعلى، أسفل، يمين، يسار) */
+            }
             #cv-container { font-family: ${bodyFont} !important; }
             #cv-container .cv-name, #cv-container .cv-title { font-family: ${nameFont} !important; }
             #cv-container .cv-section-title { font-family: ${headingsFont} !important; }
@@ -3085,7 +3122,7 @@ function generateCV(targetElement) {
     if (website) contactInfoHTML += `<div class="cv-contact-item"><i class="fas fa-map-marker-alt"></i><p>${website}</p></div>`;
     contactInfoHTML += '</div></div>';
 
-    const objectiveHTML = objective ? `<div class="cv-section" id="objective"><h3 class="cv-section-title">${translations[currentLang]['Career Objective']}</h3><p>${objective.replace(/\n/g, '<br>')}</p></div>` : '';
+    const objectiveHTML = objective ? `<div class="cv-section" id="objective"><h3 class="cv-section-title">${translations[currentLang]['Career Objective']}</h3><p>${objective.replace(/(\r\n|\n|\r)+/g, '<br>')}</p></div>` : '';
 
     let experienceHTML = '';
     const experienceEntries = getExperiencesData();
@@ -3093,7 +3130,7 @@ function generateCV(targetElement) {
         experienceHTML = `<div class="cv-section" id="experience"><h3 class="cv-section-title">${translations[currentLang]['Work Experience']}</h3>`;
         experienceEntries.forEach(entry => {
             if (entry.title || entry.company) {
-                 experienceHTML += `<div class="cv-experience-item"><h4 class="cv-job-title">${entry.title}</h4><h5 class="cv-company">${entry.company}${entry.company && entry.duration ? ' - ' : ''}${entry.duration}</h5><p>${entry.description.replace(/\n/g, '<br>')}</p></div>`;
+                experienceHTML += `<div class="cv-experience-item"><h4 class="cv-job-title">${entry.title}</h4><h5 class="cv-company">${entry.company}${entry.company && entry.duration ? ' - ' : ''}${entry.duration}</h5><p>${entry.description.replace(/(\r\n|\n|\r)+/g, '<br>')}</p></div>`;
             }
         });
         experienceHTML += '</div>';
@@ -3111,6 +3148,26 @@ function generateCV(targetElement) {
         educationHTML += '</div>';
     }
 
+    let customSectionsHTML = '';
+    const customSections = getCustomSectionsData();
+    if (customSections.length > 0) {
+        customSections.forEach(section => {
+            customSectionsHTML += `<div class="cv-section" id="custom-${section.title.replace(/\s+/g, '-')}">`;
+            customSectionsHTML += `<h3 class="cv-section-title">${section.title}</h3>`;
+            section.subSections.forEach(sub => {
+                customSectionsHTML += `<div class="cv-experience-item">`; // نستخدم نفس تنسيق الخبرات
+                if (sub.title) {
+                    customSectionsHTML += `<h4 class="cv-job-title">${sub.title}</h4>`;
+                }
+                if (sub.description) {
+                    customSectionsHTML += `<p>${sub.description.replace(/(\r\n|\n|\r)+/g, '<br>')}</p>`;
+                }
+                customSectionsHTML += `</div>`;
+            });
+            customSectionsHTML += `</div>`;
+        });
+    }
+    
     const skillsContainerClass = (selectedTemplateCategory === 'normal') ? 'horizontal-skills' : 'vertical-skills';
 
     let skillsHTMLWithLevels = '';
@@ -3150,15 +3207,15 @@ function generateCV(targetElement) {
     cvContentDiv.className = 'cv-content';
 
     if (selectedTemplateCategory === 'normal') {
-        cvContentDiv.innerHTML = `<div class="cv-header">${profilePicHTML}<div class="cv-header-text"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2>${contactInfoHTML}</div></div><div class="cv-body-content">${objectiveHTML}${experienceHTML}${educationHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div>`;
+        cvContentDiv.innerHTML = `<div class="cv-header">${profilePicHTML}<div class="cv-header-text"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2>${contactInfoHTML}</div></div><div class="cv-body-content">${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div>`;
     } 
     else if (selectedTemplateCategory === 'creative') {
         if (selectedTemplate == 1) {
-            cvContentDiv.innerHTML = `<div class="header-wave">${profilePicHTML}<div class="header-text"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div></div><div class="content-columns"><div class="left-column">${objectiveHTML}${experienceHTML}${educationHTML}${referencesHTML}${endMarkerHTML}</div><div class="right-column">${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${endMarkerHTML}</div></div>`;
+            cvContentDiv.innerHTML = `<div class="header-wave">${profilePicHTML}<div class="header-text"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div></div><div class="content-columns"><div class="left-column">${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${referencesHTML}${endMarkerHTML}</div><div class="right-column">${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${endMarkerHTML}</div></div>`;
         } else if (selectedTemplate == 2) {
-            cvContentDiv.innerHTML = `<div class="header-wave"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div><div class="content-columns"><div class="left-column">${objectiveHTML}${experienceHTML}${educationHTML}${endMarkerHTML}</div><div class="right-column">${profilePicHTML}${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div></div>`;
+            cvContentDiv.innerHTML = `<div class="header-wave"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div><div class="content-columns"><div class="left-column">${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${endMarkerHTML}</div><div class="right-column">${profilePicHTML}${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div></div>`;
         } else if (selectedTemplate == 3) {
-            cvContentDiv.innerHTML = `<div class="cv-sidebar"><div class="cv-header two-col-main">${profilePicHTML}<h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div>${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div><div class="cv-main-content">${objectiveHTML}${experienceHTML}${educationHTML}${endMarkerHTML}</div>`;
+            cvContentDiv.innerHTML = `<div class="cv-sidebar"><div class="cv-header two-col-main">${profilePicHTML}<h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div>${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div><div class="cv-main-content">${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${endMarkerHTML}</div>`;
         }
     }
     // === بداية: الكود المصحح الذي يعالج كل الفئات المتبقية ===
@@ -3177,7 +3234,7 @@ function generateCV(targetElement) {
             professionalHeader.className = 'cv-header professional-layout';
             
             sidebarDiv.innerHTML = `<div class="cv-profile-pic-wrapper">${profilePicHTML}</div>${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}`;
-            mainContentDiv.innerHTML = objectiveHTML + experienceHTML + educationHTML + endMarkerHTML;
+            mainContentDiv.innerHTML = objectiveHTML + experienceHTML + customSectionsHTML+ educationHTML  + endMarkerHTML;
 
             if (selectedTemplate == 2) {
                 const contactSectionForSidebar = `<div class="cv-section" data-section-name="contact-info">${contactInfoHTML}</div>`;
@@ -3192,7 +3249,7 @@ function generateCV(targetElement) {
         } else { 
             // هذا الجزء الآن يعالج Standard و AST
             sidebarDiv.innerHTML = profilePicHTML + contactInfoHTML + skillsHTMLWithLevels + languagesHTML + referencesHTML + endMarkerHTML;
-            mainContentDiv.innerHTML = `<div class="cv-header two-col-main"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div>${objectiveHTML}${experienceHTML}${educationHTML}${endMarkerHTML}`;
+            mainContentDiv.innerHTML = `<div class="cv-header two-col-main"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div>${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${endMarkerHTML}`;
         }
 
         layoutDiv.appendChild(sidebarDiv);
