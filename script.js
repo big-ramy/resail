@@ -2589,15 +2589,38 @@ async function generatePdfFromNode(isPaid) {
 
         const printCssOverrides = `
             ${colorVariablesCSS}
-            @page {
-                margin: 10mm !important; /* يترك هامش 5mm من كل الجهات: أعلى، أسفل، يمين، يسار */
-            }
             html, body { margin: 0 !important; padding: 0 !important; background: white !important; font-size: 10pt; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             #cv-container { margin: 0 !important; box-shadow: none !important; border: none !important; }
             .cv-experience-item, .cv-education-item, .skill-item-wrapper, .cv-reference-item, .cv-language-list  { page-break-inside: avoid !important;}
             #cv-container { font-family: ${bodyFont} !important; }
             #cv-container .cv-name, #cv-container .cv-title { font-family: ${nameFont} !important; }
             #cv-container .cv-section-title { font-family: ${headingsFont} !important; }
+
+            .cv-section-title {
+                page-break-after: avoid !important;
+            }
+            
+            /* 2. الخدعة الرئيسية: نضيف مساحة فارغة شفافة في بداية المحتوى الرئيسي */
+            .cv-main-content::before,
+            .cv-sidebar::before {
+                content: '';
+                display: block;
+                height: 10mm; /* هذا هو ارتفاع الهامش الذي نريده */
+            }
+
+            /* 3. نقوم بإلغاء تأثير هذه المساحة في الصفحة الأولى فقط */
+            /* هذا يسحب المحتوى الرئيسي للأعلى بمقدار 5mm ليغطي المساحة الفارغة */
+            .cv-main-content,
+            .cv-sidebar {
+                margin-top: -10mm;
+            }
+
+            /* 4. نلغي الهامش العلوي من القسم الأول لضمان المحاذاة الصحيحة */
+             .cv-main-content> .cv-section:first-child,
+             .cv-sidebar> .cv-section:first-child{
+                margin-top: 0 !important;
+             }
+
             
             /* === إصلاح العلامة المائية لتثبيتها على كل الصفحات === */
             #cv-container.watermarked::before {
