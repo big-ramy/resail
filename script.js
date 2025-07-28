@@ -3320,41 +3320,9 @@ function generateCV(targetElement) {
     saveCvDataToLocalStorage();
     applySelectedFonts();
     applySelectedColors();
-    updatePicturePlacement(cvContainer);
 }
 
 
-/**
- * تحديث مكان الصورة الشخصية بشكل ديناميكي بناءً على القالب المختار.
- */
-function updatePicturePlacement(cvContainer) {
-    if (!cvContainer) return;
-
-    const profilePic = cvContainer.querySelector('.cv-profile-pic');
-    const header = cvContainer.querySelector('.cv-header.professional-layout');
-    const sidebar = cvContainer.querySelector('.cv-sidebar');
-
-    if (!profilePic) return; // إذا لم تكن هناك صورة، لا تفعل شيئًا
-
-    // --- منطق جديد للتحكم في مكان الصورة ---
-    if (cvContainer.classList.contains('professional-layout')) {
-        const headerDetails = header?.querySelector('.cv-details');
-        const sidebarPicWrapper = sidebar?.querySelector('.cv-profile-pic-wrapper');
-
-        if (!headerDetails || !sidebarPicWrapper) return;
-
-        // === التصحيح الرئيسي هنا ===
-        // تحقق مما إذا كان القالب هو 1 أو 3
-        if (cvContainer.classList.contains('template1') || cvContainer.classList.contains('template3')) {
-            // القالبان 1 و 3: الصورة يجب أن تكون في الرأس
-            headerDetails.insertAdjacentElement('beforebegin', profilePic);
-        } else {
-            // القالب 2 (والافتراضي): الصورة يجب أن تكون في العامود الجانبي
-            sidebarPicWrapper.appendChild(profilePic);
-        }
-    }
-    // لا حاجة لـ else، لأن القوالب الأخرى تبني الصورة في مكانها الصحيح
-}
 
 function createEndMarkerHTML() {
     const endText = translations[currentLang]["End of CV"] || (currentLang === 'ar' ? "نهاية السيرة" : "End of CV");
