@@ -1409,6 +1409,19 @@ html[dir="ltr"] .professional-layout.template1 .cv-sidebar::before {
 .professional-layout.template2 .cv-main-content .cv-section-title { color: var(--title-text); border-bottom-color: var(--accent-bg); }
 
 /* --- القالب 3: تصميم الرأس المدمج (الصورة بالرأس) --- */
+.professional-layout.template3 .cv-header-top-row {
+    display: flex;
+    align-items: center; /* لمحاذاة الصورة والاسم عموديًا */
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+/* 2. القاعدة الجديدة والمهمة: إعادة تعيين سلوك الصورة الشخصية داخل هذه الحاوية فقط */
+.professional-layout.template3 .cv-header-top-row .cv-profile-pic {
+    display: initial !important; /* لإلغاء قاعدة display: block العامة */
+    margin: 0 !important;      /* لإلغاء هوامش التوسيط العامة */
+}
+
 .professional-layout.template3 .cv-header.professional-layout { background: var(--primary-bg); color: var(--header-text); display: flex; align-items: center; justify-content: flex-start; text-align: start; padding: 15px; }
 .professional-layout.template3 .cv-header.professional-layout .cv-profile-pic { display: block; margin-left: 20px; border-color: var(--header-text); }
 html[dir="ltr"] .professional-layout.template3 .cv-header.professional-layout .cv-profile-pic { margin-left: 0; margin-right: 20px; }
