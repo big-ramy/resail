@@ -2600,8 +2600,8 @@ async function generatePdfFromNode(isPaid) {
                 page-break-after: avoid !important;
             }
             
-            .cv-main-content-area,
-            .cv-sidebar-content {
+            .cv-content .cv-main-content,
+            .cv-content .cv-sidebar {
                 padding-top: 15mm !important;
             }
             
