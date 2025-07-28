@@ -2567,7 +2567,6 @@ function getSelectedTemplateCss() {
  * @returns {Promise<Object|null>} - كائن يحتوي على بيانات الـ PDF أو null
  */
 async function generatePdfFromNode(isPaid) {
-    updatePicturePlacement();
     toggleLoadingOverlay(true, 'Preparing perfect layout...');
     try {
         const tempContainer = document.createElement('div');
@@ -3268,43 +3267,51 @@ function generateCV(targetElement) {
         }
     }
     // === بداية: الكود المصحح الذي يعالج كل الفئات المتبقية ===
-    else { 
-        const layoutDiv = document.createElement('div');
-        layoutDiv.className = (selectedTemplateCategory === 'professional') ? 'cv-professional-layout' : 'cv-two-column-layout';
+   else { // هذا الكود سيعالج الآن Standard, AST, و Professional بشكل صحيح
+    const layoutDiv = document.createElement('div');
+    const sidebarDiv = document.createElement('div');
+    sidebarDiv.className = 'cv-sidebar';
+    const mainContentDiv = document.createElement('div');
+    mainContentDiv.className = 'cv-main-content';
+
+    if (selectedTemplateCategory === 'professional') {
+        layoutDiv.className = 'cv-professional-layout';
+        const professionalHeader = document.createElement('div');
+        professionalHeader.className = 'cv-header professional-layout';
+
+        // --- المنطق الجديد لتوزيع المحتوى بشكل صحيح من البداية ---
+        let headerHTML, sidebarHTML;
         
-        const sidebarDiv = document.createElement('div');
-        sidebarDiv.className = 'cv-sidebar';
-        
-        const mainContentDiv = document.createElement('div');
-        mainContentDiv.className = 'cv-main-content';
-
-        if (selectedTemplateCategory === 'professional') {
-            const professionalHeader = document.createElement('div');
-            professionalHeader.className = 'cv-header professional-layout';
-            
-            sidebarDiv.innerHTML = `<div class="cv-profile-pic-wrapper">${profilePicHTML}</div>${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}`;
-            mainContentDiv.innerHTML = objectiveHTML + experienceHTML + customSectionsHTML+ educationHTML  + endMarkerHTML;
-
-            if (selectedTemplate == 2) {
-                const contactSectionForSidebar = `<div class="cv-section" data-section-name="contact-info">${contactInfoHTML}</div>`;
-                sidebarDiv.innerHTML = `<div class="cv-profile-pic-wrapper">${profilePicHTML}</div>${contactSectionForSidebar}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}`;
-                professionalHeader.innerHTML = `<div class="cv-details"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div>`;
-            } else {
-                const contactForHeader = contactInfoHTML.replace('<div class="cv-section" data-section-name="contact-info">', '').replace(/<\/div>$/, '');
-                professionalHeader.innerHTML = `<div class="cv-details"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2>${contactForHeader}</div>`;
-            }
-
-            cvContentDiv.appendChild(professionalHeader);
-        } else { 
-            // هذا الجزء الآن يعالج Standard و AST
-            sidebarDiv.innerHTML = profilePicHTML + contactInfoHTML + skillsHTMLWithLevels + languagesHTML + referencesHTML + endMarkerHTML;
-            mainContentDiv.innerHTML = `<div class="cv-header two-col-main"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div>${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${endMarkerHTML}`;
+        // إذا كان القالب 1 أو 3
+        if (selectedTemplate == 1 || selectedTemplate == 3) {
+            // الصورة ومعلومات الاتصال تكون في الرأس
+            const contactForHeader = contactInfoHTML.replace('<div class="cv-section" data-section-name="contact-info">', '').replace(/<\/div>$/, '');
+            headerHTML = `<div class="cv-details">${profilePicHTML}<h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2>${contactForHeader}</div>`;
+            sidebarHTML = `${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}`;
+        } 
+        // إذا كان القالب 2
+        else { 
+            // الصورة ومعلومات الاتصال تكون في العامود الجانبي
+            headerHTML = `<div class="cv-details"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div>`;
+            sidebarHTML = `${profilePicHTML}${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}`;
         }
 
-        layoutDiv.appendChild(sidebarDiv);
-        layoutDiv.appendChild(mainContentDiv);
-        cvContentDiv.appendChild(layoutDiv);
+        professionalHeader.innerHTML = headerHTML;
+        sidebarDiv.innerHTML = sidebarHTML;
+        mainContentDiv.innerHTML = `${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${endMarkerHTML}`;
+        
+        cvContentDiv.appendChild(professionalHeader);
+
+    } else { // هذا الجزء يعالج Standard و AST كما كان
+        layoutDiv.className = 'cv-two-column-layout';
+        sidebarDiv.innerHTML = profilePicHTML + contactInfoHTML + skillsHTMLWithLevels + languagesHTML + referencesHTML + endMarkerHTML;
+        mainContentDiv.innerHTML = `<div class="cv-header two-col-main"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div>${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${endMarkerHTML}`;
     }
+    
+    layoutDiv.appendChild(sidebarDiv);
+    layoutDiv.appendChild(mainContentDiv);
+    cvContentDiv.appendChild(layoutDiv);
+}
     // === نهاية: الكود المصحح ===
     
     targetElement.appendChild(cvContentDiv);
