@@ -3267,19 +3267,12 @@ function generateCV(targetElement) {
         }
     }
     // === بداية: الكود المصحح الذي يعالج كل الفئات المتبقية ===
-   else { // هذا الكود سيعالج الآن Standard, AST, و Professional بشكل صحيح
-    const layoutDiv = document.createElement('div');
-    const sidebarDiv = document.createElement('div');
-    sidebarDiv.className = 'cv-sidebar';
-    const mainContentDiv = document.createElement('div');
-    mainContentDiv.className = 'cv-main-content';
-
-else { // هذا الكود سيعالج الآن Standard, AST, و Professional بشكل صحيح
-    const layoutDiv = document.createElement('div');
-    const sidebarDiv = document.createElement('div');
-    sidebarDiv.className = 'cv-sidebar';
-    const mainContentDiv = document.createElement('div');
-    mainContentDiv.className = 'cv-main-content';
+    else { // هذا الكود سيعالج الآن Standard, AST, و Professional بشكل صحيح
+        const layoutDiv = document.createElement('div');
+        const sidebarDiv = document.createElement('div');
+        sidebarDiv.className = 'cv-sidebar';
+        const mainContentDiv = document.createElement('div');
+        mainContentDiv.className = 'cv-main-content';
 
         if (selectedTemplateCategory === 'professional') {
             layoutDiv.className = 'cv-professional-layout';
@@ -3319,11 +3312,6 @@ else { // هذا الكود سيعالج الآن Standard, AST, و Professional
         layoutDiv.appendChild(mainContentDiv);
         cvContentDiv.appendChild(layoutDiv);
     }
-    
-    layoutDiv.appendChild(sidebarDiv);
-    layoutDiv.appendChild(mainContentDiv);
-    cvContentDiv.appendChild(layoutDiv);
-}
     // === نهاية: الكود المصحح ===
     
     targetElement.appendChild(cvContentDiv);
