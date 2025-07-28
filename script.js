@@ -2567,6 +2567,7 @@ function getSelectedTemplateCss() {
  * @returns {Promise<Object|null>} - كائن يحتوي على بيانات الـ PDF أو null
  */
 async function generatePdfFromNode(isPaid) {
+    updatePicturePlacement();
     toggleLoadingOverlay(true, 'Preparing perfect layout...');
     try {
         const tempContainer = document.createElement('div');
@@ -2601,7 +2602,7 @@ async function generatePdfFromNode(isPaid) {
             }
             
             .cv-content .cv-main-content,
-            .cv-content .cv-sidebar {
+            .cv-sidebar {
                 padding-top: 15mm !important;
             }
             
