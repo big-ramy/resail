@@ -3282,13 +3282,26 @@ function generateCV(targetElement) {
         // --- المنطق الجديد لتوزيع المحتوى بشكل صحيح من البداية ---
         let headerHTML, sidebarHTML;
         
-        // إذا كان القالب 1 أو 3
-        if (selectedTemplate == 1 || selectedTemplate == 3) {
-            // الصورة ومعلومات الاتصال تكون في الرأس
-            const contactForHeader = contactInfoHTML.replace('<div class="cv-section" data-section-name="contact-info">', '').replace(/<\/div>$/, '');
-            headerHTML = `<div class="cv-details">${profilePicHTML}<h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2>${contactForHeader}</div>`;
-            sidebarHTML = `${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}`;
-        } 
+            // حالة القالب 1: يبقى كما هو (عمودي)
+            if (selectedTemplate == 1) {
+                const contactForHeader = contactInfoHTML.replace('<div class="cv-section" data-section-name="contact-info">', '').replace(/<\/div>$/, '');
+                headerHTML = `<div class="cv-details">${profilePicHTML}<h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2>${contactForHeader}</div>`;
+                sidebarHTML = `${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}`;
+            } 
+            // حالة القالب 3: هيكل جديد (أفقي ثم عمودي)
+            else if (selectedTemplate == 3) {
+                const contactForHeader = contactInfoHTML.replace('<div class="cv-section" data-section-name="contact-info">', '').replace(/<\/div>$/, '');
+                // أنشأنا حاوية جديدة باسم "cv-header-top-row" حول الصورة والاسم فقط
+                headerHTML = `<div class="cv-details">
+                                <div class="cv-header-top-row">
+                                    ${profilePicHTML}
+                                    <h1 class="cv-name">${name}</h1>
+                                </div>
+                                <h2 class="cv-title">${title}</h2>
+                                ${contactForHeader}
+                              </div>`;
+                sidebarHTML = `${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}`;
+            }
         // إذا كان القالب 2
         else { 
             // الصورة ومعلومات الاتصال تكون في العامود الجانبي
