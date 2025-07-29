@@ -73,6 +73,7 @@
   }]
 }
 </script>
+<div id="element-selector" class="mb-3 d-flex flex-wrap justify-content-center">
 <link rel="alternate" hreflang="ar" href="https://big-ramy.github.io/resail/index.html" />
 <link rel="alternate" hreflang="en" href="https://big-ramy.github.io/resail/en.html" />
 <link rel="alternate" hreflang="x-default" href="https://big-ramy.github.io/resail/en.html" />
@@ -2145,96 +2146,6 @@ html[dir="ltr"] .gradient-toggle-wrapper .form-check-input {
     border: 1px solid rgba(0,0,0,0.1);
 }
 
-/* =================================
-   تنسيقات محرر العناصر الجديد
-==================================== */
-
-/* تمييز العنصر الذي يتم تحريره حاليًا */
-#cv-container .editing-element {
-    outline: 2px dashed #007bff;
-    outline-offset: 4px;
-    box-shadow: 0 0 15px rgba(0, 123, 255, 0.5);
-    transition: outline 0.3s ease, box-shadow 0.3s ease;
-}
-
-#element-editor-panel {
-    text-align: center;
-}
-
-#element-selector {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 10px;
-}
-
-/* Joystick Styling */
-.joystick {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-    margin-top: 10px;
-}
-
-.joystick-middle-row {
-    display: flex;
-    gap: 5px;
-    align-items: center;
-}
-
-.joystick-btn {
-    width: 40px;
-    height: 40px;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    border-radius: 8px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.joystick-btn:hover {
-    background-color: #e9ecef;
-}
-
-.joystick-btn[data-direction="reset"] {
-    border-color: #6c757d;
-    color: #6c757d;
-}
-
-/* Slider Controls Styling */
-.slider-control-wrapper {
-    margin-top: 15px;
-}
-
-.slider-control {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.slider-btn {
-    width: 30px;
-    height: 30px;
-    border: 1px solid #ccc;
-    background-color: #f8f9fa;
-    font-weight: bold;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-.slider-btn:hover {
-    background-color: #e2e6ea;
-}
-
-.form-range {
-    flex-grow: 1;
-}
 
 /* ======================= نهاية: تنسيقات لوحة التحكم الجانبية ======================= */
 </style>
@@ -2670,55 +2581,7 @@ html[dir="ltr"] .gradient-toggle-wrapper .form-check-input {
                                     </div>
                         </div>
                         <div id="controls-sidebar">
-                            <div id="element-editor-panel" class="p-3 bg-light border rounded mb-3">
-                                    <h5 class="text-center mb-3" data-translate="element_editor_title">Element Editor</h5>
-                                
-                                    <div id="element-selector" class="mb-3">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="element_to_edit" id="edit-image-radio" value="image" checked>
-                                            <label class="form-check-label" for="edit-image-radio" data-translate="editor_image">Image</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="element_to_edit" id="edit-name-radio" value="name">
-                                            <label class="form-check-label" for="edit-name-radio" data-translate="editor_name">Name</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="element_to_edit" id="edit-title-radio" value="title">
-                                            <label class="form-check-label" for="edit-title-radio" data-translate="editor_title_job">Title</label>
-                                        </div>
-                                    </div>
-                                
-                                    <div class="mb-3 text-center">
-                                        <label class="form-label fw-bold d-block" data-translate="editor_position">Position</label>
-                                        <div class="joystick">
-                                            <button class="joystick-btn" data-direction="up"><i class="fas fa-arrow-up"></i></button>
-                                            <div class="joystick-middle-row">
-                                                <button class="joystick-btn" data-direction="left"><i class="fas fa-arrow-left"></i></button>
-                                                <button class="joystick-btn" data-direction="reset"><i class="fas fa-dot-circle"></i></button>
-                                                <button class="joystick-btn" data-direction="right"><i class="fas fa-arrow-right"></i></button>
-                                            </div>
-                                            <button class="joystick-btn" data-direction="down"><i class="fas fa-arrow-down"></i></button>
-                                        </div>
-                                    </div>
-                                
-                                    <div class="mb-3 slider-control-wrapper">
-                                        <label for="size-slider" class="form-label fw-bold" data-translate="editor_size">Size</label>
-                                        <div class="slider-control">
-                                            <button class="slider-btn" data-control="size" data-action="decrease">-</button>
-                                            <input type="range" id="size-slider" class="form-range" min="50" max="200" value="100">
-                                            <button class="slider-btn" data-control="size" data-action="increase">+</button>
-                                        </div>
-                                    </div>
-                                
-                                    <div id="border-radius-control" class="mb-3 slider-control-wrapper">
-                                        <label for="radius-slider" class="form-label fw-bold" data-translate="editor_frame">Frame Shape</label>
-                                        <div class="slider-control">
-                                            <button class="slider-btn" data-control="radius" data-action="decrease">-</button>
-                                            <input type="range" id="radius-slider" class="form-range" min="0" max="50" value="50">
-                                            <button class="slider-btn" data-control="radius" data-action="increase">+</button>
-                                        </div>
-                                    </div>
-                            </div>
+
                             <div id="font-selector-container" class="text-center my-3">
                                 <div class="row justify-content-center g-2">
                                     <div class="col-12">
