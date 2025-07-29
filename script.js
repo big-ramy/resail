@@ -3657,10 +3657,9 @@ function generateCV(targetElement) {
     }
     
     targetElement.appendChild(cvContentDiv);
-    targetElement.querySelectorAll('.cv-section, .cv-header, .cv-sidebar, .cv-profile-pic, .cv-name, .cv-title, .cv-experience-item, .cv-education-item, .cv-reference-item').forEach(el => {
-        el.classList.add('editable-cv-element');
-        // استدعاء getElementId هنا يضمن تهيئة حالة كل عنصر
-        getElementId(el); 
+    // --- 4. تفعيل التحرير وإعادة تطبيق الحالات المحفوظة ---
+    targetElement.querySelectorAll('.editable-cv-element').forEach(el => {
+        getElementId(el);
     });
 
     // --- 4. استدعاء دوال التنسيق والتحديث بعد بناء الهيكل ---
