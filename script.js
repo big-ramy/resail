@@ -45,7 +45,8 @@ const translations = {
         "editor_position": "الموضع",
         "editor_size": "الحجم",
         "editor_frame": "شكل الإطار",
-        
+        "editor_select_element": "حدد عنصرًا لتحريره",
+        "editor_font_size": "حجم الخط",
         // ترجمة عناصر تغيير الخطوط
         "select_name_font_label": "خط الاسم الرئيسي:",
         "select_headings_font_label": "خط العناوين:",
@@ -367,7 +368,8 @@ const translations = {
         "editor_position": "Position",
         "editor_size": "Size",
         "editor_frame": "Frame Shape",
-        
+        "editor_select_element": "Select an element to edit",
+        "editor_font_size": "Font Size",
         // ترجمات عناصر اسماء الخطوط
         "select_name_font_label": "Main Name Font:",
         "select_headings_font_label": "Headings Font:",
@@ -921,133 +923,156 @@ function updateEditorUI() {
 }
 /**
  * =================================================================
- * == محرر السيرة الذاتية المطور باستخدام Interact.js
+ * == محرر السيرة الذاتية الهجين (Hybrid Editor Logic)
  * =================================================================
  */
 
-// متغير لتخزين العنصر المحدد حاليًا
-let selectedElement = null; 
-// كائن لتخزين حالة كل العناصر القابلة للتعديل
-const elementStates = {}; 
+let selectedElement = null;
+const elementStates = {}; // يخزن كل التعديلات
 
+// دالة الإعداد الرئيسية للمحرر
 function initInteractEditor() {
     const cvContainer = document.getElementById('cv-container');
 
-    // --- 1. منطق تحديد العنصر بالنقر ---
+    // --- 1. منطق تحديد العنصر وتفعيل "حالة التحرير" ---
     cvContainer.addEventListener('click', (event) => {
-        // ابحث عن أقرب عنصر أب قابل للتعديل
         const target = event.target.closest('.editable-cv-element');
-        
-        // إذا لم يتم النقر على عنصر قابل للتعديل، لا تفعل شيئًا
         if (!target) return;
 
-        // إذا كان هناك عنصر محدد بالفعل، قم بإزالة التمييز منه
+        // تفعيل حالة التحرير عند النقر لأول مرة
+        activateEditState(target);
+
         if (selectedElement) {
             selectedElement.classList.remove('editing-element');
         }
-
-        // حدد العنصر الجديد وقم بتمييزه
         selectedElement = target;
         selectedElement.classList.add('editing-element');
-
-        // تحديث واجهة التحكم لتعكس خصائص العنصر المحدد
         updateEditorUIForSelection();
     });
 
-
-    // --- 2. تفعيل السحب لجميع العناصر القابلة للتعديل ---
+    // --- 2. تفعيل السحب وتغيير الحجم باستخدام Interact.js ---
     interact('.editable-cv-element')
         .draggable({
             listeners: {
                 move(event) {
                     const target = event.target;
-                    // الحصول على معرف فريد للعنصر
                     const id = getElementId(target);
+                    const state = elementStates[id];
 
-                    // تحديث الموضع في كائن الحالة
-                    const x = (elementStates[id].x || 0) + event.dx;
-                    const y = (elementStates[id].y || 0) + event.dy;
-
-                    // تطبيق التحريك باستخدام transform للحصول على أفضل أداء
-                    target.style.transform = `translate(${x}px, ${y}px)`;
-
-                    // حفظ الموضع الجديد
-                    elementStates[id].x = x;
-                    elementStates[id].y = y;
+                    // تحديث الموضع (نستخدم top/left لأن العنصر absolute)
+                    state.top = (state.top || 0) + event.dy;
+                    state.left = (state.left || 0) + event.dx;
+                    
+                    applyElementState(target, state);
                 }
-            },
-            modifiers: [ // Modifier لجعل الحركة داخل الحاوية الأم فقط
-                interact.modifiers.restrictRect({
-                    restriction: 'parent'
-                })
-            ],
-            inertia: true // يعطي إحساسًا بالقصور الذاتي عند ترك العنصر
+            }
         })
         .resizable({
-            // تحديد الحواف التي يمكن تغيير الحجم منها
             edges: { left: true, right: true, bottom: true, top: true },
             listeners: {
                 move(event) {
                     const target = event.target;
                     const id = getElementId(target);
+                    const state = elementStates[id];
+
+                    // تحديث الأبعاد والموضع
+                    state.width = event.rect.width;
+                    state.height = event.rect.height;
+                    state.top = (state.top || 0) + event.deltaRect.top;
+                    state.left = (state.left || 0) + event.deltaRect.left;
                     
-                    let { x, y } = elementStates[id];
-                    x = x || 0;
-                    y = y || 0;
-
-                    // تحديث العرض والارتفاع
-                    target.style.width = `${event.rect.width}px`;
-                    target.style.height = `${event.rect.height}px`;
-
-                    // تحديث الموضع لأن تغيير الحجم يؤثر عليه
-                    x += event.deltaRect.left;
-                    y += event.deltaRect.top;
-                    target.style.transform = `translate(${x}px, ${y}px)`;
-
-                    // حفظ الحالة الجديدة
-                    elementStates[id] = { ...elementStates[id], x, y, width: event.rect.width, height: event.rect.height };
-                    updateEditorUIForSelection(); // تحديث أشرطة التمرير
+                    applyElementState(target, state);
+                    updateEditorUIForSelection();
                 }
-            },
-            inertia: true
+            }
         });
 
-    // --- 3. ربط أشرطة التحكم بالعنصر المحدد ---
-    setupSliderEvents();
+    setupControlPanelListeners();
 }
 
+// دالة تفعيل "حالة التحرير" عند النقر لأول مرة
+function activateEditState(element) {
+    const id = getElementId(element);
+    // إذا كان العنصر بالفعل في حالة التحرير، لا تفعل شيئًا
+    if (elementStates[id].isAbsolute) return;
 
-// دالة للحصول على أو إنشاء معرف فريد للعنصر وتهيئة حالته
-function getElementId(element) {
-    if (!element.id) {
-        element.id = `cv-el-${Math.random().toString(36).substr(2, 9)}`;
-    }
-    
-    // ==> هذا هو الجزء الأهم في الإصلاح <==
-    // إذا لم يكن للعنصر حالة محفوظة، قم بإنشائها الآن
-    if (!elementStates[element.id]) {
-        // التقط الأبعاد الحقيقية للعنصر كما رسمها الـ CSS
-        const initialWidth = element.offsetWidth;
-        const initialHeight = element.offsetHeight;
+    // 1. التقط الموضع والأبعاد قبل التغيير
+    const initialTop = element.offsetTop;
+    const initialLeft = element.offsetLeft;
+    const initialWidth = element.offsetWidth;
+    const initialHeight = element.offsetHeight;
 
-        // احفظ الأبعاد كحالة أولية
-        elementStates[element.id] = {
-            x: 0,
-            y: 0,
-            width: initialWidth,
-            height: initialHeight,
-            // يمكنك إضافة أي خصائص افتراضية أخرى هنا
-            fontSize: 100,
-            borderRadius: 50 
-        };
-        
-        // قم بتثبيت هذه الأبعاد الأولية مباشرة على العنصر
-        // لمنع أي انكماش مستقبلي
-        element.style.width = `${initialWidth}px`;
-        element.style.height = `${initialHeight}px`;
+    // 2. حوّل العنصر إلى absolute وثبّت موضعه وأبعاده
+    element.style.position = 'absolute';
+    element.style.top = `${initialTop}px`;
+    element.style.left = `${initialLeft}px`;
+    element.style.width = `${initialWidth}px`;
+    element.style.height = `${initialHeight}px`;
+
+    // 3. إذا كان العنصر نصيًا، اسمح له بالتمدد
+    if (element.matches('.cv-name, .cv-title')) {
+        element.style.width = 'max-content';
     }
-    return element.id;
+
+    // 4. احفظ الحالة الجديدة
+    elementStates[id] = {
+        ...elementStates[id],
+        isAbsolute: true,
+        top: initialTop,
+        left: initialLeft,
+        width: element.offsetWidth, // التقط العرض الجديد بعد max-content
+        height: element.offsetHeight
+    };
 }
+
+// دالة لإعداد كل المستمعين لأزرار وشرائط التحكم
+function setupControlPanelListeners() {
+    // 1. مستمعو الجويستيك
+    document.querySelectorAll('.joystick-btn-circle').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (!selectedElement) return;
+            const id = getElementId(selectedElement);
+            const state = elementStates[id];
+            const direction = btn.dataset.direction;
+            const step = 2; // مسافة الحركة
+
+            if (direction === 'reset') {
+                state.x = 0; state.y = 0;
+            } else {
+                if (direction === 'up') state.y = (state.y || 0) - step;
+                if (direction === 'down') state.y = (state.y || 0) + step;
+                if (direction === 'left') state.x = (state.x || 0) - step;
+                if (direction === 'right') state.x = (state.x || 0) + step;
+            }
+            applyAllSavedStates(document.getElementById('cv-container'));
+        });
+    });
+
+    // 2. مستمعو شرائط التمرير
+    const sliders = ['width', 'height', 'fontSize', 'radius'];
+    sliders.forEach(controlName => {
+        const slider = document.getElementById(`${controlName.replace('Size', '-size')}-slider`); // للتعامل مع fontSize
+        if (!slider) return;
+
+        // الأزرار + و -
+        document.querySelectorAll(`.slider-btn[data-control="${controlName}"]`).forEach(btn => {
+            btn.addEventListener('click', () => {
+                let step = (controlName === 'fontSize') ? 5 : 2;
+                slider.value = parseInt(slider.value) + (btn.dataset.action === 'increase' ? step : -step);
+                slider.dispatchEvent(new Event('input'));
+            });
+        });
+
+        // شريط التمرير نفسه
+        slider.addEventListener('input', () => {
+            if (!selectedElement) return;
+            const id = getElementId(selectedElement);
+            elementStates[id][controlName] = parseInt(slider.value);
+            applyAllSavedStates(document.getElementById('cv-container'));
+        });
+    });
+}
+
 
 // تحديث واجهة التحكم بناءً على العنصر المحدد
 function updateEditorUIForSelection() {
@@ -1070,6 +1095,17 @@ function updateEditorUIForSelection() {
     if(state.height) document.getElementById('height-slider').value = (state.height / selectedElement.parentElement.offsetHeight) * 100;
     if(state.size) document.getElementById('size-slider').value = state.size;
     if(state.radius) document.getElementById('radius-slider').value = state.radius;
+}
+
+// دالة للحصول على أو إنشاء ID وتهيئة الحالة الأولية
+function getElementId(element) {
+    if (!element.id) {
+        element.id = `cv-el-${Math.random().toString(36).substr(2, 9)}`;
+    }
+    if (!elementStates[element.id]) {
+        elementStates[element.id] = { x: 0, y: 0 }; // تهيئة أولية
+    }
+    return element.id;
 }
 
 // إعداد المستمعين لأشرطة التحكم
@@ -1101,36 +1137,33 @@ function setupSliderEvents() {
 }
 
 
+// دالة جديدة لتطبيق حالة عنصر واحد
+function applyElementState(element, state) {
+    if (!element || !state) return;
 
-// دالة جديدة لإعادة تطبيق كل الحالات المحفوظة
+    // إذا كان العنصر في حالة تحرير، طبّق كل الخصائص
+    if (state.isAbsolute) {
+        element.style.position = 'absolute';
+        element.style.top = `${state.top || 0}px`;
+        element.style.left = `${state.left || 0}px`;
+        if (state.width) element.style.width = `${state.width}px`;
+        if (state.height) element.style.height = `${state.height}px`;
+
+        if (element.matches('.cv-name, .cv-title')) {
+             element.style.width = 'max-content';
+        }
+    }
+// الدالة النهائية لتطبيق كل الحالات المحفوظة (مُعدّلة)
 function applyAllSavedStates(container) {
-    // نتأكد أن الحاوية موجودة
     if (!container) return;
-
     for (const id in elementStates) {
         const element = container.querySelector(`#${id}`);
-        const state = elementStates[id];
-        
         if (element) {
-            // تطبيق الموضع
-            element.style.transform = `translate(${state.x || 0}px, ${state.y || 0}px)`;
-
-            // تطبيق الأبعاد
-            if (state.width) element.style.width = `${state.width}px`;
-            if (state.height) element.style.height = `${state.height}px`;
-
-            // تطبيق حجم الخط (إذا كان للعنصر هذه الخاصية)
-            if (state.fontSize && !element.matches('.cv-header, .cv-sidebar')) {
-                 element.style.fontSize = `${state.fontSize}%`;
-            }
-
-            // تطبيق استدارة الإطار (إذا كان للعنصر هذه الخاصية)
-            if (state.borderRadius && element.matches('.cv-profile-pic')) {
-                element.style.borderRadius = `${state.borderRadius}%`;
-            }
+            applyElementState(element, elementStates[id]);
         }
     }
 }
+
 // تحديث التمييز البصري للعنصر النشط في المعاينة
 function updateActiveElementHighlight() {
     // إزالة التمييز من كل العناصر أولاً
