@@ -1017,19 +1017,37 @@ function initInteractEditor() {
 }
 
 
-// دالة للحصول على أو إنشاء معرف فريد للعنصر
+// دالة للحصول على أو إنشاء معرف فريد للعنصر وتهيئة حالته
 function getElementId(element) {
     if (!element.id) {
-        // إنشاء ID عشوائي إذا لم يكن موجودًا
         element.id = `cv-el-${Math.random().toString(36).substr(2, 9)}`;
     }
-    // تهيئة الحالة إذا كان العنصر جديدًا
+    
+    // ==> هذا هو الجزء الأهم في الإصلاح <==
+    // إذا لم يكن للعنصر حالة محفوظة، قم بإنشائها الآن
     if (!elementStates[element.id]) {
-        elementStates[element.id] = { x: 0, y: 0 };
+        // التقط الأبعاد الحقيقية للعنصر كما رسمها الـ CSS
+        const initialWidth = element.offsetWidth;
+        const initialHeight = element.offsetHeight;
+
+        // احفظ الأبعاد كحالة أولية
+        elementStates[element.id] = {
+            x: 0,
+            y: 0,
+            width: initialWidth,
+            height: initialHeight,
+            // يمكنك إضافة أي خصائص افتراضية أخرى هنا
+            fontSize: 100,
+            borderRadius: 50 
+        };
+        
+        // قم بتثبيت هذه الأبعاد الأولية مباشرة على العنصر
+        // لمنع أي انكماش مستقبلي
+        element.style.width = `${initialWidth}px`;
+        element.style.height = `${initialHeight}px`;
     }
     return element.id;
 }
-
 
 // تحديث واجهة التحكم بناءً على العنصر المحدد
 function updateEditorUIForSelection() {
@@ -1086,19 +1104,33 @@ function setupSliderEvents() {
 
 // دالة جديدة لإعادة تطبيق كل الحالات المحفوظة
 function applyAllSavedStates(container) {
+    // نتأكد أن الحاوية موجودة
+    if (!container) return;
+
     for (const id in elementStates) {
         const element = container.querySelector(`#${id}`);
         const state = elementStates[id];
+        
         if (element) {
+            // تطبيق الموضع
             element.style.transform = `translate(${state.x || 0}px, ${state.y || 0}px)`;
+
+            // تطبيق الأبعاد
             if (state.width) element.style.width = `${state.width}px`;
             if (state.height) element.style.height = `${state.height}px`;
-            if (state.fontSize) element.style.fontSize = `${state.fontSize}%`;
-            if (state.borderRadius) element.style.borderRadius = `${state.borderRadius}%`;
+
+            // تطبيق حجم الخط (إذا كان للعنصر هذه الخاصية)
+            if (state.fontSize && !element.matches('.cv-header, .cv-sidebar')) {
+                 element.style.fontSize = `${state.fontSize}%`;
+            }
+
+            // تطبيق استدارة الإطار (إذا كان للعنصر هذه الخاصية)
+            if (state.borderRadius && element.matches('.cv-profile-pic')) {
+                element.style.borderRadius = `${state.borderRadius}%`;
+            }
         }
     }
 }
-
 // تحديث التمييز البصري للعنصر النشط في المعاينة
 function updateActiveElementHighlight() {
     // إزالة التمييز من كل العناصر أولاً
@@ -3592,6 +3624,11 @@ function generateCV(targetElement) {
     }
     
     targetElement.appendChild(cvContentDiv);
+    targetElement.querySelectorAll('.cv-section, .cv-header, .cv-sidebar, .cv-profile-pic, .cv-name, .cv-title, .cv-experience-item, .cv-education-item, .cv-reference-item').forEach(el => {
+        el.classList.add('editable-cv-element');
+        // استدعاء getElementId هنا يضمن تهيئة حالة كل عنصر
+        getElementId(el); 
+    });
 
     // --- 4. استدعاء دوال التنسيق والتحديث بعد بناء الهيكل ---
     saveCvDataToLocalStorage();
