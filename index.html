@@ -2225,6 +2225,30 @@ html[dir="ltr"] .gradient-toggle-wrapper .form-check-input {
 }
 
 /* ======================= نهاية: تنسيقات لوحة التحكم الجانبية ======================= */
+
+/* لجعل العناصر قابلة للتفاعل مع الماوس */
+.editable-cv-element {
+    touch-action: none; /* مهم لمكتبة Interact.js */
+    user-select: none;  /* لمنع تحديد النص عند السحب */
+    box-sizing: border-box; /* لضمان دقة تغيير الحجم */
+}
+
+/* تعديل بسيط على تنسيق التمييز */
+#cv-container .editing-element {
+    outline: 2px dashed #0d6efd;
+    z-index: 100 !important; /* لضمان ظهور العنصر المحدد فوق البقية */
+}
+
+/* تنسيق مقابض تغيير الحجم التي تضيفها المكتبة */
+.resize-handle {
+    background: #0d6efd;
+    border: 1px solid white;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    position: absolute;
+    box-shadow: 0 0 5px rgba(0,0,0,0.4);
+}
 </style>
 </head>
 <body>
