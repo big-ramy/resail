@@ -3475,7 +3475,7 @@ function generateCV(targetElement) {
     const phone = document.getElementById('phone-input')?.value.trim() || '';
     const website = document.getElementById('website-input')?.value.trim() || '';
     const objective = document.getElementById('objective-input')?.value.trim() || '';
-
+    const endMarkerHTML = createEndMarkerHTML();
     // --- 2. بناء أجزاء HTML ---
     // أضفنا كلاس 'editable-cv-element' مباشرة هنا للعناصر الفردية
     let profilePicHTML = profilePicDataUrl ? `<img src="${profilePicDataUrl}" class="cv-profile-pic editable-cv-element" alt="Profile Picture">` : '';
