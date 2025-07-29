@@ -992,36 +992,54 @@ function initInteractEditor() {
 }
 
 
-// دالة تفعيل "حالة التحرير" عند النقر لأول مرة
+// دالة تفعيل "حالة التحرير" مع إنشاء عنصر وهمي للحفاظ على التخطيط
 function activateEditState(element) {
     const id = getElementId(element);
     if (elementStates[id].isAbsolute) return;
 
+    // 1. التقط الموضع والأبعاد قبل التغيير
     const initialTop = element.offsetTop;
     const initialLeft = element.offsetLeft;
     const initialWidth = element.offsetWidth;
     const initialHeight = element.offsetHeight;
 
+    // ---== بداية الإضافة الجديدة: إنشاء العنصر الوهمي ==---
+
+    // 2. أنشئ نسخة من العنصر لتكون العنصر الوهمي
+    const placeholder = element.cloneNode(true);
+    // 3. أزل الـ ID من النسخة لتجنب التكرار
+    placeholder.id = ''; 
+    // 4. أضف كلاس خاص بالعنصر الوهمي واجعله غير مرئي (لكنه لا يزال يشغل مساحة)
+    placeholder.classList.add('placeholder-element');
+    placeholder.style.visibility = 'hidden';
+    // 5. أدخل العنصر الوهمي في الصفحة مباشرة قبل العنصر الأصلي
+    element.parentNode.insertBefore(placeholder, element);
+
+    // ---== نهاية الإضافة الجديدة ==---
+
+    // 6. الآن، حوّل العنصر الأصلي إلى absolute وثبّت موضعه
     element.style.position = 'absolute';
     element.style.top = `${initialTop}px`;
     element.style.left = `${initialLeft}px`;
     element.style.width = `${initialWidth}px`;
     element.style.height = `${initialHeight}px`;
 
+    // 7. إذا كان العنصر نصيًا، اسمح له بالتمدد
     if (element.matches('.cv-name, .cv-title')) {
         element.style.width = 'max-content';
     }
 
+    // 8. احفظ الحالة الجديدة مع إضافة مرجع للعنصر الوهمي
     elementStates[id] = {
         ...elementStates[id],
         isAbsolute: true,
+        placeholder: placeholder, // حفظنا العنصر الوهمي هنا
         top: initialTop,
         left: initialLeft,
         width: element.offsetWidth,
         height: element.offsetHeight
     };
 }
-
 
 // دالة لإعداد كل المستمعين لأزرار وشرائط التحكم
 function setupControlPanelListeners() {
