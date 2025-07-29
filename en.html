@@ -2578,6 +2578,55 @@ html[dir="ltr"] .gradient-toggle-wrapper .form-check-input {
                                     </div>
                         </div>
                         <div id="controls-sidebar">
+                            <div id="element-editor-panel" class="p-3 bg-light border rounded mb-3">
+                                    <h5 class="text-center mb-3" data-translate="element_editor_title">Element Editor</h5>
+                                
+                                    <div id="element-selector" class="mb-3">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="element_to_edit" id="edit-image-radio" value="image" checked>
+                                            <label class="form-check-label" for="edit-image-radio" data-translate="editor_image">Image</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="element_to_edit" id="edit-name-radio" value="name">
+                                            <label class="form-check-label" for="edit-name-radio" data-translate="editor_name">Name</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="element_to_edit" id="edit-title-radio" value="title">
+                                            <label class="form-check-label" for="edit-title-radio" data-translate="editor_title_job">Title</label>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="mb-3 text-center">
+                                        <label class="form-label fw-bold d-block" data-translate="editor_position">Position</label>
+                                        <div class="joystick">
+                                            <button class="joystick-btn" data-direction="up"><i class="fas fa-arrow-up"></i></button>
+                                            <div class="joystick-middle-row">
+                                                <button class="joystick-btn" data-direction="left"><i class="fas fa-arrow-left"></i></button>
+                                                <button class="joystick-btn" data-direction="reset"><i class="fas fa-dot-circle"></i></button>
+                                                <button class="joystick-btn" data-direction="right"><i class="fas fa-arrow-right"></i></button>
+                                            </div>
+                                            <button class="joystick-btn" data-direction="down"><i class="fas fa-arrow-down"></i></button>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="mb-3 slider-control-wrapper">
+                                        <label for="size-slider" class="form-label fw-bold" data-translate="editor_size">Size</label>
+                                        <div class="slider-control">
+                                            <button class="slider-btn" data-control="size" data-action="decrease">-</button>
+                                            <input type="range" id="size-slider" class="form-range" min="50" max="200" value="100">
+                                            <button class="slider-btn" data-control="size" data-action="increase">+</button>
+                                        </div>
+                                    </div>
+                                
+                                    <div id="border-radius-control" class="mb-3 slider-control-wrapper">
+                                        <label for="radius-slider" class="form-label fw-bold" data-translate="editor_frame">Frame Shape</label>
+                                        <div class="slider-control">
+                                            <button class="slider-btn" data-control="radius" data-action="decrease">-</button>
+                                            <input type="range" id="radius-slider" class="form-range" min="0" max="50" value="50">
+                                            <button class="slider-btn" data-control="radius" data-action="increase">+</button>
+                                        </div>
+                                    </div>
+                            </div>
                             <div id="font-selector-container" class="text-center my-3">
                                 <div class="row justify-content-center g-2">
                                     <div class="col-12">
