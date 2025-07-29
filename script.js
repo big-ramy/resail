@@ -36,7 +36,17 @@ const translations = {
         "Intermediate": "متوسط",
         "Advanced": "متقدم",
         "Expert": "خبير",
-
+        
+        // ترجمة عناصر التحكم في الموضع
+        "element_editor_title": "محرر العناصر",
+        "editor_image": "الصورة",
+        "editor_name": "الاسم",
+        "editor_title_job": "المسمى",
+        "editor_position": "الموضع",
+        "editor_size": "الحجم",
+        "editor_frame": "شكل الإطار",
+        
+        // ترجمة عناصر تغيير الخطوط
         "select_name_font_label": "خط الاسم الرئيسي:",
         "select_headings_font_label": "خط العناوين:",
         "select_body_font_label": "خط النص الأساسي:",
@@ -348,7 +358,17 @@ const translations = {
         "Intermediate": "Intermediate",
         "Advanced": "Advanced",
         "Expert": "Expert",
-
+        
+        // ترجمات عناصر التحكم في الموضع 
+        "element_editor_title": "Element Editor",
+        "editor_image": "Image",
+        "editor_name": "Name",
+        "editor_title_job": "Title",
+        "editor_position": "Position",
+        "editor_size": "Size",
+        "editor_frame": "Frame Shape",
+        
+        // ترجمات عناصر اسماء الخطوط
         "select_name_font_label": "Main Name Font:",
         "select_headings_font_label": "Headings Font:",
         "select_body_font_label": "Body Text Font:",
@@ -567,6 +587,14 @@ const translations = {
         "terms-of-service-h4-7": "7. Contact Us",
         "terms-of-service-p-7-1": "For any questions or inquiries regarding the terms of service, please contact us via email: <strong><a href=\"mailto:ramyheshamamer@gmail.com\">ramyheshamamer@gmail.com</a></strong>."
     }
+};
+
+// متغيرات لتخزين حالة محرر العناصر
+let selectedEditorTarget = 'image'; // القيمة الافتراضية
+const elementStates = {
+    image: { top: 0, left: 0, size: 100, radius: 50 },
+    name: { top: 0, left: 0, size: 100 },
+    title: { top: 0, left: 0, size: 100 }
 };
 
 const CONTROL_VISIBILITY_CONFIG = {
@@ -878,6 +906,154 @@ let salesQueue = [
 let finalPriceToPay = 0; // سيحتفظ بالسعر النهائي بعد الخصم
 let appliedCode = ""; // سيحتفظ بالكود المطبق
 
+/**
+ * ==========================================================
+ * == دوال محرر العناصر (Position, Size, Radius)
+ * ==========================================================
+ */
+
+// دالة الإعداد الرئيسية التي يتم استدعاؤها مرة واحدة
+function setupElementEditor() {
+    // رصد التغيير في الراديو
+    document.querySelectorAll('input[name="element_to_edit"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            selectedEditorTarget = e.target.value;
+            updateEditorUI();
+            updateActiveElementHighlight();
+        });
+    });
+
+    // رصد النقرات على أزرار Joystick
+    document.querySelectorAll('.joystick-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const direction = btn.dataset.direction;
+            if (direction === 'reset') {
+                elementStates[selectedEditorTarget].top = 0;
+                elementStates[selectedEditorTarget].left = 0;
+            } else {
+                const step = 2; // قيمة التحريك بالبيكسل
+                if (direction === 'up') elementStates[selectedEditorTarget].top -= step;
+                if (direction === 'down') elementStates[selectedEditorTarget].top += step;
+                if (direction === 'left') elementStates[selectedEditorTarget].left -= step;
+                if (direction === 'right') elementStates[selectedEditorTarget].left += step;
+            }
+            applyElementStyles();
+        });
+    });
+
+    // رصد التغيير في شريط الحجم والأزرار
+    document.getElementById('size-slider').addEventListener('input', (e) => {
+        elementStates[selectedEditorTarget].size = parseInt(e.target.value);
+        applyElementStyles();
+    });
+    document.querySelectorAll('.slider-btn[data-control="size"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const slider = document.getElementById('size-slider');
+            let currentValue = parseInt(slider.value);
+            currentValue += (btn.dataset.action === 'increase' ? 5 : -5);
+            slider.value = Math.max(50, Math.min(200, currentValue)); // Ensure within bounds
+            elementStates[selectedEditorTarget].size = parseInt(slider.value);
+            applyElementStyles();
+        });
+    });
+
+    // رصد التغيير في شريط الإطار والأزرار
+    document.getElementById('radius-slider').addEventListener('input', (e) => {
+        if (selectedEditorTarget === 'image') {
+            elementStates.image.radius = parseInt(e.target.value);
+            applyElementStyles();
+        }
+    });
+    document.querySelectorAll('.slider-btn[data-control="radius"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+             if (selectedEditorTarget !== 'image') return;
+            const slider = document.getElementById('radius-slider');
+            let currentValue = parseInt(slider.value);
+            currentValue += (btn.dataset.action === 'increase' ? 5 : -5);
+            slider.value = Math.max(0, Math.min(50, currentValue)); // Ensure within bounds
+            elementStates.image.radius = parseInt(slider.value);
+            applyElementStyles();
+        });
+    });
+    
+    // التهيأة الأولية للواجهة
+    updateEditorUI();
+    updateActiveElementHighlight();
+}
+
+// تحديث واجهة المحرر (إخفاء/إظهار شريط الإطار وتحديث قيم الشرائط)
+function updateEditorUI() {
+    document.getElementById('border-radius-control').style.display = (selectedEditorTarget === 'image') ? 'block' : 'none';
+    
+    // تحديث قيم الشرائط لتعكس الحالة الحالية للعنصر المختار
+    const sizeSlider = document.getElementById('size-slider');
+    const radiusSlider = document.getElementById('radius-slider');
+    
+    sizeSlider.value = elementStates[selectedEditorTarget].size;
+    if(selectedEditorTarget === 'image') {
+        radiusSlider.value = elementStates.image.radius;
+    }
+}
+
+// تحديث التمييز البصري للعنصر النشط في المعاينة
+function updateActiveElementHighlight() {
+    // إزالة التمييز من كل العناصر أولاً
+    document.querySelector('#cv-container .cv-profile-pic')?.classList.remove('editing-element');
+    document.querySelector('#cv-container .cv-name')?.classList.remove('editing-element');
+    document.querySelector('#cv-container .cv-title')?.classList.remove('editing-element');
+    
+    // إضافة التمييز للعنصر المختار
+    const targetSelector = getTargetSelector(selectedEditorTarget);
+    if (targetSelector) {
+        const element = document.querySelector(targetSelector);
+        if (element) {
+            element.classList.add('editing-element');
+        }
+    }
+}
+
+// دالة مساعدة للحصول على محدد CSS للعنصر
+function getTargetSelector(target) {
+    if (target === 'image') return '#cv-container .cv-profile-pic';
+    if (target === 'name') return '#cv-container .cv-name';
+    if (target === 'title') return '#cv-container .cv-title';
+    return null;
+}
+
+// الدالة الأساسية التي تطبق كل التنسيقات المحفوظة على العناصر
+function applyElementStyles() {
+    // تطبيق تنسيقات الصورة
+    const img = document.querySelector(getTargetSelector('image'));
+    if (img) {
+        img.style.position = 'relative';
+        img.style.top = `${elementStates.image.top}px`;
+        img.style.left = `${elementStates.image.left}px`;
+        img.style.width = `${elementStates.image.size}%`;
+        img.style.height = 'auto'; // للحفاظ على نسبة العرض إلى الارتفاع
+        img.style.borderRadius = `${elementStates.image.radius}%`;
+    }
+
+    // تطبيق تنسيقات الاسم
+    const nameEl = document.querySelector(getTargetSelector('name'));
+    if (nameEl) {
+        nameEl.style.position = 'relative';
+        nameEl.style.top = `${elementStates.name.top}px`;
+        nameEl.style.left = `${elementStates.name.left}px`;
+        nameEl.style.fontSize = `${elementStates.name.size}%`;
+    }
+
+    // تطبيق تنسيقات المسمى الوظيفي
+    const titleEl = document.querySelector(getTargetSelector('title'));
+    if (titleEl) {
+        titleEl.style.position = 'relative';
+        titleEl.style.top = `${elementStates.title.top}px`;
+        titleEl.style.left = `${elementStates.title.left}px`;
+        titleEl.style.fontSize = `${elementStates.title.size}%`;
+    }
+    
+    // تحديث التمييز للتأكيد
+    updateActiveElementHighlight();
+}
 
 /**
  * تطبق الخط المختار من القائمة المنسدلة على حاوية عرض السيرة الذاتية.
@@ -1129,7 +1305,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadCvDataFromLocalStorage();
     updateControlsForCategory();
     applySelectedColors();
-    setupColorControls();
 
     // === أضف هذه الأسطر الأربعة هنا لربط ألوان النصوص ===
     document.getElementById('color-picker-header-text').addEventListener('input', applySelectedColors);
@@ -1199,8 +1374,10 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCounters(); // أضف هذا الاستدعاء
     updateLanguage();
     showPage('landing-page');
+    setupElementEditor();
     lazyLoadImages();
     setupColorControls();
+    
 });
 
 function addCustomSection() {
@@ -3320,6 +3497,8 @@ function generateCV(targetElement) {
     saveCvDataToLocalStorage();
     applySelectedFonts();
     applySelectedColors();
+    applyElementStyles();
+    updateActiveElementHighlight();    
 }
 
 
