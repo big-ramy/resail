@@ -2145,6 +2145,46 @@ html[dir="ltr"] .gradient-toggle-wrapper .form-check-input {
     border-radius: 50%;
     border: 1px solid rgba(0,0,0,0.1);
 }
+/*=========================التحكم=============================*/
+    /* تنسيقات الجويستيك الدائري */
+.joystick-circle {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 15px auto;
+    display: grid;
+    place-items: center;
+}
+
+.joystick-btn-circle {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.joystick-btn-circle:hover {
+    background-color: #e9ecef;
+}
+
+.joystick-btn-circle[data-direction="up"] { top: 0; }
+.joystick-btn-circle[data-direction="down"] { bottom: 0; }
+.joystick-btn-circle[data-direction="left"] { left: 0; }
+.joystick-btn-circle[data-direction="right"] { right: 0; }
+.joystick-btn-circle[data-direction="reset"] {
+    width: 45px;
+    height: 45px;
+    border-color: #6c757d;
+    color: #6c757d;
+}
 
 
 /* ======================= نهاية: تنسيقات لوحة التحكم الجانبية ======================= */
@@ -2171,7 +2211,7 @@ html[dir="ltr"] .gradient-toggle-wrapper .form-check-input {
     position: absolute;
     box-shadow: 0 0 5px rgba(0,0,0,0.4);
 }
-    
+
 </style>
 </head>
 <body>
@@ -2605,6 +2645,59 @@ html[dir="ltr"] .gradient-toggle-wrapper .form-check-input {
                                     </div>
                         </div>
                         <div id="controls-sidebar">
+
+                            <div id="element-editor-panel" class="p-3 bg-light border rounded mb-3">
+                                    <div id="editor-status-message" class="text-center text-muted mb-3" data-translate="editor_select_element">Select an element to edit</div>
+                                
+                                    <div id="main-controls" class="d-none">
+                                
+                                        <div class="mb-3 text-center">
+                                            <label class="form-label fw-bold d-block" data-translate="editor_position">Position</label>
+                                            <div class="joystick-circle">
+                                                <button class="joystick-btn-circle" data-direction="up"><i class="fas fa-arrow-up"></i></button>
+                                                <button class="joystick-btn-circle" data-direction="left"><i class="fas fa-arrow-left"></i></button>
+                                                <button class="joystick-btn-circle" data-direction="reset"><i class="fas fa-dot-circle"></i></button>
+                                                <button class="joystick-btn-circle" data-direction="right"><i class="fas fa-arrow-right"></i></button>
+                                                <button class="joystick-btn-circle" data-direction="down"><i class="fas fa-arrow-down"></i></button>
+                                            </div>
+                                        </div>
+                                
+                                        <div id="sliders-container">
+                                            <div id="width-control" class="mb-3 slider-control-wrapper">
+                                                <label for="width-slider" class="form-label fw-bold" data-translate="editor_width">Width</label>
+                                                <div class="slider-control">
+                                                    <button class="slider-btn" data-control="width" data-action="decrease">-</button>
+                                                    <input type="range" id="width-slider" class="form-range" min="20" max="100" value="100">
+                                                    <button class="slider-btn" data-control="width" data-action="increase">+</button>
+                                                </div>
+                                            </div>
+                                            <div id="height-control" class="mb-3 slider-control-wrapper">
+                                                <label for="height-slider" class="form-label fw-bold" data-translate="editor_height">Height</label>
+                                                <div class="slider-control">
+                                                    <button class="slider-btn" data-control="height" data-action="decrease">-</button>
+                                                    <input type="range" id="height-slider" class="form-range" min="10" max="100" value="20">
+                                                    <button class="slider-btn" data-control="height" data-action="increase">+</button>
+                                                </div>
+                                            </div>
+                                            <div id="font-size-control" class="mb-3 slider-control-wrapper">
+                                                <label for="font-size-slider" class="form-label fw-bold" data-translate="editor_font_size">Font Size</label>
+                                                <div class="slider-control">
+                                                    <button class="slider-btn" data-control="fontSize" data-action="decrease">-</button>
+                                                    <input type="range" id="font-size-slider" class="form-range" min="50" max="250" value="100">
+                                                    <button class="slider-btn" data-control="fontSize" data-action="increase">+</button>
+                                                </div>
+                                            </div>
+                                            <div id="radius-control" class="mb-3 slider-control-wrapper">
+                                                <label for="radius-slider" class="form-label fw-bold" data-translate="editor_frame">Frame Shape</label>
+                                                <div class="slider-control">
+                                                    <button class="slider-btn" data-control="radius" data-action="decrease">-</button>
+                                                    <input type="range" id="radius-slider" class="form-range" min="0" max="50" value="50">
+                                                    <button class="slider-btn" data-control="radius" data-action="increase">+</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </div>
 
                             <div id="font-selector-container" class="text-center my-3">
                                 <div class="row justify-content-center g-2">
