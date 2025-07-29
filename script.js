@@ -923,7 +923,7 @@ function updateEditorUI() {
 }
 /**
  * =================================================================
- * == محرر السيرة الذاتية الهجين (Hybrid Editor Logic)
+ * == محرر السيرة الذاتية الهجين (Hybrid Editor Logic) - النسخة النهائية
  * =================================================================
  */
 
@@ -939,8 +939,7 @@ function initInteractEditor() {
         const target = event.target.closest('.editable-cv-element');
         if (!target) return;
 
-        // تفعيل حالة التحرير عند النقر لأول مرة
-        activateEditState(target);
+        activateEditState(target); // تفعيل حالة التحرير عند النقر
 
         if (selectedElement) {
             selectedElement.classList.remove('editing-element');
@@ -956,10 +955,11 @@ function initInteractEditor() {
             listeners: {
                 move(event) {
                     const target = event.target;
+                    if (!target.style.position) return; // لا تحرك إلا العناصر المحررة
+
                     const id = getElementId(target);
                     const state = elementStates[id];
 
-                    // تحديث الموضع (نستخدم top/left لأن العنصر absolute)
                     state.top = (state.top || 0) + event.dy;
                     state.left = (state.left || 0) + event.dx;
                     
@@ -972,10 +972,11 @@ function initInteractEditor() {
             listeners: {
                 move(event) {
                     const target = event.target;
+                    if (!target.style.position) return;
+
                     const id = getElementId(target);
                     const state = elementStates[id];
 
-                    // تحديث الأبعاد والموضع
                     state.width = event.rect.width;
                     state.height = event.rect.height;
                     state.top = (state.top || 0) + event.deltaRect.top;
@@ -990,71 +991,70 @@ function initInteractEditor() {
     setupControlPanelListeners();
 }
 
+
 // دالة تفعيل "حالة التحرير" عند النقر لأول مرة
 function activateEditState(element) {
     const id = getElementId(element);
-    // إذا كان العنصر بالفعل في حالة التحرير، لا تفعل شيئًا
     if (elementStates[id].isAbsolute) return;
 
-    // 1. التقط الموضع والأبعاد قبل التغيير
     const initialTop = element.offsetTop;
     const initialLeft = element.offsetLeft;
     const initialWidth = element.offsetWidth;
     const initialHeight = element.offsetHeight;
 
-    // 2. حوّل العنصر إلى absolute وثبّت موضعه وأبعاده
     element.style.position = 'absolute';
     element.style.top = `${initialTop}px`;
     element.style.left = `${initialLeft}px`;
     element.style.width = `${initialWidth}px`;
     element.style.height = `${initialHeight}px`;
 
-    // 3. إذا كان العنصر نصيًا، اسمح له بالتمدد
     if (element.matches('.cv-name, .cv-title')) {
         element.style.width = 'max-content';
     }
 
-    // 4. احفظ الحالة الجديدة
     elementStates[id] = {
         ...elementStates[id],
         isAbsolute: true,
         top: initialTop,
         left: initialLeft,
-        width: element.offsetWidth, // التقط العرض الجديد بعد max-content
+        width: element.offsetWidth,
         height: element.offsetHeight
     };
 }
 
+
 // دالة لإعداد كل المستمعين لأزرار وشرائط التحكم
 function setupControlPanelListeners() {
-    // 1. مستمعو الجويستيك
     document.querySelectorAll('.joystick-btn-circle').forEach(btn => {
         btn.addEventListener('click', () => {
             if (!selectedElement) return;
             const id = getElementId(selectedElement);
             const state = elementStates[id];
+            if (!state.isAbsolute) return; // لا تحرك إلا العناصر المحررة
+
             const direction = btn.dataset.direction;
-            const step = 2; // مسافة الحركة
+            const step = 2;
 
             if (direction === 'reset') {
-                state.x = 0; state.y = 0;
+                // تحتاج إلى منطق لإعادة العنصر لمكانه الأصلي (يمكن إضافته لاحقًا)
+                // حاليًا، نعيد فقط الـ top/left
+                state.top = elementStates[id].initialTop || state.top;
+                state.left = elementStates[id].initialLeft || state.left;
             } else {
-                if (direction === 'up') state.y = (state.y || 0) - step;
-                if (direction === 'down') state.y = (state.y || 0) + step;
-                if (direction === 'left') state.x = (state.x || 0) - step;
-                if (direction === 'right') state.x = (state.x || 0) + step;
+                if (direction === 'up') state.top -= step;
+                if (direction === 'down') state.top += step;
+                if (direction === 'left') state.left -= step;
+                if (direction === 'right') state.left += step;
             }
             applyAllSavedStates(document.getElementById('cv-container'));
         });
     });
 
-    // 2. مستمعو شرائط التمرير
     const sliders = ['width', 'height', 'fontSize', 'radius'];
     sliders.forEach(controlName => {
-        const slider = document.getElementById(`${controlName.replace('Size', '-size')}-slider`); // للتعامل مع fontSize
+        const slider = document.getElementById(`${controlName.replace('Size', '-size')}-slider`);
         if (!slider) return;
 
-        // الأزرار + و -
         document.querySelectorAll(`.slider-btn[data-control="${controlName}"]`).forEach(btn => {
             btn.addEventListener('click', () => {
                 let step = (controlName === 'fontSize') ? 5 : 2;
@@ -1063,7 +1063,6 @@ function setupControlPanelListeners() {
             });
         });
 
-        // شريط التمرير نفسه
         slider.addEventListener('input', () => {
             if (!selectedElement) return;
             const id = getElementId(selectedElement);
@@ -1074,28 +1073,41 @@ function setupControlPanelListeners() {
 }
 
 
-// تحديث واجهة التحكم بناءً على العنصر المحدد
+// تحديث واجهة لوحة التحكم بناءً على العنصر المحدد
 function updateEditorUIForSelection() {
     if (!selectedElement) return;
+
+    const mainControls = document.getElementById('main-controls');
+    mainControls.classList.remove('d-none');
+    
+    document.getElementById('editor-status-message').textContent = `Editing: ${selectedElement.className.split(' ')[0]}`;
 
     const id = getElementId(selectedElement);
     const state = elementStates[id];
 
-    // إظهار وإخفاء الأدوات المناسبة
+    const isContainer = selectedElement.matches('.cv-header, .cv-sidebar, .cv-main-content');
+    const isText = selectedElement.matches('.cv-name, .cv-title');
     const isImage = selectedElement.matches('.cv-profile-pic');
-    const isContainer = selectedElement.matches('.cv-header, .cv-sidebar');
-    
+
     document.getElementById('width-control').style.display = isContainer ? 'block' : 'none';
     document.getElementById('height-control').style.display = isContainer ? 'block' : 'none';
-    document.getElementById('size-control').style.display = !isContainer ? 'block' : 'none';
-    document.getElementById('border-radius-control').style.display = isImage ? 'block' : 'none';
+    document.getElementById('font-size-control').style.display = isText ? 'block' : 'none';
+    document.getElementById('radius-control').style.display = isImage ? 'block' : 'none';
     
-    // تحديث قيم الشرائط
-    if(state.width) document.getElementById('width-slider').value = (state.width / selectedElement.parentElement.offsetWidth) * 100;
-    if(state.height) document.getElementById('height-slider').value = (state.height / selectedElement.parentElement.offsetHeight) * 100;
-    if(state.size) document.getElementById('size-slider').value = state.size;
-    if(state.radius) document.getElementById('radius-slider').value = state.radius;
+    if (isContainer) {
+        // تحويل من بكسل إلى نسبة مئوية للعرض في الشريط
+        const parentWidth = selectedElement.parentElement.offsetWidth;
+        document.getElementById('width-slider').value = state.width ? (state.width / parentWidth) * 100 : 100;
+        document.getElementById('height-slider').value = state.height || 200; // قيمة افتراضية للارتفاع بالبكسل
+    }
+    if (isText) {
+        document.getElementById('font-size-slider').value = state.fontSize || 100;
+    }
+    if (isImage) {
+        document.getElementById('radius-slider').value = state.radius || 50;
+    }
 }
+
 
 // دالة للحصول على أو إنشاء ID وتهيئة الحالة الأولية
 function getElementId(element) {
@@ -1103,37 +1115,9 @@ function getElementId(element) {
         element.id = `cv-el-${Math.random().toString(36).substr(2, 9)}`;
     }
     if (!elementStates[element.id]) {
-        elementStates[element.id] = { x: 0, y: 0 }; // تهيئة أولية
+        elementStates[element.id] = {}; // تهيئة أولية فارغة
     }
     return element.id;
-}
-
-// إعداد المستمعين لأشرطة التحكم
-function setupSliderEvents() {
-    const sliders = [
-        { id: 'width-slider', prop: 'width', unit: 'px', relativeTo: 'parent' },
-        { id: 'height-slider', prop: 'height', unit: 'px', relativeTo: 'parent' },
-        { id: 'size-slider', prop: 'fontSize', unit: '%' },
-        { id: 'radius-slider', prop: 'borderRadius', unit: '%' }
-    ];
-
-    sliders.forEach(({ id, prop, unit, relativeTo }) => {
-        const slider = document.getElementById(id);
-        if (slider) {
-            slider.addEventListener('input', (e) => {
-                if (!selectedElement) return;
-                
-                let value = e.target.value;
-                if(relativeTo === 'parent') {
-                    const parentDim = (prop === 'width') ? selectedElement.parentElement.offsetWidth : selectedElement.parentElement.offsetHeight;
-                    value = (parentDim * value) / 100;
-                }
-
-                selectedElement.style[prop] = `${value}${unit}`;
-                elementStates[getElementId(selectedElement)][prop] = value;
-            });
-        }
-    });
 }
 
 
@@ -1141,19 +1125,26 @@ function setupSliderEvents() {
 function applyElementState(element, state) {
     if (!element || !state) return;
 
-    // إذا كان العنصر في حالة تحرير، طبّق كل الخصائص
     if (state.isAbsolute) {
         element.style.position = 'absolute';
         element.style.top = `${state.top || 0}px`;
         element.style.left = `${state.left || 0}px`;
         if (state.width) element.style.width = `${state.width}px`;
         if (state.height) element.style.height = `${state.height}px`;
-
         if (element.matches('.cv-name, .cv-title')) {
              element.style.width = 'max-content';
         }
+    } else {
+        // إذا لم يكن العنصر في حالة تحرير، استخدم transform للحركة
+        element.style.transform = `translate(${state.x || 0}px, ${state.y || 0}px)`;
     }
-// الدالة النهائية لتطبيق كل الحالات المحفوظة (مُعدّلة)
+    
+    if (state.fontSize) element.style.fontSize = `${state.fontSize}%`;
+    if (state.radius) element.style.borderRadius = `${state.radius}%`;
+}
+
+
+// الدالة النهائية لتطبيق كل الحالات المحفوظة
 function applyAllSavedStates(container) {
     if (!container) return;
     for (const id in elementStates) {
@@ -1162,78 +1153,6 @@ function applyAllSavedStates(container) {
             applyElementState(element, elementStates[id]);
         }
     }
-}
-
-// تحديث التمييز البصري للعنصر النشط في المعاينة
-function updateActiveElementHighlight() {
-    // إزالة التمييز من كل العناصر أولاً
-    document.querySelector('#cv-container .cv-profile-pic')?.classList.remove('editing-element');
-    document.querySelector('#cv-container .cv-name')?.classList.remove('editing-element');
-    document.querySelector('#cv-container .cv-title')?.classList.remove('editing-element');
-    
-    // إضافة التمييز للعنصر المختار
-    const targetSelector = getTargetSelector(selectedEditorTarget);
-    if (targetSelector) {
-        const element = document.querySelector(targetSelector);
-        if (element) {
-            element.classList.add('editing-element');
-        }
-    }
-}
-
-// دالة مساعدة للحصول على محدد CSS للعنصر
-function getTargetSelector(target) {
-    if (target === 'image') return '#cv-container .cv-profile-pic';
-    if (target === 'name') return '#cv-container .cv-name';
-    if (target === 'title') return '#cv-container .cv-title';
-    return null;
-}
-
-// الدالة الأساسية التي تطبق كل التنسيقات المحفوظة على العناصر
-// الدالة الأساسية التي تطبق كل التنسيقات المحفوظة على العناصر
-function applyElementStyles() {
-    // تطبيق تنسيقات الصورة
-    const img = document.querySelector(getTargetSelector('image'));
-    if (img) {
-        // عند تحريك الصورة، نستخدم position: absolute
-        img.style.position = 'absolute'; 
-        img.style.top = `${elementStates.image.top}px`;
-        img.style.left = `${elementStates.image.left}px`;
-        // يتم التحكم في حجم الصورة بالنسبة المئوية من عرضها الأصلي
-        const originalWidth = img.naturalWidth > 0 ? img.naturalWidth : 150; // عرض افتراضي
-        img.style.width = `${(originalWidth * elementStates.image.size) / 100}px`;
-        img.style.height = 'auto'; // للحفاظ على نسبة العرض إلى الارتفاع
-        img.style.borderRadius = `${elementStates.image.radius}%`;
-        img.style.zIndex = '10'; // للتأكد من أنها فوق العناصر الأخرى
-    }
-
-    // تطبيق تنسيقات الاسم
-    const nameEl = document.querySelector(getTargetSelector('name'));
-    if (nameEl) {
-        nameEl.style.position = 'absolute';
-        nameEl.style.top = `${elementStates.name.top}px`;
-        nameEl.style.left = `${elementStates.name.left}px`;
-        // يتمدد العنصر حسب المحتوى ولا يلتف
-        nameEl.style.width = 'max-content'; 
-        nameEl.style.maxWidth = '100%'; // لمنعه من تجاوز عرض الصفحة
-        nameEl.style.fontSize = `${elementStates.name.size}%`;
-        nameEl.style.zIndex = '10';
-    }
-
-    // تطبيق تنسيقات المسمى الوظيفي
-    const titleEl = document.querySelector(getTargetSelector('title'));
-    if (titleEl) {
-        titleEl.style.position = 'absolute';
-        titleEl.style.top = `${elementStates.title.top}px`;
-        titleEl.style.left = `${elementStates.title.left}px`;
-        // يتمدد العنصر حسب المحتوى ولا يلتف
-        titleEl.style.width = 'max-content';
-        titleEl.style.maxWidth = '100%'; // لمنعه من تجاوز عرض الصفحة
-        titleEl.style.fontSize = `${elementStates.title.size}%`;
-        titleEl.style.zIndex = '10';
-    }
-    
-    updateActiveElementHighlight();
 }
 /**
  * تطبق الخط المختار من القائمة المنسدلة على حاوية عرض السيرة الذاتية.
