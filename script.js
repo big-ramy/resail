@@ -592,7 +592,7 @@ const translations = {
 // متغيرات لتخزين حالة محرر العناصر
 let selectedEditorTarget = 'image'; // القيمة الافتراضية
 const elementStates = {
-    image: { top: 0, left: 0, size: 100, radius: 50 },
+    image: { top: 0, left: 0, size: 30, radius: 50 },
     name: { top: 0, left: 0, size: 100 },
     title: { top: 0, left: 0, size: 100 }
 };
@@ -1021,40 +1021,51 @@ function getTargetSelector(target) {
 }
 
 // الدالة الأساسية التي تطبق كل التنسيقات المحفوظة على العناصر
+// الدالة الأساسية التي تطبق كل التنسيقات المحفوظة على العناصر
 function applyElementStyles() {
     // تطبيق تنسيقات الصورة
     const img = document.querySelector(getTargetSelector('image'));
     if (img) {
-        img.style.position = 'relative';
+        // عند تحريك الصورة، نستخدم position: absolute
+        img.style.position = 'absolute'; 
         img.style.top = `${elementStates.image.top}px`;
         img.style.left = `${elementStates.image.left}px`;
-        img.style.width = `${elementStates.image.size}%`;
+        // يتم التحكم في حجم الصورة بالنسبة المئوية من عرضها الأصلي
+        const originalWidth = img.naturalWidth > 0 ? img.naturalWidth : 150; // عرض افتراضي
+        img.style.width = `${(originalWidth * elementStates.image.size) / 100}px`;
         img.style.height = 'auto'; // للحفاظ على نسبة العرض إلى الارتفاع
         img.style.borderRadius = `${elementStates.image.radius}%`;
+        img.style.zIndex = '10'; // للتأكد من أنها فوق العناصر الأخرى
     }
 
     // تطبيق تنسيقات الاسم
     const nameEl = document.querySelector(getTargetSelector('name'));
     if (nameEl) {
-        nameEl.style.position = 'relative';
+        nameEl.style.position = 'absolute';
         nameEl.style.top = `${elementStates.name.top}px`;
         nameEl.style.left = `${elementStates.name.left}px`;
+        // يتمدد العنصر حسب المحتوى ولا يلتف
+        nameEl.style.width = 'max-content'; 
+        nameEl.style.maxWidth = '100%'; // لمنعه من تجاوز عرض الصفحة
         nameEl.style.fontSize = `${elementStates.name.size}%`;
+        nameEl.style.zIndex = '10';
     }
 
     // تطبيق تنسيقات المسمى الوظيفي
     const titleEl = document.querySelector(getTargetSelector('title'));
     if (titleEl) {
-        titleEl.style.position = 'relative';
+        titleEl.style.position = 'absolute';
         titleEl.style.top = `${elementStates.title.top}px`;
         titleEl.style.left = `${elementStates.title.left}px`;
+        // يتمدد العنصر حسب المحتوى ولا يلتف
+        titleEl.style.width = 'max-content';
+        titleEl.style.maxWidth = '100%'; // لمنعه من تجاوز عرض الصفحة
         titleEl.style.fontSize = `${elementStates.title.size}%`;
+        titleEl.style.zIndex = '10';
     }
     
-    // تحديث التمييز للتأكيد
     updateActiveElementHighlight();
 }
-
 /**
  * تطبق الخط المختار من القائمة المنسدلة على حاوية عرض السيرة الذاتية.
  */
