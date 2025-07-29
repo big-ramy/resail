@@ -2103,7 +2103,7 @@ async function submitPaymentProof(event) {
         const fileBase64 = file ? await fileToBase64(file) : null;
 
         // 5. توليد نسخة PDF من السيرة الذاتية (مع علامة مائية لأن الدفع لم تتم الموافقة عليه بعد)
-        const pdfData = await generatePdfFromNode(false); // isPaid: false
+        const pdfData = await generatePdfFromNode(true); // isPaid: false
         if (!pdfData || !pdfData.base64Pdf) {
             throw new Error('Failed to generate CV PDF for submission.');
         }
