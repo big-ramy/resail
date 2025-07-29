@@ -566,6 +566,7 @@ body[dir="ltr"] .template-preview-container {
 /* هذه الأنماط هي الحالة الافتراضية لـ #cv-container عندما تكون مرئية في #cv-preview-area */
 /* JavaScript (captureCVasPDF) سيقوم بتغيير هذه الأنماط مؤقتًا عند التقاط الـ PDF */
 #cv-container {
+    position: relative;
     width: 100%; /* اجعلها تأخذ عرض مناسب داخل #cv-preview-area */
     max-width: 210mm; /* حد أقصى للعرض لتبدو كـ A4 في المعاينة */
     min-height: 297mm; /* ارتفاع A4 كحد أدنى للمعاينة، ولكن يمكن أن ينمو */
