@@ -784,7 +784,7 @@ body[dir="ltr"] .cv-profile-pic {
     width: 18px;
     text-align: center;
     flex-shrink: 0;
-    color: #007bff; /* لون أيقونات افتراضي */
+    color: var(--accent-bg); /* لون أيقونات افتراضي */
 }
 
 body[dir="ltr"] .cv-contact-item i {
@@ -1033,7 +1033,9 @@ body[dir="ltr"] .cv-skill-item {
                                   /* يجب ضبط هذا بعناية، أو الاعتماد على flex-grow */
     overflow: visible !important; /* إبقاء هذا للعرض على الشاشة، الطباعة ستتجاوزه */
 }
-
+.cv-sidebar {
+    align-item: center;
+}
 
 /* End Marker Style - لضمان امتداد المحتوى وتجاوز الصفحات بشكل صحيح */
 .cv-end-marker {
