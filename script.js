@@ -36,18 +36,7 @@ const translations = {
         "Intermediate": "متوسط",
         "Advanced": "متقدم",
         "Expert": "خبير",
-        
-        // ترجمة عناصر التحكم في الموضع
-        "element_editor_title": "محرر العناصر",
-        "editor_image": "الصورة",
-        "editor_name": "الاسم",
-        "editor_title_job": "المسمى",
-        "editor_position": "الموضع",
-        "editor_size": "الحجم",
-        "editor_frame": "شكل الإطار",
-        "editor_select_element": "حدد عنصرًا لتحريره",
-        "editor_font_size": "حجم الخط",
-        // ترجمة عناصر تغيير الخطوط
+
         "select_name_font_label": "خط الاسم الرئيسي:",
         "select_headings_font_label": "خط العناوين:",
         "select_body_font_label": "خط النص الأساسي:",
@@ -359,18 +348,7 @@ const translations = {
         "Intermediate": "Intermediate",
         "Advanced": "Advanced",
         "Expert": "Expert",
-        
-        // ترجمات عناصر التحكم في الموضع 
-        "element_editor_title": "Element Editor",
-        "editor_image": "Image",
-        "editor_name": "Name",
-        "editor_title_job": "Title",
-        "editor_position": "Position",
-        "editor_size": "Size",
-        "editor_frame": "Frame Shape",
-        "editor_select_element": "Select an element to edit",
-        "editor_font_size": "Font Size",
-        // ترجمات عناصر اسماء الخطوط
+
         "select_name_font_label": "Main Name Font:",
         "select_headings_font_label": "Headings Font:",
         "select_body_font_label": "Body Text Font:",
@@ -590,7 +568,6 @@ const translations = {
         "terms-of-service-p-7-1": "For any questions or inquiries regarding the terms of service, please contact us via email: <strong><a href=\"mailto:ramyheshamamer@gmail.com\">ramyheshamamer@gmail.com</a></strong>."
     }
 };
-
 
 const CONTROL_VISIBILITY_CONFIG = {
     // للفئة العادية، نستخدم خلفية أساسية، ولون للهيدر والنصوص
@@ -901,277 +878,7 @@ let salesQueue = [
 let finalPriceToPay = 0; // سيحتفظ بالسعر النهائي بعد الخصم
 let appliedCode = ""; // سيحتفظ بالكود المطبق
 
-/**
- * ==========================================================
- * == دوال محرر العناصر (Position, Size, Radius)
- * ==========================================================
- */
 
-
-// تحديث واجهة المحرر (إخفاء/إظهار شريط الإطار وتحديث قيم الشرائط)
-function updateEditorUI() {
-    document.getElementById('border-radius-control').style.display = (selectedEditorTarget === 'image') ? 'block' : 'none';
-    
-    // تحديث قيم الشرائط لتعكس الحالة الحالية للعنصر المختار
-    const sizeSlider = document.getElementById('size-slider');
-    const radiusSlider = document.getElementById('radius-slider');
-    
-    sizeSlider.value = elementStates[selectedEditorTarget].size;
-    if(selectedEditorTarget === 'image') {
-        radiusSlider.value = elementStates.image.radius;
-    }
-}
-/**
- * =================================================================
- * == محرر السيرة الذاتية الهجين (Hybrid Editor Logic) - النسخة النهائية
- * =================================================================
- */
-
-let selectedElement = null;
-const elementStates = {}; // يخزن كل التعديلات
-
-// دالة الإعداد الرئيسية للمحرر
-function initInteractEditor() {
-    const cvContainer = document.getElementById('cv-container');
-
-    // --- 1. منطق تحديد العنصر وتفعيل "حالة التحرير" ---
-    cvContainer.addEventListener('click', (event) => {
-        const target = event.target.closest('.editable-cv-element');
-        if (!target) return;
-
-        activateEditState(target); // تفعيل حالة التحرير عند النقر
-
-        if (selectedElement) {
-            selectedElement.classList.remove('editing-element');
-        }
-        selectedElement = target;
-        selectedElement.classList.add('editing-element');
-        updateEditorUIForSelection();
-    });
-
-    // --- 2. تفعيل السحب وتغيير الحجم باستخدام Interact.js ---
-    interact('.editable-cv-element')
-        .draggable({
-            listeners: {
-                move(event) {
-                    const target = event.target;
-                    if (!target.style.position) return; // لا تحرك إلا العناصر المحررة
-
-                    const id = getElementId(target);
-                    const state = elementStates[id];
-
-                    state.top = (state.top || 0) + event.dy;
-                    state.left = (state.left || 0) + event.dx;
-                    
-                    applyElementState(target, state);
-                }
-            }
-        })
-        .resizable({
-            edges: { left: true, right: true, bottom: true, top: true },
-            listeners: {
-                move(event) {
-                    const target = event.target;
-                    if (!target.style.position) return;
-
-                    const id = getElementId(target);
-                    const state = elementStates[id];
-
-                    state.width = event.rect.width;
-                    state.height = event.rect.height;
-                    state.top = (state.top || 0) + event.deltaRect.top;
-                    state.left = (state.left || 0) + event.deltaRect.left;
-                    
-                    applyElementState(target, state);
-                    updateEditorUIForSelection();
-                }
-            }
-        });
-
-    setupControlPanelListeners();
-}
-
-
-// دالة تفعيل "حالة التحرير" مع إنشاء عنصر وهمي للحفاظ على التخطيط
-function activateEditState(element) {
-    const id = getElementId(element);
-    if (elementStates[id].isAbsolute) return;
-
-    // 1. التقط الموضع والأبعاد قبل التغيير
-    const initialTop = element.offsetTop;
-    const initialLeft = element.offsetLeft;
-    const initialWidth = element.offsetWidth;
-    const initialHeight = element.offsetHeight;
-
-    // ---== بداية الإضافة الجديدة: إنشاء العنصر الوهمي ==---
-
-    // 2. أنشئ نسخة من العنصر لتكون العنصر الوهمي
-    const placeholder = element.cloneNode(true);
-    // 3. أزل الـ ID من النسخة لتجنب التكرار
-    placeholder.id = ''; 
-    // 4. أضف كلاس خاص بالعنصر الوهمي واجعله غير مرئي (لكنه لا يزال يشغل مساحة)
-    placeholder.classList.add('placeholder-element');
-    placeholder.style.visibility = 'hidden';
-    // 5. أدخل العنصر الوهمي في الصفحة مباشرة قبل العنصر الأصلي
-    element.parentNode.insertBefore(placeholder, element);
-
-    // ---== نهاية الإضافة الجديدة ==---
-
-    // 6. الآن، حوّل العنصر الأصلي إلى absolute وثبّت موضعه
-    element.style.position = 'absolute';
-    element.style.top = `${initialTop}px`;
-    element.style.left = `${initialLeft}px`;
-    element.style.width = `${initialWidth}px`;
-    element.style.height = `${initialHeight}px`;
-
-    // 7. إذا كان العنصر نصيًا، اسمح له بالتمدد
-    if (element.matches('.cv-name, .cv-title')) {
-        element.style.width = 'max-content';
-    }
-
-    // 8. احفظ الحالة الجديدة مع إضافة مرجع للعنصر الوهمي
-    elementStates[id] = {
-        ...elementStates[id],
-        isAbsolute: true,
-        placeholder: placeholder, // حفظنا العنصر الوهمي هنا
-        top: initialTop,
-        left: initialLeft,
-        width: element.offsetWidth,
-        height: element.offsetHeight
-    };
-}
-
-// دالة لإعداد كل المستمعين لأزرار وشرائط التحكم
-function setupControlPanelListeners() {
-    document.querySelectorAll('.joystick-btn-circle').forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (!selectedElement) return;
-            const id = getElementId(selectedElement);
-            const state = elementStates[id];
-            if (!state.isAbsolute) return; // لا تحرك إلا العناصر المحررة
-
-            const direction = btn.dataset.direction;
-            const step = 2;
-
-            if (direction === 'reset') {
-                // تحتاج إلى منطق لإعادة العنصر لمكانه الأصلي (يمكن إضافته لاحقًا)
-                // حاليًا، نعيد فقط الـ top/left
-                state.top = elementStates[id].initialTop || state.top;
-                state.left = elementStates[id].initialLeft || state.left;
-            } else {
-                if (direction === 'up') state.top -= step;
-                if (direction === 'down') state.top += step;
-                if (direction === 'left') state.left -= step;
-                if (direction === 'right') state.left += step;
-            }
-            applyAllSavedStates(document.getElementById('cv-container'));
-        });
-    });
-
-    const sliders = ['width', 'height', 'fontSize', 'radius'];
-    sliders.forEach(controlName => {
-        const slider = document.getElementById(`${controlName.replace('Size', '-size')}-slider`);
-        if (!slider) return;
-
-        document.querySelectorAll(`.slider-btn[data-control="${controlName}"]`).forEach(btn => {
-            btn.addEventListener('click', () => {
-                let step = (controlName === 'fontSize') ? 5 : 2;
-                slider.value = parseInt(slider.value) + (btn.dataset.action === 'increase' ? step : -step);
-                slider.dispatchEvent(new Event('input'));
-            });
-        });
-
-        slider.addEventListener('input', () => {
-            if (!selectedElement) return;
-            const id = getElementId(selectedElement);
-            elementStates[id][controlName] = parseInt(slider.value);
-            applyAllSavedStates(document.getElementById('cv-container'));
-        });
-    });
-}
-
-
-// تحديث واجهة لوحة التحكم بناءً على العنصر المحدد
-function updateEditorUIForSelection() {
-    if (!selectedElement) return;
-
-    const mainControls = document.getElementById('main-controls');
-    mainControls.classList.remove('d-none');
-    
-    document.getElementById('editor-status-message').textContent = `Editing: ${selectedElement.className.split(' ')[0]}`;
-
-    const id = getElementId(selectedElement);
-    const state = elementStates[id];
-
-    const isContainer = selectedElement.matches('.cv-header, .cv-sidebar, .cv-main-content');
-    const isText = selectedElement.matches('.cv-name, .cv-title');
-    const isImage = selectedElement.matches('.cv-profile-pic');
-
-    document.getElementById('width-control').style.display = isContainer ? 'block' : 'none';
-    document.getElementById('height-control').style.display = isContainer ? 'block' : 'none';
-    document.getElementById('font-size-control').style.display = isText ? 'block' : 'none';
-    document.getElementById('radius-control').style.display = isImage ? 'block' : 'none';
-    
-    if (isContainer) {
-        // تحويل من بكسل إلى نسبة مئوية للعرض في الشريط
-        const parentWidth = selectedElement.parentElement.offsetWidth;
-        document.getElementById('width-slider').value = state.width ? (state.width / parentWidth) * 100 : 100;
-        document.getElementById('height-slider').value = state.height || 200; // قيمة افتراضية للارتفاع بالبكسل
-    }
-    if (isText) {
-        document.getElementById('font-size-slider').value = state.fontSize || 100;
-    }
-    if (isImage) {
-        document.getElementById('radius-slider').value = state.radius || 50;
-    }
-}
-
-
-// دالة للحصول على أو إنشاء ID وتهيئة الحالة الأولية
-function getElementId(element) {
-    if (!element.id) {
-        element.id = `cv-el-${Math.random().toString(36).substr(2, 9)}`;
-    }
-    if (!elementStates[element.id]) {
-        elementStates[element.id] = {}; // تهيئة أولية فارغة
-    }
-    return element.id;
-}
-
-
-// دالة جديدة لتطبيق حالة عنصر واحد
-function applyElementState(element, state) {
-    if (!element || !state) return;
-
-    if (state.isAbsolute) {
-        element.style.position = 'absolute';
-        element.style.top = `${state.top || 0}px`;
-        element.style.left = `${state.left || 0}px`;
-        if (state.width) element.style.width = `${state.width}px`;
-        if (state.height) element.style.height = `${state.height}px`;
-        if (element.matches('.cv-name, .cv-title')) {
-             element.style.width = 'max-content';
-        }
-    } else {
-        // إذا لم يكن العنصر في حالة تحرير، استخدم transform للحركة
-        element.style.transform = `translate(${state.x || 0}px, ${state.y || 0}px)`;
-    }
-    
-    if (state.fontSize) element.style.fontSize = `${state.fontSize}%`;
-    if (state.radius) element.style.borderRadius = `${state.radius}%`;
-}
-
-
-// الدالة النهائية لتطبيق كل الحالات المحفوظة
-function applyAllSavedStates(container) {
-    if (!container) return;
-    for (const id in elementStates) {
-        const element = container.querySelector(`#${id}`);
-        if (element) {
-            applyElementState(element, elementStates[id]);
-        }
-    }
-}
 /**
  * تطبق الخط المختار من القائمة المنسدلة على حاوية عرض السيرة الذاتية.
  */
@@ -1422,6 +1129,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadCvDataFromLocalStorage();
     updateControlsForCategory();
     applySelectedColors();
+    setupColorControls();
 
     // === أضف هذه الأسطر الأربعة هنا لربط ألوان النصوص ===
     document.getElementById('color-picker-header-text').addEventListener('input', applySelectedColors);
@@ -1485,16 +1193,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     setInitialLanguage();
-    initializeDiscountCards();
+    initializeDiscountCards(); // <<< أضف هذا السطر
     populateFontSelectors();
     startSalesNotifications();
-    updateCounters(); 
-    initInteractEditor();
+    updateCounters(); // أضف هذا الاستدعاء
     updateLanguage();
     showPage('landing-page');
     lazyLoadImages();
     setupColorControls();
-    
 });
 
 function addCustomSection() {
@@ -3445,26 +3151,26 @@ function generateCV(targetElement) {
     const phone = document.getElementById('phone-input')?.value.trim() || '';
     const website = document.getElementById('website-input')?.value.trim() || '';
     const objective = document.getElementById('objective-input')?.value.trim() || '';
-    const endMarkerHTML = createEndMarkerHTML();
-    // --- 2. بناء أجزاء HTML ---
-    // أضفنا كلاس 'editable-cv-element' مباشرة هنا للعناصر الفردية
-    let profilePicHTML = profilePicDataUrl ? `<img src="${profilePicDataUrl}" class="cv-profile-pic editable-cv-element" alt="Profile Picture">` : '';
 
-    let contactInfoHTML = `<div class="cv-section editable-cv-element" data-section-name="contact-info"><div class="cv-contact-info">`;
+    // --- 2. بناء أجزاء HTML ---
+    const endMarkerHTML = createEndMarkerHTML();
+    let profilePicHTML = profilePicDataUrl ? `<img src="${profilePicDataUrl}" class="cv-profile-pic" alt="Profile Picture">` : '';
+
+    let contactInfoHTML = `<div class="cv-section" data-section-name="contact-info"><div class="cv-contact-info">`;
     if (emailVal) contactInfoHTML += `<div class="cv-contact-item"><i class="fas fa-envelope"></i><p>${emailVal}</p></div>`;
     if (phone) contactInfoHTML += `<div class="cv-contact-item"><i class="fas fa-phone"></i><p>${phone}</p></div>`;
     if (website) contactInfoHTML += `<div class="cv-contact-item"><i class="fas fa-map-marker-alt"></i><p>${website}</p></div>`;
     contactInfoHTML += '</div></div>';
 
-    const objectiveHTML = objective ? `<div class="cv-section editable-cv-element" id="objective"><h3 class="cv-section-title">${translations[currentLang]['Career Objective']}</h3><p>${objective.replace(/(\r\n|\n|\r)+/g, '<br>')}</p></div>` : '';
+    const objectiveHTML = objective ? `<div class="cv-section" id="objective"><h3 class="cv-section-title">${translations[currentLang]['Career Objective']}</h3><p>${objective.replace(/(\r\n|\n|\r)+/g, '<br>')}</p></div>` : '';
 
     let experienceHTML = '';
     const experienceEntries = getExperiencesData();
     if (experienceEntries.length > 0 && experienceEntries.some(e => e.title || e.company)) {
-        experienceHTML = `<div class="cv-section editable-cv-element" id="experience"><h3 class="cv-section-title">${translations[currentLang]['Work Experience']}</h3>`;
+        experienceHTML = `<div class="cv-section" id="experience"><h3 class="cv-section-title">${translations[currentLang]['Work Experience']}</h3>`;
         experienceEntries.forEach(entry => {
             if (entry.title || entry.company) {
-                experienceHTML += `<div class="cv-experience-item editable-cv-element"><h4 class="cv-job-title">${entry.title}</h4><h5 class="cv-company">${entry.company}${entry.company && entry.duration ? ' - ' : ''}${entry.duration}</h5><p>${entry.description.replace(/(\r\n|\n|\r)+/g, '<br>')}</p></div>`;
+                experienceHTML += `<div class="cv-experience-item"><h4 class="cv-job-title">${entry.title}</h4><h5 class="cv-company">${entry.company}${entry.company && entry.duration ? ' - ' : ''}${entry.duration}</h5><p>${entry.description.replace(/(\r\n|\n|\r)+/g, '<br>')}</p></div>`;
             }
         });
         experienceHTML += '</div>';
@@ -3473,10 +3179,10 @@ function generateCV(targetElement) {
     let educationHTML = '';
     const educationEntries = getEducationsData();
     if (educationEntries.length > 0 && educationEntries.some(e => e.degree || e.institution)) {
-        educationHTML = `<div class="cv-section editable-cv-element" id="education"><h3 class="cv-section-title">${translations[currentLang]['Education']}</h3>`;
+        educationHTML = `<div class="cv-section" id="education"><h3 class="cv-section-title">${translations[currentLang]['Education']}</h3>`;
         educationEntries.forEach(entry => {
              if (entry.degree || entry.institution) {
-                educationHTML += `<div class="cv-education-item editable-cv-element"><h4 class="cv-degree">${entry.degree}</h4><h5 class="cv-institution">${entry.institution}${entry.institution && entry.duration ? ' - ' : ''}${entry.duration}</h5></div>`;
+                educationHTML += `<div class="cv-education-item"><h4 class="cv-degree">${entry.degree}</h4><h5 class="cv-institution">${entry.institution}${entry.institution && entry.duration ? ' - ' : ''}${entry.duration}</h5></div>`;
             }
         });
         educationHTML += '</div>';
@@ -3486,10 +3192,10 @@ function generateCV(targetElement) {
     const customSections = getCustomSectionsData();
     if (customSections.length > 0) {
         customSections.forEach(section => {
-            customSectionsHTML += `<div class="cv-section editable-cv-element" id="custom-${section.title.replace(/\s+/g, '-')}">`;
+            customSectionsHTML += `<div class="cv-section" id="custom-${section.title.replace(/\s+/g, '-')}">`;
             customSectionsHTML += `<h3 class="cv-section-title">${section.title}</h3>`;
             section.subSections.forEach(sub => {
-                customSectionsHTML += `<div class="cv-experience-item editable-cv-element">`; // نستخدم نفس تنسيق الخبرات
+                customSectionsHTML += `<div class="cv-experience-item">`; // نستخدم نفس تنسيق الخبرات
                 if (sub.title) {
                     customSectionsHTML += `<h4 class="cv-job-title">${sub.title}</h4>`;
                 }
@@ -3507,7 +3213,8 @@ function generateCV(targetElement) {
     let skillsHTMLWithLevels = '';
     const skillsWithLevels = getSkillsData();
     if (skillsWithLevels.length > 0) {
-        skillsHTMLWithLevels = `<div class="cv-section editable-cv-element" id="skills"><h3 class="cv-section-title">${translations[currentLang]['Skills']}</h3><div class="skills-container ${skillsContainerClass}">`;
+        // 2. نستخدم المتغير الجديد لوضع الكلاس الصحيح في الـ HTML
+        skillsHTMLWithLevels = `<div class="cv-section" id="skills"><h3 class="cv-section-title">${translations[currentLang]['Skills']}</h3><div class="skills-container ${skillsContainerClass}">`;
         skillsWithLevels.forEach(skill => {
             skillsHTMLWithLevels += `<div class="skill-item-wrapper"><span class="skill-name">${skill.name}</span><div class="skill-level-bar"><div class="skill-level-progress" style="width: ${skill.level};"></div></div></div>`;
         });
@@ -3518,7 +3225,7 @@ function generateCV(targetElement) {
     let languagesHTML = '';
     const filledLanguages = getLanguagesData();
     if (filledLanguages.length > 0) {
-        languagesHTML = `<div class="cv-section editable-cv-element" id="languages"><h3 class="cv-section-title">${translations[currentLang]['Languages']}</h3><ul class="cv-language-list">`;
+        languagesHTML = `<div class="cv-section" id="languages"><h3 class="cv-section-title">${translations[currentLang]['Languages']}</h3><ul class="cv-language-list">`;
         filledLanguages.forEach(lang => { languagesHTML += `<li>${lang}</li>`; });
         languagesHTML += '</ul></div>';
     }
@@ -3526,10 +3233,10 @@ function generateCV(targetElement) {
     let referencesHTML = '';
     const referenceEntries = getReferencesData();
     if (referenceEntries.length > 0 && referenceEntries.some(r => r.name)) {
-        referencesHTML = `<div class="cv-section editable-cv-element" id="references"><h3 class="cv-section-title">${translations[currentLang]['References']}</h3><div class="cv-references-list">`;
+        referencesHTML = `<div class="cv-section" id="references"><h3 class="cv-section-title">${translations[currentLang]['References']}</h3><div class="cv-references-list">`;
         referenceEntries.forEach(ref => {
             if(ref.name) {
-                referencesHTML += `<div class="cv-reference-item editable-cv-element"><h4>${ref.name}</h4><p>${ref.position || ''}</p><p>${ref.phone || ''}</p><p>${ref.email || ''}</p></div>`;
+                referencesHTML += `<div class="cv-reference-item"><h4>${ref.name}</h4><p>${ref.position || ''}</p><p>${ref.phone || ''}</p><p>${ref.email || ''}</p></div>`;
             }
         });
         referencesHTML += '</div></div>';
@@ -3540,39 +3247,44 @@ function generateCV(targetElement) {
     cvContentDiv.className = 'cv-content';
 
     if (selectedTemplateCategory === 'normal') {
-        cvContentDiv.innerHTML = `<div class="cv-header editable-cv-element">${profilePicHTML}<div class="cv-header-text"><h1 class="cv-name editable-cv-element">${name}</h1><h2 class="cv-title editable-cv-element">${title}</h2>${contactInfoHTML}</div></div><div class="cv-body-content">${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div>`;
+        cvContentDiv.innerHTML = `<div class="cv-header">${profilePicHTML}<div class="cv-header-text"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2>${contactInfoHTML}</div></div><div class="cv-body-content">${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div>`;
     } 
     else if (selectedTemplateCategory === 'creative') {
-        // ... (هذا الجزء يبقى كما هو، لكن يمكنك إضافة الكلاسات إذا أردت التحكم في هذه الحاويات أيضًا) ...
         if (selectedTemplate == 1) {
-            cvContentDiv.innerHTML = `<div class="header-wave editable-cv-element">${profilePicHTML}<div class="header-text"><h1 class="cv-name editable-cv-element">${name}</h1><h2 class="cv-title editable-cv-element">${title}</h2></div></div><div class="content-columns"><div class="left-column">${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${referencesHTML}${endMarkerHTML}</div><div class="right-column">${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${endMarkerHTML}</div></div>`;
+            cvContentDiv.innerHTML = `<div class="header-wave">${profilePicHTML}<div class="header-text"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div></div><div class="content-columns"><div class="left-column">${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${referencesHTML}${endMarkerHTML}</div><div class="right-column">${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${endMarkerHTML}</div></div>`;
         } else if (selectedTemplate == 2) {
-            cvContentDiv.innerHTML = `<div class="header-wave editable-cv-element"><h1 class="cv-name editable-cv-element">${name}</h1><h2 class="cv-title editable-cv-element">${title}</h2></div><div class="content-columns"><div class="left-column">${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${endMarkerHTML}</div><div class="right-column">${profilePicHTML}${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div></div>`;
+            cvContentDiv.innerHTML = `<div class="header-wave"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div><div class="content-columns"><div class="left-column">${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${endMarkerHTML}</div><div class="right-column">${profilePicHTML}${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div></div>`;
         } else if (selectedTemplate == 3) {
-            cvContentDiv.innerHTML = `<div class="cv-sidebar editable-cv-element"><div class="cv-header two-col-main editable-cv-element">${profilePicHTML}<h1 class="cv-name editable-cv-element">${name}</h1><h2 class="cv-title editable-cv-element">${title}</h2></div>${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div><div class="cv-main-content editable-cv-element">${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${endMarkerHTML}</div>`;
+            cvContentDiv.innerHTML = `<div class="cv-sidebar"><div class="cv-header two-col-main">${profilePicHTML}<h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div>${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div><div class="cv-main-content">${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${endMarkerHTML}</div>`;
         }
     }
-    else {
+    // === بداية: الكود المصحح الذي يعالج كل الفئات المتبقية ===
+    else { // هذا الكود سيعالج الآن Standard, AST, و Professional بشكل صحيح
         const layoutDiv = document.createElement('div');
         const sidebarDiv = document.createElement('div');
-        sidebarDiv.className = 'cv-sidebar editable-cv-element'; // أضفنا الكلاس هنا
+        sidebarDiv.className = 'cv-sidebar';
         const mainContentDiv = document.createElement('div');
-        mainContentDiv.className = 'cv-main-content editable-cv-element'; // وهنا أيضًا
+        mainContentDiv.className = 'cv-main-content';
 
         if (selectedTemplateCategory === 'professional') {
             layoutDiv.className = 'cv-professional-layout';
             const professionalHeader = document.createElement('div');
-            professionalHeader.className = 'cv-header professional-layout editable-cv-element'; // وهنا
+            professionalHeader.className = 'cv-header professional-layout';
     
+            // --- المنطق الجديد لتوزيع المحتوى بشكل صحيح من البداية ---
             let headerHTML, sidebarHTML;
             
+            // إذا كان القالب 1 أو 3
             if (selectedTemplate == 1 || selectedTemplate == 3) {
+                // الصورة ومعلومات الاتصال تكون في الرأس
                 const contactForHeader = contactInfoHTML.replace('<div class="cv-section" data-section-name="contact-info">', '').replace(/<\/div>$/, '');
-                headerHTML = `<div class="cv-details">${profilePicHTML}<h1 class="cv-name editable-cv-element">${name}</h1><h2 class="cv-title editable-cv-element">${title}</h2>${contactForHeader}</div>`;
+                headerHTML = `<div class="cv-details">${profilePicHTML}<h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2>${contactForHeader}</div>`;
                 sidebarHTML = `${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}`;
             } 
+            // إذا كان القالب 2
             else { 
-                headerHTML = `<div class="cv-details"><h1 class="cv-name editable-cv-element">${name}</h1><h2 class="cv-title editable-cv-element">${title}</h2></div>`;
+                // الصورة ومعلومات الاتصال تكون في العامود الجانبي
+                headerHTML = `<div class="cv-details"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div>`;
                 sidebarHTML = `${profilePicHTML}${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}`;
             }
     
@@ -3582,31 +3294,26 @@ function generateCV(targetElement) {
             
             cvContentDiv.appendChild(professionalHeader);
     
-        } else { // Standard و AST
+        } else { // هذا الجزء يعالج Standard و AST كما كان
             layoutDiv.className = 'cv-two-column-layout';
             sidebarDiv.innerHTML = profilePicHTML + contactInfoHTML + skillsHTMLWithLevels + languagesHTML + referencesHTML + endMarkerHTML;
-            mainContentDiv.innerHTML = `<div class="cv-header editable-cv-element two-col-main"><h1 class="cv-name editable-cv-element">${name}</h1><h2 class="cv-title editable-cv-element">${title}</h2></div>${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${endMarkerHTML}`;
+            mainContentDiv.innerHTML = `<div class="cv-header two-col-main"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div>${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${endMarkerHTML}`;
         }
         
         layoutDiv.appendChild(sidebarDiv);
         layoutDiv.appendChild(mainContentDiv);
         cvContentDiv.appendChild(layoutDiv);
     }
+    // === نهاية: الكود المصحح ===
     
     targetElement.appendChild(cvContentDiv);
-    // --- 4. تفعيل التحرير وإعادة تطبيق الحالات المحفوظة ---
-    targetElement.querySelectorAll('.editable-cv-element').forEach(el => {
-        getElementId(el);
-    });
 
     // --- 4. استدعاء دوال التنسيق والتحديث بعد بناء الهيكل ---
     saveCvDataToLocalStorage();
     applySelectedFonts();
     applySelectedColors();
-    
-    // إعادة تطبيق كل التعديلات المحفوظة (الموضع، الحجم، إلخ)
-    applyAllSavedStates(targetElement);
 }
+
 
 
 function createEndMarkerHTML() {
@@ -3754,4 +3461,3 @@ function populateWithTestData() {
     generateCV(cvContainer);
     updateProgress();
 }
-
