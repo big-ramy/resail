@@ -2574,132 +2574,45 @@ async function generatePdfFromNode(isPaid) {
         const finalHtml = tempContainer.innerHTML;
         tempContainer.remove();
 
+        const mainCssText = document.getElementById('main-stylesheet')?.textContent || '';
         const cvData = collectCvData();
         const direction = cvData.language === 'ar' ? 'rtl' : 'ltr';
 
-        // --- الخطوة 1: جمع جميع التنسيقات الديناميكية والأساسية ---
-        const mainCssText = document.getElementById('main-stylesheet')?.textContent || '';
-        const liveColorStyles = document.getElementById('live-color-styles')?.textContent || '';
-        const liveFontStyles = document.getElementById('live-font-styles')?.textContent || '';
+        // === التعديل الرئيسي هنا: استدعاء الدالة الموحدة ===
+        const colorVariablesCSS = getColorVariablesAsCssText();
+        // ===================================================
 
-        // --- الخطوة 2: تجهيز قواعد الطباعة لتجاوز المشاكل (مع الحفاظ على الديناميكية) ---
+        const isArabic = currentLang === 'ar';
+        const nameFont = document.getElementById('font-selector-name')?.value || (isArabic ? "'Cairo', sans-serif" : "'Playfair Display', serif");
+        const headingsFont = document.getElementById('font-selector-headings')?.value || (isArabic ? "'Tajawal', sans-serif" : "'Montserrat', sans-serif");
+        const bodyFont = document.getElementById('font-selector-body')?.value || (isArabic ? "'Almarai', sans-serif" : "'Roboto', sans-serif");
+
         const printCssOverrides = `
-            html, body {
-                margin: 0 !important;
-                padding: 0 !important;
-                width: 210mm !important; /* A4 width */
-                min-height: 297mm !important; /* A4 height */
-                background: white !important;
-                color: #212529 !important;
-                direction: ${direction} !important;
-                text-align: ${direction === 'rtl' ? 'right' : 'left'} !important;
-                box-sizing: border-box !important;
-                overflow: hidden !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            #cv-container {
-                display: flex !important;
-                flex-direction: column !important;
-                position: relative !important;
-                width: 210mm !important;
-                min-height: 297mm !important;
-                height: auto !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                box-shadow: none !important;
-                border: none !important;
-                background: white !important;
-                color: #212529 !important;
-                overflow: visible !important;
-                page-break-inside: auto !important;
-                direction: ${direction} !important;
-                text-align: ${direction === 'rtl' ? 'right' : 'left'} !important;
-                box-sizing: border-box !important;
-            }
+            ${colorVariablesCSS}
+            html, body { margin: 0 !important; padding: 0 !important; background: white !important; font-size: 10pt; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            #cv-container { margin: 0 !important; box-shadow: none !important; border: none !important; }
+            .cv-experience-item, .cv-education-item, .skill-item-wrapper, .cv-reference-item, .cv-language-list  { page-break-inside: avoid !important;}
+            #cv-container { font-family: ${bodyFont} !important; }
+            #cv-container .cv-name, #cv-container .cv-title { font-family: ${nameFont} !important; }
+            #cv-container .cv-section-title { font-family: ${headingsFont} !important; }
 
-            .cv-content {
-                display: flex !important;
-                flex-direction: column !important;
-                flex-grow: 1 !important; /* تجعل هذا العنصر يملأ المساحة داخل #cv-container */
+            .cv-section-title {
+                page-break-after: avoid !important;
             }
-            .site-header, .navbar, .page-section:not(.active-page), .progress-container,
-            .language-toggle, .btn-info, .btn-success, #cv-preview-area,
-            .popup-box, .popup-close, .form-group, .remove-field,
-            .template-preview-container, .template-category, .template-previews,
-            .d-flex.justify-content-center.mt-4 {
-                display: none !important;
-                visibility: hidden !important;
-                height: 0 !important;
-                max-height: 0 !important;
-                overflow: hidden !important;
-                padding: 0 !important;
-                margin: 0 !important;
+            
+            .cv-content .cv-main-content,
+            .cv-sidebar {
+                padding-top: 15mm !important;
             }
-            .cv-two-column-layout, .ast-layout, .cv-professional-layout {
-                flex-grow: 1 !important;
-                display: flex !important;
-                flex-direction: row-reverse !important; /* For all RTL layouts */
-                flex-wrap: nowrap !important;
-                page-break-inside: auto !important;
-            }
-            .cv-sidebar, .cv-main-content {
-                display: flex !important;
-                flex-direction: column !important;
-                box-sizing: border-box !important;
-                page-break-inside: avoid !important;
-            }
-            .cv-professional-layout .cv-header {
-                 display: block !important;
-                 padding-top: 15mm !important;
-            }
-            .cv-professional-layout .cv-sidebar {
-                 width: 80mm !important;
-                 padding: 15mm 10mm 15mm 15mm !important;
-                 order: 2 !important; /* Move sidebar to the right in RTL */
-            }
-            .cv-professional-layout .cv-main-content {
-                 width: auto !important;
-                 padding: 15mm 15mm 15mm 10mm !important;
-                 order: 1 !important; /* Move main content to the left in RTL */
-            }
-            .cv-two-column-layout .cv-sidebar, .ast-layout .cv-sidebar {
-                width: 80mm !important;
-                padding: 15mm 10mm 15mm 15mm !important;
-                order: 2 !important;
-            }
-            .cv-two-column-layout .cv-main-content, .ast-layout .cv-main-content {
-                width: auto !important;
-                padding: 15mm 15mm 15mm 10mm !important;
-                order: 1 !important;
-            }
-            .cv-section, .cv-experience-item, .cv-education-item, .cv-reference-item, .skill-item-wrapper {
-                page-break-inside: avoid !important;
-            }
-            /* Fix for page breaks in multi-column layouts */
-            .cv-two-column-layout, .cv-professional-layout, .ast-layout {
-                align-items: flex-start !important;
-            }
-
+            
+            /* === إصلاح العلامة المائية لتثبيتها على كل الصفحات === */
             #cv-container.watermarked::before {
                 position: fixed !important; 
-                top: 50% !important; 
-                left: 50% !important;
-                width: 100vw !important; /* استخدام vw ليتناسب مع عرض الصفحة */
-                height: 100vh !important; /* استخدام vh ليتناسب مع ارتفاع الصفحة */
+                top: 50% !important; left: 50% !important;
+                width: 100vw; height: 100vh;
                 transform: translate(-50%, -50%) rotate(-40deg) !important;
                 z-index: 10000 !important;
-                pointer-events: none !important; /* تأكيد إضافي */
-                overflow: hidden !important; /* تأكيد إضافي */
             }
-        `;
-        
-        // --- الخطوة 3: دمج كل التنسيقات في وسم <style> واحد ---
-        const combinedCss = `
-            ${mainCssText}
-            ${liveColorStyles}
-            ${liveFontStyles}
-            ${printCssOverrides}
         `;
 
         const fullPageHtml = `
@@ -2713,13 +2626,14 @@ async function generatePdfFromNode(isPaid) {
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
                 <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Cairo:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
                 <style>
-                    ${combinedCss}
+                    ${mainCssText}
+                    ${printCssOverrides}
                 </style>
             </head>
             <body class="${direction}">
-                <div id="cv-container" class="${isPaid ? '' : 'watermarked'} ${cvData.templateCategory}-layout template${cvData.templateNumber}" dir="${direction}">
+                 <div id="cv-container" class="${isPaid ? '' : 'watermarked'} ${cvData.templateCategory}-layout template${cvData.templateNumber}" dir="${direction}">
                     ${finalHtml}
-                </div>
+                 </div>
             </body>
             </html>
         `;
