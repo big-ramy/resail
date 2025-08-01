@@ -1818,7 +1818,14 @@ body[dir="ltr"] .qr-payment-inputs-scroll { padding-right: 0; padding-left: 15px
         size: A4;
         margin: 0;
     }
-
+    .professional-layout {
+    /* Change the grid rows to be based on content size, not available page space */
+    grid-template-rows: auto auto !important; 
+    height: auto !important; /* Ensure the container height is not fixed */
+    }
+    .professional-layout .cv-header.professional-layout {
+       page-break-after: avoid !important; /* Extra rule to prevent a break after the header */
+    }
     .professional-layout.template3 .cv-header.professional-layout .cv-profile-pic {
         display: block !important; /* أمر صريح بإظهار الصورة داخل الهيدر */
     }
