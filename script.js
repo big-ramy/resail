@@ -2632,7 +2632,6 @@ async function generatePdfFromNode(isPaid) {
                 display: flex !important;
                 flex-direction: row-reverse !important; /* For all RTL layouts */
                 flex-wrap: nowrap !important;
-                page-break-inside: auto !important;
             }
             .cv-sidebar, .cv-main-content {
                 display: flex !important;
