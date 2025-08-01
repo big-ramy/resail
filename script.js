@@ -2799,7 +2799,7 @@ async function sendPaymentDataToAppsScript(paymentMethod, pricePaid, cvPdfBase64
 // استبدال استدعاءات توليد الـ PDF القديمة في ملف index.html
 // هذا الزر في صفحة المعاينة (تنزيل PDF (مباشر))
 document.querySelector('#cv-preview-page .btn-info.ms-3').onclick = async function() {
-    const pdfData = await generatePdfFromNode(false); // isPaid: false -> مع علامة مائية
+    const pdfData = await generatePdfFromNode(true); // isPaid: false -> مع علامة مائية
     if (pdfData && pdfData.base64Pdf) {
         const blob = base64toBlob(pdfData.base64Pdf, 'application/pdf');
         const url = URL.createObjectURL(blob);
