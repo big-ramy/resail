@@ -1001,6 +1001,55 @@ function updateTranslationsForPalette() {
      }
 }
 
+
+/**
+ * =========================================================================
+ * ==  الكود الجديد للتحكم في الأحجام والأنماط الديناميكية (الإصدار 2.0)  ==
+ * =========================================================================
+ */
+
+// دالة لتطبيق أحجام النصوص والصور بناءً على قيم المنزلقات
+function applyDynamicSizes() {
+    const cvContainer = document.getElementById('cv-container');
+    if (!cvContainer) return;
+
+    // قراءة قيم المنزلقات
+    const nameSize = document.getElementById('name-size-slider')?.value;
+    const titleSize = document.getElementById('title-size-slider')?.value;
+    const contactSize = document.getElementById('contact-size-slider')?.value;
+    const sectionTitleSize = document.getElementById('section-title-size-slider')?.value;
+    const subsectionTitleSize = document.getElementById('subsection-title-size-slider')?.value;
+    const bodyTextSize = document.getElementById('body-text-size-slider')?.value;
+    const imageSize = document.getElementById('image-size-slider')?.value;
+    const imageRadius = document.getElementById('image-radius-slider')?.value;
+
+    // تطبيق القيم كمتغيرات CSS على حاوية السيرة الذاتية
+    cvContainer.style.setProperty('--font-size-name', `${nameSize}em`);
+    cvContainer.style.setProperty('--font-size-title', `${titleSize}em`);
+    cvContainer.style.setProperty('--font-size-contact', `${contactSize}em`);
+    cvContainer.style.setProperty('--font-size-section-title', `${sectionTitleSize}em`);
+    cvContainer.style.setProperty('--font-size-subsection-title', `${subsectionTitleSize}em`);
+    cvContainer.style.setProperty('--font-size-body', `${bodyTextSize}em`);
+    cvContainer.style.setProperty('--image-size', `${imageSize}px`);
+    cvContainer.style.setProperty('--image-radius', `${imageRadius}%`);
+}
+
+// دالة لربط الأحداث بالمنزلقات الجديدة
+function setupDynamicControlListeners() {
+    const sliders = [
+        'image-size-slider', 'image-radius-slider',
+        'name-size-slider', 'title-size-slider', 'contact-size-slider',
+        'section-title-size-slider', 'subsection-title-size-slider', 'body-text-size-slider'
+    ];
+    
+    sliders.forEach(sliderId => {
+        const slider = document.getElementById(sliderId);
+        if (slider) {
+            slider.addEventListener('input', applyDynamicSizes);
+        }
+    });
+}
+
 /**
  * === الدالة النهائية: مصدر الحقيقة الوحيد للألوان ===
  * تقرأ كل الألوان من لوحة التحكم وتعيدها كنص CSS جاهز للاستخدام.
@@ -1130,6 +1179,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateControlsForCategory();
     applySelectedColors();
     setupColorControls();
+    setupDynamicControlListeners();
 
     // === أضف هذه الأسطر الأربعة هنا لربط ألوان النصوص ===
     document.getElementById('color-picker-header-text').addEventListener('input', applySelectedColors);
@@ -3313,6 +3363,7 @@ function generateCV(targetElement) {
     saveCvDataToLocalStorage();
     applySelectedFonts();
     applySelectedColors();
+    applyDynamicSizes();
 }
 
 
