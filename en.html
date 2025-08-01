@@ -725,6 +725,35 @@ body[dir="ltr"] .cv-header.professional-layout .cv-contact-item i {
     flex-shrink: 0;
 }
 
+    .cv-name {
+    font-size: var(--font-size-name, 2.5em);
+}
+.cv-title {
+    font-size: var(--font-size-title, 1.3em);
+}
+.cv-contact-item {
+    font-size: var(--font-size-contact, 0.95em);
+}
+.cv-section-title {
+    font-size: var(--font-size-section-title, 1.2em);
+}
+/* العناوين الفرعية (مثل المسمى الوظيفي والشهادة) */
+.cv-job-title, .cv-degree {
+    font-size: var(--font-size-subsection-title, 1.05em);
+}
+/* النص الأساسي داخل الأقسام */
+.cv-experience-item p,
+#objective p {
+    font-size: var(--font-size-body, 0.9em);
+}
+/* الصورة الشخصية */
+.cv-profile-pic {
+    width: var(--image-size, 120px);
+    height: var(--image-size, 120px);
+    border-radius: var(--image-radius, 50%);
+}
+    
+
 body[dir="ltr"] .cv-profile-pic {
     margin-left: 0;
     margin-right: 20px; /* LTR */
