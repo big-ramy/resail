@@ -2617,6 +2617,12 @@ async function generatePdfFromNode(isPaid) {
                 text-align: ${direction === 'rtl' ? 'right' : 'left'} !important;
                 box-sizing: border-box !important;
             }
+
+            .cv-content {
+                display: flex !important;
+                flex-direction: column !important;
+                flex-grow: 1 !important; /* تجعل هذا العنصر يملأ المساحة داخل #cv-container */
+            }
             .site-header, .navbar, .page-section:not(.active-page), .progress-container,
             .language-toggle, .btn-info, .btn-success, #cv-preview-area,
             .popup-box, .popup-close, .form-group, .remove-field,
