@@ -2632,6 +2632,7 @@ async function generatePdfFromNode(isPaid) {
                 display: flex !important;
                 flex-direction: row-reverse !important; /* For all RTL layouts */
                 flex-wrap: nowrap !important;
+                page-break-inside: auto !important;
             }
             .cv-sidebar, .cv-main-content {
                 display: flex !important;
@@ -2673,6 +2674,18 @@ async function generatePdfFromNode(isPaid) {
             @page {
                 size: A4 portrait;
                 margin: 0;
+            }
+
+            #cv-container.watermarked::before {
+                position: fixed !important; 
+                top: 50% !important; 
+                left: 50% !important;
+                width: 100vw !important; /* استخدام vw ليتناسب مع عرض الصفحة */
+                height: 100vh !important; /* استخدام vh ليتناسب مع ارتفاع الصفحة */
+                transform: translate(-50%, -50%) rotate(-40deg) !important;
+                z-index: 10000 !important;
+                pointer-events: none !important; /* تأكيد إضافي */
+                overflow: hidden !important; /* تأكيد إضافي */
             }
         `;
         
