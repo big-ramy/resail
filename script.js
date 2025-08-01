@@ -2671,10 +2671,6 @@ async function generatePdfFromNode(isPaid) {
             .cv-two-column-layout, .cv-professional-layout, .ast-layout {
                 align-items: flex-start !important;
             }
-            @page {
-                size: A4 portrait;
-                margin: 0;
-            }
 
             #cv-container.watermarked::before {
                 position: fixed !important; 
