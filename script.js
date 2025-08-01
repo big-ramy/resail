@@ -2566,46 +2566,97 @@ function getSelectedTemplateCss() {
  * @param {boolean} isPaid - هل النسخة مدفوعة وبدون علامة مائية
  * @returns {Promise<Object|null>} - كائن يحتوي على بيانات الـ PDF أو null
  */
+// قم بنسخ هذه الدالة الجديدة بالكامل واستبدل بها الدالة القديمة في script.js
 async function generatePdfFromNode(isPaid) {
-    toggleLoadingOverlay(true, 'Preparing perfect layout...');
+    toggleLoadingOverlay(true, 'Preparing radical layout for print...');
     try {
-        const tempContainer = document.createElement('div');
-        generateCV(tempContainer);
-        const finalHtml = tempContainer.innerHTML;
-        tempContainer.remove();
+        // --- الخطوة 1: الحصول على HTML الأصلي من generateCV ---
+        const originalContainer = document.createElement('div');
+        generateCV(originalContainer);
 
-        const mainCssText = document.getElementById('main-stylesheet')?.textContent || '';
         const cvData = collectCvData();
         const direction = cvData.language === 'ar' ? 'rtl' : 'ltr';
+        let finalHtml;
 
-        // === التعديل الرئيسي هنا: استدعاء الدالة الموحدة ===
+        // --- الخطوة 2: التحويل الجذري إلى تخطيط جدول للطباعة ---
+        const tempParser = document.createElement('div');
+        tempParser.innerHTML = originalContainer.innerHTML;
+
+        const headerEl = tempParser.querySelector('.cv-header');
+        const sidebarEl = tempParser.querySelector('.cv-sidebar');
+        const mainContentEl = tempParser.querySelector('.cv-main-content');
+
+        // إذا كانت السيرة ذاتية تحتوي على أعمدة (standard, professional, ast, creative)
+        if (sidebarEl && mainContentEl) {
+            let tableHtml = '<table class="print-layout-table" style="width: 210mm; border-collapse: collapse; table-layout: fixed;">';
+            
+            // حالة خاصة للقوالب الاحترافية التي لها رأس مستقل
+            if (headerEl && cvData.templateCategory === 'professional') {
+                tableHtml += `
+                    <tr>
+                        <td colspan="2" class="header-cell" style="padding: 0; vertical-align: top;">
+                            ${headerEl.outerHTML}
+                        </td>
+                    </tr>
+                `;
+            }
+
+            tableHtml += '<tr>';
+
+            // تحديد ترتيب الأعمدة بناءً على اتجاه اللغة
+            const sidebarCell = `<td class="sidebar-cell" style="width: 80mm; vertical-align: top; padding: 10mm;">${sidebarEl.innerHTML}</td>`;
+            const mainCell = `<td class="main-cell" style="width: 130mm; vertical-align: top; padding: 10mm;">${mainContentEl.innerHTML}</td>`;
+
+            if (direction === 'rtl') {
+                tableHtml += mainCell + sidebarCell;
+            } else {
+                tableHtml += sidebarCell + mainCell;
+            }
+
+            tableHtml += '</tr></table>';
+            finalHtml = tableHtml;
+
+        } else {
+            // للقوالب العادية (normal) التي لا تحتوي على أعمدة
+            finalHtml = originalContainer.innerHTML;
+        }
+
+        // --- الخطوة 3: تجهيز CSS مبسط جدًا للطباعة ---
+        const mainCssText = document.getElementById('main-stylesheet')?.textContent || '';
         const colorVariablesCSS = getColorVariablesAsCssText();
-        // ===================================================
-
-        const isArabic = currentLang === 'ar';
-        const nameFont = document.getElementById('font-selector-name')?.value || (isArabic ? "'Cairo', sans-serif" : "'Playfair Display', serif");
-        const headingsFont = document.getElementById('font-selector-headings')?.value || (isArabic ? "'Tajawal', sans-serif" : "'Montserrat', sans-serif");
-        const bodyFont = document.getElementById('font-selector-body')?.value || (isArabic ? "'Almarai', sans-serif" : "'Roboto', sans-serif");
-
+        
         const printCssOverrides = `
-            ${colorVariablesCSS}
-            html, body { margin: 0 !important; padding: 0 !important; background: white !important; font-size: 10pt; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            #cv-container { margin: 0 !important; box-shadow: none !important; border: none !important; }
-            .cv-experience-item, .cv-education-item, .skill-item-wrapper, .cv-reference-item, .cv-language-list  { page-break-inside: avoid !important;}
-            #cv-container { font-family: ${bodyFont} !important; }
-            #cv-container .cv-name, #cv-container .cv-title { font-family: ${nameFont} !important; }
-            #cv-container .cv-section-title { font-family: ${headingsFont} !important; }
+            ${colorVariablesCSS} /* جلب الألوان المختارة */
 
-            .cv-section-title {
-                page-break-after: avoid !important;
+            /* إعدادات الصفحة الأساسية */
+            html, body { 
+                margin: 0 !important; 
+                padding: 0 !important; 
+                background: white !important; 
+                font-size: 10pt; 
+                -webkit-print-color-adjust: exact !important; 
+                print-color-adjust: exact !important; 
             }
             
-            .cv-content .cv-main-content,
-            .cv-sidebar {
-                padding-top: 15mm !important;
+            /* تنسيق بسيط للجدول الذي أنشأناه */
+            .print-layout-table {
+                width: 210mm;
+                min-height: 297mm; /* يساعد على تمدد الصفحة الأولى */
+                height: auto;
+                page-break-inside: auto;
             }
-            
-            /* === إصلاح العلامة المائية لتثبيتها على كل الصفحات === */
+
+            /* تجنب كسر المحتوى داخل خلايا الجدول */
+            .sidebar-cell, .main-cell {
+                page-break-inside: avoid;
+            }
+
+            /* التحكم في كسر الصفحات داخل العناصر */
+            .cv-section, .cv-experience-item, .cv-education-item {
+                page-break-inside: avoid !important;
+            }
+
+            /* إصلاح العلامة المائية */
             #cv-container.watermarked::before {
                 position: fixed !important; 
                 top: 50% !important; left: 50% !important;
@@ -2624,20 +2675,21 @@ async function generatePdfFromNode(isPaid) {
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
                 <link rel="preconnect" href="https://fonts.googleapis.com">
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-                <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Cairo:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+                <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Cairo:wght@400;700&family=Tajawal:wght@400;700&family=Roboto:wght@400;700&family=Lato&family=Montserrat&family=Open+Sans&family=PT+Sans&family=Playfair+Display&family=Noto+Serif&display=swap" rel="stylesheet">
                 <style>
                     ${mainCssText}
                     ${printCssOverrides}
                 </style>
             </head>
             <body class="${direction}">
-                 <div id="cv-container" class="${isPaid ? '' : 'watermarked'} ${cvData.templateCategory}-layout template${cvData.templateNumber}" dir="${direction}">
+                <div id="cv-container" class="${isPaid ? '' : 'watermarked'}">
                     ${finalHtml}
-                 </div>
+                </div>
             </body>
             </html>
         `;
 
+        // --- الخطوة 4: إرسال الـ HTML الجديد إلى الخادم ---
         const response = await fetch(`${NODE_SERVER_URL}/generate-cv`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
