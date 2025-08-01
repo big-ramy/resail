@@ -1001,7 +1001,6 @@ function updateTranslationsForPalette() {
      }
 }
 
-
 /**
  * =========================================================================
  * ==  الكود الجديد للتحكم في الأحجام والأنماط الديناميكية (الإصدار 2.0)  ==
@@ -1049,6 +1048,7 @@ function setupDynamicControlListeners() {
         }
     });
 }
+
 
 /**
  * === الدالة النهائية: مصدر الحقيقة الوحيد للألوان ===
@@ -1180,7 +1180,6 @@ document.addEventListener('DOMContentLoaded', () => {
     applySelectedColors();
     setupColorControls();
     setupDynamicControlListeners();
-
     // === أضف هذه الأسطر الأربعة هنا لربط ألوان النصوص ===
     document.getElementById('color-picker-header-text').addEventListener('input', applySelectedColors);
     document.getElementById('color-picker-title-text').addEventListener('input', applySelectedColors);
