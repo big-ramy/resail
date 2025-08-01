@@ -901,7 +901,7 @@ function applySelectedFonts() {
     // كتابة قواعد CSS مباشرةً لاستهداف العناصر الصحيحة
     livePreviewStyle.textContent = `
         /* تطبيق خط النص الأساسي على الحاوية وعناصر الاتصال */
-        #cv-container, #cv-container .cv-contact-item, #cv-container .cv-contact-item * { font-family: ${bodyFont}; }
+        #cv-container, #cv-container .cv-contact-item p { font-family: ${bodyFont}; }
         /* تجاوز الخط لاسم الشخص وعنوانه الوظيفي */
         #cv-container .cv-name, #cv-container .cv-title { font-family: ${nameFont}; }
         /* تجاوز الخط لعناوين الأقسام */
