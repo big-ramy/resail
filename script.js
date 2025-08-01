@@ -2599,6 +2599,8 @@ async function generatePdfFromNode(isPaid) {
                 print-color-adjust: exact !important;
             }
             #cv-container {
+                display: flex !important;
+                flex-direction: column !important;
                 position: relative !important;
                 width: 210mm !important;
                 min-height: 297mm !important;
@@ -2629,6 +2631,7 @@ async function generatePdfFromNode(isPaid) {
                 margin: 0 !important;
             }
             .cv-two-column-layout, .ast-layout, .cv-professional-layout {
+                flex-grow: 1 !important;
                 display: flex !important;
                 flex-direction: row-reverse !important; /* For all RTL layouts */
                 flex-wrap: nowrap !important;
@@ -2637,8 +2640,8 @@ async function generatePdfFromNode(isPaid) {
             .cv-sidebar, .cv-main-content {
                 display: flex !important;
                 flex-direction: column !important;
-                page-break-inside: avoid !important;
                 box-sizing: border-box !important;
+                page-break-inside: avoid !important;
             }
             .cv-professional-layout .cv-header {
                  display: block !important;
@@ -3365,16 +3368,10 @@ function generateCV(targetElement) {
                 sidebarHTML = `${profilePicHTML}${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}`;
             }
     
-            professionalHeader.innerHTML = headerHTML;
-            sidebarDiv.innerHTML = sidebarHTML;
-            mainContentDiv.innerHTML = `
-                ${professionalHeader.innerHTML} 
-                ${objectiveHTML}
-                ${experienceHTML}
-                ${customSectionsHTML}
-                ${educationHTML}
-                ${endMarkerHTML}
-            `;            
+            professionalHeader.innerHTML = headerHTML;
+            sidebarDiv.innerHTML = sidebarHTML;
+            mainContentDiv.innerHTML = `${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${endMarkerHTML}`;
+            cvContentDiv.appendChild(professionalHeader);           
 
         } else { // هذا الجزء يعالج Standard و AST كما كان
             layoutDiv.className = 'cv-two-column-layout';
