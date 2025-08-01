@@ -3367,10 +3367,15 @@ function generateCV(targetElement) {
     
             professionalHeader.innerHTML = headerHTML;
             sidebarDiv.innerHTML = sidebarHTML;
-            mainContentDiv.innerHTML = `${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${endMarkerHTML}`;
-            
-            cvContentDiv.appendChild(professionalHeader);
-    
+            mainContentDiv.innerHTML = `
+                ${professionalHeader.innerHTML} 
+                ${objectiveHTML}
+                ${experienceHTML}
+                ${customSectionsHTML}
+                ${educationHTML}
+                ${endMarkerHTML}
+            `;            
+
         } else { // هذا الجزء يعالج Standard و AST كما كان
             layoutDiv.className = 'cv-two-column-layout';
             sidebarDiv.innerHTML = profilePicHTML + contactInfoHTML + skillsHTMLWithLevels + languagesHTML + referencesHTML + endMarkerHTML;
