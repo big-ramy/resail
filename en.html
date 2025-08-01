@@ -2654,161 +2654,98 @@ html[dir="ltr"] .gradient-toggle-wrapper .form-check-input {
                                     </div>
                         </div>
                         <div id="controls-sidebar">
-
-                            <div id="element-editor-panel" class="p-3 bg-light border rounded mb-3">
-                                    <div id="editor-status-message" class="text-center text-muted mb-3" data-translate="editor_select_element">Select an element to edit</div>
-                                
-                                    <div id="main-controls" class="d-none">
-                                
-                                        <div class="mb-3 text-center">
-                                            <label class="form-label fw-bold d-block" data-translate="editor_position">Position</label>
-                                            <div class="joystick-circle">
-                                                <button class="joystick-btn-circle" data-direction="up"><i class="fas fa-arrow-up"></i></button>
-                                                <button class="joystick-btn-circle" data-direction="left"><i class="fas fa-arrow-left"></i></button>
-                                                <button class="joystick-btn-circle" data-direction="reset"><i class="fas fa-dot-circle"></i></button>
-                                                <button class="joystick-btn-circle" data-direction="right"><i class="fas fa-arrow-right"></i></button>
-                                                <button class="joystick-btn-circle" data-direction="down"><i class="fas fa-arrow-down"></i></button>
-                                            </div>
-                                        </div>
-                                
-                                        <div id="sliders-container">
-                                            <div id="width-control" class="mb-3 slider-control-wrapper">
-                                                <label for="width-slider" class="form-label fw-bold" data-translate="editor_width">Width</label>
-                                                <div class="slider-control">
-                                                    <button class="slider-btn" data-control="width" data-action="decrease">-</button>
-                                                    <input type="range" id="width-slider" class="form-range" min="20" max="100" value="100">
-                                                    <button class="slider-btn" data-control="width" data-action="increase">+</button>
-                                                </div>
-                                            </div>
-                                            <div id="height-control" class="mb-3 slider-control-wrapper">
-                                                <label for="height-slider" class="form-label fw-bold" data-translate="editor_height">Height</label>
-                                                <div class="slider-control">
-                                                    <button class="slider-btn" data-control="height" data-action="decrease">-</button>
-                                                    <input type="range" id="height-slider" class="form-range" min="10" max="100" value="20">
-                                                    <button class="slider-btn" data-control="height" data-action="increase">+</button>
-                                                </div>
-                                            </div>
-                                            <div id="font-size-control" class="mb-3 slider-control-wrapper">
-                                                <label for="font-size-slider" class="form-label fw-bold" data-translate="editor_font_size">Font Size</label>
-                                                <div class="slider-control">
-                                                    <button class="slider-btn" data-control="fontSize" data-action="decrease">-</button>
-                                                    <input type="range" id="font-size-slider" class="form-range" min="50" max="250" value="100">
-                                                    <button class="slider-btn" data-control="fontSize" data-action="increase">+</button>
-                                                </div>
-                                            </div>
-                                            <div id="radius-control" class="mb-3 slider-control-wrapper">
-                                                <label for="radius-slider" class="form-label fw-bold" data-translate="editor_frame">Frame Shape</label>
-                                                <div class="slider-control">
-                                                    <button class="slider-btn" data-control="radius" data-action="decrease">-</button>
-                                                    <input type="range" id="radius-slider" class="form-range" min="0" max="50" value="50">
-                                                    <button class="slider-btn" data-control="radius" data-action="increase">+</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                            </div>
-
-                            <div id="font-selector-container" class="text-center my-3">
-                                <div class="row justify-content-center g-2">
-                                    <div class="col-12">
-                                        <label for="font-selector-name" class="form-label fw-bold" data-translate="select_name_font_label">خط الاسم الرئيسي:</label>
-                                        <select id="font-selector-name" class="form-select"></select>
-                                    </div>
-                                    <div class="col-12">
-                                        <label for="font-selector-headings" class="form-label fw-bold" data-translate="select_headings_font_label">خط العناوين:</label>
-                                        <select id="font-selector-headings" class="form-select"></select>
-                                    </div>
-                                    <div class="col-12">
-                                        <label for="font-selector-body" class="form-label fw-bold" data-translate="select_body_font_label">خط النص الأساسي:</label>
-                                        <select id="font-selector-body" class="form-select"></select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div id="palette-container" class="my-3">
-                                <h6 class="text-muted border-bottom pb-2 mb-3" data-translate="color_presets_title">Color Presets</h6>
-                                <div id="palette-selector" class="d-flex flex-wrap gap-2 justify-content-center">
-                                    </div>
-                            </div>
-
-                            <div id="color-picker-container" class="text-center my-3 p-3 bg-light border rounded">
-                                <h5 class="mb-3" data-translate="color_customization_title">Customize Template Colors</h5>
-                                <h6 class="text-muted border-bottom pb-2 mb-3" data-translate="background_colors_title">Background Colors</h6>
-                                <div class="row justify-content-center g-3 mb-3">
-                                    <div class="col-12 color-control-component" data-color-name="primary-bg">
-                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <label class="form-label fw-bold" data-translate="primary_bg_label">Primary BG / Header</label>
-                                            <div class="form-check form-switch gradient-toggle-wrapper">
-                                                <input class="form-check-input gradient-toggle" type="checkbox">
-                                                <label class="form-check-label" data-translate="gradient_label">Gradient</label>
-                                            </div>
-                                        </div>
-                                        <div class="solid-color-picker"><input type="color" class="form-control form-control-color w-100" id="color-picker-primary-bg" value="#004085"></div>
-                                        <div class="gradient-controls" style="display: none;">
-                                            <div class="input-group mb-1">
-                                                <input type="color" class="form-control form-control-color" id="color-picker-primary-bg-start" value="#004085">
-                                                <input type="color" class="form-control form-control-color" id="color-picker-primary-bg-end" value="#0056b3">
-                                            </div>
-                                            <select class="form-select form-select-sm gradient-direction">
-                                                <option value="to right" data-translate="gradient_horizontal">Horizontal</option>
-                                                <option value="to bottom" data-translate="gradient_vertical">Vertical</option>
-                                                <option value="to bottom right" data-translate="gradient_diagonal">Diagonal</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 color-control-component" data-color-name="sidebar-bg">
-                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <label class="form-label fw-bold" data-translate="sidebar_bg_label">Sidebar BG</label>
-                                            <div class="form-check form-switch gradient-toggle-wrapper">
-                                                <input class="form-check-input gradient-toggle" type="checkbox">
-                                                <label class="form-check-label" data-translate="gradient_label">Gradient</label>
-                                            </div>
-                                        </div>
-                                        <div class="solid-color-picker"><input type="color" class="form-control form-control-color w-100" id="color-picker-sidebar-bg" value="#f8f9fa"></div>
-                                        <div class="gradient-controls" style="display: none;">
-                                            <div class="input-group mb-1">
-                                                <input type="color" class="form-control form-control-color" id="color-picker-sidebar-bg-start" value="#f8f9fa">
-                                                <input type="color" class="form-control form-control-color" id="color-picker-sidebar-bg-end" value="#e9ecef">
-                                            </div>
-                                            <select class="form-select form-select-sm gradient-direction">
-                                                <option value="to right" data-translate="gradient_horizontal">Horizontal</option>
-                                                <option value="to bottom" data-translate="gradient_vertical">Vertical</option>
-                                                <option value="to bottom right" data-translate="gradient_diagonal">Diagonal</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 color-control-component" data-color-name="accent-bg">
-                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <label class="form-label fw-bold" data-translate="accent_bg_label">Accent / Skills BG</label>
-                                            <div class="form-check form-switch gradient-toggle-wrapper">
-                                                <input class="form-check-input gradient-toggle" type="checkbox">
-                                                <label class="form-check-label" data-translate="gradient_label">Gradient</label>
-                                            </div>
-                                        </div>
-                                        <div class="solid-color-picker"><input type="color" class="form-control form-control-color w-100" id="color-picker-accent-bg" value="#e9ecef"></div>
-                                        <div class="gradient-controls" style="display: none;">
-                                            <div class="input-group mb-1">
-                                                <input type="color" class="form-control form-control-color" id="color-picker-accent-bg-start" value="#e9ecef">
-                                                <input type="color" class="form-control form-control-color" id="color-picker-accent-bg-end" value="#ced4da">
-                                            </div>
-                                            <select class="form-select form-select-sm gradient-direction">
-                                                <option value="to right" data-translate="gradient_horizontal">Horizontal</option>
-                                                <option value="to bottom" data-translate="gradient_vertical">Vertical</option>
-                                                <option value="to bottom right" data-translate="gradient_diagonal">Diagonal</option>
-                                            </select>
+                            <div class="accordion" id="controlsAccordion">
+                        
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingImage">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseImage" aria-expanded="false" aria-controls="collapseImage">
+                                            🖼️ التحكم بالصورة الشخصية
+                                        </button>
+                                    </h2>
+                                    <div id="collapseImage" class="accordion-collapse collapse" aria-labelledby="headingImage" data-bs-parent="#controlsAccordion">
+                                        <div class="accordion-body">
+                                            <label for="image-size-slider" class="form-label">حجم الصورة</label>
+                                            <input type="range" class="form-range" id="image-size-slider" min="80" max="150" value="120">
+                        
+                                            <label for="image-radius-slider" class="form-label mt-2">شكل الإطار (Radius)</label>
+                                            <input type="range" class="form-range" id="image-radius-slider" min="0" max="50" value="50">
                                         </div>
                                     </div>
                                 </div>
-
-                                <h6 class="text-muted border-bottom pb-2 mb-3" data-translate="text_colors_title">Text & Icon Colors</h6>
-                                <div class="row g-3">
-                                    <div class="col-md-6 col-12"><label for="color-picker-header-text" class="form-label fw-bold" data-translate="header_text_label">Header Text</label><input type="color" class="form-control form-control-color w-100" id="color-picker-header-text" value="#ffffff"></div>
-                                    <div class="col-md-6 col-12"><label for="color-picker-title-text" class="form-label fw-bold" data-translate="title_text_label">Titles Text</label><input type="color" class="form-control form-control-color w-100" id="color-picker-title-text" value="#004085"></div>
-                                    <div class="col-md-6 col-12"><label for="color-picker-body-text" class="form-label fw-bold" data-translate="body_text_label">Body Text</label><input type="color" class="form-control form-control-color w-100" id="color-picker-body-text" value="#343a40"></div>
-                                    <div class="col-md-6 col-12"><label for="color-picker-subtle-text" class="form-label fw-bold" data-translate="subtle_text_label">Subtle Text</label><input type="color" class="form-control form-control-color w-100" id="color-picker-subtle-text" value="#6c757d"></div>
+                        
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingFonts">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFonts" aria-expanded="false" aria-controls="collapseFonts">
+                                            ✒️ التحكم بالخطوط
+                                        </button>
+                                    </h2>
+                                    <div id="collapseFonts" class="accordion-collapse collapse" aria-labelledby="headingFonts" data-bs-parent="#controlsAccordion">
+                                        <div class="accordion-body">
+                                            <div id="font-selector-container" class="text-center">
+                                                <div class="row justify-content-center g-2">
+                                                    <div class="col-12">
+                                                        <label for="font-selector-name" class="form-label fw-bold" data-translate="select_name_font_label">خط الاسم الرئيسي:</label>
+                                                        <select id="font-selector-name" class="form-select"></select>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <label for="font-selector-headings" class="form-label fw-bold" data-translate="select_headings_font_label">خط العناوين:</label>
+                                                        <select id="font-selector-headings" class="form-select"></select>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <label for="font-selector-body" class="form-label fw-bold" data-translate="select_body_font_label">خط النص الأساسي:</label>
+                                                        <select id="font-selector-body" class="form-select"></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingSizes">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSizes" aria-expanded="false" aria-controls="collapseSizes">
+                                            📏 التحكم بأحجام النصوص
+                                        </button>
+                                    </h2>
+                                    <div id="collapseSizes" class="accordion-collapse collapse" aria-labelledby="headingSizes" data-bs-parent="#controlsAccordion">
+                                        <div class="accordion-body">
+                                            <label for="name-size-slider" class="form-label">حجم الاسم</label>
+                                            <input type="range" class="form-range" id="name-size-slider" min="2" max="4" value="2.5" step="0.1">
+                        
+                                            <label for="title-size-slider" class="form-label mt-2">حجم المسمى الوظيفي</label>
+                                            <input type="range" class="form-range" id="title-size-slider" min="1" max="2" value="1.3" step="0.1">
+                                            
+                                            <label for="contact-size-slider" class="form-label mt-2">حجم معلومات الاتصال</label>
+                                            <input type="range" class="form-range" id="contact-size-slider" min="0.8" max="1.2" value="0.95" step="0.05">
+                        
+                                            <label for="section-title-size-slider" class="form-label mt-2">حجم عناوين الأقسام</label>
+                                            <input type="range" class="form-range" id="section-title-size-slider" min="1" max="1.8" value="1.2" step="0.1">
+                                            
+                                            <label for="subsection-title-size-slider" class="form-label mt-2">حجم العناوين الفرعية</label>
+                                            <input type="range" class="form-range" id="subsection-title-size-slider" min="0.9" max="1.5" value="1.05" step="0.05">
+                        
+                                            <label for="body-text-size-slider" class="form-label mt-2">حجم النص الأساسي</label>
+                                            <input type="range" class="form-range" id="body-text-size-slider" min="0.8" max="1.1" value="0.9" step="0.05">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingColors">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseColors" aria-expanded="true" aria-controls="collapseColors">
+                                            🎨 التحكم بالألوان
+                                        </button>
+                                    </h2>
+                                    <div id="collapseColors" class="accordion-collapse collapse show" aria-labelledby="headingColors" data-bs-parent="#controlsAccordion">
+                                        <div class="accordion-body">
+                                            <div id="palette-container" class="my-3"></div>
+                                            <div id="color-picker-container" class="text-center my-3 p-3 bg-light border rounded">
+                                                </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-
+                        
                             <div class="action-buttons-container">
                                 <button class="btn btn-secondary" onclick="showPage('cv-template-selection-page')" data-translate="Back to Templates">العودة للنماذج</button>
                                 <button type="button" class="btn btn-info ms-3" data-translate-id="Download PDF (Direct)">تنزيل PDF (معاينة)</button>
