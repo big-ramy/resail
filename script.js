@@ -745,7 +745,7 @@ function saveCvDataToLocalStorage() {
         skills: getSkillsData(),
         languages: getLanguagesData(),
         references: getReferencesData(),
-        customSections: getCustomSectionsData()
+        customSections: getCustomSectionsData() // <<< ⭐ هذا هو السطر الجديد
     };
 
     // 2. تحويل الكائن إلى نص JSON وحفظه
@@ -755,7 +755,9 @@ function saveCvDataToLocalStorage() {
         console.error("Error saving to localStorage", e);
     }
 }
-
+/**
+ * يفحص localStorage عن بيانات محفوظة، وإذا وجدت، يقوم بتعبئة النموذج بها.
+ */
 /**
  * يفحص localStorage عن بيانات محفوظة، وإذا وجدت، يقوم بتعبئة النموذج بها.
  */
@@ -780,21 +782,22 @@ function loadCvDataFromLocalStorage() {
         }
 
         // 3. إعادة بناء الحقول الديناميكية (الخبرات، التعليم، إلخ)
-        // مسح الحقول الافتراضية أولاً
         document.getElementById('experience-input').innerHTML = '';
         document.getElementById('education-input').innerHTML = '';
         document.getElementById('skills-input').innerHTML = '';
         document.getElementById('languages-input').innerHTML = '';
         document.getElementById('references-input').innerHTML = '';
 
-        // إعادة إنشاء الحقول من البيانات المحفوظة
         savedData.experiences?.forEach(data => addExperienceField(data));
         savedData.educations?.forEach(data => addEducationField(data));
         savedData.skills?.forEach(data => addSkillField(data));
         savedData.languages?.forEach(data => addLanguageField(data));
         savedData.references?.forEach(data => addReferenceField(data));
+
+        // --- ⭐ بداية الكود الجديد لاسترجاع الأقسام المخصصة ---
         if (savedData.customSections && savedData.customSections.length > 0) {
-            const formNavigationButtons = document.getElementById('form-navigation-buttons');
+            const formContainer = document.querySelector('.col-md-6:last-of-type'); // الحاوية التي توجد بها الأقسام
+            const addCustomSectionButton = formContainer.querySelector('.btn-outline-success').parentElement; // زر "إضافة قسم"
 
             savedData.customSections.forEach(sectionData => {
                 const sectionWrapper = document.createElement('div');
@@ -823,21 +826,20 @@ function loadCvDataFromLocalStorage() {
 
                 const buttonContainer = document.createElement('div');
                 buttonContainer.className = 'mt-2';
-                // ... (يمكنك إعادة بناء الأزرار هنا بنفس طريقة دالة addCustomSection)
+                // (يمكنك إعادة بناء الأزرار هنا أيضًا، لكنها ليست ضرورية للوظيفة الأساسية)
 
                 sectionWrapper.appendChild(titleInput);
                 sectionWrapper.appendChild(subSectionsContainer);
-                sectionWrapper.appendChild(buttonContainer); // أضف حاوية الأزرار
+                sectionWrapper.appendChild(buttonContainer);
                 
-                if (formNavigationButtons) {
-                   formNavigationButtons.parentNode.insertBefore(sectionWrapper, formNavigationButtons);
-                }
+                // إضافة القسم المسترجع قبل زر "إضافة قسم مخصص"
+                formContainer.insertBefore(sectionWrapper, addCustomSectionButton);
             });
         }
+        // --- ⭐ نهاية الكود الجديد ---
 
     } catch (e) {
         console.error("Error loading from localStorage", e);
-        // في حال وجود خطأ، نقوم بمسح البيانات التالفة
         localStorage.removeItem('resailCvData');
     }
 }
@@ -3542,5 +3544,6 @@ function populateWithTestData() {
     generateCV(cvContainer);
     updateProgress();
 }
+
 
 
