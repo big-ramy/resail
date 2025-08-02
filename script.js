@@ -764,76 +764,69 @@ function saveCvDataToLocalStorage() {
 function loadCvDataFromLocalStorage() {
     try {
         const savedDataJSON = localStorage.getItem('resailCvData');
-        if (!savedDataJSON) return; // لا توجد بيانات محفوظة
+        if (!savedDataJSON) return;
 
         const savedData = JSON.parse(savedDataJSON);
 
-        // 1. تعبئة الحقول النصية البسيطة
+        // تعبئة الحقول الأساسية
         document.getElementById('name-input').value = savedData.name || '';
         document.getElementById('title-input').value = savedData.title || '';
         document.getElementById('email-input').value = savedData.email || '';
         document.getElementById('phone-input').value = savedData.phone || '';
         document.getElementById('website-input').value = savedData.website || '';
         document.getElementById('objective-input').value = savedData.objective || '';
-        
-        // 2. استرجاع الصورة الشخصية
         if (savedData.profilePic) {
             profilePicDataUrl = savedData.profilePic;
         }
 
-        // 3. إعادة بناء الحقول الديناميكية (الخبرات، التعليم، إلخ)
+        // مسح الحقول الديناميكية قبل إعادة بنائها
         document.getElementById('experience-input').innerHTML = '';
         document.getElementById('education-input').innerHTML = '';
         document.getElementById('skills-input').innerHTML = '';
         document.getElementById('languages-input').innerHTML = '';
         document.getElementById('references-input').innerHTML = '';
+        
+        // مسح حاوية الأقسام المخصصة القديمة إن وجدت
+        const oldCustomContainer = document.getElementById('custom-sections-container');
+        if (oldCustomContainer) {
+            oldCustomContainer.remove();
+        }
 
+        // إعادة بناء كل الحقول الديناميكية
         savedData.experiences?.forEach(data => addExperienceField(data));
         savedData.educations?.forEach(data => addEducationField(data));
         savedData.skills?.forEach(data => addSkillField(data));
         savedData.languages?.forEach(data => addLanguageField(data));
         savedData.references?.forEach(data => addReferenceField(data));
 
-        // --- ⭐ بداية الكود الجديد لاسترجاع الأقسام المخصصة ---
+        // --- ⭐ بداية الكود الجديد والمُبسّط لاسترجاع الأقسام المخصصة ---
         if (savedData.customSections && savedData.customSections.length > 0) {
-            const formContainer = document.querySelector('.col-md-6:last-of-type'); // الحاوية التي توجد بها الأقسام
-            const addCustomSectionButton = formContainer.querySelector('.btn-outline-success').parentElement; // زر "إضافة قسم"
-
+            // استدعاء addCustomSection لكل قسم محفوظ، ثم ملء البيانات
             savedData.customSections.forEach(sectionData => {
-                const sectionWrapper = document.createElement('div');
-                sectionWrapper.className = 'custom-section-wrapper mb-3 p-3 border rounded';
+                addCustomSection(); // ستُنشئ قسمًا جديدًا فارغًا
+                const allCustomSections = document.querySelectorAll('#custom-sections-container .custom-section-wrapper');
+                const newSection = allCustomSections[allCustomSections.length - 1]; // الحصول على آخر قسم تم إنشاؤه
 
-                const titleInput = document.createElement('input');
-                titleInput.type = 'text';
-                titleInput.placeholder = translations[currentLang]['custom_section_placeholder'];
-                titleInput.className = 'form-control form-control-lg mb-2 custom-section-title';
-                titleInput.value = sectionData.title;
-                titleInput.oninput = () => generateCV(document.getElementById('cv-container'));
-                
-                const subSectionsContainer = document.createElement('div');
-                subSectionsContainer.className = 'sub-sections-container';
+                if (newSection) {
+                    // ملء العنوان الرئيسي
+                    newSection.querySelector('.custom-section-title').value = sectionData.title;
+                    
+                    // مسح القسم الفرعي الافتراضي الذي تم إنشاؤه
+                    const subSectionsContainer = newSection.querySelector('.sub-sections-container');
+                    subSectionsContainer.innerHTML = ''; 
 
-                sectionData.subSections.forEach(subData => {
-                    const subSectionEntry = document.createElement('div');
-                    subSectionEntry.className = 'custom-subsection-entry border p-2 mb-2 rounded position-relative';
-                    subSectionEntry.innerHTML = `
-                        <button type="button" class="remove-field" onclick="this.parentElement.remove(); generateCV(document.getElementById('cv-container'));" title="${translations[currentLang]['remove_subsection_title']}">&times;</button>
-                        <input type="text" class="form-control mb-2 custom-subsection-title" placeholder="${translations[currentLang]['subsection_title_placeholder']}" value="${subData.title || ''}" oninput="generateCV(document.getElementById('cv-container'));">
-                        <textarea class="form-control custom-subsection-description" placeholder="${translations[currentLang]['subsection_desc_placeholder']}" rows="3" oninput="generateCV(document.getElementById('cv-container'));">${subData.description || ''}</textarea>
-                    `;
-                    subSectionsContainer.appendChild(subSectionEntry);
-                });
-
-                const buttonContainer = document.createElement('div');
-                buttonContainer.className = 'mt-2';
-                // (يمكنك إعادة بناء الأزرار هنا أيضًا، لكنها ليست ضرورية للوظيفة الأساسية)
-
-                sectionWrapper.appendChild(titleInput);
-                sectionWrapper.appendChild(subSectionsContainer);
-                sectionWrapper.appendChild(buttonContainer);
-                
-                // إضافة القسم المسترجع قبل زر "إضافة قسم مخصص"
-                formContainer.insertBefore(sectionWrapper, addCustomSectionButton);
+                    // إعادة بناء الأقسام الفرعية المحفوظة
+                    sectionData.subSections.forEach(subData => {
+                        const subSectionEntry = document.createElement('div');
+                        subSectionEntry.className = 'custom-subsection-entry border p-2 mb-2 rounded position-relative';
+                        subSectionEntry.innerHTML = `
+                            <button type="button" class="remove-field" onclick="this.parentElement.remove(); generateCV(document.getElementById('cv-container'));" title="${translations[currentLang]['remove_subsection_title']}">&times;</button>
+                            <input type="text" class="form-control mb-2 custom-subsection-title" placeholder="${translations[currentLang]['subsection_title_placeholder']}" value="${subData.title || ''}" oninput="generateCV(document.getElementById('cv-container'));">
+                            <textarea class="form-control custom-subsection-description" placeholder="${translations[currentLang]['subsection_desc_placeholder']}" rows="3" oninput="generateCV(document.getElementById('cv-container'));">${subData.description || ''}</textarea>
+                        `;
+                        subSectionsContainer.appendChild(subSectionEntry);
+                    });
+                }
             });
         }
         // --- ⭐ نهاية الكود الجديد ---
@@ -1278,53 +1271,51 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function addCustomSection() {
+    // --- بداية التعديل: التأكد من وجود حاوية رئيسية ---
+    let customSectionsContainer = document.getElementById('custom-sections-container');
+    if (!customSectionsContainer) {
+        customSectionsContainer = document.createElement('div');
+        customSectionsContainer.id = 'custom-sections-container';
+        const formNavigationButtons = document.getElementById('form-navigation-buttons');
+        formNavigationButtons.parentNode.insertBefore(customSectionsContainer, formNavigationButtons);
+    }
+    // --- نهاية التعديل ---
+
     const sectionWrapper = document.createElement('div');
     sectionWrapper.className = 'custom-section-wrapper mb-3 p-3 border rounded';
 
-    // حقل العنوان الرئيسي للقسم
     const titleInput = document.createElement('input');
     titleInput.type = 'text';
-    // استخدام الترجمة للنص التوضيحي
     titleInput.placeholder = translations[currentLang]['custom_section_placeholder'];
     titleInput.className = 'form-control form-control-lg mb-2 custom-section-title';
     titleInput.oninput = () => generateCV(document.getElementById('cv-container'));
 
-    // حاوية للمداخل الفرعية
     const subSectionsContainer = document.createElement('div');
     subSectionsContainer.className = 'sub-sections-container';
 
-    // الأزرار
     const buttonContainer = document.createElement('div');
     buttonContainer.className = 'mt-2';
 
-    // زر لإضافة مدخل فرعي جديد
     const addSubSectionButton = document.createElement('button');
     addSubSectionButton.type = 'button';
     addSubSectionButton.className = 'btn btn-sm btn-outline-primary me-2';
-    // استخدام الترجمة لمحتوى الزر
     addSubSectionButton.innerHTML = translations[currentLang]['add_subsection_btn'];
     addSubSectionButton.onclick = function() {
         const subSectionEntry = document.createElement('div');
         subSectionEntry.className = 'custom-subsection-entry border p-2 mb-2 rounded position-relative';
-        
-        // استخدام الترجمة داخل innerHTML
         subSectionEntry.innerHTML = `
             <button type="button" class="remove-field" onclick="this.parentElement.remove(); generateCV(document.getElementById('cv-container'));" title="${translations[currentLang]['remove_subsection_title']}">&times;</button>
             <input type="text" class="form-control mb-2 custom-subsection-title" placeholder="${translations[currentLang]['subsection_title_placeholder']}" oninput="generateCV(document.getElementById('cv-container'));">
             <textarea class="form-control custom-subsection-description" placeholder="${translations[currentLang]['subsection_desc_placeholder']}" rows="3" oninput="generateCV(document.getElementById('cv-container'));"></textarea>
         `;
-        
         subSectionsContainer.appendChild(subSectionEntry);
     };
 
-    // زر لحذف القسم بالكامل
     const removeSectionButton = document.createElement('button');
     removeSectionButton.type = 'button';
     removeSectionButton.className = 'btn btn-sm btn-danger';
-    // استخدام الترجمة لنص الزر
     removeSectionButton.textContent = translations[currentLang]['remove_section_btn'];
     removeSectionButton.onclick = function() {
-        // استخدام الترجمة لرسالة التأكيد
         if (confirm(translations[currentLang]['confirm_delete_section'])) {
             sectionWrapper.remove();
             generateCV(document.getElementById('cv-container'));
@@ -1338,11 +1329,15 @@ function addCustomSection() {
     sectionWrapper.appendChild(subSectionsContainer);
     sectionWrapper.appendChild(buttonContainer);
     
-    const formNavigationButtons = document.getElementById('form-navigation-buttons');
-    formNavigationButtons.parentNode.insertBefore(sectionWrapper, formNavigationButtons);
+    // --- تعديل: الإضافة دائمًا داخل الحاوية الجديدة ---
+    customSectionsContainer.appendChild(sectionWrapper);
 
     addSubSectionButton.click();
+    
+    sectionWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
 }
+
 
 function updateTemplateImageSources() {
     const templateImages = document.querySelectorAll('.template-preview');
@@ -2345,10 +2340,10 @@ function getReferencesData() {
  */
 function getCustomSectionsData() {
     const sections = [];
-    document.querySelectorAll('.custom-section-wrapper').forEach(sectionWrapper => {
+    // --- تعديل: البحث داخل الحاوية المخصصة فقط ---
+    document.querySelectorAll('#custom-sections-container .custom-section-wrapper').forEach(sectionWrapper => {
         const sectionTitle = sectionWrapper.querySelector('.custom-section-title')?.value.trim();
         
-        // تجاهل القسم بالكامل إذا كان عنوانه الرئيسي فارغًا
         if (!sectionTitle) return;
 
         const subSections = [];
@@ -2356,13 +2351,11 @@ function getCustomSectionsData() {
             const subTitle = subSectionEntry.querySelector('.custom-subsection-title')?.value.trim();
             const description = subSectionEntry.querySelector('.custom-subsection-description')?.value.trim();
             
-            // أضف القسم الفرعي فقط إذا كان يحتوي على عنوان أو وصف
             if (subTitle || description) {
                 subSections.push({ title: subTitle, description: description });
             }
         });
 
-        // أضف القسم الرئيسي فقط إذا كان يحتوي على أقسام فرعية ذات محتوى
         if (subSections.length > 0) {
             sections.push({
                 title: sectionTitle,
@@ -3544,6 +3537,7 @@ function populateWithTestData() {
     generateCV(cvContainer);
     updateProgress();
 }
+
 
 
 
