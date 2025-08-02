@@ -3011,6 +3011,7 @@ function addExperienceField(data = null) {
     if (!container) return;
     const newEntry = document.createElement('div');
     newEntry.className = 'experience-entry';
+    // --- ⭐ تعديل: استخدام كائن الترجمة مباشرة ---
     newEntry.innerHTML = `
         <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
         <input type="text" placeholder="${translations[currentLang]['Job Title_placeholder'] || 'Job Title'}" class="experience-title" oninput="generateCV(cvContainer); updateProgress()">
@@ -3020,7 +3021,6 @@ function addExperienceField(data = null) {
     `;
     container.appendChild(newEntry);
 
-    // الجزء الجديد: ملء البيانات إذا تم توفيرها
     if (data) {
         newEntry.querySelector('.experience-title').value = data.title || '';
         newEntry.querySelector('.experience-company').value = data.company || '';
@@ -3046,6 +3046,7 @@ function addEducationField(data = null) {
     if (!educationInput) return;
     const newEntry = document.createElement('div');
     newEntry.className = 'education-entry';
+    // --- ⭐ تعديل: استخدام كائن الترجمة مباشرة ---
     newEntry.innerHTML = `
          <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
         <input type="text" placeholder="${translations[currentLang]['Degree'] || 'Degree'}" class="education-degree" oninput="generateCV(cvContainer); updateProgress()">
@@ -3054,7 +3055,6 @@ function addEducationField(data = null) {
     `;
     educationInput.appendChild(newEntry);
 
-    // الجزء الجديد
     if (data) {
         newEntry.querySelector('.education-degree').value = data.degree || '';
         newEntry.querySelector('.education-institution').value = data.institution || '';
@@ -3069,7 +3069,7 @@ function addSkillField(data = null) {
     const newEntry = document.createElement('div');
     newEntry.className = 'skill-entry border p-2 mb-2 rounded position-relative';
 
-    // قسم لإدخال اسم المهارة والمستوى
+    // --- ⭐ تعديل شامل لاستخدام كائن الترجمة ---
     newEntry.innerHTML = `
         <button type="button" class="remove-field" onclick="removeField(this)">&times;</button>
         <div class="row">
@@ -3089,7 +3089,6 @@ function addSkillField(data = null) {
     `;
     skillsInput.appendChild(newEntry);
 
-    // للتوافق مع البيانات القديمة (اختياري)
     if (data) {
         newEntry.querySelector('.skill-item-input').value = data.name || (typeof data === 'string' ? data : '');
         if(data.level) newEntry.querySelector('.skill-level-select').value = data.level;
@@ -3165,24 +3164,24 @@ function addLanguageField(data = null) {
     if (!languagesInput) return;
     const newEntry = document.createElement('div');
     newEntry.className = 'language-entry';
+    // --- ⭐ تعديل: استخدام كائن الترجمة مباشرة ---
     newEntry.innerHTML = `
         <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
         <input type="text" placeholder="${translations[currentLang]['Enter a language'] || 'Enter a language'}" class="language-item-input" oninput="generateCV(cvContainer); updateProgress()">
     `;
     languagesInput.appendChild(newEntry);
     
-    // الجزء الجديد
     if (data) {
         newEntry.querySelector('.language-item-input').value = data || '';
     }
 }
-
 
 function addReferenceField(data = null) {
     const referencesInput = document.getElementById('references-input');
     if (!referencesInput) return;
     const newEntry = document.createElement('div');
     newEntry.className = 'reference-entry';
+    // --- ⭐ تعديل: استخدام كائن الترجمة مباشرة ---
     newEntry.innerHTML = `
         <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
         <input type="text" placeholder="${translations[currentLang]['Name'] || 'Name'}" class="reference-name" oninput="generateCV(cvContainer); updateProgress()">
@@ -3192,7 +3191,6 @@ function addReferenceField(data = null) {
     `;
     referencesInput.appendChild(newEntry);
 
-    // الجزء الجديد
     if (data) {
         newEntry.querySelector('.reference-name').value = data.name || '';
         newEntry.querySelector('.reference-position').value = data.position || '';
@@ -3537,6 +3535,7 @@ function populateWithTestData() {
     generateCV(cvContainer);
     updateProgress();
 }
+
 
 
 
