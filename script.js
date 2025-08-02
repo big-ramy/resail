@@ -2610,15 +2610,17 @@ function getSelectedTemplateCss() {
 /**
  * =========================================================================
  * == الدالة النهائية والشاملة التي تعالج كل مشاكل الطباعة بالجافا سكريبت ==
- * (النسخة النهائية مع نظام الألوان الذكي المحدث)
+ * (النسخة النهائية مع نظام الألوان الذكي المحدث وإصلاح الطباعة)
  * =========================================================================
  * @param {boolean} isPaid - هل النسخة مدفوعة وبدون علامة مائية
  * @returns {Promise<Object|null>} - كائن يحتوي على بيانات الـ PDF أو null
  */
-// قم بنسخ هذه الدالة الجديدة بالكامل واستبدل بها الدالة القديمة في script.js
 async function generatePdfFromNode(isPaid) {
     toggleLoadingOverlay(true, 'Preparing perfect layout...');
     try {
+        const cvPreviewElement = document.getElementById('cv-container');
+        if (!cvPreviewElement) throw new Error("CV container not found.");
+
         const tempContainer = document.createElement('div');
         generateCV(tempContainer);
         const finalHtml = tempContainer.innerHTML;
@@ -2628,9 +2630,14 @@ async function generatePdfFromNode(isPaid) {
         const cvData = collectCvData();
         const direction = cvData.language === 'ar' ? 'rtl' : 'ltr';
 
-        // === التعديل الرئيسي هنا: استدعاء الدالة الموحدة ===
+        // ---  ⭐ بداية التعديل الجوهري: التقاط الأنماط الديناميكية  ---
+        // 1. قراءة متغيرات الألوان من لوحة التحكم
         const colorVariablesCSS = getColorVariablesAsCssText();
-        // ===================================================
+        // 2. قراءة متغيرات الأحجام والأنماط المطبقة مباشرة على العنصر
+        const dynamicStylesFromElement = cvPreviewElement.style.cssText;
+        // 3. دمج الأنماط الديناميكية مع متغيرات الألوان في قاعدة CSS واحدة
+        const dynamicStyleRule = `#cv-container { ${dynamicStylesFromElement} }`;
+        // ---  ⭐ نهاية التعديل الجوهري  ---
 
         const isArabic = currentLang === 'ar';
         const nameFont = document.getElementById('font-selector-name')?.value || (isArabic ? "'Cairo', sans-serif" : "'Playfair Display', serif");
@@ -2639,6 +2646,8 @@ async function generatePdfFromNode(isPaid) {
 
         const printCssOverrides = `
             ${colorVariablesCSS}
+            ${dynamicStyleRule} /* <<< إضافة الأنماط الديناميكية هنا */
+
             html, body { margin: 0 !important; padding: 0 !important; background: white !important; font-size: 10pt; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             #cv-container { margin: 0 !important; box-shadow: none !important; border: none !important; }
             .professional-layout { grid-template-rows: auto !important; }
@@ -2656,7 +2665,6 @@ async function generatePdfFromNode(isPaid) {
                 padding-top: 15mm !important;
             }
             
-            /* === إصلاح العلامة المائية لتثبيتها على كل الصفحات === */
             #cv-container.watermarked::before {
                 position: fixed !important; 
                 top: 50% !important; left: 50% !important;
@@ -2675,7 +2683,7 @@ async function generatePdfFromNode(isPaid) {
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
                 <link rel="preconnect" href="https://fonts.googleapis.com">
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-                <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Cairo:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+                <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Cairo:wght@400;700&family=Tajawal:wght@400;700&family=Amiri:wght@400;700&family=Lalezar&family=Markazi+Text:wght@400;700&family=Roboto:wght@400;700&family=Lato:wght@400;700&family=Montserrat:wght@400;700&family=Open+Sans:wght@400;700&family=PT+Sans:wght@400;700&family=Playfair+Display:wght@400;700&family=Noto+Serif:wght@400;700&display=swap" rel="stylesheet">
                 <style>
                     ${mainCssText}
                     ${printCssOverrides}
@@ -2713,7 +2721,6 @@ async function generatePdfFromNode(isPaid) {
         toggleLoadingOverlay(false);
     }
 }
-
 /**
  * دالة مساعدة تأخذ الـ HTML النهائي وترسله للخادم.
  * @param {string} finalHtml - كود HTML للعنصر الجاهز للطباعة.
@@ -3512,3 +3519,4 @@ function populateWithTestData() {
     generateCV(cvContainer);
     updateProgress();
 }
+
