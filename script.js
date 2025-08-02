@@ -1271,7 +1271,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function addCustomSection() {
-    // --- بداية التعديل: التأكد من وجود حاوية رئيسية ---
     let customSectionsContainer = document.getElementById('custom-sections-container');
     if (!customSectionsContainer) {
         customSectionsContainer = document.createElement('div');
@@ -1279,13 +1278,13 @@ function addCustomSection() {
         const formNavigationButtons = document.getElementById('form-navigation-buttons');
         formNavigationButtons.parentNode.insertBefore(customSectionsContainer, formNavigationButtons);
     }
-    // --- نهاية التعديل ---
 
     const sectionWrapper = document.createElement('div');
     sectionWrapper.className = 'custom-section-wrapper mb-3 p-3 border rounded';
 
     const titleInput = document.createElement('input');
     titleInput.type = 'text';
+    // ⭐ يستخدم القاموس مباشرة
     titleInput.placeholder = translations[currentLang]['custom_section_placeholder'];
     titleInput.className = 'form-control form-control-lg mb-2 custom-section-title';
     titleInput.oninput = () => generateCV(document.getElementById('cv-container'));
@@ -1299,10 +1298,12 @@ function addCustomSection() {
     const addSubSectionButton = document.createElement('button');
     addSubSectionButton.type = 'button';
     addSubSectionButton.className = 'btn btn-sm btn-outline-primary me-2';
+    // ⭐ يستخدم القاموس مباشرة
     addSubSectionButton.innerHTML = translations[currentLang]['add_subsection_btn'];
     addSubSectionButton.onclick = function() {
         const subSectionEntry = document.createElement('div');
         subSectionEntry.className = 'custom-subsection-entry border p-2 mb-2 rounded position-relative';
+        // ⭐ يستخدم القاموس مباشرة لكل النصوص الداخلية
         subSectionEntry.innerHTML = `
             <button type="button" class="remove-field" onclick="this.parentElement.remove(); generateCV(document.getElementById('cv-container'));" title="${translations[currentLang]['remove_subsection_title']}">&times;</button>
             <input type="text" class="form-control mb-2 custom-subsection-title" placeholder="${translations[currentLang]['subsection_title_placeholder']}" oninput="generateCV(document.getElementById('cv-container'));">
@@ -1314,6 +1315,7 @@ function addCustomSection() {
     const removeSectionButton = document.createElement('button');
     removeSectionButton.type = 'button';
     removeSectionButton.className = 'btn btn-sm btn-danger';
+    // ⭐ يستخدم القاموس مباشرة
     removeSectionButton.textContent = translations[currentLang]['remove_section_btn'];
     removeSectionButton.onclick = function() {
         if (confirm(translations[currentLang]['confirm_delete_section'])) {
@@ -1329,15 +1331,10 @@ function addCustomSection() {
     sectionWrapper.appendChild(subSectionsContainer);
     sectionWrapper.appendChild(buttonContainer);
     
-    // --- تعديل: الإضافة دائمًا داخل الحاوية الجديدة ---
     customSectionsContainer.appendChild(sectionWrapper);
-
     addSubSectionButton.click();
-    
     sectionWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
 }
-
 
 function updateTemplateImageSources() {
     const templateImages = document.querySelectorAll('.template-preview');
@@ -3535,6 +3532,7 @@ function populateWithTestData() {
     generateCV(cvContainer);
     updateProgress();
 }
+
 
 
 
