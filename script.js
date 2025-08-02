@@ -36,7 +36,18 @@ const translations = {
         "Intermediate": "متوسط",
         "Advanced": "متقدم",
         "Expert": "خبير",
-
+        "accordion_image_controls": "🖼️ التحكم بالصورة الشخصية",
+        "image_size_label": "حجم الصورة",
+        "image_radius_label": "شكل الإطار (Radius)",
+        "accordion_font_controls": "✒️ التحكم بالخطوط",
+        "accordion_size_controls": "📏 التحكم بأحجام النصوص",
+        "name_size_label": "حجم الاسم",
+        "title_size_label": "حجم المسمى الوظيفي",
+        "contact_size_label": "حجم معلومات الاتصال",
+        "section_title_size_label": "حجم عناوين الأقسام",
+        "subsection_title_size_label": "حجم العناوين الفرعية",
+        "body_text_size_label": "حجم النص الأساسي",
+        "accordion_color_controls": "🎨 التحكم بالألوان",
         "select_name_font_label": "خط الاسم الرئيسي:",
         "select_headings_font_label": "خط العناوين:",
         "select_body_font_label": "خط النص الأساسي:",
@@ -348,7 +359,19 @@ const translations = {
         "Intermediate": "Intermediate",
         "Advanced": "Advanced",
         "Expert": "Expert",
-
+        
+        "accordion_image_controls": "🖼️ Profile Picture Controls",
+        "image_size_label": "Image Size",
+        "image_radius_label": "Frame Shape (Radius)",
+        "accordion_font_controls": "✒️ Font Controls",
+        "accordion_size_controls": "📏 Text Size Controls",
+        "name_size_label": "Name Size",
+        "title_size_label": "Job Title Size",
+        "contact_size_label": "Contact Info Size",
+        "section_title_size_label": "Section Titles Size",
+        "subsection_title_size_label": "Subsection Titles Size",
+        "body_text_size_label": "Body Text Size",
+        "accordion_color_controls": "🎨 Color Controls",
         "select_name_font_label": "Main Name Font:",
         "select_headings_font_label": "Headings Font:",
         "select_body_font_label": "Body Text Font:",
@@ -3519,4 +3542,5 @@ function populateWithTestData() {
     generateCV(cvContainer);
     updateProgress();
 }
+
 
