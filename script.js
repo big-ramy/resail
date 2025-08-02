@@ -1284,7 +1284,6 @@ function addCustomSection() {
 
     const titleInput = document.createElement('input');
     titleInput.type = 'text';
-    // ⭐ يستخدم القاموس مباشرة
     titleInput.placeholder = translations[currentLang]['custom_section_placeholder'];
     titleInput.className = 'form-control form-control-lg mb-2 custom-section-title';
     titleInput.oninput = () => generateCV(document.getElementById('cv-container'));
@@ -1298,24 +1297,41 @@ function addCustomSection() {
     const addSubSectionButton = document.createElement('button');
     addSubSectionButton.type = 'button';
     addSubSectionButton.className = 'btn btn-sm btn-outline-primary me-2';
-    // ⭐ يستخدم القاموس مباشرة
     addSubSectionButton.innerHTML = translations[currentLang]['add_subsection_btn'];
+    
+    // --- تعديل: بناء العناصر الفرعية برمجياً أيضاً ---
     addSubSectionButton.onclick = function() {
         const subSectionEntry = document.createElement('div');
         subSectionEntry.className = 'custom-subsection-entry border p-2 mb-2 rounded position-relative';
-        // ⭐ يستخدم القاموس مباشرة لكل النصوص الداخلية
-        subSectionEntry.innerHTML = `
-            <button type="button" class="remove-field" onclick="this.parentElement.remove(); generateCV(document.getElementById('cv-container'));" title="${translations[currentLang]['remove_subsection_title']}">&times;</button>
-            <input type="text" class="form-control mb-2 custom-subsection-title" placeholder="${translations[currentLang]['subsection_title_placeholder']}" oninput="generateCV(document.getElementById('cv-container'));">
-            <textarea class="form-control custom-subsection-description" placeholder="${translations[currentLang]['subsection_desc_placeholder']}" rows="3" oninput="generateCV(document.getElementById('cv-container'));"></textarea>
-        `;
+
+        const removeSubButton = document.createElement('button');
+        removeSubButton.type = 'button';
+        removeSubButton.className = 'remove-field';
+        removeSubButton.innerHTML = '&times;';
+        removeSubButton.title = translations[currentLang]['remove_subsection_title'];
+        removeSubButton.onclick = () => { subSectionEntry.remove(); generateCV(document.getElementById('cv-container')); };
+
+        const subTitleInput = document.createElement('input');
+        subTitleInput.type = 'text';
+        subTitleInput.className = 'form-control mb-2 custom-subsection-title';
+        subTitleInput.placeholder = translations[currentLang]['subsection_title_placeholder'];
+        subTitleInput.oninput = () => generateCV(document.getElementById('cv-container'));
+
+        const subDescriptionTextarea = document.createElement('textarea');
+        subDescriptionTextarea.className = 'form-control custom-subsection-description';
+        subDescriptionTextarea.placeholder = translations[currentLang]['subsection_desc_placeholder'];
+        subDescriptionTextarea.rows = 3;
+        subDescriptionTextarea.oninput = () => generateCV(document.getElementById('cv-container'));
+
+        subSectionEntry.appendChild(removeSubButton);
+        subSectionEntry.appendChild(subTitleInput);
+        subSectionEntry.appendChild(subDescriptionTextarea);
         subSectionsContainer.appendChild(subSectionEntry);
     };
 
     const removeSectionButton = document.createElement('button');
     removeSectionButton.type = 'button';
     removeSectionButton.className = 'btn btn-sm btn-danger';
-    // ⭐ يستخدم القاموس مباشرة
     removeSectionButton.textContent = translations[currentLang]['remove_section_btn'];
     removeSectionButton.onclick = function() {
         if (confirm(translations[currentLang]['confirm_delete_section'])) {
@@ -3063,35 +3079,63 @@ function addEducationField(data = null) {
 function addSkillField(data = null) {
     const skillsInput = document.getElementById('skills-input');
     if (!skillsInput) return;
+
+    // --- إنشاء العناصر برمجياً (الطريقة الجديدة) ---
     const newEntry = document.createElement('div');
     newEntry.className = 'skill-entry border p-2 mb-2 rounded position-relative';
 
-    // --- ⭐ تعديل شامل لاستخدام كائن الترجمة ---
-    newEntry.innerHTML = `
-        <button type="button" class="remove-field" onclick="removeField(this)">&times;</button>
-        <div class="row">
-            <div class="col-md-6">
-                <input type="text" class="form-control skill-item-input" placeholder="${translations[currentLang]['Enter a skill'] || 'Enter a skill'}" oninput="generateCV(cvContainer); updateProgress()">
-            </div>
-            <div class="col-md-6">
-                <select class="form-select skill-level-select" onchange="generateCV(cvContainer); updateProgress()">
-                    <option value="0">${translations[currentLang]['Select Level'] || 'Select Level'}</option>
-                    <option value="30%">${translations[currentLang]['Beginner'] || 'Beginner'}</option>
-                    <option value="50%">${translations[currentLang]['Intermediate'] || 'Intermediate'}</option>
-                    <option value="75%">${translations[currentLang]['Advanced'] || 'Advanced'}</option>
-                    <option value="100%">${translations[currentLang]['Expert'] || 'Expert'}</option>
-                </select>
-            </div>
-        </div>
-    `;
+    const removeButton = document.createElement('button');
+    removeButton.type = 'button';
+    removeButton.className = 'remove-field';
+    removeButton.innerHTML = '&times;';
+    removeButton.onclick = () => removeField(removeButton);
+
+    const row = document.createElement('div');
+    row.className = 'row';
+
+    const col1 = document.createElement('div');
+    col1.className = 'col-md-6';
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.className = 'form-control skill-item-input';
+    nameInput.placeholder = translations[currentLang]['Enter a skill'] || 'Enter a skill';
+    nameInput.oninput = () => { generateCV(cvContainer); updateProgress(); };
+    col1.appendChild(nameInput);
+
+    const col2 = document.createElement('div');
+    col2.className = 'col-md-6';
+    const levelSelect = document.createElement('select');
+    levelSelect.className = 'form-select skill-level-select';
+    levelSelect.onchange = () => { generateCV(cvContainer); updateProgress(); };
+    
+    // إضافة خيارات القائمة المنسدلة مع الترجمة
+    const levels = {
+        '0': 'Select Level',
+        '30%': 'Beginner',
+        '50%': 'Intermediate',
+        '75%': 'Advanced',
+        '100%': 'Expert'
+    };
+    for (const [value, key] of Object.entries(levels)) {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = translations[currentLang][key] || key;
+        levelSelect.appendChild(option);
+    }
+    col2.appendChild(levelSelect);
+
+    row.appendChild(col1);
+    row.appendChild(col2);
+    newEntry.appendChild(removeButton);
+    newEntry.appendChild(row);
     skillsInput.appendChild(newEntry);
 
+    // ملء البيانات إذا كانت موجودة (للاسترجاع من الذاكرة)
     if (data) {
-        newEntry.querySelector('.skill-item-input').value = data.name || (typeof data === 'string' ? data : '');
-        if(data.level) newEntry.querySelector('.skill-level-select').value = data.level;
+        nameInput.value = data.name || (typeof data === 'string' ? data : '');
+        if (data.level) levelSelect.value = data.level;
     }
 }
-
 // ولا تنس تعديل دالة جلب بيانات المهارات لتقرأ المستوى أيضاً
 function getSkillsData() {
     const skills = [];
@@ -3532,6 +3576,7 @@ function populateWithTestData() {
     generateCV(cvContainer);
     updateProgress();
 }
+
 
 
 
