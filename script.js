@@ -692,19 +692,17 @@ function setupLanguageToggle() {
     const langToggleButton = document.getElementById('lang-toggle-btn');
     if (!langToggleButton) return;
 
-    // النص على الزر يجب أن يعرض اللغة التي يمكنك التحويل إليها
     if (currentLang === 'ar') {
-        langToggleButton.textContent = translations['en']['English'] || 'English';
+        // إذا كانت الصفحة الحالية عربية، يجب أن يحول الزر إلى الإنجليزية
+        langToggleButton.textContent = 'English';
+        langToggleButton.href = 'en.html';
+        langToggleButton.onclick = () => setUserLanguage('en');
     } else {
-        langToggleButton.textContent = translations['ar']['English'] || 'العربية';
+        // إذا كانت الصفحة الحالية إنجليزية، يجب أن يحول الزر إلى العربية
+        langToggleButton.textContent = 'العربية';
+        langToggleButton.href = 'index.html';
+        langToggleButton.onclick = () => setUserLanguage('ar');
     }
-
-    // ⭐ يجب أن يقوم الزر فقط باستدعاء دالة تبديل اللغة
-    langToggleButton.href = '#'; // لمنع القفز لأعلى الصفحة
-    langToggleButton.onclick = (e) => {
-        e.preventDefault(); // لمنع القفز لأعلى الصفحة
-        toggleLanguage();
-    };
 }
 
 /**
@@ -1377,18 +1375,33 @@ function updateTemplateImageSources() {
  * وتتجاهل لغة المتصفح تمامًا لتجنب إعادة التوجيه التلقائي.
  */
 function setInitialLanguage() {
-    // 1. حاول الحصول على اللغة من ذاكرة الجلسة أولاً
-    const savedLang = sessionStorage.getItem('userLang');
+    const userChosenLang = sessionStorage.getItem('userLang');
+    const path = window.location.pathname;
 
-    if (savedLang) {
-        // إذا وجدنا لغة محفوظة، استخدمها
-        currentLang = savedLang;
-    } else {
-        // 2. إذا لم نجد أي شيء، اجعل العربية هي اللغة الافتراضية
-        currentLang = 'ar';
-        // واحفظ هذا الاختيار الافتراضي للجلسة الحالية
-        sessionStorage.setItem('userLang', 'ar');
+    // 1. إذا كان المستخدم قد اختار لغة بالفعل (من الزر مثلاً)، استخدمها فورًا
+    if (userChosenLang) {
+        currentLang = userChosenLang;
+        return;
     }
+
+    // 2. تحديد اللغة بناءً على الـ URL الحالي فقط
+    // إذا كانت الصفحة تنتهي بـ 'en.html'، تكون اللغة إنجليزية
+    if (path.endsWith('en.html')) {
+        currentLang = 'en';
+    }
+    // إذا كانت الصفحة هي الصفحة الرئيسية (index.html أو المسار الجذري '/'), تكون اللغة عربية
+    else if (path.endsWith('index.html') || path.endsWith('/')) {
+        currentLang = 'ar';
+    }
+    // في أي حالة أخرى (مثلاً، إذا كان URL غير متوقع)، اجعل اللغة عربية كافتراضي
+    else {
+        currentLang = 'ar';
+    }
+
+    // 3. (اختياري) إذا كنت تريد حفظ هذه اللغة الافتراضية في sessionStorage
+    // لمنع إعادة الحساب عند كل تحميل للصفحة لنفس الجلسة
+    sessionStorage.setItem('userLang', currentLang);
+
     console.log(`[setInitialLanguage] Language set to: ${currentLang}`);
 }
 
@@ -1577,15 +1590,8 @@ function showPage(pageId) {
 }
 
 function toggleLanguage() {
-    // قم بتبديل اللغة
     currentLang = currentLang === 'ar' ? 'en' : 'ar';
-    
-    // ⭐ أهم خطوة: احفظ اختيارك الجديد في ذاكرة الجلسة
-    sessionStorage.setItem('userLang', currentLang);
-
-    console.log(`[toggleLanguage] Language toggled and saved to: ${currentLang}`);
-    
-    // قم بتحديث الواجهة بالكامل
+    console.log(`[toggleLanguage] Language toggled to: ${currentLang}`);
     updateLanguage();
     updateCounters(); 
     if (cvContainer && (document.getElementById('cv-preview-page').classList.contains('active-page') ||
@@ -1594,6 +1600,7 @@ function toggleLanguage() {
         generateCV(cvContainer);
     }
 }
+
 function updateLanguage() {
     const isArabic = currentLang === 'ar';
     document.documentElement.lang = currentLang;
@@ -3569,8 +3576,6 @@ function populateWithTestData() {
     generateCV(cvContainer);
     updateProgress();
 }
-
-
 
 
 
