@@ -2269,144 +2269,138 @@ html[dir="ltr"] .gradient-toggle-wrapper .form-check-input {
 
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
-            <a class="navbar-brand" href="#" data-translate="brand-name"></a>
-            <button
-                class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarNav"
-                aria-controls="navbarNav"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-            >
+            <a class="navbar-brand" href="#" data-ar="رسائل" data-en="Resail">رسائل</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#" onclick="showPage('landing-page')" data-translate="home-link"></a>
+                        <a class="nav-link active" aria-current="page" href="#" onclick="showPage('landing-page')" data-ar="الرئيسية" data-en="Home">الرئيسية</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#why-resail" data-translate="features-link"></a>
+                        <a class="nav-link" href="#why-resail" data-ar="المميزات" data-en="Features">المميزات</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a
-                            class="nav-link dropdown-toggle"
-                            href="#"
-                            id="navbarDropdown"
-                            role="button"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                            data-translate="products-link"
-                        >
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-ar="المنتجات" data-en="Products">
+                            المنتجات
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="https://big-ramy.github.io/whatsapp-sender-/" data-translate="product-basic"></a></li>
-                             <li><a class="dropdown-item" href="#" onclick="showPage('cv-data-entry-page')" data-translate="product-cv"></a></li>
+                            <li><a class="dropdown-item" href="https://big-ramy.github.io/whatsapp-sender-/" data-ar="ارسال واتساب" data-en="WhatsApp Sender">ارسال واتساب</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="showPage('cv-data-entry-page')" data-ar="إنشاء سيرة ذاتية" data-en="Create CV">إنشاء سيرة ذاتية</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#about-us" data-translate="about-link"></a>
+                        <a class="nav-link" href="#about-us" data-ar="عنا" data-en="About Us">عنا</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#contact" data-translate="contact-link"></a>
+                        <a class="nav-link" href="#contact" data-ar="اتصل بنا" data-en="Contact Us">اتصل بنا</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link language-toggle" id="lang-toggle-btn"></a>
                     </li>
                 </ul>
-            </div>  
+            </div>
         </div>
     </nav>
 
     <div id="promo-bar" class="promo-bar">
-        <p data-translate="promo_bar_text"></p>
+        <p data-ar="عرض خاص! استخدم كود <span class='blinking-code'>FIRSTBUY</span> لخصم 25% أو كود <span class='blinking-code'>SAVE10</span> لخصم 10%!" data-en="Special Offer! Use code <span class='blinking-code'>FIRSTBUY</span> for a 25% discount or code <span class='blinking-code'>SAVE10</span> for a 10% discount!">
+            عرض خاص! استخدم كود <span class="blinking-code">FIRSTBUY</span> لخصم 25% أو كود <span class="blinking-code">SAVE10</span> لخصم 10%!
+        </p>
     </div>
 
     <header class="site-header">
         <div class="header-background"></div>
         <div class="header-content">
-            <h1 class="display-4" data-translate="Professional CV Builder_header"></h1>
-            <p class="lead" data-translate="Create a professional CV that stands out and gets you hired."></p>
-            <button class="btn btn-primary btn-lg mt-3" id="create-cv-button" onclick="showPage('cv-data-entry-page')" data-translate="Create Your CV Now"></button>
+            <h1 class="display-4" data-ar="أنشئ سيرتك الذاتية الاحترافية بسهولة" data-en="Professional CV Builder">أنشئ سيرتك الذاتية الاحترافية بسهولة</h1>
+            <p class="lead" data-ar="ابرز مهاراتك وخبراتك بتصميم احترافي يلفت الانتباه ويفتح لك أبواب الفرص." data-en="Create a professional CV that stands out and gets you hired.">ابرز مهاراتك وخبراتك بتصميم احترافي يلفت الانتباه ويفتح لك أبواب الفرص.</p>
+            <button class="btn btn-primary btn-lg mt-3" id="create-cv-button" onclick="showPage('cv-data-entry-page')" data-ar="ابدأ في إنشاء سيرتك الذاتية الآن" data-en="Create Your CV Now">ابدأ في إنشاء سيرتك الذاتية الآن</button>
         </div>
     </header>
 
     <div id="loading-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 10000; justify-content: center; align-items: center; flex-direction: column; text-align: center;">
         <div class="spinner-border text-light" role="status" style="width: 3rem; height: 3rem;"></div>
-        <p style="color: white; margin-top: 15px; font-size: 1.2em;" data-translate-id="loading-cv-text"></p>
+        <p style="color: white; margin-top: 15px; font-size: 1.2em;" data-ar="جاري إنشاء السيرة الذاتية، يرجى الانتظار..." data-en="Generating CV, please wait...">جاري إنشاء السيرة الذاتية، يرجى الانتظار...</p>
     </div>
 
     <div id="main-content-area">
         <div id="landing-page" class="page-section active-page">
             <section class="py-5 text-center">
                 <div class="container">
-                    <h1 class="display-5 fw-bold" data-translate="create-cv-in-minutes-title"></h1>
-                    <p class="lead my-4" data-translate="resail-design-intro"></p>
-                    <h2 class="h3 mb-4" data-translate="ideal-cv-maker-subtitle"></h2>
+                    <h1 class="display-5 fw-bold" data-ar="أنشئ سيرتك الذاتية الاحترافية في دقائق" data-en="Create Your Professional CV in Minutes">أنشئ سيرتك الذاتية الاحترافية في دقائق</h1>
+                    <p class="lead my-4" data-ar="مع 'رسائل'، يمكنك تصميم سيرة ذاتية مميزة تفتح لك أبواب الفرص. اختر من مجموعة واسعة من القوالب المصممة بعناية لتناسب كل مجال وظيفي." data-en="With 'Resail', you can design a standout CV that opens doors to opportunities. Choose from a wide range of templates carefully designed for every career field.">
+                        مع "رسائل"، يمكنك تصميم سيرة ذاتية مميزة تفتح لك أبواب الفرص. اختر من مجموعة واسعة من القوالب المصممة بعناية لتناسب كل مجال وظيفي.
+                    </p>
+
+                    <h2 class="h3 mb-4" data-ar="أفضل أداة لإنشاء السيرة الذاتية لمسيرتك المهنية" data-en="The Ideal CV Maker for Your Career">أفضل أداة لإنشاء السيرة الذاتية لمسيرتك المهنية</h2>
+                    
                     <div class="row text-center">
                         <div class="col-md-4">
-                            <h3 class="h5" data-translate="feature-ease-of-use"></h3>
-                            <p data-translate="feature-ease-of-use-desc"></p>
+                            <h3 class="h5" data-ar="سهولة الاستخدام" data-en="Ease of Use">سهولة الاستخدام</h3>
+                            <p data-ar="واجهة بديهية تسمح لك بإنشاء سيرتك الذاتية دون أي عناء أو خبرة سابقة في التصميم." data-en="An intuitive interface that allows you to create your CV effortlessly, with no prior design experience needed.">واجهة بديهية تسمح لك بإنشاء سيرتك الذاتية دون أي عناء أو خبرة سابقة في التصميم.</p>
                         </div>
                         <div class="col-md-4">
-                            <h3 class="h5" data-translate="feature-prof-templates"></h3>
-                            <p data-translate="feature-prof-templates-desc"></p>
+                            <h3 class="h5" data-ar="نماذج احترافية" data-en="Professional Templates">نماذج احترافية</h3>
+                            <p data-ar="مجموعة متنوعة من نماذج السيرة الذاتية العصرية والجذابة التي صممها خبراء التوظيف لضمان أفضل انطباع." data-en="A diverse collection of modern and attractive templates designed by recruitment experts to ensure the best impression.">مجموعة متنوعة من نماذج السيرة الذاتية العصرية والجذابة التي صممها خبراء التوظيف لضمان أفضل انطباع.</p>
                         </div>
                         <div class="col-md-4">
-                            <h3 class="h5" data-translate="feature-instant-results"></h3>
-                            <p data-translate="feature-instant-results-desc"></p>
-                        </div>
+                            <h3 class="h5" data-ar="نتائج فورية" data-en="Instant Results">نتائج فورية</h3>
+                            <p data-ar="احصل على سيرة ذاتية جاهزة للتقديم في غضون دقائق، وخصصها لتناسب الوظيفة التي تتقدم لها." data-en="Get your CV ready for submission in minutes, and customize it to fit the job you're applying for.">احصل على سيرة ذاتية جاهزة للتقديم في غضون دقائق، وخصصها لتناسب الوظيفة التي تتقدم لها.</p>
+                        </div>  
                     </div>
-                    <h2 class="h3 mt-5" data-translate="goto-builder-title"></h2>
-                    <p data-translate="goto-builder-desc"></p>
+
+                    <h2 class="h3 mt-5" data-ar="موقعك المفضل لعمل CV احترافي" data-en="Your Go-To CV and Resume Builder">موقعك المفضل لعمل CV احترافي</h2>
+                    <p data-ar="سواء كنت تبحث عن <strong>أداة إنشاء سيرة ذاتية</strong> بسيطة، أو <strong>موقع لعمل CV احترافي</strong>، أو <strong>برنامج تصميم سيرة ذاتية</strong>، فإن &quot;رسائل&quot; هو خيارك الأفضل. نقدم لك تجربة متكاملة لتصميم <strong>نماذج سيرة ذاتية</strong> عصرية، ومساعدتك في كتابة <strong>سيرة ذاتية قوية</strong> وفعالة." data-en="Whether you're looking for a simple <strong>CV maker</strong>, a <strong>professional resume builder</strong>, or <strong>CV design software</strong>, 'Resail' is your best choice. We provide a comprehensive experience for designing <strong>modern CV templates</strong> and helping you write a <strong>powerful and effective resume</strong>.">
+                        سواء كنت تبحث عن <strong>أداة إنشاء سيرة ذاتية</strong> بسيطة، أو <strong>موقع لعمل CV احترافي</strong>، أو <strong>برنامج تصميم سيرة ذاتية</strong>، فإن "رسائل" هو خيارك الأفضل. نقدم لك تجربة متكاملة لتصميم <strong>نماذج سيرة ذاتية</strong> عصرية، ومساعدتك في كتابة <strong>سيرة ذاتية قوية</strong> وفعالة.
+                    </p>
                 </div>
             </section>
 
             <section id="why-resail" class="py-5">
                 <div class="container">
-                    <h2 class="text-center mb-5" data-translate="why-resail-title"></h2>
+                    <h2 class="text-center mb-5" data-ar="لماذا نظام رسائل لإنشاء السيرة الذاتية؟" data-en="Why Resail CV Builder?">لماذا نظام رسائل لإنشاء السيرة الذاتية؟</h2>
                     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                         <div class="col">
                             <div class="feature-card">
                                 <img src="ChatGPT Image May 16, 2025, 04_59_21 AM.png.webp" alt="Easy Data Entry" class="feature-icon mb-3" loading="lazy">
-                                <h3 data-translate="Easy Data Entry"></h3>
-                                <p data-translate="feature-easy-data-entry-desc"></p>
+                                <h3 data-ar="سهولة إدخال البيانات" data-en="Easy Data Entry">سهولة إدخال البيانات</h3>
+                                <p data-ar="نماذج سهلة وبديهية لملء جميع بياناتك بسرعة ويسر." data-en="Intuitive forms to quickly fill in all your information.">نماذج سهلة وبديهية لملء جميع بياناتك بسرعة ويسر.</p>
                             </div>
                         </div>
                         <div class="col">
                             <div class="feature-card">
                                 <img src="ChatGPT Image May 16, 2025, 04_58_25 AM.png.webp" alt="Professional Templates" class="feature-icon mb-3" loading="lazy">
-                                <h3 data-translate="Diverse and Professional Templates"></h3>
-                                <p data-translate="feature-prof-templates-desc-2"></p>
+                                <h3 data-ar="قوالب متنوعة واحترافية" data-en="Diverse and Professional Templates">قوالب متنوعة واحترافية</h3>
+                                <p data-ar="اختر من بين العديد من التصميمات العصرية والجذابة لتناسب ذوقك ومجالك." data-en="Choose from many modern and attractive designs to suit your style and field.">اختر من بين العديد من التصميمات العصرية والجذابة لتناسب ذوقك ومجالك.</p>
                             </div>
                         </div>
                         <div class="col">
                             <div class="feature-card">
                                 <img src="ChatGPT Image May 16, 2025, 04_56_19 AM.png.webp" alt="Arabic/English Support" class="feature-icon mb-3">
-                                <h3 data-translate="Arabic and English Support"></h3>
-                                <p data-translate="feature-lang-support-desc"></p>
+                                <h3 data-ar="دعم كامل للغة العربية والإنجليزية" data-en="Full Arabic and English Support">دعم كامل للغة العربية والإنجليزية</h3>
+                                <p data-ar="أنشئ سيرتك الذاتية بلغتك المفضلة مع ضمان التنسيق الصحيح لكلا الاتجاهين." data-en="Create your CV in your preferred language with guaranteed correct formatting for both directions.">أنشئ سيرتك الذاتية بلغتك المفضلة مع ضمان التنسيق الصحيح لكلا الاتجاهين.</p>
                             </div>
                         </div>
                         <div class="col">
                             <div class="feature-card">
                                 <img src="ChatGPT Image May 16, 2025, 05_09_39 AM.png.webp" alt="Instant Preview" class="feature-icon mb-3" loading="lazy">
-                                <h3 data-translate="Instant Preview"></h3>
-                                <p data-translate="feature-instant-preview-desc"></p>
+                                <h3 data-ar="معاينة فورية" data-en="Instant Preview">معاينة فورية</h3>
+                                <p data-ar="شاهد شكل سيرتك الذاتية فور إدخال البيانات أو اختيار القالب لتضمن المظهر المثالي." data-en="Instantly see how your CV looks as you enter data or choose a template to ensure the perfect appearance.">شاهد شكل سيرتك الذاتية فور إدخال البيانات أو اختيار القالب لتضمن المظهر المثالي.</p>
                             </div>
                         </div>
                         <div class="col">
                             <div class="feature-card">
                                 <img src="ChatGPT Image May 16, 2025, 05_02_19 AM.png.webp" alt="Professional PDF Export" class="feature-icon mb-3" loading="lazy">
-                                <h3 data-translate="Professional PDF Export"></h3>
-                                <p data-translate="feature-pdf-export-desc"></p>
+                                <h3 data-ar="تصدير بصيغة PDF عالية الجودة" data-en="High-Quality PDF Export">تصدير بصيغة PDF عالية الجودة</h3>
+                                <p data-ar="احصل على سيرتك الذاتية النهائية كملف PDF احترافي جاهز للطباعة أو المشاركة عبر الإنترنت." data-en="Get your final CV as a professional PDF file, ready for printing or online sharing.">احصل على سيرتك الذاتية النهائية كملف PDF احترافي جاهز للطباعة أو المشاركة عبر الإنترنت.</p>
                             </div>
                         </div>
                         <div class="col">
                             <div class="feature-card">
                                 <img src="ChatGPT Image May 16, 2025, 05_07_17 AM.png.webp" alt="Flexible Payment Options" class="feature-icon mb-3" loading="lazy">
-                                <h3 data-translate="Flexible Payment Options"></h3>
-                                <p data-translate="feature-payment-desc"></p>
+                                <h3 data-ar="خيارات دفع متنوعة وآمنة" data-en="Various and Secure Payment Options">خيارات دفع متنوعة وآمنة</h3>
+                                <p data-ar="وسائل دفع متعددة تشمل PayPal وخيارات محلية لتسهيل عملية الحصول على سيرتك الذاتية." data-en="Multiple payment methods including PayPal and local options to facilitate getting your CV.">وسائل دفع متعددة تشمل PayPal وخيارات محلية لتسهيل عملية الحصول على سيرتك الذاتية.</p>
                             </div>
                         </div>
                     </div>
@@ -2415,18 +2409,18 @@ html[dir="ltr"] .gradient-toggle-wrapper .form-check-input {
 
             <section id="testimonials" class="py-5 bg-light">
                 <div class="container">
-                    <h2 class="text-center mb-5" data-translate="Customer Testimonials"></h2>
+                    <h2 class="text-center mb-5" data-ar="ماذا قال عملاؤنا عنا؟" data-en="What Our Customers Said About Us">ماذا قال عملاؤنا عنا؟</h2>
                     <div class="row">
                         <div class="col-md-6 mb-4">
                             <div class="testimonial-card">
-                                <p class="lead mb-3" data-translate="testimonial-1-text"></p>
-                                <p class="font-weight-bold" data-translate="- Sarah Ahmed"></p>
+                                <p class="lead mb-3" data-ar="«كانت عملية إنشاء سيرتي الذاتية سهلة وسريعة بشكل لا يصدق. القوالب عصرية واحترافية حقًا. أوصي به بشدة!»" data-en="“Creating my CV was incredibly easy and fast. The templates are truly modern and professional. I highly recommend it!”">«كانت عملية إنشاء سيرتي الذاتية سهلة وسريعة بشكل لا يصدق. القوالب عصرية واحترافية حقًا. أوصي به بشدة!»</p>
+                                <p class="font-weight-bold" data-ar="- سارة أحمد" data-en="- Sarah Ahmed">- سارة أحمد</p>
                             </div>
                         </div>
                         <div class="col-md-6 mb-4">
                             <div class="testimonial-card">
-                                <p class="lead mb-3" data-translate="testimonial-2-text"></p>
-                                <p class="font-weight-bold" data-translate="- Khalid Hassan"></p>
+                                <p class="lead mb-3" data-ar="«أعجبتني حقًا تنوع القوالب وميزة المعاينة الفورية. ساعدني ذلك في اختيار التصميم المثالي لتقديمي.»" data-en="“I really liked the variety of templates and the instant preview feature. It helped me choose the perfect design for my submission.”">«أعجبتني حقًا تنوع القوالب وميزة المعاينة الفورية. ساعدني ذلك في اختيار التصميم المثالي لتقديمي.»</p>
+                                <p class="font-weight-bold" data-ar="- خالد حسن" data-en="- Khalid Hassan">- خالد حسن</p>
                             </div>
                         </div>
                     </div>
@@ -2435,9 +2429,9 @@ html[dir="ltr"] .gradient-toggle-wrapper .form-check-input {
 
             <section id="about-us" class="py-5 bg-light">
                 <div class="container">
-                    <h2 class="text-center mb-4" data-translate="About Resail CV Builder"></h2>
-                    <p class="text-center lead" data-translate="about-us-p1"></p>
-                    <p class="text-center lead" data-translate="about-us-p2"></p>
+                    <h2 class="text-center mb-4" data-ar="عن نظام رسائل لإنشاء السيرة الذاتية" data-en="About Resail CV Builder System">عن نظام رسائل لإنشاء السيرة الذاتية</h2>
+                    <p class="text-center lead" data-ar="رسائل هو نظامك المتكامل لإنشاء سير ذاتية احترافية ومؤثرة بسهولة. نقدم مجموعة واسعة من القوالب العصرية والأدوات البديهية لمساعدتك على التميز في سوق العمل بسيرة ذاتية عالية الجودة بصيغة PDF." data-en="Resail is your integrated system for creating professional and impactful CVs with ease. We offer a wide range of modern templates and intuitive tools to help you stand out in the job market with a high-quality PDF resume.">رسائل هو نظامك المتكامل لإنشاء سير ذاتية احترافية ومؤثرة بسهولة. نقدم مجموعة واسعة من القوالب العصرية والأدوات البديهية لمساعدتك على التميز في سوق العمل بسيرة ذاتية عالية الجودة بصيغة PDF.</p>
+                    <p class="text-center lead" data-ar="تركز خدمتنا على تبسيط عملية إنشاء السيرة الذاتية، وتقديم قوالب متنوعة، وضمان الدعم الكامل للغتين العربية والإنجليزية بتنسيق دقيق. احصل على سيرتك الذاتية بصيغة PDF جاهزة للمشاركة بعد عملية دفع سلسة." data-en="Our service focuses on simplifying the CV creation process, offering diverse templates, and ensuring full support for both Arabic and English languages with accurate formatting. Get your PDF CV ready to share after a seamless payment process.">تركز خدمتنا على تبسيط عملية إنشاء السيرة الذاتية، وتقديم قوالب متنوعة، وضمان الدعم الكامل للغتين العربية والإنجليزية بتنسيق دقيق. احصل على سيرتك الذاتية بصيغة PDF جاهزة للمشاركة بعد عملية دفع سلسة.</p>
                 </div>
             </section>
 
@@ -2445,38 +2439,38 @@ html[dir="ltr"] .gradient-toggle-wrapper .form-check-input {
                 <div class="container text-center">
                     <div class="row">
                         <div class="col-md-6">
-                            <h2 class="mb-3" data-translate="CVs Generated So Far"></h2>
+                            <h2 class="mb-3" data-ar="عدد السير الذاتية التي تم إنشاؤها حتى الآن" data-en="CVs Generated So Far">عدد السير الذاتية التي تم إنشاؤها حتى الآن</h2>
                             <p class="display-4 text-primary font-weight-bold">
-                                <span id="cv-counter-span" data-translate="+٥٠٠٠"></span>
+                                <span id="cv-counter-span" data-ar="+٥٠٠٠" data-en="+5000">+٥٠٠٠</span> 
                             </p>
                         </div>
                         <div class="col-md-6">
-                            <h2 class="mb-3" data-translate="our-visitors-title"></h2>
+                            <h2 class="mb-3" data-ar="زوّارنا" data-en="Our Visitors">زوّارنا</h2>
                             <p class="display-4 text-primary font-weight-bold">
-                                <span id="visitor-counter-span" data-translate="our-visitors-count"></span>
+                                <span id="visitor-counter-span" data-ar="+٢٥٠٠٠" data-en="+25000">+٢٥٠٠٠</span> 
                             </p>
                         </div>
                     </div>
-                    <p class="lead mt-4" data-translate="join-thousands-p"></p>
+                    <p class="lead mt-4" data-ar="انضم إلى آلاف المستخدمين الذين أنشأوا سيرهم الذاتية الاحترافية بنجاح." data-en="Join thousands of users who have successfully created their professional CVs.">انضم إلى آلاف المستخدمين الذين أنشأوا سيرهم الذاتية الاحترافية بنجاح.</p>
                 </div>
             </section>
 
             <section id="faq" class="py-5">
                 <div class="container">
-                    <h2 class="text-center mb-5" data-translate="Frequently Asked Questions"></h2>
+                    <h2 class="text-center mb-5" data-ar="الأسئلة الشائعة" data-en="Frequently Asked Questions">الأسئلة الشائعة</h2>
                     <div class="row justify-content-center">
                         <div class="col-lg-8">
                             <div class="faq-item mb-4 pb-3 border-bottom">
-                                <h4 data-translate="faq-q1"></h4>
-                                <p data-translate="faq-a1"></p>
+                                <h4 data-ar="كيف يمكنني إنشاء سيرة ذاتية؟" data-en="How can I create a CV?">كيف يمكنني إنشاء سيرة ذاتية؟</h4>
+                                <p data-ar="ما عليك سوى النقر على زر 'ابدأ في إنشاء سيرتك الذاتية الآن'، قم بملء بياناتك في النموذج، اختر القالب المناسب، وقم بمعاينة سيرتك الذاتية." data-en="Simply click on the 'Create Your CV Now' button, fill in your data in the form, choose the appropriate template, and preview your CV.">ما عليك سوى النقر على زر 'ابدأ في إنشاء سيرتك الذاتية الآن'، قم بملء بياناتك في النموذج، اختر القالب المناسب، وقم بمعاينة سيرتك الذاتية.</p>
                             </div>
                             <div class="faq-item mb-4 pb-3 border-bottom">
-                                <h4 data-translate="faq-q2"></h4>
-                                <p data-translate="faq-a2"></p>
+                                <h4 data-ar="هل القوالب مجانية؟" data-en="Are the templates free?">هل القوالب مجانية؟</h4>
+                                <p data-ar="نقدم مجموعة متنوعة من القوالب المجانية والمدفوعة. تتطلب القوالب المدفوعة رسماً بسيطاً للتنزيل أو الطباعة." data-en="We offer a variety of free and paid templates. Paid templates require a small fee for download or printing.">نقدم مجموعة متنوعة من القوالب المجانية والمدفوعة. تتطلب القوالب المدفوعة رسماً بسيطاً للتنزيل أو الطباعة.</p>
                             </div>
                             <div class="faq-item mb-4 pb-3 border-bottom">
-                                <h4 data-translate="faq-q3"></h4>
-                                <p data-translate="faq-a3"></p>
+                                <h4 data-ar="كيف يمكنني تنزيل سيرتي الذاتية؟" data-en="How can I download my CV?">كيف يمكنني تنزيل سيرتي الذاتية؟</h4>
+                                <p data-ar="بعد معاينة السيرة الذاتية واختيار القالب، انقر على زر 'طلب تنزيل / طباعة'. سيتم توجيهك لعملية الدفع إذا اخترت قالباً مدفوعاً، وبعدها يمكنك تنزيل الملف بصيغة PDF." data-en="After previewing the CV and selecting the template, click on the 'Request Download / Print' button. You will be directed to the payment process if you chose a paid template, after which you can download the file in PDF format.">بعد معاينة السيرة الذاتية واختيار القالب، انقر على زر 'طلب تنزيل / طباعة'. سيتم توجيهك لعملية الدفع إذا اخترت قالباً مدفوعاً، وبعدها يمكنك تنزيل الملف بصيغة PDF.</p>
                             </div>
                         </div>
                     </div>
@@ -2484,62 +2478,64 @@ html[dir="ltr"] .gradient-toggle-wrapper .form-check-input {
             </section>
 
             <section class="container my-5" id="contact">
-                <h2 class="section-title" data-translate="Contact Us"></h2>
-                <p class="text-center" data-translate="For inquiries or support, please contact us via email: ramyheshamamer@gmail.com"></p>
+                <h2 class="section-title" data-ar="تواصل معنا" data-en="Contact Us">تواصل معنا</h2>
+                <p class="text-center" data-ar="للاستفسارات أو الدعم، تواصل عبر البريد الإلكتروني: <strong><a href='mailto:ramyheshamamer@gmail.com'>ramyheshamamer@gmail.com</a></strong>" data-en="For inquiries or support, contact us via email: <strong><a href='mailto:ramyheshamamer@gmail.com'>ramyheshamamer@gmail.com</a></strong>">
+                    للاستفسارات أو الدعم، تواصل عبر البريد الإلكتروني: <strong><a href="mailto:ramyheshamamer@gmail.com">ramyheshamamer@gmail.com</a></strong>
+                </p>
             </section>
             
             <div id="sales-notification" class="sales-notification">
-                <p><strong id="sales-name"></strong> <span data-translate="from-city"></span> <strong id="sales-city"></strong> <span data-translate="notification-action"></span></p>
+                <p><strong id="sales-name"></strong> <span data-ar="من" data-en="from">من</span> <strong id="sales-city"></strong> <span data-ar="قام للتو بإنشاء سيرته الذاتية!" data-en="just created their CV!">قام للتو بإنشاء سيرته الذاتية!</span></p>
             </div>
         </div>
-<div id="cv-data-entry-page" class="page-section">
+        <div id="cv-data-entry-page" class="page-section">
             <div class="container py-4">
-                <h2 class="mb-4 text-center" data-translate="Enter Your Information"></h2>
+                <h2 class="mb-4 text-center" data-ar="أدخل بياناتك" data-en="Enter Your Information">أدخل بياناتك</h2>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="name-input" data-translate="Full Name"></label>
-                            <input type="text" id="name-input" data-translate-placeholder="Enter your name" oninput="generateCV(cvContainer); updateProgress()">
+                            <label for="name-input" data-ar="الاسم" data-en="Full Name">الاسم</label>
+                            <input type="text" id="name-input" placeholder="أدخل اسمك" data-ar-placeholder="أدخل اسمك" data-en-placeholder="Enter your name" oninput="generateCV(cvContainer); updateProgress()">
                         </div>
                         <div class="form-group">
-                            <label for="title-input" data-translate="Job Title"></label>
-                            <input type="text" id="title-input" data-translate-placeholder="Enter your job title" oninput="generateCV(cvContainer); updateProgress()">
+                            <label for="title-input" data-ar="المسمى الوظيفي" data-en="Job Title">المسمى الوظيفي</label>
+                            <input type="text" id="title-input" placeholder="أدخل المسمى الوظيفي" data-ar-placeholder="أدخل المسمى الوظيفي" data-en-placeholder="Enter your job title" oninput="generateCV(cvContainer); updateProgress()">
                         </div>
                         <div class="form-group">
-                            <label for="email-input" data-translate="Email Address"></label>
-                            <input type="email" id="email-input" data-translate-placeholder="Enter your email address" oninput="generateCV(cvContainer); updateProgress()">
+                            <label for="email-input" data-ar="البريد الإلكتروني" data-en="Email Address">البريد الإلكتروني</label>
+                            <input type="email" id="email-input" placeholder="أدخل بريدك الإلكتروني" data-ar-placeholder="أدخل بريدك الإلكتروني" data-en-placeholder="Enter your email address" oninput="generateCV(cvContainer); updateProgress()">
                         </div>
                         <div class="form-group">
-                            <label for="phone-input" data-translate="Phone Number"></label>
-                            <input type="text" id="phone-input" data-translate-placeholder="Enter your phone number" oninput="generateCV(cvContainer); updateProgress()">
+                            <label for="phone-input" data-ar="رقم الهاتف" data-en="Phone Number">رقم الهاتف</label>
+                            <input type="text" id="phone-input" placeholder="أدخل رقم هاتفك" data-ar-placeholder="أدخل رقم هاتفك" data-en-placeholder="Enter your phone number" oninput="generateCV(cvContainer); updateProgress()">
                         </div>
                         <div class="form-group">
-                            <label for="website-input" data-translate="website-input-label"></label>
-                            <input type="text" id="website-input" data-translate-placeholder="website-input-placeholder" oninput="generateCV(cvContainer); updateProgress()">
+                            <label for="website-input" data-ar="مدينتك" data-en="Your City">مدينتك </label>
+                            <input type="text" id="website-input" placeholder="أدخل اسم مدينتك" data-ar-placeholder="أدخل اسم مدينتك" data-en-placeholder="Enter your City" oninput="generateCV(cvContainer); updateProgress()">
                         </div>
                         <div class="form-group">
-                            <label for="profile-pic-input" data-translate="Profile Picture"></label>
+                            <label for="profile-pic-input" data-ar="الصورة الشخصية" data-en="Profile Picture">الصورة الشخصية</label>
                             <input type="file" id="profile-pic-input" accept="image/*" onchange="handleProfilePicChange(event); updateProgress()">
-                            <small class="form-text text-muted" data-translate="profile-pic-note"></small>
+                            <small class="form-text text-muted" data-ar="اختر صورة لتحسين مظهر السيرة الذاتية في بعض النماذج." data-en="Choose a picture to enhance the look of your CV in some templates.">اختر صورة لتحسين مظهر السيرة الذاتية في بعض النماذج.</small>
                         </div>
-                        <div class="form-group">
-                            <label data-translate="Skills"></label>
-                            <button type="button" onclick="addSkillField()" class="btn btn-sm btn-outline-primary" data-translate="Add Skill"></button>
-                            <button type="button" onclick="removeLastSkillField()" class="btn btn-sm btn-outline-danger" data-translate="Remove Last"></button>
+                        <div class="form-group" id="form-navigation-buttons">
+                            <label data-ar="المهارات" data-en="Skills">المهارات</label>
+                            <button type="button" onclick="addSkillField()" class="btn btn-sm btn-outline-primary" data-ar="إضافة مهارة" data-en="Add Skill">إضافة مهارة</button>
+                            <button type="button" onclick="removeLastSkillField()" class="btn btn-sm btn-outline-danger" data-ar="حذف آخر" data-en="Remove Last">حذف آخر</button>
                             <div id="skills-input">
                                 <div class="skill-entry border p-2 mb-2 rounded position-relative">
                                     <button type="button" class="remove-field" onclick="removeField(this)">&times;</button>
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <input type="text" class="form-control skill-item-input" data-translate-placeholder="Enter a skill" oninput="generateCV(cvContainer); updateProgress()">
+                                            <input type="text" class="form-control skill-item-input" placeholder="أدخل مهارة" data-ar-placeholder="أدخل مهارة" data-en-placeholder="Enter a skill" oninput="generateCV(cvContainer); updateProgress()">
                                         </div>
                                         <div class="col-md-6">
                                             <select class="form-select skill-level-select" onchange="generateCV(cvContainer); updateProgress()">
-                                                <option value="0" data-translate="Select Level"></option>
-                                                <option value="30%" data-translate="Beginner"></option>
-                                                <option value="50%" data-translate="Intermediate"></option>
-                                                <option value="75%" data-translate="Advanced"></option>
-                                                <option value="100%" data-translate="Expert"></option>
+                                                <option value="0" data-ar="اختر المستوى" data-en="Select Level">اختر المستوى</option>
+                                                <option value="30%" data-ar="مبتدئ" data-en="Beginner">مبتدئ</option>
+                                                <option value="50%" data-ar="متوسط" data-en="Intermediate">متوسط</option>
+                                                <option value="75%" data-ar="متقدم" data-en="Advanced">متقدم</option>
+                                                <option value="100%" data-ar="خبير" data-en="Expert">خبير</option>
                                             </select>
                                         </div>
                                     </div>
@@ -2547,366 +2543,292 @@ html[dir="ltr"] .gradient-toggle-wrapper .form-check-input {
                             </div>
                         </div>
                         <div class="form-group">
-                            <label data-translate="Languages"></label>
-                            <button type="button" onclick="addLanguageField()" class="btn btn-sm btn-outline-primary" data-translate="Add Language"></button>
-                            <button type="button" onclick="removeLastLanguageField()" class="btn btn-sm btn-outline-danger" data-translate="Remove Last"></button>
+                            <label data-ar="اللغات" data-en="Languages">اللغات</label>
+                            <button type="button" onclick="addLanguageField()" class="btn btn-sm btn-outline-primary" data-ar="إضافة لغة" data-en="Add Language">إضافة لغة</button>
+                            <button type="button" onclick="removeLastLanguageField()" class="btn btn-sm btn-outline-danger" data-ar="حذف آخر" data-en="Remove Last">حذف آخر</button>
                             <div id="languages-input">
                                 <div class="language-entry">
                                     <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
-                                    <input type="text" data-translate-placeholder="Enter a language" class="language-item-input" oninput="generateCV(cvContainer); updateProgress()">
+                                    <input type="text" placeholder="أدخل لغة" data-ar-placeholder="أدخل لغة" data-en-placeholder="Enter a language" class="language-item-input" oninput="generateCV(cvContainer); updateProgress()"> 
                                 </div>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label data-translate="References"></label>
-                            <button type="button" onclick="addReferenceField()" class="btn btn-sm btn-outline-primary" data-translate="Add Reference"></button>
-                            <button type="button" onclick="removeLastReferenceField()" class="btn btn-sm btn-outline-danger" data-translate="Remove Last"></button>
+                            <label data-ar="المراجع" data-en="References">المراجع</label>
+                            <button type="button" onclick="addReferenceField()" class="btn btn-sm btn-outline-primary" data-ar="إضافة مرجع" data-en="Add Reference">إضافة مرجع</button>
+                            <button type="button" onclick="removeLastReferenceField()" class="btn btn-sm btn-outline-danger" data-ar="حذف آخر" data-en="Remove Last">حذف آخر</button>
                             <div id="references-input">
                                 <div class="reference-entry">
                                     <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
-                                    <input type="text" data-translate-placeholder="Name" class="reference-name" oninput="generateCV(cvContainer); updateProgress()">
-                                    <input type="text" data-translate-placeholder="Position" class="reference-position" oninput="generateCV(cvContainer); updateProgress()">
-                                    <input type="text" data-translate-placeholder="Phone" class="reference-phone" oninput="generateCV(cvContainer); updateProgress()">
-                                    <input type="email" data-translate-placeholder="Email" class="reference-email" oninput="generateCV(cvContainer); updateProgress()">
+                                    <input type="text" placeholder="الاسم" data-ar-placeholder="الاسم" data-en-placeholder="Name" class="reference-name" oninput="generateCV(cvContainer); updateProgress()">
+                                    <input type="text" placeholder="الموقع" data-ar-placeholder="الموقع" data-en-placeholder="Position" class="reference-position" oninput="generateCV(cvContainer); updateProgress()">
+                                    <input type="text" placeholder="الهاتف" data-ar-placeholder="الهاتف" data-en-placeholder="Phone" class="reference-phone" oninput="generateCV(cvContainer); updateProgress()">
+                                    <input type="email" placeholder="البريد" data-ar-placeholder="البريد" data-en-placeholder="Email" class="reference-email" oninput="generateCV(cvContainer); updateProgress()">
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="objective-input" data-translate="Career Objective"></label>
-                            <textarea id="objective-input" rows="6" data-translate-placeholder="Enter your career objective" oninput="generateCV(cvContainer); updateProgress()"></textarea>
+                            <label for="objective-input" data-ar="الهدف الوظيفي" data-en="Career Objective">الهدف الوظيفي</label>
+                            <textarea id="objective-input" rows="6" placeholder="أدخل هدفك الوظيفي" data-ar-placeholder="أدخل هدفك الوظيفي" data-en-placeholder="Enter your career objective" oninput="generateCV(cvContainer); updateProgress()"></textarea>
                         </div>
                         <div class="form-group">
-                            <label data-translate="Work Experience"></label>
-                            <button type="button" onclick="addExperienceField()" class="btn btn-sm btn-outline-primary" data-translate="Add Experience"></button>
-                            <button type="button" onclick="removeLastExperienceField()" class="btn btn-sm btn-outline-danger" data-translate="Remove Last"></button>
+                            <label data-ar="الخبرة العملية" data-en="Work Experience">الخبرة العملية</label>
+                            <button type="button" onclick="addExperienceField()" class="btn btn-sm btn-outline-primary" data-ar="إضافة خبرة" data-en="Add Experience">إضافة خبرة</button>
+                            <button type="button" onclick="removeLastExperienceField()" class="btn btn-sm btn-outline-danger" data-ar="حذف آخر" data-en="Remove Last">حذف آخر</button>
                             <div id="experience-input">
                                 <div class="experience-entry">
                                     <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
-                                    <input type="text" data-translate-placeholder="Job Title_placeholder" class="experience-title" oninput="generateCV(cvContainer); updateProgress()">
-                                    <input type="text" data-translate-placeholder="Company" class="experience-company" oninput="generateCV(cvContainer); updateProgress()">
-                                    <input type="text" data-translate-placeholder="Duration" class="experience-duration" oninput="generateCV(cvContainer); updateProgress()">
-                                    <textarea data-translate-placeholder="Description" class="experience-description" oninput="generateCV(cvContainer); updateProgress()"></textarea>
+                                    <input type="text" placeholder="المسمى الوظيفي" data-ar-placeholder="المسمى الوظيفي" data-en-placeholder="Job Title" class="experience-title" oninput="generateCV(cvContainer); updateProgress()">
+                                    <input type="text" placeholder="الشركة" data-ar-placeholder="الشركة" data-en-placeholder="Company" class="experience-company" oninput="generateCV(cvContainer); updateProgress()">
+                                    <input type="text" placeholder="المدة" data-ar-placeholder="المدة" data-en-placeholder="Duration" class="experience-duration" oninput="generateCV(cvContainer); updateProgress()">
+                                    <textarea placeholder="الوصف" data-ar-placeholder="الوصف" data-en-placeholder="Description" class="experience-description" oninput="generateCV(cvContainer); updateProgress()"></textarea>
                                 </div>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label data-translate="Education"></label>
-                            <button type="button" onclick="addEducationField()" class="btn btn-sm btn-outline-primary" data-translate="Add Education"></button>
-                            <button type="button" onclick="removeLastEducationField()" class="btn btn-sm btn-outline-danger" data-translate="Remove Last"></button>
+                            <label data-ar="المؤهلات العلمية" data-en="Education">المؤهلات العلمية</label>
+                            <button type="button" onclick="addEducationField()" class="btn btn-sm btn-outline-primary" data-ar="إضافة مؤهل" data-en="Add Education">إضافة مؤهل</button>
+                            <button type="button" onclick="removeLastEducationField()" class="btn btn-sm btn-outline-danger" data-ar="حذف آخر" data-en="Remove Last">حذف آخر</button>
                             <div id="education-input">
                                 <div class="education-entry">
                                     <button type="button" class="remove-field" onclick="removeField(this)"><i class="fas fa-times-circle"></i></button>
-                                    <input type="text" data-translate-placeholder="Degree" class="education-degree" oninput="generateCV(cvContainer); updateProgress()">
-                                    <input type="text" data-translate-placeholder="University/Institution" class="education-institution" oninput="generateCV(cvContainer); updateProgress()">
-                                    <input type="text" data-translate-placeholder="Duration" class="education-duration" oninput="generateCV(cvContainer); updateProgress()">
+                                    <input type="text" placeholder="الشهادة" data-ar-placeholder="الشهادة" data-en-placeholder="Degree" class="education-degree" oninput="generateCV(cvContainer); updateProgress()">
+                                    <input type="text" placeholder="الجامعة/المعهد" data-ar-placeholder="الجامعة/المعهد" data-en-placeholder="University/Institution" class="education-institution" oninput="generateCV(cvContainer); updateProgress()">
+                                    <input type="text" placeholder="المدة" data-ar-placeholder="المدة" data-en-placeholder="Duration" class="education-duration" oninput="generateCV(cvContainer); updateProgress()">
                                 </div>
                             </div>
                         </div>
-                        <div id="form-navigation-buttons" class="text-center mt-4">
-                             <button type="button" onclick="addCustomSection()" class="btn btn-outline-success">
+                        <div class="text-center mt-4">
+                            <button type="button" onclick="addCustomSection()" class="btn btn-outline-success">
                                 <i class="fas fa-plus-circle"></i>
-                                <span data-translate="add_custom_section_btn"></span>
+                                <span data-ar="إضافة قسم مخصص" data-en="Add Custom Section">إضافة قسم مخصص</span>
                             </button>
                         </div>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label data-translate="Data Completion Progress"></label>
+                    <label data-ar="نسبة إكمال البيانات" data-en="Data Completion Progress">نسبة إكمال البيانات</label>
                     <div class="progress-container">
                         <div class="progress-bar" id="progressBar"></div>
                     </div>
                 </div>
                 <div class="d-flex justify-content-center mt-3">
-                    <button class="btn btn-secondary btn-lg" onclick="showPage('landing-page')" data-translate="Back to Home"></button>
-                    <button class="btn btn-primary btn-lg ms-3" onclick="validateAndShowTemplatePage()" data-translate="Next: Choose Template"></button>
+                    <button class="btn btn-secondary btn-lg" onclick="showPage('landing-page')" data-ar="العودة للرئيسية" data-en="Back to Home">العودة للرئيسية</button>
+                    <button class="btn btn-primary btn-lg ms-3" onclick="validateAndShowTemplatePage()" data-ar="التالي: اختر قالب" data-en="Next: Choose Template">التالي: اختر قالب</button>
                 </div>
             </div>
         </div>
 
         <div id="cv-template-selection-page" class="page-section">
             <div class="container py-4">
-                <h2 class="mb-4 text-center" data-translate="Choose a CV Template and Preview"></h2>
+                <h2 class="mb-4 text-center" data-ar="اختر نموذجًا للسيرة الذاتية والمعاينة" data-en="Choose a CV Template and Preview">اختر نموذجًا للسيرة الذاتية والمعاينة</h2>
                 <div class="template-preview-container">
                     <div class="template-category">
-                        <h3 data-translate="Normal Templates (Full Width)"></h3>
+                        <h3 data-ar="نماذج عادية (عرض الصفحة)" data-en="Normal Templates (Full Width)">نماذج عادية (عرض الصفحة)</h3>
                         <div class="template-previews">
-                            <img src="CV templates_ar/1.webp" class="template-preview selected-template" onclick="selectTemplate(1, 'normal')" data-template-category="normal" data-template-id="1" loading="lazy" alt="" data-ar-alt="Normal Template 1 Preview" data-en-alt="Normal Template 1 Preview">
-                            <img src="CV templates_ar/2.webp" class="template-preview" onclick="selectTemplate(2, 'normal')" data-template-category="normal" data-template-id="2" loading="lazy" alt="" data-ar-alt="Normal Template 2 Preview" data-en-alt="Normal Template 2 Preview">
-                            <img src="CV templates_ar/3.webp" class="template-preview" onclick="selectTemplate(3, 'normal')" data-template-category="normal" data-template-id="3" loading="lazy" alt="" data-ar-alt="Normal Template 3 Preview" data-en-alt="Normal Template 3 Preview">
+                            <img src="CV templates_ar/1.webp" class="template-preview selected-template" onclick="selectTemplate(1, 'normal')" alt="Normal Template 1 Preview" data-template-category="normal" data-ar-alt="معاينة النموذج العادي 1" data-en-alt="Normal Template 1 Preview" data-template-id="1" loading="lazy">
+                            <img src="CV templates_ar/2.webp" class="template-preview" onclick="selectTemplate(2, 'normal')" alt="Normal Template 2 Preview" data-template-category="normal" data-ar-alt="معاينة النموذج العادي 2" data-en-alt="Normal Template 2 Preview" data-template-id="2" loading="lazy">
+                            <img src="CV templates_ar/3.webp" class="template-preview" onclick="selectTemplate(3, 'normal')" alt="Normal Template 3 Preview" data-template-category="normal" data-ar-alt="معاينة النموذج العادي 3" data-en-alt="Normal Template 3 Preview" data-template-id="3" loading="lazy">
                         </div>
                     </div>
                     <div class="template-category">
-                        <h3 data-translate="Standard Templates (Sidebar)"></h3>
+                        <h3 data-ar="نماذج عادية (قسم جانبي ورئيسي)" data-en="Standard Templates (Sidebar)">نماذج عادية (قسم جانبي ورئيسي)</h3>
                         <div class="template-previews">
-                            <img src="CV templates_ar/13.webp" class="template-preview" onclick="selectTemplate(1, 'standard')" data-template-category="standard" data-template-id="13" loading="lazy" alt="" data-ar-alt="Standard Template 1 Preview" data-en-alt="Standard Template 1 Preview">
-                            <img src="CV templates_ar/14.webp" class="template-preview" onclick="selectTemplate(2, 'standard')" data-template-category="standard" data-template-id="14" loading="lazy" alt="" data-ar-alt="Standard Template 2 Preview" data-en-alt="Standard Template 2 Preview">
+                            <img src="CV templates_ar/13.webp" class="template-preview" onclick="selectTemplate(1, 'standard')" alt="Standard Template 1 Preview" data-template-category="standard" data-ar-alt="معاينة النموذج العادي 1 (شريط جانبي)" data-en-alt="Standard Template 1 Preview" data-template-id="13" loading="lazy">
+                            <img src="CV templates_ar/14.webp" class="template-preview" onclick="selectTemplate(2, 'standard')" alt="Standard Template 2 Preview" data-template-category="standard" data-ar-alt="معاينة النموذج العادي 2 (شريط جانبي)" data-en-alt="Standard Template 2 Preview" data-template-id="14" loading="lazy">
                         </div>
                     </div>
                     <div class="template-category">
-                        <h3 data-translate="standard-x-templates-title"></h3>
+                        <h3 data-ar="نماذج أساسية اكسترا" data-en="StandardX Templates">نماذج أساسية اكسترا</h3>
                         <div class="template-previews">
-                            <img src="CV templates_ar/37.webp" class="template-preview" onclick="selectTemplate(1, 'ast')" data-template-category="ast" data-template-id="37" loading="lazy" alt="" data-ar-alt="AST Template 1 Preview" data-en-alt="AST Template 1 Preview">
-                            <img src="CV templates_ar/38.webp" class="template-preview" onclick="selectTemplate(2, 'ast')" data-template-category="ast" data-template-id="38" loading="lazy" alt="" data-ar-alt="AST Template 2 Preview" data-en-alt="AST Template 2 Preview">
+                            <img src="CV templates_ar/37.webp" class="template-preview" onclick="selectTemplate(1, 'ast')" alt="AST Template 1 Preview" data-template-category="ast" data-ar-alt="معاينة نموذج AST 1" data-en-alt="AST Template 1 Preview" data-template-id="37" loading="lazy">
+                            <img src="CV templates_ar/38.webp" class="template-preview" onclick="selectTemplate(2, 'ast')" alt="AST Template 2 Preview" data-template-category="ast" data-ar-alt="معاينة نموذج AST 2" data-en-alt="AST Template 2 Preview" data-template-id="38" loading="lazy">
                         </div>
                     </div>
                     <div class="template-category">
-                        <h3 data-translate="Professional Templates (Header + Sidebar)"></h3>
+                        <h3 data-ar="نماذج احترافية (رأس وجانبي ورئيسي)" data-en="Professional Templates (Header + Sidebar)">نماذج احترافية (رأس وجانبي ورئيسي)</h3>
                         <div class="template-previews">
-                            <img src="CV templates_ar/25.webp" class="template-preview" onclick="selectTemplate(1, 'professional')" data-template-category="professional" data-template-id="25" loading="lazy" alt="" data-ar-alt="Professional Template 1 Preview" data-en-alt="Professional Template 1 Preview">
-                            <img src="CV templates_ar/26.webp" class="template-preview" onclick="selectTemplate(2, 'professional')" data-template-category="professional" data-template-id="26" loading="lazy" alt="" data-ar-alt="Professional Template 2 Preview" data-en-alt="Professional Template 2 Preview">
-                            <img src="CV templates_ar/27.webp" class="template-preview" onclick="selectTemplate(3, 'professional')" data-template-category="professional" data-template-id="27" loading="lazy" alt="" data-ar-alt="Professional Template 3 Preview" data-en-alt="Professional Template 3 Preview">
+                            <img src="CV templates_ar/25.webp" class="template-preview" onclick="selectTemplate(1, 'professional')" alt="Professional Template 1 Preview" data-template-category="professional" data-ar-alt="معاينة النموذج الاحترافي 1" data-en-alt="Professional Template 1 Preview" data-template-id="25" loading="lazy">
+                            <img src="CV templates_ar/26.webp" class="template-preview" onclick="selectTemplate(2, 'professional')" alt="Professional Template 2 Preview" data-template-category="professional" data-ar-alt="معاينة النموذج الاحترافي 2" data-en-alt="Professional Template 2 Preview" data-template-id="26" loading="lazy">
+                            <img src="CV templates_ar/27.webp" class="template-preview" onclick="selectTemplate(3, 'professional')" alt="Professional Template 3 Preview" data-template-category="professional" data-ar-alt="معاينة النموذج الاحترافي 3" data-en-alt="Professional Template 3 Preview" data-template-id="27" loading="lazy">
                         </div>
                     </div>
                     <div class="template-category">
-                        <h3 data-translate="Creative Templates"></h3>
+                        <h3 data-ar="قوالب إبداعية" data-en="Creative Templates">قوالب إبداعية</h3>
                         <div class="template-previews">
-                            <img src="CV templates_ar/creative-1.webp" class="template-preview" onclick="selectTemplate(1, 'creative')" data-template-category="creative" data-template-id="49" loading="lazy" alt="" data-ar-alt="Creative Template 1 Preview" data-en-alt="Creative Template 1 Preview">
-                            <img src="CV templates_ar/creative-2.webp" class="template-preview" onclick="selectTemplate(2, 'creative')" data-template-category="creative" data-template-id="50" loading="lazy" alt="" data-ar-alt="Creative Template 2 Preview" data-en-alt="Creative Template 2 Preview">
-                            <img src="CV templates_ar/creative-3.webp" class="template-preview" onclick="selectTemplate(3, 'creative')" data-template-category="creative" data-template-id="51" loading="lazy" alt="" data-ar-alt="Creative Template 3 Preview" data-en-alt="Creative Template 3 Preview">
+                            <img src="CV templates_ar/creative-1.webp" class="template-preview" onclick="selectTemplate(1, 'creative')" alt="Creative Template 1" data-template-category="creative" data-template-id="49" loading="lazy">
+                            <img src="CV templates_ar/creative-2.webp" class="template-preview" onclick="selectTemplate(2, 'creative')" alt="Creative Template 2" data-template-category="creative" data-template-id="50" loading="lazy">
+                            <img src="CV templates_ar/creative-3.webp" class="template-preview" onclick="selectTemplate(3, 'creative')" alt="Creative Template 3" data-template-category="creative" data-template-id="51" loading="lazy">
                         </div>
                     </div>
                 </div>
                 <div class="d-flex justify-content-center mt-3">
-                    <button class="btn btn-secondary btn-lg" onclick="showPage('cv-data-entry-page')" data-translate="Back to Data Entry"></button>
-                    <button class="btn btn-primary btn-lg ms-3" onclick="showPage('cv-preview-page')" data-translate="Next: Preview CV"></button>
+                    <button class="btn btn-secondary btn-lg" onclick="showPage('cv-data-entry-page')" data-ar="العودة لإدخال البيانات" data-en="Back to Data Entry">العودة لإدخال البيانات</button>
+                    <button class="btn btn-primary btn-lg ms-3" onclick="showPage('cv-preview-page')" data-ar="التالي: معاينة السيرة" data-en="Next: Preview CV">التالي: معاينة السيرة</button>
                 </div>
             </div>
         </div>
 
         <div id="cv-preview-page" class="page-section">
             <div class="container py-4">
-                <h2 class="mb-4 text-center" data-translate="Your CV Preview"></h2>
+                <h2 class="mb-4 text-center" data-ar="معاينة سيرتك الذاتية" data-en="Your CV Preview">معاينة سيرتك الذاتية</h2>
                 <div id="preview-wrapper">
                     <div id="cv-preview-area">
                         <div id="cv-container" class="normal-layout template1" dir="rtl">
                         </div>
                     </div>
                     <div id="controls-sidebar">
-                            <div class="accordion" id="controlsAccordion">
-                        
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="headingImage">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseImage" aria-expanded="false" aria-controls="collapseImage">
-                                            🖼️ التحكم بالصورة الشخصية
-                                        </button>
-                                    </h2>
-                                    <div id="collapseImage" class="accordion-collapse collapse" aria-labelledby="headingImage" data-bs-parent="#controlsAccordion">
-                                        <div class="accordion-body">
-                                            <label for="image-size-slider" class="form-label">حجم الصورة</label>
-                                            <input type="range" class="form-range" id="image-size-slider" min="80" max="150" value="120">
-                        
-                                            <label for="image-radius-slider" class="form-label mt-2">شكل الإطار (Radius)</label>
-                                            <input type="range" class="form-range" id="image-radius-slider" min="0" max="50" value="50">
-                                        </div>
-                                    </div>
+                        <div id="font-selector-container" class="text-center my-3">
+                            <div class="row justify-content-center g-2">
+                                <div class="col-12">
+                                    <label for="font-selector-name" class="form-label fw-bold" data-ar="خط الاسم الرئيسي:" data-en="Main Name Font:">خط الاسم الرئيسي:</label>
+                                    <select id="font-selector-name" class="form-select"></select>
                                 </div>
-                        
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="headingFonts">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFonts" aria-expanded="false" aria-controls="collapseFonts">
-                                            ✒️ التحكم بالخطوط
-                                        </button>
-                                    </h2>
-                                    <div id="collapseFonts" class="accordion-collapse collapse" aria-labelledby="headingFonts" data-bs-parent="#controlsAccordion">
-                                        <div class="accordion-body">
-                                            <div id="font-selector-container" class="text-center">
-                                                <div class="row justify-content-center g-2">
-                                                    <div class="col-12">
-                                                        <label for="font-selector-name" class="form-label fw-bold" data-translate="select_name_font_label">خط الاسم الرئيسي:</label>
-                                                        <select id="font-selector-name" class="form-select"></select>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <label for="font-selector-headings" class="form-label fw-bold" data-translate="select_headings_font_label">خط العناوين:</label>
-                                                        <select id="font-selector-headings" class="form-select"></select>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <label for="font-selector-body" class="form-label fw-bold" data-translate="select_body_font_label">خط النص الأساسي:</label>
-                                                        <select id="font-selector-body" class="form-select"></select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div class="col-12">
+                                    <label for="font-selector-headings" class="form-label fw-bold" data-ar="خط العناوين:" data-en="Headings Font:">خط العناوين:</label>
+                                    <select id="font-selector-headings" class="form-select"></select>
                                 </div>
-                        
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="headingSizes">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSizes" aria-expanded="false" aria-controls="collapseSizes">
-                                            📏 التحكم بأحجام النصوص
-                                        </button>
-                                    </h2>
-                                    <div id="collapseSizes" class="accordion-collapse collapse" aria-labelledby="headingSizes" data-bs-parent="#controlsAccordion">
-                                        <div class="accordion-body">
-                                            <label for="name-size-slider" class="form-label">حجم الاسم</label>
-                                            <input type="range" class="form-range" id="name-size-slider" min="2" max="4" value="2.5" step="0.1">
-                        
-                                            <label for="title-size-slider" class="form-label mt-2">حجم المسمى الوظيفي</label>
-                                            <input type="range" class="form-range" id="title-size-slider" min="1" max="2" value="1.3" step="0.1">
-                                            
-                                            <label for="contact-size-slider" class="form-label mt-2">حجم معلومات الاتصال</label>
-                                            <input type="range" class="form-range" id="contact-size-slider" min="0.8" max="1.2" value="0.95" step="0.05">
-                        
-                                            <label for="section-title-size-slider" class="form-label mt-2">حجم عناوين الأقسام</label>
-                                            <input type="range" class="form-range" id="section-title-size-slider" min="1" max="1.8" value="1.2" step="0.1">
-                                            
-                                            <label for="subsection-title-size-slider" class="form-label mt-2">حجم العناوين الفرعية</label>
-                                            <input type="range" class="form-range" id="subsection-title-size-slider" min="0.9" max="1.5" value="1.05" step="0.05">
-                        
-                                            <label for="body-text-size-slider" class="form-label mt-2">حجم النص الأساسي</label>
-                                            <input type="range" class="form-range" id="body-text-size-slider" min="0.8" max="1.1" value="0.9" step="0.05">
-                                        </div>
-                                    </div>
+                                <div class="col-12">
+                                    <label for="font-selector-body" class="form-label fw-bold" data-ar="خط النص الأساسي:" data-en="Body Text Font:">خط النص الأساسي:</label>
+                                    <select id="font-selector-body" class="form-select"></select>
                                 </div>
-                                
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="headingColors">
-                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseColors" aria-expanded="true" aria-controls="collapseColors">
-                                            🎨 التحكم بالألوان
-                                        </button>
-                                    </h2>
-                                    <div id="collapseColors" class="accordion-collapse collapse show" aria-labelledby="headingColors" data-bs-parent="#controlsAccordion">
-                                        <div class="accordion-body">
-                                            <div id="palette-container" class="my-3">
-                                                <h6 class="text-muted border-bottom pb-2 mb-3" data-translate="color_presets_title">Color Presets</h6>
-                                                <div id="palette-selector" class="d-flex flex-wrap gap-2 justify-content-center"></div>
-                                            </div>
-                        
-                                            <div id="color-picker-container" class="text-center my-3 p-3 bg-light border rounded">
-                                                <h5 class="mb-3" data-translate="color_customization_title">Customize Template Colors</h5>
-                                                <h6 class="text-muted border-bottom pb-2 mb-3" data-translate="background_colors_title">Background Colors</h6>
-                                                <div class="row justify-content-center g-3 mb-3">
-                                                    <div class="col-12 color-control-component" data-color-name="primary-bg">
-                                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                                            <label class="form-label fw-bold" data-translate="primary_bg_label">Primary BG / Header</label>
-                                                            <div class="form-check form-switch gradient-toggle-wrapper">
-                                                                <input class="form-check-input gradient-toggle" type="checkbox">
-                                                                <label class="form-check-label" data-translate="gradient_label">Gradient</label>
-                                                            </div>
-                                                        </div>
-                                                        <div class="solid-color-picker"><input type="color" class="form-control form-control-color w-100" id="color-picker-primary-bg" value="#004085"></div>
-                                                        <div class="gradient-controls" style="display: none;">
-                                                            <div class="input-group mb-1">
-                                                                <input type="color" class="form-control form-control-color" id="color-picker-primary-bg-start" value="#004085">
-                                                                <input type="color" class="form-control form-control-color" id="color-picker-primary-bg-end" value="#0056b3">
-                                                            </div>
-                                                            <select class="form-select form-select-sm gradient-direction">
-                                                                <option value="to right" data-translate="gradient_horizontal">Horizontal</option>
-                                                                <option value="to bottom" data-translate="gradient_vertical">Vertical</option>
-                                                                <option value="to bottom right" data-translate="gradient_diagonal">Diagonal</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 color-control-component" data-color-name="sidebar-bg">
-                                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                                            <label class="form-label fw-bold" data-translate="sidebar_bg_label">Sidebar BG</label>
-                                                            <div class="form-check form-switch gradient-toggle-wrapper">
-                                                                <input class="form-check-input gradient-toggle" type="checkbox">
-                                                                <label class="form-check-label" data-translate="gradient_label">Gradient</label>
-                                                            </div>
-                                                        </div>
-                                                        <div class="solid-color-picker"><input type="color" class="form-control form-control-color w-100" id="color-picker-sidebar-bg" value="#f8f9fa"></div>
-                                                        <div class="gradient-controls" style="display: none;">
-                                                            <div class="input-group mb-1">
-                                                                <input type="color" class="form-control form-control-color" id="color-picker-sidebar-bg-start" value="#f8f9fa">
-                                                                <input type="color" class="form-control form-control-color" id="color-picker-sidebar-bg-end" value="#e9ecef">
-                                                            </div>
-                                                            <select class="form-select form-select-sm gradient-direction">
-                                                                <option value="to right" data-translate="gradient_horizontal">Horizontal</option>
-                                                                <option value="to bottom" data-translate="gradient_vertical">Vertical</option>
-                                                                <option value="to bottom right" data-translate="gradient_diagonal">Diagonal</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 color-control-component" data-color-name="accent-bg">
-                                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                                            <label class="form-label fw-bold" data-translate="accent_bg_label">Accent / Skills BG</label>
-                                                            <div class="form-check form-switch gradient-toggle-wrapper">
-                                                                <input class="form-check-input gradient-toggle" type="checkbox">
-                                                                <label class="form-check-label" data-translate="gradient_label">Gradient</label>
-                                                            </div>
-                                                        </div>
-                                                        <div class="solid-color-picker"><input type="color" class="form-control form-control-color w-100" id="color-picker-accent-bg" value="#e9ecef"></div>
-                                                        <div class="gradient-controls" style="display: none;">
-                                                            <div class="input-group mb-1">
-                                                                <input type="color" class="form-control form-control-color" id="color-picker-accent-bg-start" value="#e9ecef">
-                                                                <input type="color" class="form-control form-control-color" id="color-picker-accent-bg-end" value="#ced4da">
-                                                            </div>
-                                                            <select class="form-select form-select-sm gradient-direction">
-                                                                <option value="to right" data-translate="gradient_horizontal">Horizontal</option>
-                                                                <option value="to bottom" data-translate="gradient_vertical">Vertical</option>
-                                                                <option value="to bottom right" data-translate="gradient_diagonal">Diagonal</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                        
-                                                <h6 class="text-muted border-bottom pb-2 mb-3" data-translate="text_colors_title">Text & Icon Colors</h6>
-                                                <div class="row g-3">
-                                                    <div class="col-md-6 col-12"><label for="color-picker-header-text" class="form-label fw-bold" data-translate="header_text_label">Header Text</label><input type="color" class="form-control form-control-color w-100" id="color-picker-header-text" value="#ffffff"></div>
-                                                    <div class="col-md-6 col-12"><label for="color-picker-title-text" class="form-label fw-bold" data-translate="title_text_label">Titles Text</label><input type="color" class="form-control form-control-color w-100" id="color-picker-title-text" value="#004085"></div>
-                                                    <div class="col-md-6 col-12"><label for="color-picker-body-text" class="form-label fw-bold" data-translate="body_text_label">Body Text</label><input type="color" class="form-control form-control-color w-100" id="color-picker-body-text" value="#343a40"></div>
-                                                    <div class="col-md-6 col-12"><label for="color-picker-subtle-text" class="form-label fw-bold" data-translate="subtle_text_label">Subtle Text</label><input type="color" class="form-control form-control-color w-100" id="color-picker-subtle-text" value="#6c757d"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        
-                            <div class="action-buttons-container">
-                                <button class="btn btn-secondary" onclick="showPage('cv-template-selection-page')" data-translate="Back to Templates">العودة للنماذج</button>
-                                <button type="button" class="btn btn-info ms-3" data-translate-id="Download PDF (Direct)">تنزيل PDF (معاينة)</button>
-                                <button type="button" class="btn btn-success ms-3" data-translate-id="Request Download / Print">طلب تنزيل / طباعة</button>
                             </div>
                         </div>
+                        <div id="palette-container" class="my-3">
+                            <h6 class="text-muted border-bottom pb-2 mb-3" data-ar="إعدادات الألوان المسبقة" data-en="Color Presets">إعدادات الألوان المسبقة</h6>
+                            <div id="palette-selector" class="d-flex flex-wrap gap-2 justify-content-center">
+                            </div>
+                        </div>
+                        <div id="color-picker-container" class="text-center my-3 p-3 bg-light border rounded">
+                            <h5 class="mb-3" data-ar="تخصيص ألوان القالب" data-en="Customize Template Colors">تخصيص ألوان القالب</h5>
+                            <h6 class="text-muted border-bottom pb-2 mb-3" data-ar="ألوان الخلفية" data-en="Background Colors">ألوان الخلفية</h6>
+                            <div class="row justify-content-center g-3 mb-3">
+                                <div class="col-12 color-control-component" data-color-name="primary-bg">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label class="form-label fw-bold" data-ar="الخلفية الأساسية / الرأس" data-en="Primary BG / Header">الخلفية الأساسية / الرأس</label>
+                                        <div class="form-check form-switch gradient-toggle-wrapper">
+                                            <input class="form-check-input gradient-toggle" type="checkbox">
+                                            <label class="form-check-label" data-ar="تدرج" data-en="Gradient">تدرج</label>
+                                        </div>
+                                    </div>
+                                    <div class="solid-color-picker"><input type="color" class="form-control form-control-color w-100" id="color-picker-primary-bg" value="#004085"></div>
+                                    <div class="gradient-controls" style="display: none;">
+                                        <div class="input-group mb-1">
+                                            <input type="color" class="form-control form-control-color" id="color-picker-primary-bg-start" value="#004085">
+                                            <input type="color" class="form-control form-control-color" id="color-picker-primary-bg-end" value="#0056b3">
+                                        </div>
+                                        <select class="form-select form-select-sm gradient-direction">
+                                            <option value="to right" data-ar="أفقي" data-en="Horizontal">أفقي</option>
+                                            <option value="to bottom" data-ar="عمودي" data-en="Vertical">عمودي</option>
+                                            <option value="to bottom right" data-ar="قطري" data-en="Diagonal">قطري</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12 color-control-component" data-color-name="sidebar-bg">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label class="form-label fw-bold" data-ar="خلفية الشريط الجانبي" data-en="Sidebar BG">خلفية الشريط الجانبي</label>
+                                        <div class="form-check form-switch gradient-toggle-wrapper">
+                                            <input class="form-check-input gradient-toggle" type="checkbox">
+                                            <label class="form-check-label" data-ar="تدرج" data-en="Gradient">تدرج</label>
+                                        </div>
+                                    </div>
+                                    <div class="solid-color-picker"><input type="color" class="form-control form-control-color w-100" id="color-picker-sidebar-bg" value="#f8f9fa"></div>
+                                    <div class="gradient-controls" style="display: none;">
+                                        <div class="input-group mb-1">
+                                            <input type="color" class="form-control form-control-color" id="color-picker-sidebar-bg-start" value="#f8f9fa">
+                                            <input type="color" class="form-control form-control-color" id="color-picker-sidebar-bg-end" value="#e9ecef">
+                                        </div>
+                                        <select class="form-select form-select-sm gradient-direction">
+                                            <option value="to right" data-ar="أفقي" data-en="Horizontal">أفقي</option>
+                                            <option value="to bottom" data-ar="عمودي" data-en="Vertical">عمودي</option>
+                                            <option value="to bottom right" data-ar="قطري" data-en="Diagonal">قطري</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12 color-control-component" data-color-name="accent-bg">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label class="form-label fw-bold" data-ar="خلفية مميزة / المهارات" data-en="Accent / Skills BG">خلفية مميزة / المهارات</label>
+                                        <div class="form-check form-switch gradient-toggle-wrapper">
+                                            <input class="form-check-input gradient-toggle" type="checkbox">
+                                            <label class="form-check-label" data-ar="تدرج" data-en="Gradient">تدرج</label>
+                                        </div>
+                                    </div>
+                                    <div class="solid-color-picker"><input type="color" class="form-control form-control-color w-100" id="color-picker-accent-bg" value="#e9ecef"></div>
+                                    <div class="gradient-controls" style="display: none;">
+                                        <div class="input-group mb-1">
+                                            <input type="color" class="form-control form-control-color" id="color-picker-accent-bg-start" value="#e9ecef">
+                                            <input type="color" class="form-control form-control-color" id="color-picker-accent-bg-end" value="#ced4da">
+                                        </div>
+                                        <select class="form-select form-select-sm gradient-direction">
+                                            <option value="to right" data-ar="أفقي" data-en="Horizontal">أفقي</option>
+                                            <option value="to bottom" data-ar="عمودي" data-en="Vertical">عمودي</option>
+                                            <option value="to bottom right" data-ar="قطري" data-en="Diagonal">قطري</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <h6 class="text-muted border-bottom pb-2 mb-3" data-ar="ألوان النصوص والأيقونات" data-en="Text & Icon Colors">ألوان النصوص والأيقونات</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6 col-12"><label for="color-picker-header-text" class="form-label fw-bold" data-ar="نص الرأس" data-en="Header Text">نص الرأس</label><input type="color" class="form-control form-control-color w-100" id="color-picker-header-text" value="#ffffff"></div>
+                                <div class="col-md-6 col-12"><label for="color-picker-title-text" class="form-label fw-bold" data-ar="نص العناوين" data-en="Titles Text">نص العناوين</label><input type="color" class="form-control form-control-color w-100" id="color-picker-title-text" value="#004085"></div>
+                                <div class="col-md-6 col-12"><label for="color-picker-body-text" class="form-label fw-bold" data-ar="نص المحتوى" data-en="Body Text">نص المحتوى</label><input type="color" class="form-control form-control-color w-100" id="color-picker-body-text" value="#343a40"></div>
+                                <div class="col-md-6 col-12"><label for="color-picker-subtle-text" class="form-label fw-bold" data-ar="نص ثانوي" data-en="Subtle Text">نص ثانوي</label><input type="color" class="form-control form-control-color w-100" id="color-picker-subtle-text" value="#6c757d"></div>
+                            </div>
+                        </div>
+                        <div class="action-buttons-container">
+                            <button class="btn btn-secondary" onclick="showPage('cv-template-selection-page')" data-ar="العودة للنماذج" data-en="Back to Templates">العودة للنماذج</button>
+                            <button type="button" class="btn btn-info ms-3" data-ar="تنزيل PDF (معاينة)" data-en="Download PDF (Preview)">تنزيل PDF (معاينة)</button>
+                            <button type="button" class="btn btn-success ms-3" data-ar="طلب تنزيل / طباعة" data-en="Request Download / Print">طلب تنزيل / طباعة</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-<div id="payment-options-page" class="page-section">
+
+        <div id="payment-options-page" class="page-section">
             <div class="container py-4 text-center">
-                <h3 class="mb-4" data-translate="choose-payment"></h3>
+                <h3 class="mb-4" data-ar="اختر باقتك وطريقة الدفع" data-en="Choose Your Package & Payment Method">اختر باقتك وطريقة الدفع</h3>
                 <div class="discount-section my-4">
-                    <h5 data-translate="available-discounts-title"></h5>
+                    <h5 data-ar="الخصومات المتاحة" data-en="Available Discounts">الخصومات المتاحة</h5>
                     <div class="d-flex justify-content-center gap-3 flex-wrap">
                         <div class="discount-card" data-code="FIRSTBUY">
                             <div class="discount-tag">25%</div>
                             <div class="discount-info">
                                 <strong class="code-text">FIRSTBUY</strong>
-                                <small data-translate="discount-new-customer"></small>
+                                <small data-ar="للمشترين الجدد" data-en="For new customers">للمشترين الجدد</small>
                             </div>
+                            <input type="hidden" id="discount-code-input-1" />
                         </div>
                         <div class="discount-card" data-code="SAVE10">
                             <div class="discount-tag">10%</div>
                             <div class="discount-info">
                                 <strong class="code-text">SAVE10</strong>
-                                <small data-translate="discount-limited-offer"></small>
+                                <small data-ar="عرض لفترة محدودة" data-en="Limited time offer">عرض لفترة محدودة</small>
                             </div>
                         </div>
+                        <div class="text-center mt-2" id="remove-discount-container" style="display: none;">
+                            <a href="#" id="remove-discount-btn" class="remove-discount-link" data-ar="إزالة الخصم" data-en="Remove Discount">إزالة الخصم</a>
+                        </div>
                     </div>
-                    <div class="text-center mt-2" id="remove-discount-container" style="display: none;">
-                        <a href="#" id="remove-discount-btn" class="remove-discount-link" data-translate="remove-discount"></a>
-                    </div>
-                    <input type="hidden" id="discount-code" />
+                    <input type="hidden" id="discount-code-main" />
                 </div>
                 <div class="row justify-content-center g-4">
                     <div class="col-md-5">
                         <div class="card h-100 shadow-sm">
                             <div class="card-body d-flex flex-column">
-                                <h4 class="card-title" data-translate="local-payment-title"></h4>
-                                <p class="text-muted" data-translate="local-payment-desc"></p>
+                                <h4 class="card-title" data-ar="الدفع المحلي" data-en="Local Payment">الدفع المحلي</h4>
+                                <p class="text-muted" data-ar="(عبر STC Pay أو تحويل الراجحي)" data-en="(via STC Pay or Al Rajhi Transfer)">(عبر STC Pay أو تحويل الراجحي)</p>
                                 <p class="card-text fs-4 fw-bold my-3">
                                     <span id="local-price-display">0</span>
-                                    <span data-translate="sar-currency"></span>
+                                    <span data-ar="ريال سعودي" data-en="SAR">ريال سعودي</span>
                                 </p>
                                 <div class="mt-auto">
-                                    <p class="fw-bold" data-translate="click-to-pay"></p>
+                                    <p class="fw-bold" data-ar="اختر وسيلتك المفضلة:" data-en="Choose your preferred method:">اختر وسيلتك المفضلة:</p>
                                     <div class="d-flex justify-content-center flex-wrap">
-                                        <img src="stcpay.png.webp" alt="STC Pay" style="height: 60px; cursor: pointer; margin:10px;"
-                                            onclick="openQrPaymentPage('STC Pay', selectedTemplateCategory)" loading="lazy"/>
-                                        <img src="alrajhi.png.webp" alt="Al Rajhi" style="height: 60px; cursor: pointer; margin:10px;"
-                                            onclick="openQrPaymentPage('Rajhi', selectedTemplateCategory)" loading="lazy"/>
+                                        <img src="stcpay.png.webp" alt="STC Pay" style="height: 60px; cursor: pointer; margin:10px;" onclick="openQrPaymentPage('STC Pay', selectedTemplateCategory)" loading="lazy" />
+                                        <img src="alrajhi.png.webp" alt="Al Rajhi" style="height: 60px; cursor: pointer; margin:10px;" onclick="openQrPaymentPage('Rajhi', selectedTemplateCategory)" loading="lazy" />
                                     </div>
                                 </div>
                             </div>
@@ -2914,126 +2836,148 @@ html[dir="ltr"] .gradient-toggle-wrapper .form-check-input {
                     </div>
                     <div class="col-md-5">
                         <div class="card h-100 shadow-sm border-primary">
-                            <div class="card-header bg-primary text-white" data-translate="international-payment-header"></div>
+                            <div class="card-header bg-primary text-white" data-ar="دولي وآمن" data-en="International & Secure">دولي وآمن</div>
                             <div class="card-body d-flex flex-column">
-                                <h4 class="card-title" data-translate="card-payment-title"></h4>
-                                <p class="text-muted" data-translate="card-payment-desc"></p>
+                                <h4 class="card-title" data-ar="الدفع بالبطاقة الائتمانية" data-en="Credit Card Payment">الدفع بالبطاقة الائتمانية</h4>
+                                <p class="text-muted" data-ar="(Visa, MasterCard, etc. via Lemon Squeezy)" data-en="(Visa, MasterCard, etc. via Lemon Squeezy)">(Visa, MasterCard, etc. via Lemon Squeezy)</p>
                                 <p class="card-text fs-4 fw-bold my-3 text-primary">
                                     <span id="ls-price-display">0</span>
-                                    <span data-translate="sar-currency"></span>
+                                    <span data-ar="ريال سعودي" data-en="SAR">ريال سعودي</span>
                                 </p>
                                 <div class="mt-auto">
-                                    <p class="fw-bold" data-translate="click-to-pay-ls"></p>
+                                    <p class="fw-bold" data-ar="اضغط للدفع الآمن:" data-en="Click for secure payment:">اضغط للدفع الآمن:</p>
                                     <button id="lemon-squeezy-btn" class="btn btn-lg btn-primary w-100">
-                                        <span data-translate="pay-with-card"></span>
+                                        <span data-ar="ادفع الآن" data-en="Pay Now">ادفع الآن</span>
                                     </button>
-                                    <img src="lemonsqueezy-logo.png" alt="Pay with Card (Lemon Squeezy)" loading="lazy" style="height: 40px; cursor: pointer; margin:5px;" title="ادفع بالبطاقة الائتمانية عبر Lemon Squeezy">
+                                    <img src="lemonsqueezy-logo.png" alt="Pay with Card (Lemon Squeezy)" id="lemon-squeezy-btn-img" loading="lazy" style="height: 40px; cursor: pointer; margin:5px;" title="ادفع بالبطاقة الائتمانية عبر Lemon Squeezy">
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="d-flex justify-content-center mt-4">
-                    <button class="btn btn-secondary btn-lg" onclick="showPage('cv-template-selection-page')" data-translate="Back to Templates"></button>
-                    <button class="btn btn-secondary btn-lg ms-3" onclick="showPage('landing-page')" data-translate="Back to Home"></button>
+                    <button class="btn btn-secondary btn-lg ms-3" onclick="showPage('cv-template-selection-page')" data-ar="العودة للنماذج" data-en="Back to Templates">العودة للنماذج</button>
+                    <button class="btn btn-secondary btn-lg" onclick="showPage('landing-page')" data-ar="العودة للرئيسية" data-en="Back to Home">العودة للرئيسية</button>
                 </div>
             </div>
         </div>
 
         <div id="qr-manual-payment-page" class="page-section">
             <div class="container py-4 text-center">
-                <h3 data-translate="payment"></h3>
-                <img id="qr-payment-image" src="" alt="QR Code" style="max-width: 200px; margin-bottom: 15px; display:none;" loading="lazy"/>
+                <h3 data-ar="الدفع" data-en="Payment">الدفع</h3>
+                <img id="qr-payment-image" src="" alt="QR Code" style="max-width: 200px; margin-bottom: 15px; display:none;" loading="lazy" />
                 <div id="paypal-button-container" style="display: none; margin-top: 20px;"></div>
                 <div id="manual-payment-form" style="display: none; text-align: initial;">
-                    <p data-translate="payment-note"></p>
-                    <label data-translate="your-name"></label>
+                    <p data-ar="بعد إتمام الدفع في تطبيق البنك، الرجاء تعبئة البيانات التالية:" data-en="After completing the payment in your banking app, please fill in the following details:">بعد إتمام الدفع في تطبيق البنك، الرجاء تعبئة البيانات التالية:</p>
+                    <label data-ar="اسمك:" data-en="Your Name:">اسمك:</label>
                     <input type="text" id="payment-name" class="form-control mb-2" />
-                    <label data-translate="your-email"></label>
+                    <label data-ar="بريدك الإلكتروني:" data-en="Your Email:">بريدك الإلكتروني:</label>
                     <input type="email" id="payment-email" class="form-control mb-2" />
-                    <label data-translate="your-phone"></label>
+                    <label data-ar="رقم الهاتف:" data-en="Phone Number:">رقم الهاتف:</label>
                     <input type="tel" id="payment-phone" class="form-control mb-2" />
-                    <label data-translate="messages"></label> <input type="number" id="payment-messages" class="form-control mb-2" readonly />
-                    <label data-translate="attachment"></label>
+                    <label data-ar="السعر المدفوع:" data-en="Amount Paid:">السعر المدفوع:</label> <input type="number" id="payment-messages" class="form-control mb-2" readonly />
+                    <label data-ar="أرفق إيصال الدفع (صورة / PDF):" data-en="Attach Payment Receipt (Image / PDF):">أرفق إيصال الدفع (صورة / PDF):</label>
                     <input type="file" id="payment-file" accept="image/*,application/pdf" class="form-control mb-3" />
                 </div>
                 <button class="btn btn-primary w-100" id="submit-payment-proof" style="display:none;" onclick="submitPaymentProof(event)">
-                    <span data-translate="submit"></span>
+                    <span data-ar="إرسال" data-en="Submit">إرسال</span>
                 </button>
                 <div id="qr-payment-result" style="margin-top:10px; color:green;"></div>
                 <div class="d-flex justify-content-center mt-4">
-                    <button class="btn btn-secondary btn-lg" onclick="showPage('payment-options-page')" data-translate="Back to Payment Options"></button>
+                    <button class="btn btn-secondary btn-lg" onclick="showPage('payment-options-page')" data-ar="العودة لخيارات الدفع" data-en="Back to Payment Options">العودة لخيارات الدفع</button>
                 </div>
             </div>
         </div>
 
         <div id="terms-of-service" class="page-section">
             <div class="container py-4">
-                <h2 class="mb-4 text-center" data-translate="terms-of-service-title"></h2>
-                <p data-translate="terms-of-service-intro-p"></p>
-                <h4 class="mt-4" data-translate="terms-of-service-h4-1"></h4>
-                <p data-translate="terms-of-service-p-1-1"></p>
-                <p data-translate="terms-of-service-p-1-2"></p>
-                <h4 class="mt-4" data-translate="terms-of-service-h4-2"></h4>
-                <p data-translate="terms-of-service-p-2-1"></p>
-                <p data-translate="terms-of-service-p-2-2"></p>
-                <h4 class="mt-4" data-translate="terms-of-service-h4-3"></h4>
-                <p data-translate="terms-of-service-p-3-1"></p>
-                <p data-translate="terms-of-service-p-3-2"></p>
-                <h4 class="mt-4" data-translate="terms-of-service-h4-4"></h4>
-                <p data-translate="terms-of-service-p-4-1"></p>
-                <p data-translate="terms-of-service-p-4-2"></p>
-                <h4 class="mt-4" data-translate="terms-of-service-h4-5"></h4>
-                <p data-translate="terms-of-service-p-5-1"></p>
-                <h4 class="mt-4" data-translate="terms-of-service-h4-6"></h4>
-                <p data-translate="terms-of-service-p-6-1"></p>
-                <h4 class="mt-4" data-translate="terms-of-service-h4-7"></h4>
-                <p data-translate="terms-of-service-p-7-1"></p>
-                <button class="btn btn-secondary mt-3" onclick="showPage('landing-page')" data-translate="back-to-home"></button>
+                <h2 class="mb-4 text-center" data-ar="شروط الخدمة" data-en="Terms of Service">شروط الخدمة</h2>
+                <p data-ar="مرحباً بكم في نظام رسائل لإنشاء السيرة الذاتية. باستخدامك لخدماتنا، فإنك توافق على الالتزام بالشروط والأحكام التالية، والتي تشكل اتفاقية ملزمة بينك وبين 'رسائل'. يرجى قراءتها بعناية." data-en="Welcome to the Resail CV Builder system. By using our services, you agree to be bound by the following terms and conditions, which constitute a binding agreement between you and 'Resail'. Please read them carefully.">مرحباً بكم في نظام رسائل لإنشاء السيرة الذاتية. باستخدامك لخدماتنا، فإنك توافق على الالتزام بالشروط والأحكام التالية، والتي تشكل اتفاقية ملزمة بينك وبين 'رسائل'. يرجى قراءتها بعناية.</p>
+                <h4 class="mt-4" data-ar="1. استخدام الخدمة" data-en="1. Use of Service">1. استخدام الخدمة</h4>
+                <p data-ar="تتيح لك منصة رسائل إنشاء وتصميم السير الذاتية الاحترافية وتصديرها بصيغة PDF. يجب أن تكون جميع البيانات والمعلومات التي تقدمها (بما في ذلك، على سبيل المثال لا الحصر، الاسم، الخبرات، المؤهلات، المهارات) صحيحة ودقيقة وحديثة، وتتحمل أنت وحدك مسؤولية المحتوى الخاص بك. لا يجوز استخدام الخدمة لأي أغراض غير قانونية أو احتيالية أو تشهيرية أو غير مصرح بها." data-en="The Resail platform allows you to create, design, and export professional CVs in PDF format. All data and information you provide (including, but not limited to, name, experience, qualifications, and skills) must be correct, accurate, and up-to-date, and you are solely responsible for your content. The service may not be used for any unlawful, fraudulent, defamatory, or unauthorized purposes.">تتيح لك منصة رسائل إنشاء وتصميم السير الذاتية الاحترافية وتصديرها بصيغة PDF. يجب أن تكون جميع البيانات والمعلومات التي تقدمها (بما في ذلك، على سبيل المثال لا الحصر، الاسم، الخبرات، المؤهلات، المهارات) صحيحة ودقيقة وحديثة، وتتحمل أنت وحدك مسؤولية المحتوى الخاص بك. لا يجوز استخدام الخدمة لأي أغراض غير قانونية أو احتيالية أو تشهيرية أو غير مصرح بها.</p>
+                <p data-ar="نحتفظ بالحق في تعليق أو إنهاء وصولك إلى الخدمة إذا انتهكت أياً من هذه الشروط، أو إذا رأينا أن سلوكك يضر بالخدمة أو المستخدمين الآخرين." data-en="We reserve the right to suspend or terminate your access to the service if you violate any of these terms, or if we deem your conduct to be harmful to the service or other users.">نحتفظ بالحق في تعليق أو إنهاء وصولك إلى الخدمة إذا انتهكت أياً من هذه الشروط، أو إذا رأينا أن سلوكك يضر بالخدمة أو المستخدمين الآخرين.</p>
+                <h4 class="mt-4" data-ar="2. الملكية الفكرية" data-en="2. Intellectual Property">2. الملكية الفكرية</h4>
+                <p data-ar="جميع التصميمات، القوالب، النصوص، الرسومات، الشعارات، الأيقونات، الصور، البرمجيات، وأي محتوى آخر متاح عبر الخدمة ('محتوى الخدمة') هي ملكية فكرية خاصة بـ 'رسائل' أو مرخصة لنا، وهي محمية بموجب قوانين حقوق النشر والعلامات التجارية والملكية الفكرية الأخرى. عند استخدامك للخدمة، فإنك تحصل على ترخيص شخصي، غير حصري، غير قابل للتحويل، وقابل للإلغاء لاستخدام السيرة الذاتية التي تنشئها لأغراضك الشخصية أو المهنية فقط." data-en="All designs, templates, text, graphics, logos, icons, images, software, and other content available through the service ('Service Content') are the intellectual property of 'Resail' or are licensed to us, and are protected by copyright, trademark, and other intellectual property laws. By using the service, you receive a personal, non-exclusive, non-transferable, and revocable license to use the CV you create for your personal or professional purposes only.">جميع التصميمات، القوالب، النصوص، الرسومات، الشعارات، الأيقونات، الصور، البرمجيات، وأي محتوى آخر متاح عبر الخدمة ('محتوى الخدمة') هي ملكية فكرية خاصة بـ 'رسائل' أو مرخصة لنا، وهي محمية بموجب قوانين حقوق النشر والعلامات التجارية والملكية الفكرية الأخرى. عند استخدامك للخدمة، فإنك تحصل على ترخيص شخصي، غير حصري، غير قابل للتحويل، وقابل للإلغاء لاستخدام السيرة الذاتية التي تنشئها لأغراضك الشخصية أو المهنية فقط.</p>
+                <p data-ar="لا يجوز لك إعادة بيع أو إعادة إنتاج أو توزيع أو تعديل أو إنشاء أعمال مشتقة أو عرض علني أو أداء علني أو نشر أو نقل أو استغلال أي جزء من محتوى الخدمة أو الخدمة نفسها دون إذن كتابي مسبق من 'رسائل'." data-en="You may not resell, reproduce, distribute, modify, create derivative works from, publicly display, publicly perform, publish, transmit, or exploit any part of the Service Content or the service itself without prior written permission from 'Resail'.">لا يجوز لك إعادة بيع أو إعادة إنتاج أو توزيع أو تعديل أو إنشاء أعمال مشتقة أو عرض علني أو أداء علني أو نشر أو نقل أو استغلال أي جزء من محتوى الخدمة أو الخدمة نفسها دون إذن كتابي مسبق من 'رسائل'.</p>
+                <h4 class="mt-4" data-ar="3. الدفع والأسعار" data-en="3. Payment and Pricing">3. الدفع والأسعار</h4>
+                <p data-ar="تتطلب بعض القوالب والميزات المتقدمة دفع رسوم محددة. تكون جميع الأسعار موضحة بوضوح في صفحة اختيار القوالب أو عند بداية عملية الدفع. تحتفظ 'رسائل' بالحق في تعديل الأسعار أو فرض رسوم على ميزات جديدة في أي وقت، مع إخطار مسبق بذلك. جميع المدفوعات تتم عبر بوابات دفع خارجية آمنة (مثل Lemon Squeezy). 'رسائل' لا تقوم بتخزين معلومات بطاقة الدفع الخاصة بك." data-en="Some advanced templates and features require payment of specific fees. All prices are clearly stated on the template selection page or at the beginning of the payment process. 'Resail' reserves the right to modify prices or charge for new features at any time, with prior notice. All payments are processed through secure third-party payment gateways (like Lemon Squeezy). 'Resail' does not store your payment card information.">تتطلب بعض القوالب والميزات المتقدمة دفع رسوم محددة. تكون جميع الأسعار موضحة بوضوح في صفحة اختيار القوالب أو عند بداية عملية الدفع. تحتفظ 'رسائل' بالحق في تعديل الأسعار أو فرض رسوم على ميزات جديدة في أي وقت، مع إخطار مسبق بذلك. جميع المدفوعات تتم عبر بوابات دفع خارجية آمنة (مثل Lemon Squeezy). 'رسائل' لا تقوم بتخزين معلومات بطاقة الدفع الخاصة بك.</p>
+                <p data-ar="جميع المدفوعات غير قابلة للاسترداد إلا في حالات محددة وفقًا لسياسة الاسترداد الخاصة بنا، والتي يمكنك مراجعتها في القسم المخصص لذلك." data-en="All payments are non-refundable except in specific cases according to our Refund Policy, which you can review in the dedicated section.">جميع المدفوعات غير قابلة للاسترداد إلا في حالات محددة وفقًا لسياسة الاسترداد الخاصة بنا، والتي يمكنك مراجعتها في القسم المخصص لذلك.</p>
+                <h4 class="mt-4" data-ar="4. حدود المسؤولية" data-en="4. Limitation of Liability">4. حدود المسؤولية</h4>
+                <p data-ar="يتم تقديم الخدمة 'كما هي' و 'حسب توفرها' دون أي ضمانات من أي نوع، صريحة أو ضمنية. نحن لا نضمن دقة أو اكتمال أو صلاحية أو موثوقية أو توفر أي معلومات مقدمة من قبل المستخدمين أو النتائج التي يمكن الحصول عليها من استخدام الخدمة." data-en="The service is provided 'as is' and 'as available' without any warranties of any kind, express or implied. We do not guarantee the accuracy, completeness, validity, reliability, or availability of any information provided by users or the results that may be obtained from using the service.">يتم تقديم الخدمة 'كما هي' و 'حسب توفرها' دون أي ضمانات من أي نوع، صريحة أو ضمنية. نحن لا نضمن دقة أو اكتمال أو صلاحية أو موثوقية أو توفر أي معلومات مقدمة من قبل المستخدمين أو النتائج التي يمكن الحصول عليها من استخدام الخدمة.</p>
+                <p data-ar="لن تكون 'رسائل' مسؤولة، تحت أي ظرف من الظروف، عن أي أضرار مباشرة أو غير مباشرة أو عرضية أو خاصة أو تبعية أو تأديبية، بما في ذلك، على سبيل المثال لا الحصر، خسارة الأرباح، البيانات، أو الاستخدام، تنشأ عن استخدام أو عدم القدرة على استخدام الخدمة." data-en="Under no circumstances shall 'Resail' be liable for any direct, indirect, incidental, special, consequential, or punitive damages, including, but not limited to, loss of profits, data, or use, arising from the use or inability to use the service.">لن تكون 'رسائل' مسؤولة، تحت أي ظرف من الظروف، عن أي أضرار مباشرة أو غير مباشرة أو عرضية أو خاصة أو تبعية أو تأديبية، بما في ذلك، على سبيل المثال لا الحصر، خسارة الأرباح، البيانات، أو الاستخدام، تنشأ عن استخدام أو عدم القدرة على استخدام الخدمة.</p>
+                <h4 class="mt-4" data-ar="5. التعديلات على الشروط" data-en="5. Modifications to Terms">5. التعديلات على الشروط</h4>
+                <p data-ar="نحتفظ بالحق في تعديل أو تحديث هذه الشروط والأحكام في أي وقت ودون إشعار مسبق. سيتم نشر أي تغييرات على هذه الصفحة، ويعتبر استمرار استخدامك للخدمة بعد نشر التعديلات بمثابة موافقة منك على الشروط المعدلة. يرجى مراجعة هذه الصفحة بانتظام للاطلاع على أي تحديثات." data-en="We reserve the right to modify or update these terms and conditions at any time without prior notice. Any changes will be posted on this page, and your continued use of the service after the changes are posted will constitute your acceptance of the modified terms. Please review this page regularly for any updates.">نحتفظ بالحق في تعديل أو تحديث هذه الشروط والأحكام في أي وقت ودون إشعار مسبق. سيتم نشر أي تغييرات على هذه الصفحة، ويعتبر استمرار استخدامك للخدمة بعد نشر التعديلات بمثابة موافقة منك على الشروط المعدلة. يرجى مراجعة هذه الصفحة بانتظام للاطلاع على أي تحديثات.</p>
+                <h4 class="mt-4" data-ar="6. القانون المعمول به" data-en="6. Governing Law">6. القانون المعمول به</h4>
+                <p data-ar="تخضع هذه الشروط والأحكام وتفسر وفقًا لقوانين المملكة العربية السعودية، وتوافق على الخضوع للاختصاص القضائي الحصري لمحاكم المملكة العربية السعودية لحل أي نزاعات تنشأ عن هذه الشروط أو استخدام الخدمة." data-en="These terms and conditions are governed by and construed in accordance with the laws of the Kingdom of Saudi Arabia, and you agree to submit to the exclusive jurisdiction of the courts of the Kingdom of Saudi Arabia to resolve any disputes arising from these terms or the use of the service.">تخضع هذه الشروط والأحكام وتفسر وفقًا لقوانين المملكة العربية السعودية، وتوافق على الخضوع للاختصاص القضائي الحصري لمحاكم المملكة العربية السعودية لحل أي نزاعات تنشأ عن هذه الشروط أو استخدام الخدمة.</p>
+                <h4 class="mt-4" data-ar="7. الاتصال بنا" data-en="7. Contact Us">7. الاتصال بنا</h4>
+                <p data-ar="لأي أسئلة أو استفسارات بخصوص شروط الخدمة، يرجى الاتصال بنا عبر البريد الإلكتروني: <a href='mailto:ramyheshamamer@gmail.com'>ramyheshamamer@gmail.com</a>." data-en="For any questions or inquiries regarding the Terms of Service, please contact us via email: <a href='mailto:ramyheshamamer@gmail.com'>ramyheshamamer@gmail.com</a>.">لأي أسئلة أو استفسارات بخصوص شروط الخدمة، يرجى الاتصال بنا عبر البريد الإلكتروني: <a href="mailto:ramyheshamamer@gmail.com">ramyheshamamer@gmail.com</a>.</p>
+                <button class="btn btn-secondary mt-3" onclick="showPage('landing-page')" data-ar="العودة للرئيسية" data-en="Back to Home">العودة للرئيسية</button>
             </div>
         </div>
 
         <div id="refund-policy" class="page-section">
             <div class="container py-4">
-                <h2 class="mb-4 text-center" data-translate="refund-policy-title"></h2>
-                <p data-translate="refund-policy-intro-p"></p>
-                <h4 class="mt-4" data-translate="refund-policy-h4-1"></h4>
-                <p data-translate="refund-policy-p-1-1"></p>
-                <h4 class="mt-4" data-translate="refund-policy-h4-2"></h4>
-                <p data-translate="refund-policy-p-2-1"></p>
-                <ul data-translate="refund-policy-list-1"></ul>
-                <h4 class="mt-4" data-translate="refund-policy-h4-3"></h4>
-                <p data-translate="refund-policy-p-3-1"></p>
-                <ul data-translate="refund-policy-list-2"></ul>
-                <h4 class="mt-4" data-translate="refund-policy-h4-4"></h4>
-                <p data-translate="refund-policy-p-4-1"></p>
-                <h4 class="mt-4" data-translate="refund-policy-h4-5"></h4>
-                <p data-translate="refund-policy-p-5-1"></p>
-                <button class="btn btn-secondary mt-3" onclick="showPage('landing-page')" data-translate="back-to-home"></button>
+                <h2 class="mb-4 text-center" data-ar="سياسة الاسترداد والنزاعات" data-en="Refund and Dispute Policy">سياسة الاسترداد والنزاعات</h2>
+                <p data-ar="نحن في 'رسائل' نسعى لتقديم خدمة عالية الجودة وضمان رضا عملائنا. نظرًا لطبيعة منتجاتنا الرقمية (السير الذاتية التي يتم إنشاؤها وتنزيلها بصيغة PDF)، فإن سياستنا للاسترداد والنزاعات كالتالي:" data-en="At 'Resail', we strive to provide a high-quality service and ensure customer satisfaction. Due to the digital nature of our products (CVs created and downloaded as PDF files), our refund and dispute policy is as follows:">نحن في 'رسائل' نسعى لتقديم خدمة عالية الجودة وضمان رضا عملائنا. نظرًا لطبيعة منتجاتنا الرقمية (السير الذاتية التي يتم إنشاؤها وتنزيلها بصيغة PDF)، فإن سياستنا للاسترداد والنزاعات كالتالي:</p>
+                <h4 class="mt-4" data-ar="1. المنتجات الرقمية (السير الذاتية بصيغة PDF)" data-en="1. Digital Products (PDF CVs)">1. المنتجات الرقمية (السير الذاتية بصيغة PDF)</h4>
+                <p data-ar="بمجرد إتمام عملية الدفع ونجاح إنشاء السيرة الذاتية وإرسالها إلى بريدك الإلكتروني (أو توفير رابط التنزيل)، تعتبر الخدمة قد اكتملت بالكامل. ولذلك، لا تتوفر عادةً عمليات استرداد للمبالغ المدفوعة." data-en="Once the payment is completed and the CV is successfully generated and sent to your email (or a download link is provided), the service is considered fully delivered. Therefore, refunds for payments made are generally not available.">بمجرد إتمام عملية الدفع ونجاح إنشاء السيرة الذاتية وإرسالها إلى بريدك الإلكتروني (أو توفير رابط التنزيل)، تعتبر الخدمة قد اكتملت بالكامل. ولذلك، لا تتوفر عادةً عمليات استرداد للمبالغ المدفوعة.</p>
+                <h4 class="mt-4" data-ar="2. حالات الاسترداد الاستثنائية" data-en="2. Exceptional Refund Cases">2. حالات الاسترداد الاستثنائية</h4>
+                <p data-ar="قد يتم النظر في طلبات الاسترداد في الحالات الاستثنائية التالية فقط:" data-en="Refund requests may be considered only in the following exceptional cases:">قد يتم النظر في طلبات الاسترداد في الحالات الاستثنائية التالية فقط:</p>
+                <ul data-ar-list='["مشكلة فنية جوهرية: إذا واجهت مشكلة فنية في نظامنا منعتك من إنشاء أو تنزيل السيرة الذاتية بشكل كامل، ولم يتمكن فريق الدعم من حل المشكلة في غضون فترة زمنية معقولة.", "خطأ فادح في المنتج: إذا كانت السيرة الذاتية التي تم إنشاؤها تحتوي على أخطاء فادحة ناتجة عن خلل في نظامنا (وليس بسبب أخطاء في البيانات المدخلة من قبلك)، ولم نتمكن من تصحيحها.", "الدفع المكرر: إذا قمت بالدفع لنفس الخدمة عن طريق الخطأ أكثر من مرة."]' data-en-list='["Critical technical issue: If you encounter a technical problem in our system that prevents you from fully creating or downloading the CV, and our support team is unable to resolve the issue within a reasonable time frame.", "Major product error: If the generated CV contains significant errors resulting from a flaw in our system (and not due to errors in the data you entered), and we are unable to correct it.", "Duplicate payment: If you accidentally paid for the same service more than once."]' >
+                    <li>مشكلة فنية جوهرية: إذا واجهت مشكلة فنية في نظامنا منعتك من إنشاء أو تنزيل السيرة الذاتية بشكل كامل، ولم يتمكن فريق الدعم من حل المشكلة في غضون فترة زمنية معقولة.</li>
+                    <li>خطأ فادح في المنتج: إذا كانت السيرة الذاتية التي تم إنشاؤها تحتوي على أخطاء فادحة ناتجة عن خلل في نظامنا (وليس بسبب أخطاء في البيانات المدخلة من قبلك)، ولم نتمكن من تصحيحها.</li>
+                    <li>الدفع المكرر: إذا قمت بالدفع لنفس الخدمة عن طريق الخطأ أكثر من مرة.</li>
+                </ul>
+                <h4 class="mt-4" data-ar="3. عملية طلب الاسترداد" data-en="3. Refund Request Process">3. عملية طلب الاسترداد</h4>
+                <p data-ar="لتقديم طلب استرداد، يرجى الاتصال بفريق الدعم لدينا عبر البريد الإلكتروني <a href='mailto:ramyheshamamer@gmail.com'>ramyheshamamer@gmail.com</a> في غضون 7 أيام من تاريخ الشراء. يجب أن يتضمن طلبك التفاصيل التالية:" data-en="To submit a refund request, please contact our support team via email at <a href='mailto:ramyheshamamer@gmail.com'>ramyheshamamer@gmail.com</a> within 7 days of the purchase date. Your request must include the following details:">لتقديم طلب استرداد، يرجى الاتصال بفريق الدعم لدينا عبر البريد الإلكتروني <a href="mailto:ramyheshamamer@gmail.com">ramyheshamamer@gmail.com</a> في غضون 7 أيام من تاريخ الشراء. يجب أن يتضمن طلبك التفاصيل التالية:</p>
+                <ul data-ar-list='["اسمك الكامل والبريد الإلكتروني المستخدم في الشراء.", "تاريخ ورقم المعاملة (إن وجد).", "وصف مفصل للمشكلة التي واجهتها والأسباب التي تدفعك لطلب الاسترداد.", "أي لقطات شاشة أو مستندات تدعم طلبك."]' data-en-list='["Your full name and the email address used for the purchase.", "Date and transaction number (if available).", "A detailed description of the problem you encountered and the reasons for your refund request.", "Any screenshots or documents that support your request."]' >
+                    <li>اسمك الكامل والبريد الإلكتروني المستخدم في الشراء.</li>
+                    <li>تاريخ ورقم المعاملة (إن وجد).</li>
+                    <li>وصف مفصل للمشكلة التي واجهتها والأسباب التي تدفعك لطلب الاسترداد.</li>
+                    <li>أي لقطات شاشة أو مستندات تدعم طلبك.</li>
+                </ul>
+                <h4 class="mt-4" data-ar="4. مراجعة الطلبات" data-en="4. Request Review">4. مراجعة الطلبات</h4>
+                <p data-ar="سنقوم بمراجعة جميع طلبات الاسترداد بعناية. سيتم إخطارك بالقرار في غضون 5 أيام عمل من استلام طلبك. إذا تمت الموافقة على الاسترداد، فسيتم معالجة المبلغ إلى طريقة الدفع الأصلية خلال 7-14 يوم عمل، اعتمادًا على سياسات معالج الدفع الخاص بك." data-en="We will carefully review all refund requests. You will be notified of the decision within 5 business days of receiving your request. If the refund is approved, the amount will be processed to the original payment method within 7-14 business days, depending on your payment processor's policies.">سنقوم بمراجعة جميع طلبات الاسترداد بعناية. سيتم إخطارك بالقرار في غضون 5 أيام عمل من استلام طلبك. إذا تمت الموافقة على الاسترداد، فسيتم معالجة المبلغ إلى طريقة الدفع الأصلية خلال 7-14 يوم عمل، اعتمادًا على سياسات معالج الدفع الخاص بك.</p>
+                <h4 class="mt-4" data-ar="5. حل النزاعات" data-en="5. Dispute Resolution">5. حل النزاعات</h4>
+                <p data-ar="نحن نشجعك على الاتصال بنا مباشرة في حال وجود أي مشاكل أو نزاعات قبل اللجوء إلى معالج الدفع أو البنك. نسعى لحل جميع المشكلات بشكل ودي وعادل لضمان رضا عملائنا." data-en="We encourage you to contact us directly with any issues or disputes before resorting to your payment processor or bank. We strive to resolve all problems amicably and fairly to ensure our customers' satisfaction.">نحن نشجعك على الاتصال بنا مباشرة في حال وجود أي مشاكل أو نزاعات قبل اللجوء إلى معالج الدفع أو البنك. نسعى لحل جميع المشكلات بشكل ودي وعادل لضمان رضا عملائنا.</p>
+                <button class="btn btn-secondary mt-3" onclick="showPage('landing-page')" data-ar="العودة للرئيسية" data-en="Back to Home">العودة للرئيسية</button>
             </div>
         </div>
 
         <div id="privacy-policy" class="page-section">
             <div class="container py-4">
-                <h2 class="mb-4 text-center" data-translate="privacy-policy-title"></h2>
-                <p data-translate="privacy-policy-intro-p"></p>
-                <h4 class="mt-4" data-translate="privacy-policy-h4-1"></h4>
-                <ul data-translate="privacy-policy-list-1"></ul>
-                <h4 class="mt-4" data-translate="privacy-policy-h4-2"></h4>
-                <p data-translate="privacy-policy-p-2-1"></p>
-                <ul data-translate="privacy-policy-list-2"></ul>
-                <h4 class="mt-4" data-translate="privacy-policy-h4-3"></h4>
-                <p data-translate="privacy-policy-p-3-1"></p>
-                <ul data-translate="privacy-policy-list-3"></ul>
-                <h4 class="mt-4" data-translate="privacy-policy-h4-4"></h4>
-                <p data-translate="privacy-policy-p-4-1"></p>
-                <h4 class="mt-4" data-translate="privacy-policy-h4-5"></h4>
-                <p data-translate="privacy-policy-p-5-1"></p>
-                <h4 class="mt-4" data-translate="privacy-policy-h4-6"></h4>
-                <p data-translate="privacy-policy-p-6-1"></p>
-                <h4 class="mt-4" data-translate="privacy-policy-h4-7"></h4>
-                <p data-translate="privacy-policy-p-7-1"></p>
-                <button class="btn btn-secondary mt-3" onclick="showPage('landing-page')" data-translate="back-to-home"></button>
+                <h2 class="mb-4 text-center" data-ar="سياسة الخصوصية" data-en="Privacy Policy">سياسة الخصوصية</h2>
+                <p data-ar="نحن في 'رسائل' نلتزم بحماية خصوصية بياناتك الشخصية. توضح هذه السياسة كيف نجمع، نستخدم، نحمي، وندير المعلومات التي تقدمها لنا عند استخدام خدماتنا لإنشاء السير الذاتية." data-en="At 'Resail', we are committed to protecting the privacy of your personal data. This policy explains how we collect, use, protect, and manage the information you provide to us when using our CV creation services.">نحن في 'رسائل' نلتزم بحماية خصوصية بياناتك الشخصية. توضح هذه السياسة كيف نجمع، نستخدم، نحمي، وندير المعلومات التي تقدمها لنا عند استخدام خدماتنا لإنشاء السير الذاتية.</p>
+                <h4 class="mt-4" data-ar="1. المعلومات التي نجمعها" data-en="1. Information We Collect">1. المعلومات التي نجمعها</h4>
+                <ul data-ar-list='["<strong>معلومات السيرة الذاتية:</strong> نقوم بجمع المعلومات التي تدخلها مباشرة في نماذج إنشاء السيرة الذاتية، مثل اسمك الكامل، المسمى الوظيفي، عنوان البريد الإلكتروني، رقم الهاتف، الموقع الشخصي/المحفظة، الهدف الوظيفي، تفاصيل الخبرة العملية، المؤهلات العلمية، المهارات، اللغات، والمراجع. إذا قمت بتحميل صورة شخصية، فإننا نقوم بجمعها أيضاً.", "<strong>معلومات الاتصال والدفع:</strong> عند إجراء عملية شراء، نجمع اسمك، بريدك الإلكتروني، ورقم هاتفك. تفاصيل الدفع (مثل أرقام البطاقات الائتمانية) يتم معالجتها مباشرة بواسطة بوابات دفع خارجية آمنة (مثل Lemon Squeezy/Stripe)، ونحن لا نقوم بتخزين هذه المعلومات الحساسة على خوادمنا.", "<strong>بيانات الاستخدام:</strong> قد نجمع معلومات حول كيفية وصولك واستخدامك لخدمتنا، مثل عنوان IP، نوع المتصفح، الصفحات التي زرتها، والوقت المستغرق في كل صفحة. هذه البيانات تُستخدم لتحسين الخدمة ولا ترتبط بشكل مباشر بمعلوماتك الشخصية."]' data-en-list='["<strong>CV Information:</strong> We collect the information you enter directly into the CV creation forms, such as your full name, job title, email address, phone number, personal website/portfolio, career objective, details of work experience, educational qualifications, skills, languages, and references. If you upload a profile picture, we collect that as well.", "<strong>Contact and Payment Information:</strong> When you make a purchase, we collect your name, email address, and phone number. Payment details (like credit card numbers) are processed directly by secure third-party payment gateways (such as Lemon Squeezy/Stripe), and we do not store this sensitive information on our servers.", "<strong>Usage Data:</strong> We may collect information about how you access and use our service, such as your IP address, browser type, pages visited, and time spent on each page. This data is used to improve the service and is not directly linked to your personal information."]' >
+                    <li><strong>معلومات السيرة الذاتية:</strong> نقوم بجمع المعلومات التي تدخلها مباشرة في نماذج إنشاء السيرة الذاتية، مثل اسمك الكامل، المسمى الوظيفي، عنوان البريد الإلكتروني، رقم الهاتف، الموقع الشخصي/المحفظة، الهدف الوظيفي، تفاصيل الخبرة العملية، المؤهلات العلمية، المهارات، اللغات، والمراجع. إذا قمت بتحميل صورة شخصية، فإننا نقوم بجمعها أيضاً.</li>
+                    <li><strong>معلومات الاتصال والدفع:</strong> عند إجراء عملية شراء، نجمع اسمك، بريدك الإلكتروني، ورقم هاتفك. تفاصيل الدفع (مثل أرقام البطاقات الائتمانية) يتم معالجتها مباشرة بواسطة بوابات دفع خارجية آمنة (مثل Lemon Squeezy/Stripe)، ونحن لا نقوم بتخزين هذه المعلومات الحساسة على خوادمنا.</li>
+                    <li><strong>بيانات الاستخدام:</strong> قد نجمع معلومات حول كيفية وصولك واستخدامك لخدمتنا، مثل عنوان IP، نوع المتصفح، الصفحات التي زرتها، والوقت المستغرق في كل صفحة. هذه البيانات تُستخدم لتحسين الخدمة ولا ترتبط بشكل مباشر بمعلوماتك الشخصية.</li>
+                </ul>
+                <h4 class="mt-4" data-ar="2. كيف نستخدم معلوماتك" data-en="2. How We Use Your Information">2. كيف نستخدم معلوماتك</h4>
+                <p data-ar="نستخدم المعلومات التي نجمعها للأغراض التالية:" data-en="We use the information we collect for the following purposes:">نستخدم المعلومات التي نجمعها للأغراض التالية:</p>
+                <ul data-ar-list='["لتقديم خدمة إنشاء السيرة الذاتية وتخصيصها لك.", "لمعالجة معاملات الدفع الخاصة بك وتزويدك بالمنتج النهائي (ملف PDF للسيرة الذاتية).", "لتحسين وتطوير خدماتنا وميزاتنا.", "للتواصل معك بخصوص استخدامك للخدمة، أو لأغراض الدعم الفني، أو لإرسال تحديثات مهمة.", "لضمان الامتثال للمتطلبات القانونية والتنظيمية."]' data-en-list='["To provide and customize the CV creation service for you.", "To process your payment transactions and provide you with the final product (the PDF CV file).", "To improve and develop our services and features.", "To communicate with you regarding your use of the service, for technical support purposes, or to send important updates.", "To ensure compliance with legal and regulatory requirements."]' >
+                    <li>لتقديم خدمة إنشاء السيرة الذاتية وتخصيصها لك.</li>
+                    <li>لمعالجة معاملات الدفع الخاصة بك وتزويدك بالمنتج النهائي (ملف PDF للسيرة الذاتية).</li>
+                    <li>لتحسين وتطوير خدماتنا وميزاتنا.</li>
+                    <li>للتواصل معك بخصوص استخدامك للخدمة، أو لأغراض الدعم الفني، أو لإرسال تحديثات مهمة.</li>
+                    <li>لضمان الامتثال للمتطلبات القانونية والتنظيمية.</li>
+                </ul>
+                <h4 class="mt-4" data-ar="3. مشاركة المعلومات" data-en="3. Information Sharing">3. مشاركة المعلومات</h4>
+                <p data-ar="نحن لا نبيع، نؤجر، أو نتبادل معلوماتك الشخصية مع أطراف ثالثة لأغراض التسويق. قد نشارك معلوماتك مع:" data-en="We do not sell, rent, or trade your personal information with third parties for marketing purposes. We may share your information with:">نحن لا نبيع، نؤجر، أو نتبادل معلوماتك الشخصية مع أطراف ثالثة لأغراض التسويق. قد نشارك معلوماتك مع:</p>
+                <ul data-ar-list='["<strong>مقدمي الخدمات الخارجيين:</strong> مثل بوابات الدفع (Lemon Squeezy/Stripe) ومعالجي البريد الإلكتروني، وذلك بالقدر اللازم لتقديم خدماتنا. هؤلاء المقدمون ملزمون بالحفاظ على سرية معلوماتك.", "<strong>الامتثال القانوني:</strong> قد نكشف عن معلوماتك إذا كان ذلك مطلوبًا بموجب القانون أو أمر قضائي، أو لحماية حقوقنا ومصالحنا أو حقوق المستخدمين الآخرين."]' data-en-list='["<strong>Third-Party Service Providers:</strong> Such as payment gateways (Lemon Squeezy/Stripe) and email processors, to the extent necessary to provide our services. These providers are obligated to maintain the confidentiality of your information.", "<strong>Legal Compliance:</strong> We may disclose your information if required by law or a court order, or to protect our rights and interests or the rights of other users."]' >
+                    <li><strong>مقدمي الخدمات الخارجيين:</strong> مثل بوابات الدفع (Lemon Squeezy/Stripe) ومعالجي البريد الإلكتروني، وذلك بالقدر اللازم لتقديم خدماتنا. هؤلاء المقدمون ملزمون بالحفاظ على سرية معلوماتك.</li>
+                    <li><strong>الامتثال القانوني:</strong> قد نكشف عن معلوماتك إذا كان ذلك مطلوبًا بموجب القانون أو أمر قضائي، أو لحماية حقوقنا ومصالحنا أو حقوق المستخدمين الآخرين.</li>
+                </ul>
+                <h4 class="mt-4" data-ar="4. أمان البيانات" data-en="4. Data Security">4. أمان البيانات</h4>
+                <p data-ar="نحن نتخذ إجراءات أمنية معقولة ومناسبة لحماية معلوماتك الشخصية من الوصول غير المصرح به، أو التغيير، أو الكشف، أو التدمير. ومع ذلك، يجب أن تدرك أنه لا يوجد نظام نقل بيانات عبر الإنترنت أو تخزين إلكتروني آمن 100%." data-en="We take reasonable and appropriate security measures to protect your personal information from unauthorized access, alteration, disclosure, or destruction. However, you should be aware that no method of transmission over the Internet or electronic storage is 100% secure.">نحن نتخذ إجراءات أمنية معقولة ومناسبة لحماية معلوماتك الشخصية من الوصول غير المصرح به، أو التغيير، أو الكشف، أو التدمير. ومع ذلك، يجب أن تدرك أنه لا يوجد نظام نقل بيانات عبر الإنترنت أو تخزين إلكتروني آمن 100%.</p>
+                <h4 class="mt-4" data-ar="5. حقوقك" data-en="5. Your Rights">5. حقوقك</h4>
+                <p data-ar="يحق لك الوصول إلى بياناتك الشخصية التي نحتفظ بها، وطلب تصحيح أي معلومات غير دقيقة، أو طلب حذف بياناتك. لممارسة هذه الحقوق، يرجى الاتصال بنا عبر البريد الإلكتروني المذكور أدناه." data-en="You have the right to access your personal data that we hold, request the correction of any inaccurate information, or request the deletion of your data. To exercise these rights, please contact us at the email address mentioned below.">يحق لك الوصول إلى بياناتك الشخصية التي نحتفظ بها، وطلب تصحيح أي معلومات غير دقيقة، أو طلب حذف بياناتك. لممارسة هذه الحقوق، يرجى الاتصال بنا عبر البريد الإلكتروني المذكور أدناه.</p>
+                <h4 class="mt-4" data-ar="6. التعديلات على سياسة الخصوصية" data-en="6. Changes to the Privacy Policy">6. التعديلات على سياسة الخصوصية</h4>
+                <p data-ar="نحتفظ بالحق في تعديل أو تحديث سياسة الخصوصية هذه من وقت لآخر. سيتم نشر أي تغييرات على هذه الصفحة، ويعتبر استمرارك في استخدام الخدمة بعد نشر التعديلات بمثابة موافقة منك على السياسة المعدلة." data-en="We reserve the right to modify or update this Privacy Policy from time to time. Any changes will be posted on this page, and your continued use of the service after the changes are posted will constitute your acceptance of the modified policy.">نحتفظ بالحق في تعديل أو تحديث سياسة الخصوصية هذه من وقت لآخر. سيتم نشر أي تغييرات على هذه الصفحة، ويعتبر استمرارك في استخدام الخدمة بعد نشر التعديلات بمثابة موافقة منك على السياسة المعدلة.</p>
+                <h4 class="mt-4" data-ar="7. الاتصال بنا" data-en="7. Contact Us">7. الاتصال بنا</h4>
+                <p data-ar="لأي أسئلة أو استفسارات بخصوص سياسة الخصوصية، يرجى الاتصال بنا عبر البريد الإلكتروني: <a href='mailto:ramyheshamamer@gmail.com'>ramyheshamamer@gmail.com</a>." data-en="For any questions or inquiries regarding this Privacy Policy, please contact us via email: <a href='mailto:ramyheshamamer@gmail.com'>ramyheshamamer@gmail.com</a>.">لأي أسئلة أو استفسارات بخصوص سياسة الخصوصية، يرجى الاتصال بنا عبر البريد الإلكتروني: <a href="mailto:ramyheshamamer@gmail.com">ramyheshamamer@gmail.com</a>.</p>
+                <button class="btn btn-secondary mt-3" onclick="showPage('landing-page')" data-ar="العودة للرئيسية" data-en="Back to Home">العودة للرئيسية</button>
             </div>
         </div>
     </div>
@@ -3041,11 +2985,11 @@ html[dir="ltr"] .gradient-toggle-wrapper .form-check-input {
     <footer class="bg-dark text-white py-4">
         <div class="container text-center">
             <ul class="list-inline mb-3">
-                <li class="list-inline-item"><a href="#" onclick="showPage('terms-of-service')" class="text-white text-decoration-none" data-translate="terms-of-service-link"></a></li>
-                <li class="list-inline-item mx-3"><a href="#" onclick="showPage('refund-policy')" class="text-white text-decoration-none" data-translate="refund-policy-link"></a></li>
-                <li class="list-inline-item"><a href="#" onclick="showPage('privacy-policy')" class="text-white text-decoration-none" data-translate="privacy-policy-link"></a></li>
+                <li class="list-inline-item"><a href="#terms-of-service" onclick="showPage('terms-of-service')" class="text-white text-decoration-none" data-ar="شروط الخدمة" data-en="Terms of Service">شروط الخدمة</a></li>
+                <li class="list-inline-item mx-3"><a href="#refund-policy" onclick="showPage('refund-policy')" class="text-white text-decoration-none" data-ar="سياسة الاسترداد" data-en="Refund Policy">سياسة الاسترداد</a></li>
+                <li class="list-inline-item"><a href="#privacy-policy" onclick="showPage('privacy-policy')" class="text-white text-decoration-none" data-ar="سياسة الخصوصية" data-en="Privacy Policy">سياسة الخصوصية</a></li>
             </ul>
-            <p>&copy; 2023 <span data-translate="brand-name"></span>. All rights reserved.</p>
+            <p>&copy; 2023 <span data-ar="رسائل" data-en="Resail">رسائل</span>. <span data-ar="جميع الحقوق محفوظة." data-en="All rights reserved.">جميع الحقوق محفوظة.</span></p>
         </div>
     </footer>
 
