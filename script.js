@@ -835,6 +835,7 @@ function loadCvDataFromLocalStorage() {
         console.error("Error loading from localStorage", e);
         localStorage.removeItem('resailCvData');
     }
+        updatePageContentLanguage(); // لإعادة ترجمة العناصر بعد ملء البيانات
 }
 
 // Global variables
@@ -2288,36 +2289,21 @@ function getEducationsData() {
 function getSkillsData() {
     const skills = [];
     document.querySelectorAll('#skills-input .skill-entry').forEach(entry => {
-        
-        // الخطوة 1: ابحث عن حقل إدخال اسم المهارة
         const nameInput = entry.querySelector('.skill-item-input');
-        
-        // الخطوة 2: *** هذا هو التحقق الأهم الذي كان ناقصاً ***
-        // لا تكمل الكود إلا إذا تم العثور على حقل الإدخال بنجاح
-        if (nameInput) {
+        const levelSelect = entry.querySelector('.skill-level-select');
+
+        // تحقق من وجود حقول الإدخال لتجنب الأخطاء
+        if (nameInput && levelSelect) {
             const name = nameInput.value.trim();
+            const level = levelSelect.value;
 
-            // تجاهل المهارات الفارغة
-            if (name === '') {
-                return; // يعادل 'continue' في الحلقة
+            // الشرط الوحيد لعدم الحفظ هو أن يكون حقل الاسم فارغًا
+            if (name !== '') {
+                // احفظ المهارة دائمًا طالما الاسم موجود
+                // سيتم حفظ المستوى بقيمته الحالية (سواء كانت '0' أو قيمة أخرى)
+                skills.push({ name, level });
             }
-
-            // الخطوة 3: ابحث الآن عن قائمة المستوى (إن وجدت)
-            const levelSelect = entry.querySelector('.skill-level-select');
-            let level = '100%'; // قيمة افتراضية للمهارات التي ليس لها مستوى (الحقول القديمة)
-
-            if (levelSelect) {
-                // تجاهل المهارة إذا لم يتم تحديد مستوى
-                if (levelSelect.value === '0') {
-                    return; 
-                }
-                level = levelSelect.value;
-            }
-            
-            // إذا وصلنا إلى هنا، فكل شيء سليم. أضف المهارة.
-            skills.push({ name, level });
         }
-        // إذا لم يتم العثور على nameInput من الأساس، سيتجاهل الكود هذا الـ entry وينتقل للتالي دون أن ينهار.
     });
     return skills;
 }
@@ -3576,6 +3562,7 @@ function populateWithTestData() {
     generateCV(cvContainer);
     updateProgress();
 }
+
 
 
 
