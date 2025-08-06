@@ -3353,7 +3353,7 @@ function generateCV(targetElement) {
         if (selectedTemplate == 1) {
             cvContentDiv.innerHTML = `<div class="header-wave">${profilePicHTML}<div class="header-text"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div></div><div class="content-columns"><div class="left-column">${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${referencesHTML}${endMarkerHTML}</div><div class="right-column">${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${endMarkerHTML}</div></div>`;
         } else if (selectedTemplate == 2) {
-            cvContentDiv.innerHTML = `<div class="header-wave"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div><div class="content-columns"><div class="left-column">${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${endMarkerHTML}</div><div class="right-column">${profilePicHTML}${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div></div>`;
+            cvContentDiv.innerHTML = `<div class="header-wave"><div class="header-text"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div></div><div class="content-columns"><div class="left-column">${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${endMarkerHTML}</div><div class="right-column">${profilePicHTML}${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div></div>`;
         } else if (selectedTemplate == 3) {
             cvContentDiv.innerHTML = `<div class="cv-sidebar"><div class="cv-header two-col-main">${profilePicHTML}<h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div>${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div><div class="cv-main-content">${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${endMarkerHTML}</div>`;
         }
@@ -3561,6 +3561,7 @@ function populateWithTestData() {
     generateCV(cvContainer);
     updateProgress();
 }
+
 
 
 
