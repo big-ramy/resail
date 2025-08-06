@@ -1,0 +1,183 @@
+/* ========================================================== */
+/* ==   ملف التجاوب والطباعة (responsive.css)              == */
+/* ==   يحتوي على جميع قواعد @media للشاشات المختلفة والطباعة == */
+/* ========================================================== */
+
+/* --- Responsive Adjustments for Header --- */
+@media (max-width: 768px) {
+    .site-header {
+        height: 300px;
+    }
+    .site-header h1 {
+        font-size: 1.8em;
+    }
+    .site-header p.lead {
+        font-size: 1.2em;
+    }
+    .header-content {
+        gap: 10px;
+    }
+}
+
+/* --- Responsive Adjustments for Controls Sidebar --- */
+@media (max-width: 992px) {
+    #preview-wrapper {
+        /* اجعل العناصر تتراص فوق بعضها في الشاشات الصغيرة */
+        flex-direction: column !important; 
+    }
+    #controls-sidebar {
+        width: 100%; /* اجعل اللوحة تأخذ عرض الشاشة بالكامل */
+        order: -1; /* اجعل لوحة التحكم تظهر فوق المعاينة */
+        margin-bottom: 20px;
+    }
+}
+
+
+/* --- Responsive Adjustments for Mobile Screens (On-Screen Preview of CV) --- */
+@media (max-width: 768px) {
+    /* Adjust CV container preview on mobile */
+    #cv-container {
+        min-height: auto; /* اجعل الارتفاع مرنًا أكثر في المعاينة على الجوال */
+    }
+
+    /* Stack columns in layouts for mobile preview */
+    .cv-two-column-layout, .ast-layout, .cv-professional-layout {
+        flex-direction: column !important; /* Stack columns */
+        gap: 0 !important; /* No gap when stacked */
+    }
+    .cv-professional-layout { /* Reset grid for stacking */
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    .cv-sidebar, .cv-main-content,
+    .cv-two-column-layout .cv-sidebar, .ast-layout .cv-sidebar,
+    .cv-professional-layout .cv-sidebar,
+    .cv-two-column-layout .cv-main-content, .ast-layout .cv-main-content,
+    .cv-professional-layout .cv-main-content {
+        width: 100% !important; /* Full width when stacked */
+        max-width: 100% !important;
+        padding: 15px !important; /* Padding for stacked view */
+        min-height: auto !important;
+    }
+    .cv-professional-layout .cv-header.professional-layout { /* Ensure professional header is also full width */
+        width: 100% !important;
+    }
+
+    /* Font sizes for mobile preview */
+    body, .cv-section, .cv-contact-info, .cv-experience-item, .cv-education-item,
+    .cv-skill-list, .cv-language-list, .cv-reference-item {
+        font-size: 0.9em !important; /* Slightly larger base for mobile readability */
+        line-height: 1.5 !important;
+    }
+    .cv-name { font-size: 1.8em !important; }
+    .cv-title { font-size: 1.1em !important; }
+    .cv-section-title { font-size: 1.2em !important; margin-bottom: 10px !important; padding-bottom: 5px !important; }
+    .cv-contact-item { font-size: 0.9em !important; flex-wrap: wrap; justify-content: center; }
+    .cv-contact-item i { width: 16px !important; height: 16px !important; font-size: 0.9em !important; margin: 0 5px !important; }
+    .cv-profile-pic { width: 100px !important; height: 100px !important; margin: 0 auto 15px auto !important; }
+    .cv-skill-list, .cv-language-list { column-count: 1 !important; text-align: center !important;}
+    .cv-skill-item { margin: 5px auto !important; display: inline-block !important; width: auto; font-size: 0.85em !important;}
+}
+
+@media (max-width: 400px) { /* Very small screens */
+    #cv-container { padding: 3mm; }
+    .cv-name { font-size: 1.6em !important; }
+    .cv-title { font-size: 1em !important; }
+    .cv-section-title { font-size: 1.1em !important; }
+    .cv-profile-pic { width: 80px !important; height: 80px !important; }
+    .cv-contact-item { font-size: 0.8em !important; }
+    .cv-job-title, .cv-degree { font-size: 0.95em !important; }
+    .cv-company, .cv-institution, .cv-duration { font-size: 0.85em !important; }
+    .cv-experience-item p { font-size: 0.85em !important; line-height: 1.4 !important; }
+    .cv-skill-item { font-size: 0.8em !important; padding: 4px 8px !important; }
+}
+
+
+/* ==========================================================================
+   ==                  Final and Simplified Print Rules V5               ==
+   ========================================================================== */
+@media print {
+    /* --- 1. General Page Setup --- */
+    @page {
+        size: A4;
+        margin: 0;
+    }
+   .professional-layout {
+        /* Change the grid rows to be based on content size, not available page space */
+        grid-template-rows: auto auto !important; 
+        height: auto !important; /* Ensure the container height is not fixed */
+    }
+
+    .professional-layout .cv-header.professional-layout {
+       page-break-after: avoid !important; /* Extra rule to prevent a break after the header */
+    }
+    
+    .professional-layout.template3 .cv-header.professional-layout .cv-profile-pic {
+        display: block !important; /* Explicit command to show the image in the header */
+    }
+
+    /* --- 2. Fix for header drop in Creative Template 2 --- */
+    .creative-layout.template2 .cv-content {
+        position: static !important; /* Cancel relative positioning */
+        padding-top: 0 !important;   /* Cancel unnecessary top padding for printing */
+    }
+    .creative-layout.template2 .header-wave {
+        position: static !important; /* Cancel absolute positioning and let it flow naturally */
+        height: auto !important;      /* Allow height to be natural */
+        margin-bottom: 20px !important; /* Add bottom margin to separate header from content */
+    }
+    .creative-layout.template2 .right-column .cv-profile-pic {
+        margin-top: 20px !important; /* Adjust image margin to fit the new flow */
+    }
+
+
+    html, body {
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 10pt; /* A suitable base font size for printing */
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* --- 3. Force unified font and remove shadows --- */
+    *:not(.fas):not(.fab):not(.far):not(.fa-solid):not(.fa-regular):not(.fa-brands) {
+        font-family: 'Tajawal', Arial, sans-serif !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    /* --- 4. Hide UI elements --- */
+    body > nav, body > footer, body > header.site-header, #promo-bar,
+    .page-section:not(.active-page), #cv-preview-page .d-flex, #controls-sidebar {
+        display: none !important;
+    }
+    
+    /* --- 5. Style the JS-created table for printing --- */
+    .print-layout-table {
+        width: 210mm;
+        height: 297mm; /* Force the table to fill the page */
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+    .print-layout-table .sidebar-cell {
+        width: 80mm;
+        vertical-align: top;
+        padding: 8mm; /* Inner padding for the column */
+    }
+    .print-layout-table .main-cell {
+        vertical-align: top;
+        padding: 8mm; /* Inner padding for the column */
+    }
+
+    /* --- 6. Control page breaks --- */
+    .cv-section, .cv-header, .cv-experience-item {
+        page-break-inside: avoid !important;
+    }
+
+    .cv-end-marker {
+        margin-top: auto !important; /* The most important property to push content up and stretch the column */
+        height: 1px !important;
+        display: block !important;
+        page-break-inside: avoid !important;
+    }
+}

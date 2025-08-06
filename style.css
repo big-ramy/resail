@@ -1,0 +1,1052 @@
+/* ========================================================== */
+/* ==   ملف الأنماط الرئيسي للموقع (style.css)             == */
+/* ==   يحتوي على أنماط الواجهة العامة والتخطيط              == */
+/* ========================================================== */
+
+/* General styles */
+body {
+    font-family: "Tajawal", Arial, sans-serif;
+    background-color: #f7f9fc;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    direction: rtl; 
+    text-align: right; 
+    overflow-y: auto; 
+    padding-top: 40px;
+}
+
+/* Language direction classes */
+.rtl {
+    direction: rtl;
+    text-align: right;
+    font-family: "Tajawal", sans-serif;
+}
+
+.ltr {
+    direction: ltr;
+    text-align: left;
+    font-family: "Roboto", sans-serif; /* Ensure fonts are loaded */
+}
+
+/* Ensure Bootstrap RTL is applied correctly within components that inherit direction */
+.container, .row, .col-md-6, .col-md-12, .d-flex, .mb-4, .mb-3, .mt-3, .me-2, .ms-auto {
+    direction: inherit;
+    text-align: inherit;
+}
+
+/* Navbar style */
+.navbar {
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1rem 0;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333 !important;
+}
+
+.navbar-nav .nav-link {
+    color: #555 !important;
+    margin-left: 15px; /* Adjust margin for RTL */
+    margin-right: 0;
+}
+
+body[dir="ltr"] .navbar-nav .nav-link {
+    margin-left: 0;
+    margin-right: 15px; /* Adjust margin for LTR */
+}
+
+.navbar-nav .nav-link:hover {
+    color: #007bff !important;
+}
+
+.dropdown-menu {
+    right: 0; /* Position dropdown on the right for RTL */
+    left: auto;
+    text-align: right; /* Align text right for RTL */
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+body[dir="ltr"] .dropdown-menu {
+    right: auto; /* Position dropdown on the left for LTR */
+    left: 0;
+    text-align: left; /* Align text left for LTR */
+}
+
+.dropdown-item {
+    text-align: inherit; /* Inherit text alignment */
+    padding: 0.5rem 1rem;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+    color: #007bff;
+}
+
+/* Landing Page Styles */
+.site-header {
+    position: relative;
+    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    overflow: hidden;
+    margin-bottom: 40px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('header-background.jpeg.webp');
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.5);
+    z-index: 1;
+}
+
+.header-content {
+    position: relative;
+    z-index: 2;
+    padding: 0 20px;
+    opacity: 1;
+    transform: translateY(0);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.site-header h1 {
+    font-size: 3.5em;
+    margin-bottom: 20px;
+    color: white;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.6);
+    font-weight: 700;
+    width: 100%;
+}
+
+.site-header p.lead {
+    font-size: 1.5em;
+    margin-bottom: 30px;
+    color: white;
+}
+
+/* --- Page/Modal Styles (for the new page-based approach) --- */
+.page-section {
+    display: none;
+    min-height: calc(100vh - 100px);
+    padding: 20px;
+    background-color: #f7f9fc;
+}
+
+.page-section.active-page {
+    display: block;
+}
+
+.page-section .container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.popup-box {
+    position: relative;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 95%;
+    width: 100%;
+    min-height: 80vh;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+#cv-preview-page .container {
+    width: 100%;
+    max-width: 100%;
+    padding: 15px;
+    margin: 10px auto;
+}
+
+#qr-manual-payment-page .container {
+    padding: 30px;
+    border-radius: 8px;
+    width: 550px;
+    max-width: 90vw;
+    text-align: center;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+    margin: 20px auto;
+}
+
+.popup-close {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: #000;
+    padding: 5px;
+    z-index: 10;
+}
+
+body[dir="ltr"] .popup-close {
+    left: auto;
+    right: 10px;
+}
+
+.popup-close:hover {
+    color: red;
+}
+
+/* --- CV Builder Form Styles --- */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="file"],
+textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+    direction: inherit;
+    text-align: inherit;
+}
+
+textarea {
+    resize: vertical;
+}
+
+.form-group .btn {
+    margin-bottom: 10px;
+    margin-left: 5px;
+    margin-right: 0;
+}
+
+body[dir="ltr"] .form-group .btn {
+    margin-left: 0;
+    margin-right: 5px;
+}
+
+.remove-field {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    background: none;
+    border: none;
+    color: #dc3545;
+    font-size: 1.2em;
+    cursor: pointer;
+    z-index: 1;
+    padding: 5px;
+}
+.btn-outline-success {
+    color: #e191fb;
+    border-color: #e191fb;
+}
+
+.btn-outline-success:hover {
+    color: #ffffff;
+    border-color: #e191fb;
+    background-image: linear-gradient(90deg, #8e44ad 0%, #d1aaff 100%);
+}
+
+
+body[dir="ltr"] .remove-field {
+    left: auto;
+    right: 8px;
+}
+
+.remove-field:hover {
+    color: #c82333;
+}
+
+.experience-entry,
+.education-entry,
+.skill-entry,
+.language-entry,
+.reference-entry {
+    border: 1px dashed #ccc;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    position: relative;
+}
+
+.experience-entry textarea {
+    margin-bottom: 0;
+}
+
+.btn-outline-primary {
+    color: #0d6efd;
+    border-color: #0d6efd;
+    background-color: transparent;
+}
+
+.btn-outline-primary:hover {
+    color: #fff;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-outline-danger {
+    color: #dc3545;
+    border-color: #dc3545;
+    background-color: transparent;
+}
+
+.btn-outline-danger:hover {
+    color: #fff;
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+/* Progress bar style */
+.progress-container {
+    margin: 1rem 0;
+    height: 15px;
+    background: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #0d6efd;
+    border-radius: 10px;
+    transition: width 0.3s ease, background-color 0.3s ease;
+    color: #fff;
+    text-align: center;
+    line-height: 15px;
+    font-size: 0.7em;
+}
+
+/* Language toggle style */
+.language-toggle {
+    z-index: 1000;
+    background-color: #d1aaff ;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgb(209, 170, 255);
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 0.9em;
+    user-select: none;
+    transition: background-color 0.3s ease;
+    margin-right: 10px;
+}
+
+body[dir="ltr"] .language-toggle {
+    margin-right: 0;
+    margin-left: 10px;
+}
+
+.language-toggle:hover {
+    background-color: rgba(240, 240, 240, 0.9);
+}
+
+/* --- Template Preview Selection Styles --- */
+.template-preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 30px;
+    overflow-y: auto;
+    max-height: calc(100vh - 250px);
+    padding-right: 15px;
+    box-sizing: border-box;
+}
+
+body[dir="ltr"] .template-preview-container {
+    padding-right: 0;
+    padding-left: 15px;
+}
+
+.template-category {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.template-category h3 {
+    font-size: 1.4em;
+    color: #333;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #0d6efd;
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+.template-previews {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+}
+
+.template-preview {
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: all 0.3s ease;
+    width: 300px;
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.template-preview:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.selected-template {
+    border-color: #0d6efd !important;
+    box-shadow: 0 3px 10px rgba(13, 110, 253, 0.4);
+}
+
+/* --- CV Preview Area (The box holding the CV) --- */
+#cv-preview-area {
+    /* الخصائص القديمة للتنسيق الداخلي تبقى كما هي */
+    flex-grow: 1;
+    overflow-y: auto; /* مهم للسماح بالسكرول داخل المعاينة نفسها إذا كانت السيرة طويلة */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+    background-color: rgba(25, 22, 34, 0.5); /* استخدام لون المظهر الداكن */
+    border-radius: 8px;
+    border: 1px dashed #4a3a69; /* استخدام لون المظهر الداكن */
+    box-sizing: border-box;
+
+    /* --- بداية الإضافات الجديدة لجعل العنصر عائمًا --- */
+
+    /* 1. تحديد نوع التموضع ليكون "لاصق" */
+    position: -webkit-sticky; /* لدعم متصفحات Safari القديمة */
+    position: sticky;
+
+    /* 2. تحديد النقطة التي سيلتصق عندها العنصر */
+    /* سيلتصق عندما يصل إلى مسافة 20 بكسل من أعلى الشاشة */
+    top: 20px; 
+
+    /* 3. تعديل الارتفاع الأقصى ليناسب الشاشة */
+    /* هذا يضمن أن العنصر اللاصق نفسه لا يكون أطول من الشاشة ويمكن السكرول بداخله */
+    max-height: calc(100vh - 40px); 
+}
+
+/* Payment Modal/Page Styles */
+#payment-modal .popup-box { text-align: center; padding: 20px; }
+.qr-payment-inputs-scroll { flex-grow: 1; overflow-y: auto; margin-bottom: 20px; box-sizing: border-box; padding-right: 15px; }
+body[dir="ltr"] .qr-payment-inputs-scroll { padding-right: 0; padding-left: 15px; }
+#paypal-button-container { margin-bottom: 20px; width: 100%; display: flex; justify-content: center; }
+#submit-payment-proof { margin-bottom: 10px; }
+#qr-payment-result { margin-top: 10px; }
+#qr-payment-image { max-width: 200px; margin-bottom: 15px; display: none; margin-left: auto; margin-right: auto; }
+#manual-payment-form { margin-top: 20px; display: none; text-align: initial; }
+
+/* Section: Why Resail */
+#why-resail { background-color: #fff; }
+.feature-card { text-align: center; padding: 30px; border-radius: 8px; height: 100%; box-shadow: 0 2px 8px rgba(0,0,0,0); transition: transform 0.3s ease, box-shadow 0.3s ease; background-color: #f8f9fa00; }
+.feature-card:hover { transform: translateY(-10px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+.feature-icon { width: 200px; height: 200px; object-fit: contain; border-radius: 15px; filter: drop-shadow(-10px 10px 10px rgba(0,0,0,0.5)); }
+.feature-card h3 { font-size: 1.3em; color: #007bff; margin-bottom: 10px; text-shadow: -10px 10px 10px rgba(0,0,0,0.5); }
+.feature-card p { font-size: 1em; color: #555; line-height: 1.6; }
+
+/* Live Sales Notification Styles */
+.sales-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #fff;
+    color: #333;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 10001;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.5s ease-in-out;
+}
+
+body.ltr .sales-notification {
+    right: auto;
+    left: 20px;
+}
+
+.sales-notification.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Discount Card Styles */
+.discount-section {
+    text-align: center;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    padding: 20px 0;
+}
+.discount-card {
+    display: flex;
+    align-items: center;
+    background-color: #f8f9fa;
+    border: 2px dashed #0d6efd;
+    border-radius: 10px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 220px;
+}
+.discount-card:hover, .discount-card.selected {
+    border-style: solid;
+    background-color: #e9f3ff;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.discount-tag {
+    background-color: #0d6efd;
+    color: white;
+    font-weight: bold;
+    font-size: 1.2em;
+    padding: 10px;
+    border-radius: 8px;
+    margin-left: 15px; /* LTR default */
+}
+html[dir="rtl"] .discount-tag {
+    margin-left: 0;
+    margin-right: 15px;
+}
+.discount-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+html[dir="rtl"] .discount-info {
+    align-items: flex-end;
+}
+.discount-info .code-text {
+    font-family: monospace;
+    font-size: 1.1em;
+    color: #333;
+}
+.discount-info small {
+    color: #555;
+}
+
+/* Remove Discount Link Style */
+.remove-discount-link {
+    color: #dc3545;
+    text-decoration: underline;
+    font-size: 0.9em;
+    font-weight: bold;
+}
+.remove-discount-link:hover {
+    color: #c82333;
+}
+
+/* Promo Bar Styles */
+.promo-bar {
+    background-color: #343a40;
+    color: #ffffff;
+    text-align: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1051;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.promo-bar p {
+    margin: 0;
+    font-weight: 500;
+    font-size: 0.95em;
+}
+
+.blinking-code {
+    animation: blink-animation 2.5s infinite;
+    background-color: rgba(255, 193, 7, 0.2);
+    color: #ffc107;
+    padding: 2px 8px;
+    border-radius: 5px;
+    font-family: monospace;
+    margin: 0 5px;
+    border: 1px solid rgba(255, 193, 7, 0.5);
+}
+
+@keyframes blink-animation {
+    50% {
+        background-color: #ffc107;
+        color: #000;
+    }
+}
+
+/* --- Controls Sidebar & Editor Styles --- */
+#preview-wrapper {
+    display: flex;
+    gap: 20px;
+}
+
+html[dir="rtl"] #preview-wrapper {
+    flex-direction: row;
+}
+html[dir="ltr"] #preview-wrapper {
+    flex-direction: row-reverse;
+}
+
+#controls-sidebar {
+    flex-basis: 320px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    align-self: flex-start;
+}
+
+.action-buttons-container {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+#font-selector-container,
+#color-picker-container {
+    margin-top: 0;
+    width: 100%;
+}
+
+.gradient-toggle-wrapper {
+    white-space: nowrap; 
+}
+
+.gradient-toggle-wrapper .form-check-input {
+    vertical-align: middle;
+    margin-left: 0.5em;
+}
+html[dir="ltr"] .gradient-toggle-wrapper .form-check-input {
+    margin-left: 0;
+    margin-right: 0.5em; 
+}
+.gradient-toggle-wrapper .form-check-label {
+    vertical-align: middle;
+}
+
+#palette-selector {
+    padding: 5px;
+}
+.palette-swatch {
+    cursor: pointer;
+    border: 2px solid #dee2e6;
+    padding: 4px;
+    border-radius: 8px;
+    background-color: #fff;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.palette-swatch:hover, .palette-swatch.selected {
+    border-color: var(--title-text, #007bff);
+    transform: scale(1.05);
+}
+.palette-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+.joystick-circle {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 15px auto;
+    display: grid;
+    place-items: center;
+}
+
+.joystick-btn-circle {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.joystick-btn-circle:hover {
+    background-color: #e9ecef;
+}
+
+.joystick-btn-circle[data-direction="up"] { top: 0; }
+.joystick-btn-circle[data-direction="down"] { bottom: 0; }
+.joystick-btn-circle[data-direction="left"] { left: 0; }
+.joystick-btn-circle[data-direction="right"] { right: 0; }
+.joystick-btn-circle[data-direction="reset"] {
+    width: 45px;
+    height: 45px;
+    border-color: #6c757d;
+    color: #6c757d;
+}
+
+.editable-cv-element {
+    touch-action: none;
+    user-select: none;
+    box-sizing: border-box;
+}
+
+.resize-handle {
+    background: #0d6efd;
+    border: 1px solid white;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    position: absolute;
+    box-shadow: 0 0 5px rgba(0,0,0,0.4);
+}
+/* ========================================================== */
+/* ==   بداية كود المظهر الداكن المحدث والكامل (v2)         == */
+/* ========================================================== */
+
+/* 1. الألوان الأساسية للجسم والنصوص */
+body {
+    background-color: #191622; /* خلفية داكنة مع لمسة بنفسجية */
+    color: #e0e0e0; /* لون نص فاتح ومريح للعين */
+}
+
+/* 2. شريط التنقل العلوي والقوائم */
+.navbar {
+    background-color: rgba(30, 27, 40, 0.85); /* خلفية شبه شفافة */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid #4a3a69;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+.navbar-brand {
+    color: #d1aaff !important; /* لون موف مشع للعلامة التجارية */
+    text-shadow: 0 0 8px rgba(209, 170, 255, 0.6);
+}
+.navbar-nav .nav-link {
+    color: #ffffff !important;
+}
+.navbar-nav .nav-link:hover {
+    color: #8728f4 !important;
+    text-shadow: 0 0 10px rgba(209, 170, 255, 0.7);
+}
+.dropdown-menu {
+    background-color: #231a31;
+    border-color: #4a3a69;
+}
+.dropdown-item {
+    color: #e0e0e0;
+}
+.dropdown-item:hover {
+    background-color: #d1aaff;
+    color: #191622;
+}
+
+/* 3. حاويات الصفحات والمحتوى */
+.page-section .container,
+.popup-box,
+#qr-manual-payment-page .container {
+    background-color: #231a31;
+    border: 1px solid #4a3a69;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    color: #e0e0e0;
+}
+#cv-preview-area {
+    background-color: rgba(25, 22, 34, 0.5); /* خلفية منطقة المعاينة */
+    border: 1px dashed #4a3a69;
+}
+.popup-close:hover {
+    color: #ff85c4;
+}
+
+/* 4. النماذج وحقول الإدخال */
+.form-group label {
+    color: #f2f1f3;
+}
+
+.form-control {
+    display: block;
+    width: 100%;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #e7e7e7;
+    background-color: #191622;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.btn-danger {
+    color: #ff85c4;
+    background-color: transparent;
+    border-color: #ff85c4;
+}
+
+.btn-danger:hover {
+    background-color: #ff85c4;
+    border-color: red;
+    color: #191622;
+    box-shadow: 0 0 12px rgba(255, 133, 196, 0.6);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="file"],
+textarea,
+select {
+    background-color: #191622;
+    color: #e0e0e0;
+    border-color: #4a3a69;
+}
+/* 1. إخفاء زر اختيار الملف الأصلي */
+#profile-pic-input {
+    display: none;
+}
+
+/* 2. تصميم الزر الجديد (الذي هو في الحقيقة label) */
+.file-upload-button {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    margin-top: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+
+    /* استخدام نفس تصميم الأزرار الرئيسية في الموقع */
+    background-image: linear-gradient(90deg, #8e44ad 0%, #d1aaff 100%);
+    color: #191622;
+    border: none;
+    box-shadow: 0 4px 15px rgba(142, 68, 173, 0.4);
+}
+
+.file-upload-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(209, 170, 255, 0.5);
+}
+
+.file-upload-button i {
+    margin-right: 8px; /* لغة عربية */
+}
+
+/* للغة الإنجليزية */
+body.ltr .file-upload-button i {
+    margin-right: 0;
+    margin-left: 8px;
+}
+
+/* 3. تصميم منطقة عرض اسم الملف */
+.file-name-display {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0 10px;
+    color: #9e88c7; /* لون بنفسجي باهت */
+    font-size: 0.9em;
+    font-style: italic;
+}
+
+.profile-pic-preview {
+    display: none; /* تكون مخفية بشكل افتراضي */
+    width: 50px;   /* عرض الأيقونة */
+    height: 50px;  /* ارتفاع الأيقونة */
+    border-radius: 50%; /* لجعلها دائرية تمامًا */
+    border: 2px solid #d1aaff; /* حد بنفسجي مشع */
+    object-fit: cover; /* لضمان أن الصورة تملأ الدائرة دون تشويه */
+    vertical-align: middle; /* لمحاذاتها بشكل جيد مع الزر والنص */
+    margin: 0 15px; /* لإضافة مسافة حولها */
+    box-shadow: 0 0 10px rgba(209, 170, 255, 0.5); /* إضافة توهج خفيف */
+}
+
+.form-select {
+    color: #cbcbcb;
+    background-color: #191622;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+textarea:focus,
+select:focus {
+    border-color: #d1aaff;
+    box-shadow: 0 0 10px rgba(209, 170, 255, 0.5);
+}
+.experience-entry,
+.education-entry,
+.skill-entry,
+.language-entry,
+.reference-entry {
+    border-color: #4a3a69;
+}
+.remove-field {
+    color: #ff85c4;
+}
+
+/* 5. الأزرار (تصميم جديد وجذاب) */
+.btn-primary, .btn-success, .btn-info {
+    background-image: linear-gradient(90deg, #8e44ad 0%, #d1aaff 100%);
+    color: #191622;
+    border: none;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(142, 68, 173, 0.4);
+    transition: all 0.3s ease;
+}
+.btn-primary:hover, .btn-success:hover, .btn-info:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(209, 170, 255, 0.5);
+}
+.btn-outline-primary {
+    color: #d1aaff;
+    border-color: #d1aaff;
+}
+.btn-outline-primary:hover {
+    color: #191622;
+    background-color: #d1aaff;
+    box-shadow: 0 0 12px rgba(209, 170, 255, 0.6);
+}
+.btn-outline-danger {
+    color: #ff85c4;
+    border-color: #ff85c4;
+}
+.btn-outline-danger:hover {
+    color: #191622;
+    background-color: #ff85c4;
+    box-shadow: 0 0 12px rgba(255, 133, 196, 0.6);
+}
+
+/* 6. قسم "لماذا رسائل" والبطاقات */
+.feature-card {
+    background-color: #231a31;
+    border: 1px solid #4a3a69;
+}
+.feature-card:hover {
+    border-color: #d1aaff;
+}
+.feature-card h3 {
+    color: #d1aaff;
+}
+.feature-card p {
+    color: #c0c0c0;
+}
+
+/* 7. لوحة التحكم الجانبية (تصحيح شامل) */
+#controls-sidebar,
+#font-selector-container,
+#color-picker-container {
+    background-color: #1b0134!important;
+    border: 1px solid #4a3a69;
+    color: #e0e0e0;
+}
+.action-buttons-container {
+    border-top-color: #4a3a69;
+}
+.accordion-item {
+    background-color: transparent;
+    border-color: #4a3a69;
+}
+.accordion-button {
+    background-color: #2e243d;
+    color: #e0e0e0;
+}
+.accordion-button:not(.collapsed) {
+    background-color: #4a3a69;
+    color: #d1aaff;
+    box-shadow: none;
+}
+.accordion-button:focus {
+    box-shadow: 0 0 0 .25rem rgba(209, 170, 255, 0.25);
+}
+.accordion-button::after {
+    filter: invert(1) grayscale(100%) brightness(200%); /* لجعل السهم أبيض */
+}
+.accordion-body {
+    background-color: #191622;
+}
+#palette-swatch, .joystick-btn-circle {
+    background-color: #4a3a69;
+    border-color: #6c509b;
+    color: #e0e0e0;
+}
+.palette-swatch:hover, .joystick-btn-circle:hover {
+    background-color: #6c509b;
+}
+.palette-swatch.selected {
+    border-color: #d1aaff;
+}
+input[type="range"]::-webkit-slider-thumb {
+    background: #d1aaff;
+}
+input[type="range"]::-moz-range-thumb {
+    background: #d1aaff;
+}
+
+/* 8. متفرقات */
+.progress-container {
+    background: #4a3a69;
+}
+.progress-bar {
+    background: linear-gradient(90deg, #8e44ad, #d1aaff);
+    color: #191622;
+}
+.template-category h3 {
+    color: #d1aaff;
+    border-bottom-color: #d1aaff;
+}
