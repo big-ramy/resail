@@ -1032,7 +1032,7 @@ html[dir="rtl"] .creative-layout.template1 .header-wave { clip-path: polygon(0 0
 .creative-layout.template2 .header-wave {
     background: var(--primary-bg);
     clip-path: polygon(0 0, 100% 0, 100% 70%, 0 100%);
-    position: absolute; top: 0; left: 0; right: 0; height: 200px;
+    position: absolute; top: 0; left: 0; right: 0; height: 100px;
     color: var(--header-text);
 }
 .creative-layout.template2 .header-wave .cv-name { margin: 0 0 0 0; }
@@ -1074,3 +1074,4 @@ html[dir="rtl"] .creative-layout.template3 .cv-sidebar {
 .creative-layout.template3 .cv-sidebar .cv-section-title { color: var(--header-text); border-bottom-color: var(--sidebar-bg); }
 
 .creative-layout.template3 .cv-main-content .cv-section-title { color: var(--title-text); border-bottom-color: var(--accent-bg); }
+
