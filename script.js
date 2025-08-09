@@ -31,7 +31,7 @@ const translations = {
         "Error processing file.": "حدث خطأ أثناء معالجة الملف.",
         "Enter a skill": "أدخل مهارة",
         //قسم المهارات
-        "Select Level": "اختر المستوى",
+        "Select Level": "اختر المستوى", 
         "Beginner": "مبتدئ",
         "Intermediate": "متوسط",
         "Advanced": "متقدم",
@@ -320,7 +320,12 @@ const translations = {
         "privacy-policy-h4-6": "6. التعديلات على سياسة الخصوصية",
         "privacy-policy-p-6-1": "نحتفظ بالحق في تعديل أو تحديث سياسة الخصوصية هذه من وقت لآخر. سيتم نشر أي تغييرات على هذه الصفحة، ويعتبر استمرارك في استخدام الخدمة بعد نشر التعديلات بمثابة موافقة منك على السياسة المعدلة.",
         "privacy-policy-h4-7": "7. الاتصال بنا",
-        "privacy-policy-p-7-1": "لأي أسئلة أو استفسارات بخصوص سياسة الخصوصية، يرجى الاتصال بنا عبر البريد الإلكتروني: <strong><a href=\"mailto:ramyheshamamer@gmail.com\">ramyheshamamer@gmail.com</a></strong>."
+        "privacy-policy-p-7-1": "لأي أسئلة أو استفسارات بخصوص سياسة الخصوصية، يرجى الاتصال بنا عبر البريد الإلكتروني: <strong><a href=\"mailto:ramyheshamamer@gmail.com\">ramyheshamamer@gmail.com</a></strong>.",
+        "please_wait_and_do_not_refresh": "الرجاء عدم إغلاق أو تحديث الصفحة...",
+        "loading-cv-text": "جاري إنشاء السيرة الذاتية، يرجى الانتظار...",
+        "payment_processing": "جاري معالجة الدفع، يرجى الانتظار...",
+        "pdf_generation_in_progress": "جاري تحضير ملف الـ PDF...",
+        "preparing_secure_payment": "جاري تحضير عملية الدفع الآمنة..."
     },
     "en": {
         "image-paths": { // هذا هو الجزء الخاص بمسارات الصور
@@ -588,7 +593,12 @@ const translations = {
         "terms-of-service-h4-6": "6. Governing Law",
         "terms-of-service-p-6-1": "These terms and conditions are governed by and construed in accordance with the laws of the Kingdom of Saudi Arabia, and you agree to submit to the exclusive jurisdiction of the courts of the Kingdom of Saudi Arabia to resolve any disputes arising from these terms or the use of the service.",
         "terms-of-service-h4-7": "7. Contact Us",
-        "terms-of-service-p-7-1": "For any questions or inquiries regarding the terms of service, please contact us via email: <strong><a href=\"mailto:ramyheshamamer@gmail.com\">ramyheshamamer@gmail.com</a></strong>."
+        "terms-of-service-p-7-1": "For any questions or inquiries regarding the terms of service, please contact us via email: <strong><a href=\"mailto:ramyheshamamer@gmail.com\">ramyheshamamer@gmail.com</a></strong>.",
+        "please_wait_and_do_not_refresh": "Please do not close or refresh the page...",
+        "loading-cv-text": "Generating CV, please wait...",
+        "payment_processing": "Processing payment, please wait...",
+        "pdf_generation_in_progress": "Preparing the PDF file...",
+        "preparing_secure_payment": "Preparing secure payment..."
     }
 };
 
@@ -1498,20 +1508,21 @@ async function fetchRecentSales() {
     }
 }
 
-function toggleLoadingOverlay(show, messageKey = 'Generating CV, please wait...') {
+function toggleLoadingOverlay(show, messageKey = 'loading-cv-text') {
     if (loadingOverlayGlobal && loadingTextGlobal) {
         if (show) {
+            // جلب الرسالة الأساسية المترجمة
+            let message = translations[currentLang][messageKey] || messageKey;
+            // إضافة عبارة التحذير
+            const warningText = translations[currentLang]['please_wait_and_do_not_refresh'] || 'Please do not close or refresh the page...';
+            
+            loadingTextGlobal.innerHTML = `${message}<br><small>${warningText}</small>`; // استخدام innerHTML لوضع فاصل أسطر
             loadingTextGlobal.setAttribute('data-current-key', messageKey);
-            loadingTextGlobal.textContent = translations[currentLang][messageKey] || messageKey;
             loadingOverlayGlobal.style.display = 'flex';
-            console.log(`[toggleLoadingOverlay] SHOWN with message key: ${messageKey}`);
         } else {
             loadingOverlayGlobal.style.display = 'none';
             loadingTextGlobal.removeAttribute('data-current-key');
-            console.log("[toggleLoadingOverlay] HIDDEN.");
         }
-    } else {
-        console.error("[toggleLoadingOverlay] loadingOverlayGlobal or loadingTextGlobal is null.");
     }
 }
 
@@ -1783,7 +1794,7 @@ function collectCvData() {
 
 // استبدل الدالة القديمة بالكامل بهذه النسخة المصححة
 async function handleLemonSqueezyPurchase() {
-    toggleLoadingOverlay(true, 'Preparing secure payment...');
+    toggleLoadingOverlay(true, 'preparing_secure_payment'); // استخدام مفتاح الترجمة
     try {
         // 1. جمع بيانات السيرة الذاتية
         const cvData = collectCvData();
@@ -1812,14 +1823,35 @@ async function handleLemonSqueezyPurchase() {
             throw new Error('Checkout link for the selected category is not configured.');
         }
 
-        // --- بداية التعديل: تم إعادة ترتيب هذا الجزء ---
+        // ★★★ بداية التعديل المطلوب ★★★
 
-        // 4. أنشئ الرابط أولاً
+        // 4. تحديد البيانات المترجمة بناءً على لغة الموقع الحالية
+        let storeName = "Resail CV"; // الاسم الافتراضي بالإنجليزية
+        let productDescription = `CV Template: ${selectedTemplateCategory}`; // الوصف الافتراضي بالإنجليزية
+
+        if (currentLang === 'ar') {
+            storeName = "رسائل للسير الذاتية"; // اسم المتجر بالعربية
+            
+            // ترجمة اسم الفئة
+            const categoryTranslations = {
+                normal: "قالب عادي",
+                standard: "قالب قياسي",
+                professional: "قالب احترافي",
+                ast: "قالب AST",
+                creative: "قالب إبداعي"
+            };
+            const translatedCategory = categoryTranslations[selectedTemplateCategory] || selectedTemplateCategory;
+            productDescription = `قالب سيرة ذاتية: ${translatedCategory}`; // الوصف بالعربية
+        }
+
+        // 5. أنشئ الرابط
         const finalUrl = new URL(checkoutConfig.link);
         
-        // 5. أضف البيانات الأساسية للرابط (معرف الجلسة، البريد الإلكتروني، الاسم)
+        // 6. أضف البيانات الأساسية والبيانات المترجمة الجديدة للرابط
         finalUrl.searchParams.set('checkout[custom][session_id]', sessionId);
-        
+        finalUrl.searchParams.set('checkout[store]', storeName); // إضافة اسم المتجر المترجم
+        finalUrl.searchParams.set('checkout[custom][description]', productDescription); // إضافة وصف المنتج المترجم
+
         if (cvData.email) {
             finalUrl.searchParams.set('checkout[email]', cvData.email);
         }
@@ -1827,27 +1859,27 @@ async function handleLemonSqueezyPurchase() {
             finalUrl.searchParams.set('checkout[name]', cvData.name);
         }
         
-        // 6. الآن، بعد إنشاء الرابط، تحقق من وجود كود خصم وأضفه
+        // 7. تحقق من وجود كود خصم وأضفه
         const codeInput = document.getElementById("discount-code");
         const code = codeInput ? codeInput.value.trim() : "";
         if (code) {
-            // هذا السطر الآن يعمل بشكل صحيح لأن finalUrl موجود بالفعل
-            finalUrl.searchParams.set('discount_code', code); // التغيير هنا: من 'discount' إلى 'discount_code'
+            finalUrl.searchParams.set('discount_code', code);
         }
         
-        // --- نهاية التعديل ---
+        // ★★★ نهاية التعديل المطلوب ★★★
 
-        // 7. وجه المستخدم إلى صفحة الدفع النهائية في Lemon Squeezy
+        // 8. وجه المستخدم إلى صفحة الدفع النهائية
         console.log('Redirecting to Lemon Squeezy:', finalUrl.toString());
         window.location.href = finalUrl.toString();
 
     } catch (error) {
         console.error('Lemon Squeezy purchase error:', error);
-        alert('An error occurred while preparing your payment. Please try again or contact support.');
+        // استخدام مفتاح الترجمة لرسالة الخطأ
+        const errorMessage = translations[currentLang]["An error occurred while preparing your payment. Please try again or contact support."];
+        alert(errorMessage);
         toggleLoadingOverlay(false);
     }
 }
-
 
 /**
  * دالة لجلب وتحديث عداد السير الذاتية وعداد الزوار
@@ -1995,7 +2027,7 @@ async function applyDiscountCode() {
     // التحقق مما إذا كان السعر أصبح مجانياً بعد التحديث
     if (finalPriceToPay === 0 && discountApplied > 0) {
         alert(currentLang === 'ar' ? 'هذه السيرة الذاتية مجانية! سيتم إرسالها إلى بريدك الإلكتروني.' : 'This CV is free! It will be sent to your email shortly.');
-        toggleLoadingOverlay(true, 'Processing your free CV...');
+        toggleLoadingOverlay(true, 'payment_processing');
         try {
             const pdfData = await generatePdfFromNode(true);
             if (pdfData && pdfData.base64Pdf) {
@@ -2150,23 +2182,17 @@ async function submitPaymentProof(event) {
     qrPaymentResultDiv.textContent = ''; // مسح أي رسائل سابقة
 
     try {
-        // 1. جمع البيانات من نموذج الدفع اليدوي
+        // ... (جميع أجزاء الدالة الأخرى تبقى كما هي تماماً) ...
         const name = paymentNameInput.value.trim();
         const email = paymentEmailInput.value.trim();
         const phoneNumber = paymentPhoneInput.value.trim();
         const file = paymentFileInput.files[0];
-
-        // 2. جمع البيانات المخزنة في سمات الصفحة (data-attributes)
         const qrManualPaymentPage = document.getElementById('qr-manual-payment-page');
         const paymentMethod = qrManualPaymentPage.getAttribute("data-payment-method");
         const cvTemplateCategory = qrManualPaymentPage.getAttribute("data-cv-template-category");
         const pricePaid = qrManualPaymentPage.getAttribute("data-price-paid");
-        
-        // --- إصلاح مشكلة كود الخصم ---
-        // قراءة كود الخصم كنص مباشرة من السمة المحفوظة
         const actualDiscountCodeStr = qrManualPaymentPage.getAttribute("data-discount-code") || 'N/A';
 
-        // 3. التحقق من صحة البيانات المدخلة
         if (!name || !email || !phoneNumber) {
             throw new Error(translations[currentLang]['Please fill in all fields.'] || 'Please fill in all required fields.');
         }
@@ -2182,18 +2208,14 @@ async function submitPaymentProof(event) {
             }
         }
 
-        toggleLoadingOverlay(true, 'Payment processing, please wait...');
+        toggleLoadingOverlay(true, 'payment_processing');
 
-        // 4. تحويل ملف الإيصال إلى Base64 (إن وجد)
         const fileBase64 = file ? await fileToBase64(file) : null;
-
-        // 5. توليد نسخة PDF من السيرة الذاتية (مع علامة مائية لأن الدفع لم تتم الموافقة عليه بعد)
-        const pdfData = await generatePdfFromNode(true); // isPaid: false
+        const pdfData = await generatePdfFromNode(true);
         if (!pdfData || !pdfData.base64Pdf) {
             throw new Error('Failed to generate CV PDF for submission.');
         }
 
-        // 6. تجهيز كافة البيانات للإرسال إلى Apps Script
         const formData = new URLSearchParams();
         formData.append('name', name);
         formData.append('email', email);
@@ -2201,20 +2223,15 @@ async function submitPaymentProof(event) {
         formData.append('pricePaid', pricePaid);
         formData.append('paymentMethod', paymentMethod);
         formData.append('cvTemplateCategory', cvTemplateCategory);
-        formData.append('discountCode', actualDiscountCodeStr); // استخدام الكود النصي الصحيح
+        formData.append('discountCode', actualDiscountCodeStr);
         formData.append('language', currentLang);
-        
-        // --- إصلاح مشكلة بيانات المدينة/الموقع ---
-        // جلب قيمة حقل "الموقع" من الصفحة الرئيسية وإضافتها للطلب
         const website = document.getElementById('website-input')?.value.trim();
         formData.append('website', website || '');
-        
         formData.append('paymentFileBase64', fileBase64 || '');
         formData.append('paymentFileType', file?.type || '');
         formData.append('cvPdfFileBase64', pdfData.base64Pdf);
         formData.append('cvPdfFileName', `CV_Preview_${name.replace(/\s/g, '_')}.pdf`);
 
-        // 7. إرسال الطلب إلى Google Apps Script
         const response = await fetch(GOOGLE_APPS_SCRIPT_WEB_APP_URL_PAYMENT_PROCESSOR, {
             method: 'POST',
             body: formData,
@@ -2225,23 +2242,25 @@ async function submitPaymentProof(event) {
         if (data.status === 'success') {
             qrPaymentResultDiv.style.color = "green";
             qrPaymentResultDiv.textContent = data.message || (translations[currentLang]["payment-success"]);
-            // لا نُعيد تفعيل الزر هنا لأنه سينتقل لصفحة أخرى بعد 5 ثواني
-            setTimeout(() => { showPage('landing-page'); }, 5000);
+            submitButton.style.display = 'none';
+            
+            // ★★★ بداية التعديل المطلوب ★★★
+            // استبدال showPage بتحديث الصفحة بعد 5 ثوانٍ
+            setTimeout(() => { 
+                window.location.reload(); 
+            }, 5000);
+            // ★★★ نهاية التعديل المطلوب ★★★
+
         } else {
-            // إذا فشل الطلب من جهة الخادم، قم برمي خطأ ليتم التقاطه في catch
             throw new Error(data.error || 'An unknown error occurred on the server.');
         }
 
     } catch (err) {
-        // عرض أي خطأ للمستخدم (سواء من التحقق أو من الإرسال)
         console.error("Error in submitPaymentProof:", err);
         qrPaymentResultDiv.style.color = "red";
         qrPaymentResultDiv.textContent = err.message;
     } finally {
-        // هذا الجزء سيعمل دائمًا، سواء نجح الطلب أم فشل
         toggleLoadingOverlay(false);
-
-        // إعادة تفعيل الزر فقط في حال حدوث خطأ وبقاء المستخدم في الصفحة
         if (!qrPaymentResultDiv.textContent.includes("نجاح") && !qrPaymentResultDiv.textContent.includes("Success")) {
             submitButton.disabled = false;
             submitButton.innerHTML = translations[currentLang]['submit'] || 'Submit';
@@ -2628,7 +2647,7 @@ function getSelectedTemplateCss() {
  * @returns {Promise<Object|null>} - كائن يحتوي على بيانات الـ PDF أو null
  */
 async function generatePdfFromNode(isPaid) {
-    toggleLoadingOverlay(true, 'Preparing perfect layout...');
+    toggleLoadingOverlay(true, 'pdf_generation_in_progress');
     try {
         const cvPreviewElement = document.getElementById('cv-container');
         if (!cvPreviewElement) throw new Error("CV container not found.");
@@ -3353,7 +3372,7 @@ function generateCV(targetElement) {
         if (selectedTemplate == 1) {
             cvContentDiv.innerHTML = `<div class="header-wave">${profilePicHTML}<div class="header-text"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div></div><div class="content-columns"><div class="left-column">${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${referencesHTML}${endMarkerHTML}</div><div class="right-column">${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${endMarkerHTML}</div></div>`;
         } else if (selectedTemplate == 2) {
-            cvContentDiv.innerHTML = `<div class="header-wave"><div class="header-text"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div></div><div class="content-columns"><div class="left-column">${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${endMarkerHTML}</div><div class="right-column">${profilePicHTML}${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div></div>`;
+            cvContentDiv.innerHTML = `<div class="header-wave"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div><div class="content-columns"><div class="left-column">${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${endMarkerHTML}</div><div class="right-column">${profilePicHTML}${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div></div>`;
         } else if (selectedTemplate == 3) {
             cvContentDiv.innerHTML = `<div class="cv-sidebar"><div class="cv-header two-col-main">${profilePicHTML}<h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div>${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div><div class="cv-main-content">${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${endMarkerHTML}</div>`;
         }
@@ -3561,9 +3580,3 @@ function populateWithTestData() {
     generateCV(cvContainer);
     updateProgress();
 }
-
-
-
-
-
-
