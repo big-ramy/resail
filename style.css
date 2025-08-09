@@ -152,6 +152,7 @@ body[dir="ltr"] .dropdown-menu {
 
 .page-section.active-page {
     display: block;
+    background: #191622;
 }
 
 .page-section .container {
@@ -1077,6 +1078,7 @@ input[type="range"]::-moz-range-thumb {
 .card-body.d-flex.flex-column:hover {
     border: 1px solid red;
 }
+
 
 
 
