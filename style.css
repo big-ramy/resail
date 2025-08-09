@@ -490,11 +490,11 @@ body[dir="ltr"] .qr-payment-inputs-scroll { padding-right: 0; padding-left: 15px
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background-color: #fff;
-    color: #333;
+    background-image: linear-gradient(90deg, #8e44ad 0%, #d1aaff 100%);
+    color: white;
     padding: 15px 20px;
     border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 15px rgb(255 151 232 / 79%);
     z-index: 10001;
     opacity: 0;
     visibility: hidden;
@@ -1077,4 +1077,5 @@ input[type="range"]::-moz-range-thumb {
 .card-body.d-flex.flex-column:hover {
     border: 1px solid red;
 }
+
 
