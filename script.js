@@ -321,11 +321,6 @@ const translations = {
         "privacy-policy-p-6-1": "نحتفظ بالحق في تعديل أو تحديث سياسة الخصوصية هذه من وقت لآخر. سيتم نشر أي تغييرات على هذه الصفحة، ويعتبر استمرارك في استخدام الخدمة بعد نشر التعديلات بمثابة موافقة منك على السياسة المعدلة.",
         "privacy-policy-h4-7": "7. الاتصال بنا",
         "privacy-policy-p-7-1": "لأي أسئلة أو استفسارات بخصوص سياسة الخصوصية، يرجى الاتصال بنا عبر البريد الإلكتروني: <strong><a href=\"mailto:ramyheshamamer@gmail.com\">ramyheshamamer@gmail.com</a></strong>."
-        "please_wait_and_do_not_refresh": "الرجاء عدم إغلاق أو تحديث الصفحة...",
-        "loading-cv-text": "جاري إنشاء السيرة الذاتية، يرجى الانتظار...",
-        "payment_processing": "جاري معالجة الدفع، يرجى الانتظار...",
-        "pdf_generation_in_progress": "جاري تحضير ملف الـ PDF...",
-        "preparing_secure_payment": "جاري تحضير عملية الدفع الآمنة..."
     },
     "en": {
         "image-paths": { // هذا هو الجزء الخاص بمسارات الصور
@@ -594,11 +589,6 @@ const translations = {
         "terms-of-service-p-6-1": "These terms and conditions are governed by and construed in accordance with the laws of the Kingdom of Saudi Arabia, and you agree to submit to the exclusive jurisdiction of the courts of the Kingdom of Saudi Arabia to resolve any disputes arising from these terms or the use of the service.",
         "terms-of-service-h4-7": "7. Contact Us",
         "terms-of-service-p-7-1": "For any questions or inquiries regarding the terms of service, please contact us via email: <strong><a href=\"mailto:ramyheshamamer@gmail.com\">ramyheshamamer@gmail.com</a></strong>."
-        "please_wait_and_do_not_refresh": "Please do not close or refresh the page...",
-        "loading-cv-text": "Generating CV, please wait...",
-        "payment_processing": "Processing payment, please wait...",
-        "pdf_generation_in_progress": "Preparing the PDF file...",
-        "preparing_secure_payment": "Preparing secure payment..."
     }
 };
 
@@ -1508,21 +1498,20 @@ async function fetchRecentSales() {
     }
 }
 
-function toggleLoadingOverlay(show, messageKey = 'loading-cv-text') {
+function toggleLoadingOverlay(show, messageKey = 'Generating CV, please wait...') {
     if (loadingOverlayGlobal && loadingTextGlobal) {
         if (show) {
-            // جلب الرسالة الأساسية المترجمة
-            let message = translations[currentLang][messageKey] || messageKey;
-            // إضافة عبارة التحذير
-            const warningText = translations[currentLang]['please_wait_and_do_not_refresh'] || 'Please do not close or refresh the page...';
-            
-            loadingTextGlobal.innerHTML = `${message}<br><small>${warningText}</small>`; // استخدام innerHTML لوضع فاصل أسطر
             loadingTextGlobal.setAttribute('data-current-key', messageKey);
+            loadingTextGlobal.textContent = translations[currentLang][messageKey] || messageKey;
             loadingOverlayGlobal.style.display = 'flex';
+            console.log(`[toggleLoadingOverlay] SHOWN with message key: ${messageKey}`);
         } else {
             loadingOverlayGlobal.style.display = 'none';
             loadingTextGlobal.removeAttribute('data-current-key');
+            console.log("[toggleLoadingOverlay] HIDDEN.");
         }
+    } else {
+        console.error("[toggleLoadingOverlay] loadingOverlayGlobal or loadingTextGlobal is null.");
     }
 }
 
@@ -2172,6 +2161,9 @@ async function submitPaymentProof(event) {
         const paymentMethod = qrManualPaymentPage.getAttribute("data-payment-method");
         const cvTemplateCategory = qrManualPaymentPage.getAttribute("data-cv-template-category");
         const pricePaid = qrManualPaymentPage.getAttribute("data-price-paid");
+        
+        // --- إصلاح مشكلة كود الخصم ---
+        // قراءة كود الخصم كنص مباشرة من السمة المحفوظة
         const actualDiscountCodeStr = qrManualPaymentPage.getAttribute("data-discount-code") || 'N/A';
 
         // 3. التحقق من صحة البيانات المدخلة
@@ -2190,13 +2182,13 @@ async function submitPaymentProof(event) {
             }
         }
 
-        toggleLoadingOverlay(true, 'payment_processing'); // تم تعديل الرسالة هنا أيضاً
+        toggleLoadingOverlay(true, 'Payment processing, please wait...');
 
         // 4. تحويل ملف الإيصال إلى Base64 (إن وجد)
         const fileBase64 = file ? await fileToBase64(file) : null;
 
-        // 5. توليد نسخة PDF من السيرة الذاتية
-        const pdfData = await generatePdfFromNode(true); // isPaid: true
+        // 5. توليد نسخة PDF من السيرة الذاتية (مع علامة مائية لأن الدفع لم تتم الموافقة عليه بعد)
+        const pdfData = await generatePdfFromNode(true); // isPaid: false
         if (!pdfData || !pdfData.base64Pdf) {
             throw new Error('Failed to generate CV PDF for submission.');
         }
@@ -2209,10 +2201,14 @@ async function submitPaymentProof(event) {
         formData.append('pricePaid', pricePaid);
         formData.append('paymentMethod', paymentMethod);
         formData.append('cvTemplateCategory', cvTemplateCategory);
-        formData.append('discountCode', actualDiscountCodeStr);
+        formData.append('discountCode', actualDiscountCodeStr); // استخدام الكود النصي الصحيح
         formData.append('language', currentLang);
+        
+        // --- إصلاح مشكلة بيانات المدينة/الموقع ---
+        // جلب قيمة حقل "الموقع" من الصفحة الرئيسية وإضافتها للطلب
         const website = document.getElementById('website-input')?.value.trim();
         formData.append('website', website || '');
+        
         formData.append('paymentFileBase64', fileBase64 || '');
         formData.append('paymentFileType', file?.type || '');
         formData.append('cvPdfFileBase64', pdfData.base64Pdf);
@@ -2229,13 +2225,7 @@ async function submitPaymentProof(event) {
         if (data.status === 'success') {
             qrPaymentResultDiv.style.color = "green";
             qrPaymentResultDiv.textContent = data.message || (translations[currentLang]["payment-success"]);
-
-            // ★★★ بداية التعديل المطلوب ★★★
-            // إخفاء الزر بالكامل عند نجاح العملية بدلاً من تركه معطلاً
-            // لأن المستخدم سيتم توجيهه بعيداً عن الصفحة بعد 5 ثواني
-            submitButton.style.display = 'none';
-            // ★★★ نهاية التعديل المطلوب ★★★
-            
+            // لا نُعيد تفعيل الزر هنا لأنه سينتقل لصفحة أخرى بعد 5 ثواني
             setTimeout(() => { showPage('landing-page'); }, 5000);
         } else {
             // إذا فشل الطلب من جهة الخادم، قم برمي خطأ ليتم التقاطه في catch
@@ -3571,8 +3561,6 @@ function populateWithTestData() {
     generateCV(cvContainer);
     updateProgress();
 }
-
-
 
 
 
