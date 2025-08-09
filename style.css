@@ -1049,4 +1049,23 @@ input[type="range"]::-moz-range-thumb {
 .template-category h3 {
     color: #d1aaff;
     border-bottom-color: #d1aaff;
+
+}
+
+.card-body {
+    background-color: #231a31;
+    color: #e0e0e0;
+    box-shadow: 0 0 10px 5px rgba(206, 91, 197, 0.5);
+}
+.card-header {
+    background-color: #d1aaff !important;
+    color: #290057 !important;
+    border-bottom: 1px solid #4a3a69;
+    
+}
+.border-primary {
+    border-color: #ce5bc5 !important;
+}
+.card-body.d-flex.flex-column:hover {
+    border: 1px solid red;
 }
