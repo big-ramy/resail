@@ -987,6 +987,14 @@ select:focus {
     color: #c0c0c0;
 }
 
+button:not(:disabled) {
+    cursor: pointer;
+    margin: 3px;
+}
+.card img {
+    border-radius: 5px;
+}
+
 /* 7. لوحة التحكم الجانبية (تصحيح شامل) */
 #controls-sidebar,
 #font-selector-container,
@@ -1060,7 +1068,7 @@ input[type="range"]::-moz-range-thumb {
 .card-header {
     background-color: #d1aaff !important;
     color: #290057 !important;
-    border-bottom: 1px solid #4a3a69;
+    border-radius: 5px;    
     
 }
 .border-primary {
@@ -1069,3 +1077,4 @@ input[type="range"]::-moz-range-thumb {
 .card-body.d-flex.flex-column:hover {
     border: 1px solid red;
 }
+
