@@ -17,6 +17,14 @@
     .header-content {
         gap: 10px;
     }
+    .btn-group-lg>.btn, .btn-lg
+    Specificity: (0,2,0)
+     {
+         font-size: 0.8rem;
+     }
+    button:not(:disabled) {
+        height: 30px;
+    }
 }
 
 /* --- Responsive Adjustments for Controls Sidebar --- */
@@ -180,4 +188,5 @@
         display: block !important;
         page-break-inside: avoid !important;
     }
+
 }
