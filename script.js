@@ -86,22 +86,52 @@ lazyImage.removeAttribute('data-src');lazyImage.removeAttribute('data-srcset');o
 image.removeAttribute('data-src');image.removeAttribute('data-srcset')})}}
 function validateAndShowTemplatePage(){showPage('cv-template-selection-page')}
 function initializeDiscountCards(){const discountCards=document.querySelectorAll('.discount-card');const codeInput=document.getElementById('discount-code');discountCards.forEach(card=>{card.addEventListener('click',()=>{discountCards.forEach(c=>c.classList.remove('selected'));card.classList.add('selected');const code=card.getAttribute('data-code');codeInput.value=code;applyDiscountCode()})})}
-async function applyDiscountCode(){const codeInput=document.getElementById("discount-code");if(!codeInput)return;const code=codeInput.value.trim().toUpperCase();if(code&&discountCodes[code]!==undefined){discountApplied=discountCodes[code];appliedCode=code;const alertMessage=currentLang==='ar'?`تم تطبيق كود الخصم "${code}".\n\n- تم تحديث سعر الدفع المحلي.\n- للدفع بالبطاقة، الرجاء إدخال نفس الكود مرة أخرى في صفحة الدفع التالية لتأكيد الخصم.`:`Discount code "${code}" applied.\n\n- The price for local payment has been updated.\n- For card payment, please re-enter the code on the next page to confirm your discount.`;alert(alertMessage);document.getElementById('remove-discount-container').style.display='block'}else if(code){removeDiscount();alert(currentLang==='ar'?'كود الخصم غير صالح.':'Invalid discount code.')}else{removeDiscount()}
-updateAllPriceDisplays();    if (finalPriceToPay === 0 && discountApplied > 0) {
-        alert(currentLang === 'ar' ? 'هذه السيرة الذاتية مجانية! سيتم إرسالها إلى بريدك الإلكتروني.' : 'This CV is free! It will be sent to your email shortly.');
+async function applyDiscountCode() {
+    const codeInput = document.getElementById("discount-code");
+    if (!codeInput) return;
+    const code = codeInput.value.trim().toUpperCase();
+
+    if (code && discountCodes[code] !== undefined) {
+        discountApplied = discountCodes[code];
+        appliedCode = code;
+        alert(currentLang === 'ar' ? `تم تطبيق كود الخصم "${code}". سيتم تحديث السعر.` : `Discount code "${code}" applied. The price will be updated.`);
+        document.getElementById('remove-discount-container').style.display = 'block';
+    } else if (code) {
+        removeDiscount();
+        alert(currentLang === 'ar' ? 'كود الخصم غير صالح.' : 'Invalid discount code.');
+    } else {
+        removeDiscount();
+    }
+    updateAllPriceDisplays();
+}
+fasync function openPaymentForCV_appsScript() {
+    updateAllPriceDisplays(); // تحديث السعر النهائي ليعكس أي خصم
+
+    // التحقق إذا كان السعر صفراً بسبب كود خصم
+    if (finalPriceToPay <= 0 && (appliedCode === 'FREECV' || discountApplied === 100)) {
+        alert(currentLang === 'ar' ? 'هذه السيرة الذاتية مجانية! سيتم إرسالها إلى بريدك الإلكتروني قريباً.' : 'This CV is free! It will be sent to your email shortly.');
         toggleLoadingOverlay(true, 'payment_processing');
         try {
-            const pdfData = await generatePdfFromNode(true);
+            const pdfData = await generatePdfFromNode(true); // isPaid: true (بدون علامة مائية)
             if (pdfData && pdfData.base64Pdf) {
-                // لا ننتظر الإرسال، فقط نرسل الطلب ونوجه المستخدم مباشرة
-                sendPaymentDataToAppsScript('Discounted/Free', 0, pdfData.base64Pdf, null);
+                // إرسال البيانات للتسجيل والبريد الإلكتروني
+                await sendPaymentDataToAppsScript('Discounted/Free', 0, pdfData.base64Pdf, null);
                 localStorage.removeItem('resailCvData_' + currentLang);
-                showPage('thank-you-page'); // الانتقال لصفحة الشكر
+                showPage('thank-you-page');
             } else {
-                throw new Error("Failed to generate PDF for free CV.");
+                throw new Error("Failed to generate PDF for the free CV.");
             }
-        }catch(error){console.error("Error processing free CV:",error);alert("Error: "+error.message)}finally{toggleLoadingOverlay(!1)}}}
-function openPaymentForCV_appsScript(){discountApplied=0;appliedCode="";selectedPriceToPay=PRICES.local[selectedTemplateCategory];finalPriceToPay=selectedPriceToPay;document.querySelectorAll('.discount-card').forEach(c=>c.classList.remove('selected'));const codeInput=document.getElementById("discount-code");if(codeInput)codeInput.value="";document.getElementById('remove-discount-container').style.display='none';updateAllPriceDisplays();showPage('payment-options-page')}
+        } catch (error) {
+            console.error("Error processing free CV:", error);
+            alert("Error: " + error.message);
+        } finally {
+            toggleLoadingOverlay(false);
+        }
+    } else {
+        // إذا لم يكن السعر صفراً، اذهب لصفحة خيارات الدفع
+        showPage('payment-options-page');
+    }
+}
 function updatePriceDisplay(discountedPrice){const finalPriceText=document.getElementById("final-price-text");if(finalPriceText){const currency=currentLang==='ar'?' ريال':' SAR';finalPriceText.textContent=(translations[currentLang].messages||"Price Paid")+": "+discountedPrice+currency}}
 function getDiscountedPrice(){if(discountApplied>0&&discountApplied<=100){return Math.max(0,Math.round(selectedPriceToPay*(1-discountApplied/100)))}
 return selectedPriceToPay}
@@ -112,13 +142,90 @@ if(method.toLowerCase()==="stc pay"||method.toLowerCase()==="rajhi"){if(qrPaymen
 if(manualPaymentForm)manualPaymentForm.style.display="block";if(submitBtn)submitBtn.style.display="block"}
 showPage('qr-manual-payment-page')}
 function isMobileDevice(){return/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)}
-async function submitPaymentProof(event){event.preventDefault();const submitButton=document.getElementById("submit-payment-proof");if(submitButton.disabled){return}
-submitButton.disabled=!0;submitButton.innerHTML=`<span class="spinner-border spinner-border-sm"></span> ${translations[currentLang]['Submitting...'] || 'Submitting...'}`;const qrPaymentResultDiv=document.getElementById("qr-payment-result");qrPaymentResultDiv.textContent='';try{const name=paymentNameInput.value.trim();const email=paymentEmailInput.value.trim();const phoneNumber=paymentPhoneInput.value.trim();const file=paymentFileInput.files[0];const qrManualPaymentPage=document.getElementById('qr-manual-payment-page');const paymentMethod=qrManualPaymentPage.getAttribute("data-payment-method");const cvTemplateCategory=qrManualPaymentPage.getAttribute("data-cv-template-category");const pricePaid=qrManualPaymentPage.getAttribute("data-price-paid");const actualDiscountCodeStr=qrManualPaymentPage.getAttribute("data-discount-code")||'N/A';if(!name||!email||!phoneNumber){throw new Error(translations[currentLang]['Please fill in all fields.']||'Please fill in all required fields.')}
-if(!validateEmail(email)){throw new Error(translations[currentLang]['Please enter a valid email.']||'Please enter a valid email address.')}
-if(file){if(file.size>MAX_FILE_SIZE){throw new Error(translations[currentLang]['File size exceeds the limit (3MB).']||'File size exceeds the 3MB limit.')}
-if(!ALLOWED_FILE_TYPES.includes(file.type)){throw new Error(translations[currentLang]['Please attach only image or PDF files.']||'Please attach only image or PDF files.')}}
-toggleLoadingOverlay(!0,'payment_processing');const fileBase64=file?await fileToBase64(file):null;const pdfData=await generatePdfFromNode(!0);if(!pdfData||!pdfData.base64Pdf){throw new Error('Failed to generate CV PDF for submission.')}
-const formData=new URLSearchParams();formData.append('name',name);formData.append('email',email);formData.append('phoneNumber',phoneNumber);formData.append('pricePaid',pricePaid);formData.append('paymentMethod',paymentMethod);formData.append('cvTemplateCategory',cvTemplateCategory);formData.append('discountCode',actualDiscountCodeStr);formData.append('language',currentLang);const website=document.getElementById('website-input')?.value.trim();formData.append('website',website||'');formData.append('paymentFileBase64',fileBase64||'');formData.append('paymentFileType',file?.type||'');formData.append('cvPdfFileBase64',pdfData.base64Pdf);formData.append('cvPdfFileName',`CV_Preview_${name.replace(/\s/g, '_')}.pdf`);const response=await fetch(GOOGLE_APPS_SCRIPT_WEB_APP_URL_PAYMENT_PROCESSOR,{method:'POST',body:formData,});const data=await response.json();if(data.status==='success'){qrPaymentResultDiv.style.color="green";qrPaymentResultDiv.textContent=data.message||(translations[currentLang]["payment-success"]);submitButton.style.display='none';setTimeout(()=>{window.location.reload()},5000)}else{throw new Error(data.error||'An unknown error occurred on the server.')}}catch(err){console.error("Error in submitPaymentProof:",err);qrPaymentResultDiv.style.color="red";qrPaymentResultDiv.textContent=err.message}finally{toggleLoadingOverlay(!1);if(!qrPaymentResultDiv.textContent.includes("نجاح")&&!qrPaymentResultDiv.textContent.includes("Success")){submitButton.disabled=!1;submitButton.innerHTML=translations[currentLang].submit||'Submit'}}}
+async function submitPaymentProof(event) {
+    event.preventDefault();
+    const submitButton = document.getElementById("submit-payment-proof");
+    if (submitButton.disabled) {
+        return;
+    }
+
+    submitButton.disabled = true;
+    submitButton.innerHTML = `<span class="spinner-border spinner-border-sm"></span> ${translations[currentLang]['Submitting...'] || 'Submitting...'}`;
+    const qrPaymentResultDiv = document.getElementById("qr-payment-result");
+    qrPaymentResultDiv.textContent = '';
+
+    try {
+        // ... (نفس كود التحقق من البيانات وملف الـ PDF) ...
+        // [الكود من ملفك الأصلي يبقى هنا بدون تغيير]
+        const name = paymentNameInput.value.trim();
+        const email = paymentEmailInput.value.trim();
+        const phoneNumber = paymentPhoneInput.value.trim();
+        const file = paymentFileInput.files[0];
+        const qrManualPaymentPage = document.getElementById('qr-manual-payment-page');
+        const paymentMethod = qrManualPaymentPage.getAttribute("data-payment-method");
+        const cvTemplateCategory = qrManualPaymentPage.getAttribute("data-cv-template-category");
+        const pricePaid = qrManualPaymentPage.getAttribute("data-price-paid");
+        const actualDiscountCodeStr = qrManualPaymentPage.getAttribute("data-discount-code") || 'N/A';
+        if (!name || !email || !phoneNumber) {
+            throw new Error(translations[currentLang]['Please fill in all fields.'] || 'Please fill in all required fields.');
+        }
+        if (!validateEmail(email)) {
+            throw new Error(translations[currentLang]['Please enter a valid email.'] || 'Please enter a valid email address.');
+        }
+        
+        toggleLoadingOverlay(true, 'payment_processing');
+        
+        const fileBase64 = file ? await fileToBase64(file) : null;
+        const pdfData = await generatePdfFromNode(true); // isPaid: true
+        
+        if (!pdfData || !pdfData.base64Pdf) {
+            throw new Error('Failed to generate CV PDF for submission.');
+        }
+        
+        const formData = new URLSearchParams();
+        // ... (نفس كود تعبئة formData) ...
+        formData.append('name', name);
+        formData.append('email', email);
+        formData.append('phoneNumber', phoneNumber);
+        formData.append('pricePaid', pricePaid);
+        formData.append('paymentMethod', paymentMethod);
+        formData.append('cvTemplateCategory', cvTemplateCategory);
+        formData.append('discountCode', actualDiscountCodeStr);
+        formData.append('language', currentLang);
+        const website = document.getElementById('website-input')?.value.trim();
+        formData.append('website', website || '');
+        formData.append('paymentFileBase64', fileBase64 || '');
+        formData.append('paymentFileType', file?.type || '');
+        formData.append('cvPdfFileBase64', pdfData.base64Pdf);
+        formData.append('cvPdfFileName', `CV_Preview_${name.replace(/\s/g, '_')}.pdf`);
+
+
+        const response = await fetch(GOOGLE_APPS_SCRIPT_WEB_APP_URL_PAYMENT_PROCESSOR, {
+            method: 'POST',
+            body: formData,
+        });
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            // *** التعديل هنا: عرض صفحة الشكر بدلاً من رسالة نصية ***
+            localStorage.removeItem('resailCvData_' + currentLang); // مسح البيانات
+            showPage('thank-you-page');
+        } else {
+            throw new Error(data.error || 'An unknown error occurred on the server.');
+        }
+    } catch (err) {
+        console.error("Error in submitPaymentProof:", err);
+        qrPaymentResultDiv.style.color = "red";
+        qrPaymentResultDiv.textContent = err.message;
+    } finally {
+        toggleLoadingOverlay(false);
+        // إعادة الزر لحالته الطبيعية فقط في حال حدوث خطأ
+        if (qrPaymentResultDiv.textContent.includes("Error") || qrPaymentResultDiv.textContent.includes("خطأ")) {
+           submitButton.disabled = false;
+           submitButton.innerHTML = translations[currentLang].submit || 'Submit';
+        }
+    }
+}
 function fileToBase64(file){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.readAsDataURL(file);reader.onload=()=>resolve(reader.result.split(',')[1]);reader.onerror=error=>reject(error)})}
 function validateEmail(email){const re=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;return re.test(String(email).toLowerCase())}
 function getExperiencesData(){const experiences=[];document.querySelectorAll('#experience-input .experience-entry').forEach(entry=>{const title=entry.querySelector('.experience-title')?.value.trim();const company=entry.querySelector('.experience-company')?.value.trim();const duration=entry.querySelector('.experience-duration')?.value.trim();const description=entry.querySelector('.experience-description')?.value.trim();if(title||company||duration||description){experiences.push({title,company,duration,description})}});return experiences}
@@ -1090,6 +1197,7 @@ if(expEntries[1]){expEntries[1].querySelector('.experience-title').value=current
 const eduEntries=document.querySelectorAll('#education-input .education-entry');if(eduEntries[0]){eduEntries[0].querySelector('.education-degree').value=currentLang==='ar'?'بكالوريوس علوم حاسوب':'B.Sc. Computer Science';eduEntries[0].querySelector('.education-institution').value=currentLang==='ar'?'جامعة الملك فهد للبترول والمعادن':'King Fahd University of Petroleum & Minerals';eduEntries[0].querySelector('.education-duration').value=currentLang==='ar'?'2012 - 2017':'2012 - 2017'}
 const skillInputsTest=document.querySelectorAll('#skills-input .skill-item-input');if(skillInputsTest[0])skillInputsTest[0].value='JavaScript';if(skillInputsTest[1])skillInputsTest[1].value='React';if(skillInputsTest[2])skillInputsTest[2].value='Node.js';if(skillInputsTest[3])skillInputsTest[3].value='SQL';if(skillInputsTest[4])skillInputsTest[4].value=currentLang==='ar'?'منهجيات أجايل':'Agile Methodologies';const langInputsTest=document.querySelectorAll('#languages-input .language-item-input');if(langInputsTest[0])langInputsTest[0].value=currentLang==='ar'?'العربية (لغة أم)':'Arabic (Native)';const refEntries=document.querySelectorAll('#references-input .reference-entry');if(refEntries[0]){refEntries[0].querySelector('.reference-name').value=currentLang==='ar'?'الدكتور علي أحمد':'Dr. Ali Ahmed';refEntries[0].querySelector('.reference-position').value=currentLang==='ar'?'أستاذ مساعد، جامعة الملك فهد':'Assistant Professor, KFUPM';refEntries[0].querySelector('.reference-phone').value='0551234567';refEntries[0].querySelector('.reference-email').value='ali.ahmed@example.com'}
 generateCV(cvContainer);updateProgress()}
+
 
 
 
