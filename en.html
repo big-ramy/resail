@@ -709,12 +709,13 @@
                 <div class="discount-section my-4">
                     <h5 data-ar="الخصومات المتاحة" data-en="Available Discounts">Available Discounts</h5>
                     <div class="d-flex justify-content-center gap-3 flex-wrap">
-                        <div class="discount-card" data-code="FREECV">
+                        <div class="discount-card" id="free-cv-card" style="display: none;">
                             <div class="discount-tag">100%</div>
                             <div class="discount-info">
                                 <strong class="code-text">FREECV</strong>
-                                <small data-ar="للمرة واحدة" data-en="For One Time">For One Time</small>
+                                <small data-ar="سيرة ذاتية مجانية (مرة واحدة)" data-en="Free CV (One Time)">سيرة ذاتية مجانية (مرة واحدة)</small>
                             </div>
+                        </div>
                         </div>
                         <div class="discount-card" data-code="FIRSTBUY">
                             <div class="discount-tag">25%</div>
@@ -730,9 +731,9 @@
                                 <small data-ar="عرض لفترة محدودة" data-en="Limited time offer">Limited time offer</small>
                             </div>
                         </div>
-                        <div class="text-center mt-2" id="remove-discount-container" style="display: none;">
-                            <a href="#" id="remove-discount-btn" class="remove-discount-link" data-ar="إزالة الخصم" data-en="Remove Discount">Remove Discount</a>
-                        </div>
+                    </div>
+                    <div class="text-center mt-2" id="remove-discount-container" style="display: none;">
+                        <a href="#" id="remove-discount-btn" class="remove-discount-link" data-ar="إزالة الخصم" data-en="Remove Discount">Remove Discount</a>
                     </div>
                     <input type="hidden" id="discount-code" />
                 </div>
