@@ -104,7 +104,7 @@ async function applyDiscountCode() {
     }
     updateAllPriceDisplays();
 }
-fasync function openPaymentForCV_appsScript() {
+async function openPaymentForCV_appsScript() {
     updateAllPriceDisplays(); // تحديث السعر النهائي ليعكس أي خصم
 
     // التحقق إذا كان السعر صفراً بسبب كود خصم
@@ -1197,6 +1197,7 @@ if(expEntries[1]){expEntries[1].querySelector('.experience-title').value=current
 const eduEntries=document.querySelectorAll('#education-input .education-entry');if(eduEntries[0]){eduEntries[0].querySelector('.education-degree').value=currentLang==='ar'?'بكالوريوس علوم حاسوب':'B.Sc. Computer Science';eduEntries[0].querySelector('.education-institution').value=currentLang==='ar'?'جامعة الملك فهد للبترول والمعادن':'King Fahd University of Petroleum & Minerals';eduEntries[0].querySelector('.education-duration').value=currentLang==='ar'?'2012 - 2017':'2012 - 2017'}
 const skillInputsTest=document.querySelectorAll('#skills-input .skill-item-input');if(skillInputsTest[0])skillInputsTest[0].value='JavaScript';if(skillInputsTest[1])skillInputsTest[1].value='React';if(skillInputsTest[2])skillInputsTest[2].value='Node.js';if(skillInputsTest[3])skillInputsTest[3].value='SQL';if(skillInputsTest[4])skillInputsTest[4].value=currentLang==='ar'?'منهجيات أجايل':'Agile Methodologies';const langInputsTest=document.querySelectorAll('#languages-input .language-item-input');if(langInputsTest[0])langInputsTest[0].value=currentLang==='ar'?'العربية (لغة أم)':'Arabic (Native)';const refEntries=document.querySelectorAll('#references-input .reference-entry');if(refEntries[0]){refEntries[0].querySelector('.reference-name').value=currentLang==='ar'?'الدكتور علي أحمد':'Dr. Ali Ahmed';refEntries[0].querySelector('.reference-position').value=currentLang==='ar'?'أستاذ مساعد، جامعة الملك فهد':'Assistant Professor, KFUPM';refEntries[0].querySelector('.reference-phone').value='0551234567';refEntries[0].querySelector('.reference-email').value='ali.ahmed@example.com'}
 generateCV(cvContainer);updateProgress()}
+
 
 
 
