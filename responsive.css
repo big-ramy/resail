@@ -70,49 +70,14 @@
         font-size: 0.75em;
     }
 
-    /* --- تجاوب السيرة الذاتية داخل المعاينة --- */
-    #cv-container {
-        min-height: auto;
-        transform: scale(1);
-        width: 100%;
-        max-width: 100%;
+    #cv-preview-area {
+        overflow: auto; /* يجعل الإطار قابلاً للتمرير */
+        -webkit-overflow-scrolling: touch; /* لتحسين التمرير باللمس */
     }
 
-    .cv-two-column-layout, .ast-layout, .cv-professional-layout {
-        flex-direction: column !important;
-        gap: 0 !important;
+    #cv-preview-area #cv-container {
+        min-width: 210mm; /* يفرض على السيرة الذاتية أن تحتفظ بحجمها الكامل */
     }
-    .cv-professional-layout {
-        display: flex !important;
-    }
-    .cv-sidebar, .cv-main-content,
-    .cv-two-column-layout .cv-sidebar, .ast-layout .cv-sidebar,
-    .cv-professional-layout .cv-sidebar,
-    .cv-two-column-layout .cv-main-content, .ast-layout .cv-main-content,
-    .cv-professional-layout .cv-main-content {
-        width: 100% !important;
-        max-width: 100% !important;
-        padding: 15px !important;
-        min-height: auto !important;
-    }
-    .cv-professional-layout .cv-header.professional-layout {
-        width: 100% !important;
-    }
-
-    /* أحجام الخطوط داخل السيرة الذاتية */
-    #cv-container {
-        font-size: 14px !important;
-    }
-    .cv-name { font-size: 1.8em !important; }
-    .cv-title { font-size: 1.1em !important; }
-    .cv-section-title { font-size: 1.2em !important; margin-bottom: 10px !important; padding-bottom: 5px !important; }
-    .cv-contact-item { font-size: 0.9em !important; flex-wrap: wrap; justify-content: flex-start; text-align: start; }
-    body.rtl .cv-contact-item { justify-content: flex-end; }
-    .cv-contact-item i { width: 16px !important; height: 16px !important; font-size: 0.9em !important; margin: 0 5px !important; }
-    .cv-profile-pic { width: 100px !important; height: 100px !important; margin: 0 auto 15px auto !important; }
-    .cv-skill-list, .cv-language-list { column-count: 1 !important; text-align: start; }
-    body.rtl .cv-skill-list, body.rtl .cv-language-list { text-align: right; }
-    .cv-skill-item { margin: 5px 0 !important; display: inline-block !important; width: auto; font-size: 0.85em !important;}
 }
 
 /* --- شاشات الجوال الصغيرة جداً --- */
@@ -197,3 +162,4 @@
         page-break-inside: avoid !important;
     }
 }
+
