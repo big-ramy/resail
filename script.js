@@ -87,7 +87,20 @@ image.removeAttribute('data-src');image.removeAttribute('data-srcset')})}}
 function validateAndShowTemplatePage(){showPage('cv-template-selection-page')}
 function initializeDiscountCards(){const discountCards=document.querySelectorAll('.discount-card');const codeInput=document.getElementById('discount-code');discountCards.forEach(card=>{card.addEventListener('click',()=>{discountCards.forEach(c=>c.classList.remove('selected'));card.classList.add('selected');const code=card.getAttribute('data-code');codeInput.value=code;applyDiscountCode()})})}
 async function applyDiscountCode(){const codeInput=document.getElementById("discount-code");if(!codeInput)return;const code=codeInput.value.trim().toUpperCase();if(code&&discountCodes[code]!==undefined){discountApplied=discountCodes[code];appliedCode=code;const alertMessage=currentLang==='ar'?`تم تطبيق كود الخصم "${code}".\n\n- تم تحديث سعر الدفع المحلي.\n- للدفع بالبطاقة، الرجاء إدخال نفس الكود مرة أخرى في صفحة الدفع التالية لتأكيد الخصم.`:`Discount code "${code}" applied.\n\n- The price for local payment has been updated.\n- For card payment, please re-enter the code on the next page to confirm your discount.`;alert(alertMessage);document.getElementById('remove-discount-container').style.display='block'}else if(code){removeDiscount();alert(currentLang==='ar'?'كود الخصم غير صالح.':'Invalid discount code.')}else{removeDiscount()}
-updateAllPriceDisplays();if(finalPriceToPay===0&&discountApplied>0){alert(currentLang==='ar'?'هذه السيرة الذاتية مجانية! سيتم إرسالها إلى بريدك الإلكتروني.':'This CV is free! It will be sent to your email shortly.');toggleLoadingOverlay(!0,'payment_processing');try{const pdfData=await generatePdfFromNode(!0);if(pdfData&&pdfData.base64Pdf){await sendPaymentDataToAppsScript('Discounted/Free',0,pdfData.base64Pdf,null);showPage('landing-page')}else{throw new Error("Failed to generate PDF for free CV.")}}catch(error){console.error("Error processing free CV:",error);alert("Error: "+error.message)}finally{toggleLoadingOverlay(!1)}}}
+updateAllPriceDisplays();    if (finalPriceToPay === 0 && discountApplied > 0) {
+        alert(currentLang === 'ar' ? 'هذه السيرة الذاتية مجانية! سيتم إرسالها إلى بريدك الإلكتروني.' : 'This CV is free! It will be sent to your email shortly.');
+        toggleLoadingOverlay(true, 'payment_processing');
+        try {
+            const pdfData = await generatePdfFromNode(true);
+            if (pdfData && pdfData.base64Pdf) {
+                // لا ننتظر الإرسال، فقط نرسل الطلب ونوجه المستخدم مباشرة
+                sendPaymentDataToAppsScript('Discounted/Free', 0, pdfData.base64Pdf, null);
+                localStorage.removeItem('resailCvData_' + currentLang);
+                showPage('thank-you-page'); // الانتقال لصفحة الشكر
+            } else {
+                throw new Error("Failed to generate PDF for free CV.");
+            }
+        }catch(error){console.error("Error processing free CV:",error);alert("Error: "+error.message)}finally{toggleLoadingOverlay(!1)}}}
 function openPaymentForCV_appsScript(){discountApplied=0;appliedCode="";selectedPriceToPay=PRICES.local[selectedTemplateCategory];finalPriceToPay=selectedPriceToPay;document.querySelectorAll('.discount-card').forEach(c=>c.classList.remove('selected'));const codeInput=document.getElementById("discount-code");if(codeInput)codeInput.value="";document.getElementById('remove-discount-container').style.display='none';updateAllPriceDisplays();showPage('payment-options-page')}
 function updatePriceDisplay(discountedPrice){const finalPriceText=document.getElementById("final-price-text");if(finalPriceText){const currency=currentLang==='ar'?' ريال':' SAR';finalPriceText.textContent=(translations[currentLang].messages||"Price Paid")+": "+discountedPrice+currency}}
 function getDiscountedPrice(){if(discountApplied>0&&discountApplied<=100){return Math.max(0,Math.round(selectedPriceToPay*(1-discountApplied/100)))}
@@ -480,22 +493,19 @@ function base64toBlob(base64, type = 'application/octet-stream') {
 }
 
 
-function selectTemplate(templateNumber, category) {
+function selectTemplate(clickedElement, templateNumber, category) {
     const cvContainer = document.getElementById('cv-container');
     
-    // --- بداية الكود الجديد ---
     // 1. إزالة الإطار من جميع القوالب أولاً
     const previews = document.querySelectorAll('.template-preview');
     previews.forEach(preview => preview.classList.remove('selected-template'));
 
-    // 2. إضافة الإطار للقالب الذي تم النقر عليه
-    const selectedPreview = document.querySelector(`.template-preview[data-template-category="${category}"][onclick*="selectTemplate(${templateNumber},'${category}')"]`);
-    if (selectedPreview) {
-        selectedPreview.classList.add('selected-template');
+    // 2. إضافة الإطار للقالب الذي تم النقر عليه مباشرة (هذا هو الحل المضمون)
+    if (clickedElement) {
+        clickedElement.classList.add('selected-template');
     }
-    // --- نهاية الكود الجديد ---
 
-    // الكود الأصلي لتغيير شكل السيرة الذاتية (يبقى كما هو)
+    // 3. باقي الكود يبقى كما هو لتحديث السيرة الذاتية
     cvContainer.className = ''; 
     cvContainer.classList.add(`${category}-layout`, `template${templateNumber}`);
     
@@ -1080,5 +1090,6 @@ if(expEntries[1]){expEntries[1].querySelector('.experience-title').value=current
 const eduEntries=document.querySelectorAll('#education-input .education-entry');if(eduEntries[0]){eduEntries[0].querySelector('.education-degree').value=currentLang==='ar'?'بكالوريوس علوم حاسوب':'B.Sc. Computer Science';eduEntries[0].querySelector('.education-institution').value=currentLang==='ar'?'جامعة الملك فهد للبترول والمعادن':'King Fahd University of Petroleum & Minerals';eduEntries[0].querySelector('.education-duration').value=currentLang==='ar'?'2012 - 2017':'2012 - 2017'}
 const skillInputsTest=document.querySelectorAll('#skills-input .skill-item-input');if(skillInputsTest[0])skillInputsTest[0].value='JavaScript';if(skillInputsTest[1])skillInputsTest[1].value='React';if(skillInputsTest[2])skillInputsTest[2].value='Node.js';if(skillInputsTest[3])skillInputsTest[3].value='SQL';if(skillInputsTest[4])skillInputsTest[4].value=currentLang==='ar'?'منهجيات أجايل':'Agile Methodologies';const langInputsTest=document.querySelectorAll('#languages-input .language-item-input');if(langInputsTest[0])langInputsTest[0].value=currentLang==='ar'?'العربية (لغة أم)':'Arabic (Native)';const refEntries=document.querySelectorAll('#references-input .reference-entry');if(refEntries[0]){refEntries[0].querySelector('.reference-name').value=currentLang==='ar'?'الدكتور علي أحمد':'Dr. Ali Ahmed';refEntries[0].querySelector('.reference-position').value=currentLang==='ar'?'أستاذ مساعد، جامعة الملك فهد':'Assistant Professor, KFUPM';refEntries[0].querySelector('.reference-phone').value='0551234567';refEntries[0].querySelector('.reference-email').value='ali.ahmed@example.com'}
 generateCV(cvContainer);updateProgress()}
+
 
 
