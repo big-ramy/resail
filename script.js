@@ -482,32 +482,30 @@ function base64toBlob(base64, type = 'application/octet-stream') {
 
 function selectTemplate(templateNumber, category) {
     const cvContainer = document.getElementById('cv-container');
-    const previews = document.querySelectorAll('.template-preview-container .template-preview');
+    
+    // --- بداية الكود الجديد ---
+    // 1. إزالة الإطار من جميع القوالب أولاً
+    const previews = document.querySelectorAll('.template-preview');
     previews.forEach(preview => preview.classList.remove('selected-template'));
 
-    // --- هذا هو السطر الأهم الذي يجب تعديله ---
-    // بدلاً من .classList.add، نستخدم .className = '' لمسح كل شيء أولاً
-    cvContainer.className = ''; 
-    // ------------------------------------------
-
-    // ثم نضيف الكلاسات الجديدة والنظيفة
-    cvContainer.classList.add(`${category}-layout`, `template${templateNumber}`);
-
-    // الكود التالي يبقى كما هو
+    // 2. إضافة الإطار للقالب الذي تم النقر عليه
     const selectedPreview = document.querySelector(`.template-preview[data-template-category="${category}"][onclick*="selectTemplate(${templateNumber},'${category}')"]`);
     if (selectedPreview) {
         selectedPreview.classList.add('selected-template');
     }
+    // --- نهاية الكود الجديد ---
+
+    // الكود الأصلي لتغيير شكل السيرة الذاتية (يبقى كما هو)
+    cvContainer.className = ''; 
+    cvContainer.classList.add(`${category}-layout`, `template${templateNumber}`);
     
     selectedTemplate = templateNumber;
     selectedTemplateCategory = category;
     
-    // الآن، عندما يتم استدعاء هذه الدالة، ستجد الكلاس الصحيح فقط
     updateControlsForCategory();
     createPaletteControls();
     generateCV(cvContainer);
     updateColorControlVisibility(); 
-
 }
 
 /**
@@ -939,7 +937,7 @@ function generateCV(targetElement) {
         if (selectedTemplate == 1) {
             cvContentDiv.innerHTML = `<div class="header-wave">${profilePicHTML}<div class="header-text"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div></div><div class="content-columns"><div class="left-column">${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${referencesHTML}${endMarkerHTML}</div><div class="right-column">${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${endMarkerHTML}</div></div>`;
         } else if (selectedTemplate == 2) {
-            cvContentDiv.innerHTML = `<div class="header-wave"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div><div class="content-columns"><div class="left-column">${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${endMarkerHTML}</div><div class="right-column">${profilePicHTML}${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div></div>`;
+              cvContentDiv.innerHTML = `<div class="header-wave"><div style="display: flex; flex-direction: column; align-items: center;"><h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div></div><div class="content-columns"><div class="left-column">${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${endMarkerHTML}</div><div class="right-column">${profilePicHTML}${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div></div>`;
         } else if (selectedTemplate == 3) {
             cvContentDiv.innerHTML = `<div class="cv-sidebar"><div class="cv-header two-col-main">${profilePicHTML}<h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2></div>${contactInfoHTML}${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}</div><div class="cv-main-content">${objectiveHTML}${experienceHTML}${customSectionsHTML}${educationHTML}${endMarkerHTML}</div>`;
         }
@@ -1082,3 +1080,4 @@ if(expEntries[1]){expEntries[1].querySelector('.experience-title').value=current
 const eduEntries=document.querySelectorAll('#education-input .education-entry');if(eduEntries[0]){eduEntries[0].querySelector('.education-degree').value=currentLang==='ar'?'بكالوريوس علوم حاسوب':'B.Sc. Computer Science';eduEntries[0].querySelector('.education-institution').value=currentLang==='ar'?'جامعة الملك فهد للبترول والمعادن':'King Fahd University of Petroleum & Minerals';eduEntries[0].querySelector('.education-duration').value=currentLang==='ar'?'2012 - 2017':'2012 - 2017'}
 const skillInputsTest=document.querySelectorAll('#skills-input .skill-item-input');if(skillInputsTest[0])skillInputsTest[0].value='JavaScript';if(skillInputsTest[1])skillInputsTest[1].value='React';if(skillInputsTest[2])skillInputsTest[2].value='Node.js';if(skillInputsTest[3])skillInputsTest[3].value='SQL';if(skillInputsTest[4])skillInputsTest[4].value=currentLang==='ar'?'منهجيات أجايل':'Agile Methodologies';const langInputsTest=document.querySelectorAll('#languages-input .language-item-input');if(langInputsTest[0])langInputsTest[0].value=currentLang==='ar'?'العربية (لغة أم)':'Arabic (Native)';const refEntries=document.querySelectorAll('#references-input .reference-entry');if(refEntries[0]){refEntries[0].querySelector('.reference-name').value=currentLang==='ar'?'الدكتور علي أحمد':'Dr. Ali Ahmed';refEntries[0].querySelector('.reference-position').value=currentLang==='ar'?'أستاذ مساعد، جامعة الملك فهد':'Assistant Professor, KFUPM';refEntries[0].querySelector('.reference-phone').value='0551234567';refEntries[0].querySelector('.reference-email').value='ali.ahmed@example.com'}
 generateCV(cvContainer);updateProgress()}
+
