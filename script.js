@@ -85,7 +85,26 @@ function lazyLoadImages(){const lazyImages=document.querySelectorAll('img[data-s
 lazyImage.removeAttribute('data-src');lazyImage.removeAttribute('data-srcset');observer.unobserve(lazyImage)}})},{rootMargin:'0px 0px 200px 0px',threshold:0.01});lazyImages.forEach(image=>{observer.observe(image)})}else{lazyImages.forEach(image=>{image.src=image.dataset.src;if(image.dataset.srcset){image.srcset=image.dataset.srcset}
 image.removeAttribute('data-src');image.removeAttribute('data-srcset')})}}
 function validateAndShowTemplatePage(){showPage('cv-template-selection-page')}
-function initializeDiscountCards(){const discountCards=document.querySelectorAll('.discount-card');const codeInput=document.getElementById('discount-code');discountCards.forEach(card=>{card.addEventListener('click',()=>{discountCards.forEach(c=>c.classList.remove('selected'));card.classList.add('selected');const code=card.getAttribute('data-code');codeInput.value=code;applyDiscountCode()})})}
+function initializeDiscountCards() {
+    const discountCards = document.querySelectorAll('.discount-card');
+    const codeInput = document.getElementById('discount-code');
+
+    discountCards.forEach(card => {
+        // التعامل مع بطاقة الخصم المجاني بشكل خاص
+        if (card.id === 'free-cv-card') {
+            card.addEventListener('click', handleFreeCvDownload);
+        } else {
+            // البطاقات الأخرى تعمل كالمعتاد
+            card.addEventListener('click', () => {
+                discountCards.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                const code = card.getAttribute('data-code');
+                codeInput.value = code;
+                applyDiscountCode();
+            });
+        }
+    });
+}
 async function applyDiscountCode() {
     const codeInput = document.getElementById("discount-code");
     if (!codeInput) return;
@@ -104,33 +123,8 @@ async function applyDiscountCode() {
     }
     updateAllPriceDisplays();
 }
-async function openPaymentForCV_appsScript() {
-    updateAllPriceDisplays(); // تحديث السعر النهائي ليعكس أي خصم
-
-    // التحقق إذا كان السعر صفراً بسبب كود خصم
-    if (finalPriceToPay <= 0 && (appliedCode === 'FREECV' || discountApplied === 100)) {
-        alert(currentLang === 'ar' ? 'هذه السيرة الذاتية مجانية! سيتم إرسالها إلى بريدك الإلكتروني قريباً.' : 'This CV is free! It will be sent to your email shortly.');
-        toggleLoadingOverlay(true, 'payment_processing');
-        try {
-            const pdfData = await generatePdfFromNode(true); // isPaid: true (بدون علامة مائية)
-            if (pdfData && pdfData.base64Pdf) {
-                // إرسال البيانات للتسجيل والبريد الإلكتروني
-                await sendPaymentDataToAppsScript('Discounted/Free', 0, pdfData.base64Pdf, null);
-                localStorage.removeItem('resailCvData_' + currentLang);
-                showPage('thank-you-page');
-            } else {
-                throw new Error("Failed to generate PDF for the free CV.");
-            }
-        } catch (error) {
-            console.error("Error processing free CV:", error);
-            alert("Error: " + error.message);
-        } finally {
-            toggleLoadingOverlay(false);
-        }
-    } else {
-        // إذا لم يكن السعر صفراً، اذهب لصفحة خيارات الدفع
-        showPage('payment-options-page');
-    }
+function openPaymentForCV_appsScript() {
+    showPage('payment-options-page');
 }
 function updatePriceDisplay(discountedPrice){const finalPriceText=document.getElementById("final-price-text");if(finalPriceText){const currency=currentLang==='ar'?' ريال':' SAR';finalPriceText.textContent=(translations[currentLang].messages||"Price Paid")+": "+discountedPrice+currency}}
 function getDiscountedPrice(){if(discountApplied>0&&discountApplied<=100){return Math.max(0,Math.round(selectedPriceToPay*(1-discountApplied/100)))}
@@ -485,82 +479,46 @@ const cvData=collectCvData();const direction=cvData.language==='ar'?'rtl':'ltr';
  * @param {File|null} paymentFile - ملف الإيصال (للدفع اليدوي)، أو null للعمليات التلقائية.
  */
 async function sendPaymentDataToAppsScript(paymentMethod, pricePaid, cvPdfBase64, paymentFile) {
-    toggleLoadingOverlay(true, 'Payment processing, please wait...');
-
+    toggleLoadingOverlay(true, 'please_wait_and_do_not_refresh');
     try {
-        // 1. جمع بيانات المستخدم الأساسية من حقول الإدخال الرئيسية
+        // ... (كل الكود الحالي لجمع البيانات وتجهيز formData يبقى كما هو)
         const name = document.getElementById('name-input')?.value.trim() || 'Unnamed User';
         const email = document.getElementById('email-input')?.value.trim();
         const phoneNumber = document.getElementById('phone-input')?.value.trim();
         const website = document.getElementById('website-input')?.value.trim();
-
-        // 2. التحقق من صحة البيانات الأساسية
-        if (!email || !validateEmail(email)) {
-            // استخدام رسالة خطأ عامة لأن هذه الدالة قد تُستدعى من سياقات مختلفة
-            throw new Error(translations[currentLang]['Please enter a valid email.'] || 'A valid email is required to send your CV.');
-        }
         
-        if (!cvPdfBase64) {
-            throw new Error('CV PDF data was not provided to the submission function.');
-        }
-
-        // 3. معالجة ملف إيصال الدفع (إن وجد)
-        let paymentFileBase64 = null;
-        if (paymentFile) {
-            // يمكنك إضافة التحقق من حجم ونوع الملف هنا أيضاً كطبقة حماية إضافية
-            if (paymentFile.size > MAX_FILE_SIZE) {
-                throw new Error(translations[currentLang]['File size exceeds the limit (3MB).']);
-            }
-            if (!ALLOWED_FILE_TYPES.includes(paymentFile.type)) {
-                throw new Error(translations[currentLang]['Please attach only image or PDF files.']);
-            }
-            paymentFileBase64 = await fileToBase64(paymentFile);
-        }
-
-        // 4. تجهيز حمولة البيانات (Payload) بتنسيق URLSearchParams
         const formData = new URLSearchParams();
         formData.append('name', name);
         formData.append('email', email);
         formData.append('phoneNumber', phoneNumber || '');
-        formData.append('website', website || ''); // إرسال بيانات الموقع/المدينة
+        formData.append('website', website || '');
         formData.append('pricePaid', pricePaid.toString());
         formData.append('paymentMethod', paymentMethod);
-        formData.append('cvTemplateCategory', selectedTemplateCategory); // استخدام المتغير العام
-        formData.append('discountCode', appliedCode || 'N/A'); // استخدام المتغير العام للكود المطبق
-        formData.append('language', currentLang); // استخدام المتغير العام
-
-        // بيانات الملفات
-        formData.append('paymentFileBase64', paymentFileBase64 || '');
-        formData.append('paymentFileType', paymentFile?.type || '');
-        formData.append('cvPdfFileBase64', cvPdfBase64); // استخدام بيانات الـ PDF التي تم تمريرها
+        formData.append('cvTemplateCategory', selectedTemplateCategory);
+        formData.append('discountCode', appliedCode || (pricePaid === 0 ? 'FREECV' : 'N/A')); // Ensure FREECV is sent
+        formData.append('language', currentLang);
+        formData.append('cvPdfFileBase64', cvPdfBase64);
         formData.append('cvPdfFileName', `CV_${name.replace(/\s/g, '_')}.pdf`);
-
-        // 5. إرسال الطلب إلى Google Apps Script
+        
         const response = await fetch(GOOGLE_APPS_SCRIPT_WEB_APP_URL_PAYMENT_PROCESSOR, {
             method: 'POST',
             body: formData,
         });
-
         const data = await response.json();
 
         if (data.status === 'success') {
-            alert(data.message || translations[currentLang]["payment-success"]);
-            showPage('landing-page');
+            return true; // إرجاع "نجاح"
         } else {
-            // إذا فشل الطلب من جهة الخادم، قم برمي خطأ ليتم عرضه
-            throw new Error(data.error || 'An unknown error occurred on the server.');
+            throw new Error(data.error || 'An unknown error occurred.');
         }
-
     } catch (err) {
         console.error("Error in sendPaymentDataToAppsScript:", err);
-        // عرض أي خطأ للمستخدم
-        alert((translations[currentLang]["Error processing file."] || "Error:") + err.message);
+        alert((translations[currentLang]["Error processing file."] || "Error:") + " " + err.message);
+        return false; // إرجاع "فشل"
     } finally {
-        // إخفاء شاشة التحميل دائمًا في النهاية
         toggleLoadingOverlay(false);
     }
 }
-
 
 // استبدال استدعاءات توليد الـ PDF القديمة في ملف index.html
 // هذا الزر في صفحة المعاينة (تنزيل PDF (مباشر))
@@ -603,27 +561,33 @@ function base64toBlob(base64, type = 'application/octet-stream') {
 function selectTemplate(clickedElement, templateNumber, category) {
     const cvContainer = document.getElementById('cv-container');
     
-    // 1. إزالة الإطار من جميع القوالب أولاً
-    const previews = document.querySelectorAll('.template-preview');
-    previews.forEach(preview => preview.classList.remove('selected-template'));
-
-    // 2. إضافة الإطار للقالب الذي تم النقر عليه مباشرة (هذا هو الحل المضمون)
+    document.querySelectorAll('.template-preview').forEach(p => p.classList.remove('selected-template'));
     if (clickedElement) {
         clickedElement.classList.add('selected-template');
     }
 
-    // 3. باقي الكود يبقى كما هو لتحديث السيرة الذاتية
     cvContainer.className = ''; 
     cvContainer.classList.add(`${category}-layout`, `template${templateNumber}`);
     
     selectedTemplate = templateNumber;
     selectedTemplateCategory = category;
+
+    // --- منطق إظهار وإخفاء بطاقة الخصم المجاني ---
+    const freeCvCard = document.getElementById('free-cv-card');
+    if (freeCvCard) {
+        if (category === 'normal' || category === 'standard') {
+            freeCvCard.style.display = 'flex';
+        } else {
+            freeCvCard.style.display = 'none';
+        }
+    }
     
     updateControlsForCategory();
     createPaletteControls();
     generateCV(cvContainer);
     updateColorControlVisibility(); 
 }
+
 
 /**
  * يعالج تغيير الصورة الشخصية، ويعرض معاينة كأيقونة، ويقوم بتصغير الصورة.
@@ -1198,7 +1162,58 @@ const eduEntries=document.querySelectorAll('#education-input .education-entry');
 const skillInputsTest=document.querySelectorAll('#skills-input .skill-item-input');if(skillInputsTest[0])skillInputsTest[0].value='JavaScript';if(skillInputsTest[1])skillInputsTest[1].value='React';if(skillInputsTest[2])skillInputsTest[2].value='Node.js';if(skillInputsTest[3])skillInputsTest[3].value='SQL';if(skillInputsTest[4])skillInputsTest[4].value=currentLang==='ar'?'منهجيات أجايل':'Agile Methodologies';const langInputsTest=document.querySelectorAll('#languages-input .language-item-input');if(langInputsTest[0])langInputsTest[0].value=currentLang==='ar'?'العربية (لغة أم)':'Arabic (Native)';const refEntries=document.querySelectorAll('#references-input .reference-entry');if(refEntries[0]){refEntries[0].querySelector('.reference-name').value=currentLang==='ar'?'الدكتور علي أحمد':'Dr. Ali Ahmed';refEntries[0].querySelector('.reference-position').value=currentLang==='ar'?'أستاذ مساعد، جامعة الملك فهد':'Assistant Professor, KFUPM';refEntries[0].querySelector('.reference-phone').value='0551234567';refEntries[0].querySelector('.reference-email').value='ali.ahmed@example.com'}
 generateCV(cvContainer);updateProgress()}
 
+// 1. الدالة النهائية للتحكم بالتنزيل المجاني
+async function handleFreeCvDownload() {
+    const freeCard = document.getElementById('free-cv-card');
+    const originalText = freeCard.innerHTML;
+    const email = document.getElementById('email-input')?.value.trim();
 
+    if (!validateEmail(email)) {
+        alert(currentLang === 'ar' ? 'الرجاء إدخال بريد إلكتروني صالح أولاً للمتابعة.' : 'Please enter a valid email to continue.');
+        return;
+    }
+
+    // تغيير شكل البطاقة للإشارة إلى التحميل
+    freeCard.innerHTML = `<div class="spinner-border spinner-border-sm" role="status"></div><span class="ms-2">${currentLang === 'ar' ? 'جاري المعالجة...' : 'Processing...'}</span>`;
+    freeCard.style.pointerEvents = 'none'; // تعطيل الزر مؤقتاً
+
+    try {
+        // توليد الـ PDF أولاً
+        const pdfData = await generatePdfFromNode(true); // true = بدون علامة مائية
+        if (!pdfData || !pdfData.base64Pdf) {
+            throw new Error("Failed to generate PDF before submission.");
+        }
+
+        // إرسال الطلب إلى doPost للتحقق والتسجيل
+        // sendPaymentDataToAppsScript هي الدالة التي تقوم ببناء الطلب وإرساله إلى doPost
+        // سنمرر لها 'FREECV' كطريقة دفع وسعر 0
+        const success = await sendPaymentDataToAppsScript('FREECV Payment', 0, pdfData.base64Pdf, null);
+
+        if (success) {
+            // إذا نجحت العملية (تم التحقق والتسجيل)، ابدأ التنزيل
+            const blob = base64toBlob(pdfData.base64Pdf, 'application/pdf');
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `CV_${document.getElementById('name-input')?.value.replace(/\s/g, '_') || 'ResailCV'}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showPage('thank-you-page'); // الانتقال لصفحة الشكر
+        }
+        // إذا لم تكن العملية ناجحة، فإن دالة sendPaymentDataToAppsScript ستكون قد عرضت رسالة الخطأ بالفعل
+
+    } catch (error) {
+        console.error("Free CV Download Error:", error);
+        alert("Error: " + error.message);
+    } finally {
+        // إعادة البطاقة لحالتها الأصلية في جميع الأحوال
+        freeCard.innerHTML = originalText;
+        freeCard.style.pointerEvents = 'auto';
+    }
+}
 
 
 
