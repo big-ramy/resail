@@ -1722,7 +1722,9 @@ function setupModalButtonListener() {
 }
 
 /**
- * Creates and populates a custom section from AI data.
+ * =========================================================================
+ * == (النسخة النهائية) تنشئ وتعبئ قسماً مخصصاً من بيانات الذكاء الاصطناعي ==
+ * =========================================================================
  * @param {object} sectionData - The custom section object from the AI.
  */
 function addCustomSectionFromAI(sectionData) {
@@ -1731,7 +1733,13 @@ function addCustomSectionFromAI(sectionData) {
         customSectionsContainer = document.createElement('div');
         customSectionsContainer.id = 'custom-sections-container';
         const formNavigationButtons = document.getElementById('form-navigation-buttons');
-        formNavigationButtons.parentNode.insertBefore(customSectionsContainer, formNavigationButtons);
+        // التأكد من وجود العنصر قبل الإضافة لتجنب الأخطاء
+        if(formNavigationButtons && formNavigationButtons.parentNode) {
+            formNavigationButtons.parentNode.insertBefore(customSectionsContainer, formNavigationButtons);
+        } else {
+             // حل بديل إذا لم يتم العثور على العنصر المرجعي
+            document.querySelector('#cv-data-entry-page .col-md-6:last-child').appendChild(customSectionsContainer);
+        }
     }
 
     const sectionWrapper = document.createElement('div');
@@ -1746,14 +1754,13 @@ function addCustomSectionFromAI(sectionData) {
     const subSectionsContainer = document.createElement('div');
     subSectionsContainer.className = 'sub-sections-container';
 
+    // تعبئة العناوين الفرعية من بيانات الذكاء الاصطناعي
     if (sectionData.subSections && Array.isArray(sectionData.subSections)) {
         sectionData.subSections.forEach(subData => {
             const subSectionEntry = document.createElement('div');
             subSectionEntry.className = 'custom-subsection-entry border p-2 mb-2 rounded position-relative';
-
             const subTitle = subData.title || '';
             const subDescription = subData.description || '';
-
             subSectionEntry.innerHTML = `
                 <button type="button" class="remove-field" onclick="this.parentElement.remove(); generateCV(document.getElementById('cv-container'));" title="${translations[currentLang]['remove_subsection_title']}">&times;</button>
                 <input type="text" class="form-control mb-2 custom-subsection-title" placeholder="${translations[currentLang]['subsection_title_placeholder']}" value="${subTitle}" oninput="generateCV(document.getElementById('cv-container'));">
@@ -1763,9 +1770,46 @@ function addCustomSectionFromAI(sectionData) {
         });
     }
 
+    // --- ▼▼▼ الجزء الجديد والمهم: إضافة أزرار التحكم ▼▼▼ ---
+    const buttonContainer = document.createElement('div');
+    buttonContainer.className = 'mt-2';
+
+    // زر "إضافة عنوان فرعي"
+    const addSubSectionButton = document.createElement('button');
+    addSubSectionButton.type = 'button';
+    addSubSectionButton.className = 'btn btn-sm btn-outline-primary me-2';
+    addSubSectionButton.innerHTML = translations[currentLang].add_subsection_btn;
+    addSubSectionButton.onclick = function() {
+        const subSectionEntry = document.createElement('div');
+        subSectionEntry.className = 'custom-subsection-entry border p-2 mb-2 rounded position-relative';
+        subSectionEntry.innerHTML = `
+            <button type="button" class="remove-field" onclick="this.parentElement.remove(); generateCV(document.getElementById('cv-container'));" title="${translations[currentLang]['remove_subsection_title']}">&times;</button>
+            <input type="text" class="form-control mb-2 custom-subsection-title" placeholder="${translations[currentLang]['subsection_title_placeholder']}" oninput="generateCV(document.getElementById('cv-container'));">
+            <textarea class="form-control custom-subsection-description" placeholder="${translations[currentLang]['subsection_desc_placeholder']}" rows="3" oninput="generateCV(document.getElementById('cv-container'));"></textarea>
+        `;
+        subSectionsContainer.appendChild(subSectionEntry);
+    };
+
+    // زر "حذف القسم بالكامل"
+    const removeSectionButton = document.createElement('button');
+    removeSectionButton.type = 'button';
+    removeSectionButton.className = 'btn btn-sm btn-danger';
+    removeSectionButton.textContent = translations[currentLang].remove_section_btn;
+    removeSectionButton.onclick = function() {
+        if (confirm(translations[currentLang].confirm_delete_section)) {
+            sectionWrapper.remove();
+            generateCV(document.getElementById('cv-container'));
+        }
+    };
+
+    buttonContainer.appendChild(addSubSectionButton);
+    buttonContainer.appendChild(removeSectionButton);
+    // --- ▲▲▲ نهاية الجزء الجديد ▲▲▲ ---
+
     sectionWrapper.appendChild(titleInput);
     sectionWrapper.appendChild(subSectionsContainer);
-    // We don't add the "Add/Remove Section" buttons for AI-generated sections to keep it simple.
+    sectionWrapper.appendChild(buttonContainer); // إضافة حاوية الأزرار إلى القسم
+
     customSectionsContainer.appendChild(sectionWrapper);
 }
 /**
