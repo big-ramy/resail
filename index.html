@@ -149,72 +149,6 @@
     justify-content: center; /* يوسط الأزرار */
     gap: 1rem;           /* مسافة بين الزرين */
 }
-/* responsive.css */
-@media (max-width: 991.98px) {
-    #cv-preview-area {
-        height: 70vh;
-        overflow: auto;
-        justify-content: flex-start !important;
-    }
-
-    html[dir="rtl"] #cv-preview-area {
-        justify-content: flex-start !important;
-    }
-
-    #cv-container {
-        transform: scale(0.35);
-        transform-origin: top left;
-        transition: transform 0.3s ease;
-        margin-bottom: -190mm;
-        margin-right: -135mm;
-    }
-    
-    /* Add this new rule for the zoomed-in state */
-    #cv-container.zoomed-in {
-        transform: scale(1);
-        margin-bottom: 0;
-        margin-right: 0;
-    }
-
-
-    html[dir="rtl"] #cv-container {
-        transform-origin: top right;
-        margin-right: 0;
-        margin-left: -135mm;
-    }
-    
-    /* And this one for the zoomed-in state in RTL */
-    html[dir="rtl"] #cv-container.zoomed-in {
-        margin-left: 0;
-    }
-
-
-    #zoom-controls {
-        display: block !important;
-    }
-}
-
-/* --- Two-Column Layouts (Standard, Professional, AST) --- */
-.cv-two-column-layout,
-.cv-professional-layout,
-.ast-layout {
-    flex-grow: 1 !important;
-    display: flex;
-    gap: 10mm;
-    /* --- Add this line --- */
-    flex-direction: row; /* Or 'row-reverse' depending on the template */
-}
-
-/* ... a little further down ... */
-.cv-two-column-layout[dir="rtl"],
-.ast-layout[dir="rtl"] {
-    flex-direction: row;
-}
-
-.cv-two-column-layout[dir="ltr"],
-.ast-layout[dir="ltr"] {
-    flex-direction: row-reverse;
-}
 </style>
 
 <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" as="style">
@@ -1156,6 +1090,17 @@
     </button>
     <div id="save-notification" data-ar="✓ تم حفظ التغييرات" data-en="✓ Changes Saved"></div>
 
+
+    <footer class="bg-dark text-white py-4">
+        <div class="container text-center">
+            <ul class="list-inline mb-3">
+                <li class="list-inline-item"><a href="#terms-of-service" onclick="showPage('terms-of-service')" class="text-white text-decoration-none" data-ar="شروط الخدمة" data-en="Terms of Service">شروط الخدمة</a></li>
+                <li class="list-inline-item mx-3"><a href="#refund-policy" onclick="showPage('refund-policy')" class="text-white text-decoration-none" data-ar="سياسة الاسترداد" data-en="Refund Policy">سياسة الاسترداد</a></li>
+                <li class="list-inline-item"><a href="#privacy-policy" onclick="showPage('privacy-policy')" class="text-white text-decoration-none" data-ar="سياسة الخصوصية" data-en="Privacy Policy">سياسة الخصوصية</a></li>
+            </ul>
+            <p>&copy; 2023 <span data-ar="رسائل" data-en="Resail">رسائل</span>. <span data-ar="جميع الحقوق محفوظة." data-en="All rights reserved.">جميع الحقوق محفوظة.</span></p>
+        </div>
+    </footer>
         <div class="modal fade" id="ai-prompt-modal" tabindex="-1" aria-labelledby="aiModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -1187,17 +1132,5 @@
             </div>
         </div>
         </div>
-    <footer class="bg-dark text-white py-4">
-        <div class="container text-center">
-            <ul class="list-inline mb-3">
-                <li class="list-inline-item"><a href="#terms-of-service" onclick="showPage('terms-of-service')" class="text-white text-decoration-none" data-ar="شروط الخدمة" data-en="Terms of Service">شروط الخدمة</a></li>
-                <li class="list-inline-item mx-3"><a href="#refund-policy" onclick="showPage('refund-policy')" class="text-white text-decoration-none" data-ar="سياسة الاسترداد" data-en="Refund Policy">سياسة الاسترداد</a></li>
-                <li class="list-inline-item"><a href="#privacy-policy" onclick="showPage('privacy-policy')" class="text-white text-decoration-none" data-ar="سياسة الخصوصية" data-en="Privacy Policy">سياسة الخصوصية</a></li>
-            </ul>
-            <p>&copy; 2023 <span data-ar="رسائل" data-en="Resail">رسائل</span>. <span data-ar="جميع الحقوق محفوظة." data-en="All rights reserved.">جميع الحقوق محفوظة.</span></p>
-        </div>
-    </footer>
-
 </body>
 </html>
-
