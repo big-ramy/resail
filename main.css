@@ -24,7 +24,7 @@
   src: url('fonts/tajawal-v11-arabic_latin-700.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
 
-body{font-family:"Tajawal",Arial,sans-serif;background-color:#f7f9fc;color:#333;margin:0;padding:0;direction:rtl;text-align:right;overflow-y:auto;padding-top:70px}.rtl{direction:rtl;text-align:right;font-family:"Tajawal",sans-serif}.ltr{direction:ltr;text-align:left;font-family:"Roboto",sans-serif}.container,.row,.col-md-6,.col-md-12,.d-flex,.mb-4,.mb-3,.mt-3,.me-2,.ms-auto{direction:inherit;text-align:inherit}.navbar{background-color:#fff;box-shadow:0 2px 4px rgba(0,0,0,.1);padding:1rem 0}.navbar-brand{font-size:1.5rem;font-weight:700;color:#333!important}.navbar-nav .nav-link{color:#555!important;margin-left:15px;margin-right:0}body[dir="ltr"] .navbar-nav .nav-link{margin-left:0;margin-right:15px}.navbar-nav .nav-link:hover{color:#007bff!important}.dropdown-menu{right:0;left:auto;text-align:right;border:none;box-shadow:0 2px 8px rgba(0,0,0,.15)}body[dir="ltr"] .dropdown-menu{right:auto;left:0;text-align:left}.dropdown-item{text-align:inherit;padding:.5rem 1rem}.dropdown-item:hover{background-color:#f8f9fa;color:#007bff}.site-header{position:relative;height:650px;display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;overflow:hidden;margin-bottom:40px;box-shadow:0 4px 8px rgba(0,0,0,.1)}.header-background{position:absolute;top:0;left:0;width:100%;height:100%;background-image:url(header-background.jpeg.webp);background-size:cover;background-position:center;filter:brightness(.5);z-index:1}.header-content{position:relative;z-index:2;padding:0 20px;opacity:1;transform:translateY(0);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px}.site-header h1{font-size:3.5em;margin-bottom:20px;color:#fff;text-shadow:3px 3px 6px rgba(0,0,0,.6);font-weight:700;width:100%}.site-header p.lead{font-size:1.5em;margin-bottom:30px;color:#fff}.page-section{display:none;min-height:calc(100vh - 100px);padding:20px;background-color:#f7f9fc}.page-section.active-page{display:block;background:#191622}.page-section .container{background-color:#fff;padding:30px;border-radius:10px;box-shadow:0 4px 8px rgba(0,0,0,.1)}.popup-box{position:relative;background-color:#fff;padding:30px;border-radius:10px;max-width:95%;width:100%;min-height:80vh;box-shadow:0 4px 8px rgba(0,0,0,.2);box-sizing:border-box;margin:20px auto;display:flex;flex-direction:column;overflow-y:auto}#cv-preview-page .container{width:100%;max-width:100%;padding:15px;margin:10px auto}#qr-manual-payment-page .container{padding:30px;border-radius:8px;width:550px;max-width:90vw;text-align:center;background:#fff;display:flex;flex-direction:column;max-height:90vh;overflow-y:auto;box-sizing:border-box;margin:20px auto}.popup-close{position:absolute;top:10px;left:10px;font-size:1.5rem;cursor:pointer;border:none;background:transparent;color:#000;padding:5px;z-index:10}body[dir="ltr"] .popup-close{left:auto;right:10px}.popup-close:hover{color:red}.form-group{margin-bottom:1rem}.form-group label{font-weight:600;margin-bottom:.5rem;display:block}input[type="text"],input[type="email"],input[type="file"],textarea{width:100%;padding:.75rem;border:1px solid #ced4da;border-radius:.375rem;box-sizing:border-box;margin-bottom:10px;direction:inherit;text-align:inherit}textarea{resize:vertical}.form-group .btn{margin-bottom:10px;margin-left:5px;margin-right:0}body[dir="ltr"] .form-group .btn{margin-left:0;margin-right:5px}.remove-field{position:absolute;top:-10px;left:-10px;background:none;border:none;color:#dc3545;font-size:1.2em;cursor:pointer;z-index:1;padding:5px}.btn-outline-success{color:#e191fb;border-color:#e191fb}.btn-outline-success:hover{color:#fff;border-color:#e191fb;background-image:linear-gradient(90deg,#8e44ad 0%,#d1aaff 100%)}body[dir="ltr"] .remove-field{left:auto;right:8px}.remove-field:hover{color:#c82333}.experience-entry,.education-entry,.skill-entry,.language-entry,.reference-entry{border:1px dashed #ccc;padding:15px;margin-bottom:15px;border-radius:5px;position:relative}.experience-entry textarea{margin-bottom:0}.btn-outline-primary{color:#0d6efd;border-color:#0d6efd;background-color:transparent}.btn-outline-primary:hover{color:#fff;background-color:#0d6efd;border-color:#0d6efd}.btn-outline-danger{color:#dc3545;border-color:#dc3545;background-color:transparent}.btn-outline-danger:hover{color:#fff;background-color:#dc3545;border-color:#dc3545}.progress-container{margin:1rem 0;height:15px;background:#e9ecef;border-radius:10px;overflow:hidden}.progress-bar{height:100%;width:0%;background:#0d6efd;border-radius:10px;transition:width 0.3s ease,background-color 0.3s ease;color:#fff;text-align:center;line-height:15px;font-size:.7em}.language-toggle{z-index:1000;background-color:#d1aaff;border-radius:5px;box-shadow:0 2px 4px rgb(209,170,255);padding:5px 10px;cursor:pointer;font-size:.9em;user-select:none;transition:background-color 0.3s ease;margin-right:10px}body[dir="ltr"] .language-toggle{margin-right:0;margin-left:10px}.language-toggle:hover{background-color:rgba(240,240,240,.9)}.template-preview-container{display:flex;flex-wrap:wrap;justify-content:center;margin-bottom:30px;overflow-y:auto;max-height:calc(100vh - 250px);padding-right:15px;box-sizing:border-box}body[dir="ltr"] .template-preview-container{padding-right:0;padding-left:15px}.template-category{width:100%;text-align:center;margin-bottom:20px}.template-category h3{font-size:1.4em;color:#333;margin-bottom:15px;border-bottom:2px solid #0d6efd;display:inline-block;padding-bottom:5px}.template-previews{display:flex;flex-wrap:wrap;justify-content:center;gap:15px}.template-preview{cursor:pointer;border:3px solid transparent;transition:all 0.3s ease;width:300px;height:auto;object-fit:cover;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1)}.template-preview:hover{transform:translateY(-5px);box-shadow:0 5px 15px rgba(0,0,0,.2)}#cv-template-selection-page .template-preview.selected-template {
+body{font-family:"Tajawal",Arial,sans-serif;background-color:#f7f9fc;color:#333;margin:0;padding:0;direction:rtl;text-align:right;overflow-y:auto;padding-top:70px}.rtl{direction:rtl;text-align:right;font-family:"Tajawal",sans-serif}.ltr{direction:ltr;text-align:left;font-family:"Roboto",sans-serif}.container,.row,.col-md-6,.col-md-12,.d-flex,.mb-4,.mb-3,.mt-3,.me-2,.ms-auto{direction:inherit;text-align:inherit}.navbar{background-color:#fff;box-shadow:0 2px 4px rgba(0,0,0,.1);padding:1rem 0}.navbar-brand{font-size:1.5rem;font-weight:700;color:#333!important}.navbar-nav .nav-link{color:#555!important;margin-left:15px;margin-right:0}body[dir="ltr"] .navbar-nav .nav-link{margin-left:0;margin-right:15px}.navbar-nav .nav-link:hover{color:#007bff!important}.dropdown-menu{right:0;left:auto;text-align:right;border:none;box-shadow:0 2px 8px rgba(0,0,0,.15)}body[dir="ltr"] .dropdown-menu{right:auto;left:0;text-align:left}.dropdown-item{text-align:inherit;padding:.5rem 1rem}.dropdown-item:hover{background-color:#f8f9fa;color:#007bff}.site-header{position:relative;height:650px;display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;overflow:hidden;margin-bottom:40px;box-shadow:0 4px 8px rgba(0,0,0,.1)}.header-background{position:absolute;top:0;left:0;width:100%;height:100%;background-image:url(header-background.jpeg.avif);background-size:cover;background-position:center;filter:brightness(.5);z-index:1}.header-content{position:relative;z-index:2;padding:0 20px;opacity:1;transform:translateY(0);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px}.site-header h1{font-size:3.5em;margin-bottom:20px;color:#fff;text-shadow:3px 3px 6px rgba(0,0,0,.6);font-weight:700;width:100%}.site-header p.lead{font-size:1.5em;margin-bottom:30px;color:#fff}.page-section{display:none;min-height:calc(100vh - 100px);padding:20px;background-color:#f7f9fc}.page-section.active-page{display:block;background:#191622}.page-section .container{background-color:#fff;padding:30px;border-radius:10px;box-shadow:0 4px 8px rgba(0,0,0,.1)}.popup-box{position:relative;background-color:#fff;padding:30px;border-radius:10px;max-width:95%;width:100%;min-height:80vh;box-shadow:0 4px 8px rgba(0,0,0,.2);box-sizing:border-box;margin:20px auto;display:flex;flex-direction:column;overflow-y:auto}#cv-preview-page .container{width:100%;max-width:100%;padding:15px;margin:10px auto}#qr-manual-payment-page .container{padding:30px;border-radius:8px;width:550px;max-width:90vw;text-align:center;background:#fff;display:flex;flex-direction:column;max-height:90vh;overflow-y:auto;box-sizing:border-box;margin:20px auto}.popup-close{position:absolute;top:10px;left:10px;font-size:1.5rem;cursor:pointer;border:none;background:transparent;color:#000;padding:5px;z-index:10}body[dir="ltr"] .popup-close{left:auto;right:10px}.popup-close:hover{color:red}.form-group{margin-bottom:1rem}.form-group label{font-weight:600;margin-bottom:.5rem;display:block}input[type="text"],input[type="email"],input[type="file"],textarea{width:100%;padding:.75rem;border:1px solid #ced4da;border-radius:.375rem;box-sizing:border-box;margin-bottom:10px;direction:inherit;text-align:inherit}textarea{resize:vertical}.form-group .btn{margin-bottom:10px;margin-left:5px;margin-right:0}body[dir="ltr"] .form-group .btn{margin-left:0;margin-right:5px}.remove-field{position:absolute;top:-10px;left:-10px;background:none;border:none;color:#dc3545;font-size:1.2em;cursor:pointer;z-index:1;padding:5px}.btn-outline-success{color:#e191fb;border-color:#e191fb}.btn-outline-success:hover{color:#fff;border-color:#e191fb;background-image:linear-gradient(90deg,#8e44ad 0%,#d1aaff 100%)}body[dir="ltr"] .remove-field{left:auto;right:8px}.remove-field:hover{color:#c82333}.experience-entry,.education-entry,.skill-entry,.language-entry,.reference-entry{border:1px dashed #ccc;padding:15px;margin-bottom:15px;border-radius:5px;position:relative}.experience-entry textarea{margin-bottom:0}.btn-outline-primary{color:#0d6efd;border-color:#0d6efd;background-color:transparent}.btn-outline-primary:hover{color:#fff;background-color:#0d6efd;border-color:#0d6efd}.btn-outline-danger{color:#dc3545;border-color:#dc3545;background-color:transparent}.btn-outline-danger:hover{color:#fff;background-color:#dc3545;border-color:#dc3545}.progress-container{margin:1rem 0;height:15px;background:#e9ecef;border-radius:10px;overflow:hidden}.progress-bar{height:100%;width:0%;background:#0d6efd;border-radius:10px;transition:width 0.3s ease,background-color 0.3s ease;color:#fff;text-align:center;line-height:15px;font-size:.7em}.language-toggle{z-index:1000;background-color:#d1aaff;border-radius:5px;box-shadow:0 2px 4px rgb(209,170,255);padding:5px 10px;cursor:pointer;font-size:.9em;user-select:none;transition:background-color 0.3s ease;margin-right:10px}body[dir="ltr"] .language-toggle{margin-right:0;margin-left:10px}.language-toggle:hover{background-color:rgba(240,240,240,.9)}.template-preview-container{display:flex;flex-wrap:wrap;justify-content:center;margin-bottom:30px;overflow-y:auto;max-height:calc(100vh - 250px);padding-right:15px;box-sizing:border-box}body[dir="ltr"] .template-preview-container{padding-right:0;padding-left:15px}.template-category{width:100%;text-align:center;margin-bottom:20px}.template-category h3{font-size:1.4em;color:#333;margin-bottom:15px;border-bottom:2px solid #0d6efd;display:inline-block;padding-bottom:5px}.template-previews{display:flex;flex-wrap:wrap;justify-content:center;gap:15px}.template-preview{cursor:pointer;border:3px solid transparent;transition:all 0.3s ease;width:300px;height:auto;object-fit:cover;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1)}.template-preview:hover{transform:translateY(-5px);box-shadow:0 5px 15px rgba(0,0,0,.2)}#cv-template-selection-page .template-preview.selected-template {
     border: 3px solid #d1aaff !important;
     box-shadow: 0 0 15px rgba(209, 170, 255, 0.6) !important;
     transform: scale(1.05);
@@ -46,12 +46,115 @@ body{font-family:"Tajawal",Arial,sans-serif;background-color:#f7f9fc;color:#333;
 /* ============================================= */
 /* == تنسيقات شريط العروض في الهيدر (Hero) - نسخة مُحسّنة == */
 /* ============================================= */
+#why-resail .row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* الخطوة 2: القاعدة الافتراضية للشاشات الصغيرة جداً (عمود واحد) */
+#why-resail .row > .col {
+    flex: 0 0 100%;
+    width: 100%;
+    max-width: 100%;
+}
+
+/* الخطوة 3: قاعدة الشاشات المتوسطة (عمودان) - تأتي بعد القاعدة الافتراضية */
+@media (min-width: 768px) {
+    #why-resail .row > .col {
+        flex: 0 0 50%;
+        width: 50%;
+        max-width: 50%;
+    }
+}
+
+/* الخطوة 4: قاعدة الشاشات الكبيرة (3 أعمدة) - يجب أن تكون هذه القاعدة هي الأخيرة */
+@media (min-width: 992px) {
+    #why-resail .row > .col {
+        flex: 0 0 33.3333%;
+        width: 33.3333%;
+        max-width: 33.3333%;
+    }
+}
+
+/* الخطوة 5: قواعد ضمان تساوي الارتفاع (تأتي في النهاية) */
+#why-resail .row > .col {
+    display: flex;
+    flex-direction: column;
+}
+
+#why-resail .row > .col > .feature-card {
+    flex-grow: 1;
+    height: 100%;
+}
 .standard-layout .cv-language-list li {
     margin-bottom: 2mm!important; /* تقليل المسافة بين اللغات */
 }
 .standard-layout.template2 .cv-sidebar
  {
     background: var(--primary-bg);
+}
+
+.site-header {
+    height: auto; /* إلغاء الارتفاع الثابت */
+    min-height: 100vh; /* تحديد أقل ارتفاع ليكون بحجم الشاشة */
+    padding: 120px 0 60px 0; /* إضافة حشوة داخلية مرنة بدلاً من الارتفاع */
+    display: flex; /* التأكد من أنه Flexbox */
+    align-items: center; /* توسيط المحتوى عمودياً */
+    justify-content: center; /* توسيط المحتوى أفقياً */
+}
+
+/* 2. تحسين حاوية المحتوى الداخلي */
+.header-content {
+    gap: 20px; /* زيادة المسافة بين العناصر لتحسين القراءة */
+    width: 100%;
+    max-width: 900px; /* تحديد عرض أقصى للمحتوى */
+}
+
+/* 3. جعل حقول الإدخال أكثر مرونة */
+.site-header .row.justify-content-center {
+    max-width: 800px !important; /* زيادة العرض الأقصى قليلاً */
+}
+
+/* 4. تعديلات خاصة بالشاشات المتوسطة والصغيرة (الأجهزة اللوحية والجوال) */
+@media (max-width: 768px) {
+    .site-header {
+        min-height: auto; /* السماح للهيدر بالتقلص بناءً على المحتوى */
+        padding: 100px 0 40px 0; /* تقليل الحشوة الداخلية */
+    }
+
+    .site-header h1 {
+        font-size: 2.5em; /* تصغير حجم العنوان الرئيسي */
+        margin-top: 0; /* إزالة الهامش العلوي الذي قد يسبب مشاكل */
+    }
+
+    .site-header p.lead {
+        font-size: 1.2em; /* تصغير حجم النص التعريفي */
+    }
+
+    .header-content {
+        gap: 15px; /* تقليل المسافة بين العناصر */
+    }
+
+    /* التأكد من أن حقول الإدخال تظهر بشكل جيد */
+    .site-header .col-md-5 {
+        flex: 0 0 100%; /* جعل كل حقل يأخذ عرض الشاشة الكامل */
+        width: 100%;
+    }
+}
+
+/* 5. تعديلات إضافية للشاشات الصغيرة جداً (الجوال) */
+@media (max-width: 480px) {
+    .site-header h1 {
+        font-size: 2em; /* تصغير إضافي للعنوان */
+    }
+
+    .site-header p.lead {
+        font-size: 1em; /* تصغير إضافي للنص التعريفي */
+    }
+
+    #hero-offers-container {
+        padding: 10px; /* تقليل الحشوة لشريط العروض */
+    }
 }
 /* يستهدف الحاوية الرئيسية للشريط */
 #hero-offers-container {
@@ -381,6 +484,8 @@ body{font-family:"Tajawal",Arial,sans-serif;background-color:#f7f9fc;color:#333;
      #color-picker-container .col-md-6 {
         flex-basis: 50%; /* Allow two color pickers side-by-side if there's space */
     }
+    #hero-summary-input.form-control {
+    height: 110px;}
 }
 
 #save-notification {
