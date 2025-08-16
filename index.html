@@ -139,9 +139,30 @@
         </div>
     </nav>
     <header class="site-header">
-        <div class="header-background"></div>
+        <div class="header-background">
         <div class="header-content">
-            <div id="hero-offers-container">
+
+
+
+            <h1 class="display-4" data-ar="أنشئ سيرتك الذاتية الاحترافية بسهولة" data-en="Professional CV Builder">أنشئ سيرتك الذاتية الاحترافية بسهولة</h1>
+            <p class="lead" data-ar="الذكاء الاصطناعي جاهز لتحضير سيرتك الذاتية ادخل بياناتك وأبدأ الأن" data-en="AI is ready to prepare your CV. Enter your data and start now..">الذكاء الاصطناعي جاهز لتحضير سيرتك الذاتية ادخل بياناتك وأبدأ الأن.</p>
+            <div class="row justify-content-center g-2 mb-3" style="max-width: 700px; width: 100%;">
+                <div class="col-md-5">
+                    <input type="text" id="hero-name-input" class="form-control form-control-lg text-center" placeholder="اكتب اسمك هنا" data-ar-placeholder="اكتب اسمك هنا" data-en-placeholder="Enter your name here">
+                </div>
+                <div class="col-md-5">
+                    <input type="text" id="hero-title-input" class="form-control form-control-lg text-center" placeholder="اكتب مسماك الوظيفي" data-ar-placeholder="اكتب مسماك الوظيفي" data-en-placeholder="Enter your job title here">
+                </div>
+            </div>
+            <div class="row justify-content-center g-2 mb-3" style="max-width: 700px; width: 100%;">
+                <div class="col-12">
+                    <textarea id="hero-summary-input" class="form-control" rows="5" 
+                    data-ar-placeholder="أخبرالذكاء الاصطناعي عنك وعن خبراتك ومهاراتك وهو سيقوم بتعبئة البيانات عنك... كلما زادت التفاصيل، كانت النتيجة افضل. (اختياري)"                            
+                    data-en-placeholder="Tell the AI about you, your experiences, and your skills, and it will fill in the data about you... the more details, the better the result. (Optional)"></textarea>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-lg mt-3" id="create-cv-button"  data-ar="ابدأ في إنشاء سيرتك الذاتية الآن" data-en="Create Your CV Now">ابدأ في إنشاء سيرتك الذاتية الآن</button>
+                    <div id="hero-offers-container">
                 <div id="countdown-timer-wrapper">
                     <span data-ar="العرض ينتهي خلال: " data-en="Offer ends in: ">العرض ينتهي خلال: </span>
                     <span id="countdown-timer" class="blinking-code" style="color: #ff85c4; background-color: rgba(255, 133, 196, 0.1);">--:--:--</span>
@@ -168,28 +189,9 @@
                             لخصم 10% لمرة واحدة
                         </div>
                     </div>
-
-                </div>
             </div>
-            <h1 class="display-4" data-ar="أنشئ سيرتك الذاتية الاحترافية بسهولة" data-en="Professional CV Builder">أنشئ سيرتك الذاتية الاحترافية بسهولة</h1>
-            <p class="lead" data-ar="ابرز مهاراتك وخبراتك بتصميم احترافي يلفت الانتباه ويفتح لك أبواب الفرص." data-en="Create a professional CV that stands out and gets you hired.">ابرز مهاراتك وخبراتك بتصميم احترافي يلفت الانتباه ويفتح لك أبواب الفرص.</p>
-            <div class="row justify-content-center g-2 mb-3" style="max-width: 700px; width: 100%;">
-                <div class="col-md-5">
-                    <input type="text" id="hero-name-input" class="form-control form-control-lg text-center" placeholder="اكتب اسمك هنا" data-ar-placeholder="اكتب اسمك هنا" data-en-placeholder="Enter your name here">
-                </div>
-                <div class="col-md-5">
-                    <input type="text" id="hero-title-input" class="form-control form-control-lg text-center" placeholder="اكتب مسماك الوظيفي" data-ar-placeholder="اكتب مسماك الوظيفي" data-en-placeholder="Enter your job title here">
-                </div>
-            </div>
-            <div class="row justify-content-center g-2 mb-3" style="max-width: 700px; width: 100%;">
-                <div class="col-12">
-                    <textarea id="hero-summary-input" class="form-control" rows="5" 
-                    data-ar-placeholder="أخبرالذكاء الاصطناعي عنك وعن خبراتك ومهاراتك وهو سيقوم بتعبئة البيانات عنك... كلما زادت التفاصيل، كانت النتيجة افضل. (اختياري)"                            
-                    data-en-placeholder="Tell the AI about you, your experiences, and your skills, and it will fill in the data about you... the more details, the better the result. (Optional)"></textarea>
-                </div>
-            </div>
-            <button class="btn btn-primary btn-lg mt-3" id="create-cv-button"  data-ar="ابدأ في إنشاء سيرتك الذاتية الآن" data-en="Create Your CV Now">ابدأ في إنشاء سيرتك الذاتية الآن</button>
         </div>
+
     </header>
 
     <div id="loading-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 10000; justify-content: center; align-items: center; flex-direction: column; text-align: center;">
@@ -1068,6 +1070,7 @@
 
 </body>
 </html>
+
 
 
 
