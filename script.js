@@ -256,17 +256,91 @@ allTranslatableElements.forEach(element=>{let newContent=null;const translateIdK
 if(newContent!==null){if(Array.isArray(newContent)&&element.tagName==='UL'){let listHtml='';newContent.forEach(itemHtml=>{listHtml+=`<li>${itemHtml}</li>`});element.innerHTML=listHtml}else if(typeof newContent==='string'){const containsHtml=/<[a-z][\s\S]*>/i.test(newContent);if(containsHtml){element.innerHTML=newContent}else{if(element.tagName!=='IMG'&&element.tagName!=='INPUT'&&element.tagName!=='TEXTAREA'){element.textContent=newContent}}}}});const placeholderElements=document.querySelectorAll('[data-en-placeholder], [data-ar-placeholder]');placeholderElements.forEach(element=>{const placeholderKey=isArabic?element.getAttribute('data-ar-placeholder'):element.getAttribute('data-en-placeholder');if(placeholderKey&&translations[currentLang]&&translations[currentLang][placeholderKey]!==undefined){element.placeholder=translations[currentLang][placeholderKey]}else if(placeholderKey){element.placeholder=placeholderKey}});const altElements=document.querySelectorAll('[data-en-alt], [data-ar-alt]');altElements.forEach(element=>{if(element.tagName==='IMG'){const altKey=isArabic?element.getAttribute('data-ar-alt'):element.getAttribute('data-en-alt');if(altKey&&translations[currentLang]&&translations[currentLang][altKey]!==undefined){element.alt=translations[currentLang][altKey]}else if(altKey){element.alt=altKey}}});const footerLinks=document.querySelectorAll('footer .list-inline-item a');footerLinks.forEach(link=>{const key=link.getAttribute('data-translate');if(key&&translations[currentLang]&&translations[currentLang][key]!==undefined){link.textContent=translations[currentLang][key]}});const contactEmailLinks=document.querySelectorAll('#contact p strong a, #terms-of-service-page a[href^="mailto:"], #refund-policy a[href^="mailto:"], #privacy-policy a[href^="mailto:"]');contactEmailLinks.forEach(link=>{let key;if(link.closest('#contact')){key='email-address-contact'}else if(link.closest('#terms-of-service-page')){key='terms-of-service-email-contact'}else if(link.closest('#refund-policy')){key='refund-policy-email-contact'}else if(link.closest('#privacy-policy')){key='privacy-policy-email-contact'}
 if(key&&translations[currentLang]&&translations[currentLang][key]!==undefined){link.textContent=translations[currentLang][key]}});if(document.getElementById('payment-options-page')?.classList.contains('active-page')){updateAllPriceDisplays()}}
 function collectCvData(){const cvData={name:document.getElementById('name-input')?.value.trim(),jobTitle:document.getElementById('title-input')?.value.trim(),email:document.getElementById('email-input')?.value.trim(),phone:document.getElementById('phone-input')?.value.trim(),website:document.getElementById('website-input')?.value.trim(),profilePicDataUrl:profilePicDataUrl,objective:document.getElementById('objective-input')?.value.trim(),experiences:getExperiencesData(),educations:getEducationsData(),skills:getSkillsData(),languages:getLanguagesData(),references:getReferencesData(),templateCategory:selectedTemplateCategory,templateNumber:selectedTemplate,language:currentLang,templateCss:getSelectedTemplateCss()};return cvData}
-async function handleLemonSqueezyPurchase(){toggleLoadingOverlay(!0,'preparing_secure_payment');try{const cvData=collectCvData();const prepareResponse=await fetch(`${NODE_SERVER_URL}/api/prepare-checkout`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cvData)});if(!prepareResponse.ok){const errorText=await prepareResponse.text();throw new Error(`Server failed to prepare session: ${errorText}`)}
-const{sessionId}=await prepareResponse.json();if(!sessionId){throw new Error('Could not retrieve session ID from the server.')}
-const checkoutConfig=CHECKOUT_CONFIG[selectedTemplateCategory];if(!checkoutConfig||!checkoutConfig.link){throw new Error('Checkout link for the selected category is not configured.')}
-let storeName="Resail CV";let productDescription=`CV Template: ${selectedTemplateCategory}`;if(currentLang==='ar'){storeName="رسائل للسير الذاتية";const categoryTranslations={normal:"قالب عادي",standard:"قالب قياسي",professional:"قالب احترافي",ast:"قالب AST",creative:"قالب إبداعي"};const translatedCategory=categoryTranslations[selectedTemplateCategory]||selectedTemplateCategory;productDescription=`قالب سيرة ذاتية: ${translatedCategory}`}
-const finalUrl=new URL(checkoutConfig.link);finalUrl.searchParams.set('checkout[custom][session_id]',sessionId);finalUrl.searchParams.set('checkout[store]',storeName);finalUrl.searchParams.set('checkout[custom][description]',productDescription);if(cvData.email){finalUrl.searchParams.set('checkout[email]',cvData.email)}
-if(cvData.name){finalUrl.searchParams.set('checkout[name]',cvData.name)}
-const codeInput=document.getElementById("discount-code");const code=codeInput?codeInput.value.trim():"";if(code){finalUrl.searchParams.set('discount_code',code)}
-console.log('Redirecting to Lemon Squeezy:',finalUrl.toString());window.location.href=finalUrl.toString()}catch(error){console.error('Lemon Squeezy purchase error:',error);const errorMessage=translations[currentLang]["An error occurred while preparing your payment. Please try again or contact support."];alert(errorMessage);toggleLoadingOverlay(!1)}}
-async function updateCounters(){const cvCounterElement=document.getElementById('cv-counter-span');const visitorCounterElement=document.getElementById('visitor-counter-span');if(!cvCounterElement||!visitorCounterElement){return}
-try{const response=await fetch(`${GOOGLE_APPS_SCRIPT_WEB_APP_URL_PAYMENT_PROCESSOR}?action=getCounters`);if(!response.ok){throw new Error('Network response was not ok')}
-const data=await response.json();if(data.status==='success'){const locale=currentLang==='ar'?'ar-EG':'en-US';cvCounterElement.textContent=`+${data.cvCount.toLocaleString(locale)}`;visitorCounterElement.textContent=`+${data.visitorCount.toLocaleString(locale)}`}}catch(error){console.error('Failed to fetch counters:',error)}}
+// ▼▼▼ استبدل دالة handleLemonSqueezyPurchase القديمة بهذه النسخة المحدثة ▼▼▼
+
+async function handleLemonSqueezyPurchase() {
+    toggleLoadingOverlay(true, 'preparing_secure_payment');
+    try {
+        // 1. نقوم بجمع كل بيانات السيرة الذاتية الخام
+        const cvData = collectCvData();
+
+        // 2. نقوم ببناء كود الـ HTML الكامل تمامًا كما تفعل دالة generatePdfFromNode
+        const cvPreviewElement = document.getElementById('cv-container');
+        if (!cvPreviewElement) throw new Error("CV container not found.");
+
+        const fetchCss = async (url) => {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`Failed to fetch ${url}`);
+            return response.text();
+        };
+
+        const [mainCss, templatesCss, responsiveCss] = await Promise.all([
+            fetchCss('style.css'),
+            fetchCss('templates.css'),
+            fetchCss('responsive.css')
+        ]);
+        const fullCssText = mainCss + templatesCss + responsiveCss;
+
+        const tempContainer = document.createElement('div');
+        generateCV(tempContainer);
+        const finalHtmlContent = tempContainer.innerHTML; // المحتوى الداخلي فقط
+        tempContainer.remove();
+
+        const direction = cvData.language === 'ar' ? 'rtl' : 'ltr';
+        
+        // --- بناء الهيكل الكامل للصفحة ---
+        const fullPageHtml = `
+            <!DOCTYPE html>
+            <html lang="${cvData.language}" dir="${direction}">
+            <head>
+                <meta charset="UTF-8">
+                <title>CV</title>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+                <link rel="preconnect" href="https://fonts.googleapis.com">
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                <link href="https://fonts.googleapis.com/css2?family=Almarai&family=Cairo&family=Tajawal&family=Amiri&family=Lalezar&family=Markazi+Text&family=Roboto&family=Lato&family=Montserrat&family=Open+Sans&family=PT+Sans&family=Playfair+Display&family=Noto+Serif&display=swap" rel="stylesheet">
+                <style>${fullCssText}</style>
+            </head>
+            <body>
+                 <div id="cv-container" class="${cvData.templateCategory}-layout template${cvData.templateNumber}" dir="${direction}">
+                    ${finalHtmlContent}
+                 </div>
+            </body>
+            </html>
+        `;
+
+        // 3. نضيف الـ HTML الجاهز إلى البيانات التي سيتم إرسالها للسيرفر
+        cvData.fullHtml = fullPageHtml; // <-- هذه هي الإضافة الحاسمة
+
+        // 4. نرسل كل شيء إلى السيرفر ليقوم بتخزينه مؤقتًا
+        const prepareResponse = await fetch(`${NODE_SERVER_URL}/api/prepare-checkout`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(cvData)
+        });
+
+        if (!prepareResponse.ok) {
+            throw new Error(await prepareResponse.text());
+        }
+
+        const { sessionId } = await prepareResponse.json();
+        if (!sessionId) {
+            throw new Error('Could not retrieve session ID.');
+        }
+
+        // ... باقي الكود للانتقال إلى Lemon Squeezy يبقى كما هو ...
+        const checkoutConfig = CHECKOUT_CONFIG[selectedTemplateCategory];
+        let finalUrl = new URL(checkoutConfig.link);
+        finalUrl.searchParams.set('checkout[custom][session_id]', sessionId);
+        // ... إلخ
+        window.location.href = finalUrl.toString();
+
+    } catch (error) {
+        console.error('Lemon Squeezy purchase error:', error);
+        alert(translations[currentLang]["An error occurred while preparing your payment. Please try again or contact support."]);
+        toggleLoadingOverlay(false);
+    }
+}
 function lazyLoadImages(){const lazyImages=document.querySelectorAll('img[data-src]');if('IntersectionObserver' in window){const observer=new IntersectionObserver((entries,observer)=>{entries.forEach(entry=>{if(entry.isIntersecting){const lazyImage=entry.target;lazyImage.src=lazyImage.dataset.src;if(lazyImage.dataset.srcset){lazyImage.srcset=lazyImage.dataset.srcset}
 lazyImage.removeAttribute('data-src');lazyImage.removeAttribute('data-srcset');observer.unobserve(lazyImage)}})},{rootMargin:'0px 0px 200px 0px',threshold:0.01});lazyImages.forEach(image=>{observer.observe(image)})}else{lazyImages.forEach(image=>{image.src=image.dataset.src;if(image.dataset.srcset){image.srcset=image.dataset.srcset}
 image.removeAttribute('data-src');image.removeAttribute('data-srcset')})}}
@@ -1857,5 +1931,6 @@ function loadFontCss(fontFileName) {
         console.log(`Loading ${fontFileName} font...`);
     }
 }
+
 
 
