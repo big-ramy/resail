@@ -728,39 +728,14 @@ cssRules.push(`
             .cv-experience-item, .cv-education-item, .cv-reference-item { page-break-inside: avoid !important; }
         }
     `);return cssRules.join('\n')}
-async// استبدل هذه الدالة في ملف script (6).js
-async function generatePdfFromNode(isPaid) {
-    toggleLoadingOverlay(true, 'pdf_generation_in_progress');
-    try {
-        const cvPreviewElement = document.getElementById('cv-container');
-        if (!cvPreviewElement) throw new Error("CV container not found.");
-
-        // ... (كود تجميع الـ CSS والـ HTML يبقى كما هو) ...
-        const fetchCss = async (url) => { /* ... */ };
-        const [mainCss, templatesCss, responsiveCss] = await Promise.all([ /* ... */ ]);
-        const fullCssText = mainCss + templatesCss + responsiveCss;
-        const tempContainer = document.createElement('div');
-        generateCV(tempContainer);
-        const finalHtml = tempContainer.innerHTML;
-        tempContainer.remove();
-        const cvData = collectCvData();
-        const direction = cvData.language === 'ar' ? 'rtl' : 'ltr';
-        const colorVariablesCSS = getColorVariablesAsCssText();
-        const dynamicStylesFromElement = cvPreviewElement.style.cssText;
-        const dynamicStyleRule = `#cv-container { ${dynamicStylesFromElement} }`;
-        const isArabic = currentLang === 'ar';
-        const nameFont = document.getElementById('font-selector-name')?.value || (isArabic ? "'Cairo', sans-serif" : "'Playfair Display', serif");
-        const headingsFont = document.getElementById('font-selector-headings')?.value || (isArabic ? "'Tajawal', sans-serif" : "'Montserrat', sans-serif");
-        const bodyFont = document.getElementById('font-selector-body')?.value || (isArabic ? "'Almarai', sans-serif" : "'Roboto', sans-serif");
-        const printCssOverrides = `
+async function generatePdfFromNode(isPaid){toggleLoadingOverlay(!0,'pdf_generation_in_progress');try{const cvPreviewElement=document.getElementById('cv-container');if(!cvPreviewElement)throw new Error("CV container not found.");const fetchCss=async(url)=>{const response=await fetch(url);if(!response.ok)throw new Error(`Failed to fetch ${url}`);return response.text()};const[mainCss,templatesCss,responsiveCss]=await Promise.all([fetchCss('style.css'),fetchCss('templates.css'),fetchCss('responsive.css')]);const fullCssText=mainCss+templatesCss+responsiveCss;const tempContainer=document.createElement('div');generateCV(tempContainer);const finalHtml=tempContainer.innerHTML;tempContainer.remove();const cvData=collectCvData();const direction=cvData.language==='ar'?'rtl':'ltr';const colorVariablesCSS=getColorVariablesAsCssText();const dynamicStylesFromElement=cvPreviewElement.style.cssText;const dynamicStyleRule=`#cv-container { ${dynamicStylesFromElement} }`;const isArabic=currentLang==='ar';const nameFont=document.getElementById('font-selector-name')?.value||(isArabic?"'Cairo', sans-serif":"'Playfair Display', serif");const headingsFont=document.getElementById('font-selector-headings')?.value||(isArabic?"'Tajawal', sans-serif":"'Montserrat', sans-serif");const bodyFont=document.getElementById('font-selector-body')?.value||(isArabic?"'Almarai', sans-serif":"'Roboto', sans-serif");const printCssOverrides=`
             body { padding-top: 0 !important; }
             ${colorVariablesCSS}
             ${dynamicStyleRule}
             #cv-container { font-family: ${bodyFont} !important; }
             #cv-container .cv-name, #cv-container .cv-title { font-family: ${nameFont} !important; }
             #cv-container .cv-section-title { font-family: ${headingsFont} !important; }
-        `;
-        const fullPageHtml = `
+        `;const fullPageHtml=`
             <!DOCTYPE html>
             <html lang="${cvData.language}" dir="${direction}">
             <head>
@@ -782,8 +757,6 @@ async function generatePdfFromNode(isPaid) {
             </body>
             </html>
         `;
-
-        // --- بداية التعديل المهم ---
         const requestBody = {
             fullHtml: fullPageHtml,
             isWatermarked: !isPaid, // إذا لم تكن مدفوعة، فهي بعلامة مائية
@@ -794,32 +767,8 @@ async function generatePdfFromNode(isPaid) {
                 lang: cvData.language
             } : null
         };
-        // --- نهاية التعديل المهم ---
-
-        const response = await fetch(`${NODE_SERVER_URL}/generate-cv`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(requestBody), // استخدام الكائن الجديد
-            mode: 'cors'
-        });
-
-        if (!response.ok) throw new Error(await response.text());
-        const pdfData = await response.json();
-
-        if (pdfData && pdfData.status === 'success') {
-            return pdfData;
-        } else {
-            throw new Error(pdfData.message || "Failed to generate PDF on server.");
-        }
-    } catch (error) {
-        console.error("Error in generatePdfFromNode:", error);
-        alert('An error occurred while preparing the PDF: ' + error.message);
-        return null;
-    } finally {
-        toggleLoadingOverlay(false);
-    }
-}
-function sendFinalHtmlToServer(finalHtml,isPaid){const mainCssText=document.getElementById('main-stylesheet')?.textContent||'';if(!mainCssText){throw new Error("Critical: Main stylesheet could not be found in the DOM.")}
+const response=await fetch(`${NODE_SERVER_URL}/generate-cv`,{method:'POST',headers:{'Content-Type':'application/json'},body: JSON.stringify(requestBody),mode:'cors'});if(!response.ok)throw new Error(await response.text());const pdfData=await response.json();if(pdfData&&pdfData.status==='success'){return pdfData}else{throw new Error(pdfData.message||"Failed to generate PDF on server.")}}catch(error){console.error("Error in generatePdfFromNode:",error);alert('An error occurred while preparing the PDF: '+error.message);return null}finally{toggleLoadingOverlay(!1)}}
+async function sendFinalHtmlToServer(finalHtml,isPaid){const mainCssText=document.getElementById('main-stylesheet')?.textContent||'';if(!mainCssText){throw new Error("Critical: Main stylesheet could not be found in the DOM.")}
 const cvData=collectCvData();const direction=cvData.language==='ar'?'rtl':'ltr';const fullPageHtml=`
         <!DOCTYPE html>
         <html lang="${cvData.language}" dir="${direction}">
@@ -2053,8 +2002,6 @@ function loadFontCss(fontFileName) {
         console.log(`Loading ${fontFileName} font...`);
     }
 }
-
-
 
 
 
