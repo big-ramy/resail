@@ -264,7 +264,16 @@ async function handleLemonSqueezyPurchase() {
         // 1. نقوم بجمع كل بيانات السيرة الذاتية الخام
         const cvData = collectCvData();
 
-        // 2. نقوم ببناء كود الـ HTML الكامل تمامًا كما تفعل دالة generatePdfFromNode
+        // ▼▼▼  هذا هو التعديل الوحيد والمهم ▼▼▼
+        // نتأكد من أن الإيميل موجود في البيانات التي سنرسلها للسيرفر
+        // الدالة collectCvData() تقوم بجمعه بالفعل، وهذا السطر للتأكيد
+        if (!cvData.email) {
+             cvData.email = document.getElementById('email-input')?.value || '';
+        }
+        // ▲▲▲ نهاية التعديل ▲▲▲
+
+
+        // 2. نقوم ببناء كود الـ HTML الكامل
         const cvPreviewElement = document.getElementById('cv-container');
         if (!cvPreviewElement) throw new Error("CV container not found.");
 
@@ -283,12 +292,11 @@ async function handleLemonSqueezyPurchase() {
 
         const tempContainer = document.createElement('div');
         generateCV(tempContainer);
-        const finalHtmlContent = tempContainer.innerHTML; // المحتوى الداخلي فقط
+        const finalHtmlContent = tempContainer.innerHTML;
         tempContainer.remove();
 
         const direction = cvData.language === 'ar' ? 'rtl' : 'ltr';
         
-        // --- بناء الهيكل الكامل للصفحة ---
         const fullPageHtml = `
             <!DOCTYPE html>
             <html lang="${cvData.language}" dir="${direction}">
@@ -310,9 +318,9 @@ async function handleLemonSqueezyPurchase() {
         `;
 
         // 3. نضيف الـ HTML الجاهز إلى البيانات التي سيتم إرسالها للسيرفر
-        cvData.fullHtml = fullPageHtml; // <-- هذه هي الإضافة الحاسمة
+        cvData.fullHtml = fullPageHtml;
 
-        // 4. نرسل كل شيء إلى السيرفر ليقوم بتخزينه مؤقتًا
+        // 4. نرسل كل شيء (بما في ذلك الإيميل المؤكد) إلى السيرفر
         const prepareResponse = await fetch(`${NODE_SERVER_URL}/api/prepare-checkout`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -332,7 +340,15 @@ async function handleLemonSqueezyPurchase() {
         const checkoutConfig = CHECKOUT_CONFIG[selectedTemplateCategory];
         let finalUrl = new URL(checkoutConfig.link);
         finalUrl.searchParams.set('checkout[custom][session_id]', sessionId);
-        // ... إلخ
+        
+        // إعادة إضافة منطق إرسال بيانات المستخدم إلى رابط الدفع
+        if (cvData.email) {
+            finalUrl.searchParams.set('checkout[email]', cvData.email);
+        }
+        if (cvData.name) {
+            finalUrl.searchParams.set('checkout[name]', cvData.name);
+        }
+        
         window.location.href = finalUrl.toString();
 
     } catch (error) {
@@ -1931,6 +1947,7 @@ function loadFontCss(fontFileName) {
         console.log(`Loading ${fontFileName} font...`);
     }
 }
+
 
 
 
