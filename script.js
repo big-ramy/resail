@@ -255,8 +255,49 @@ function updatePageContentLanguage(){const isArabic=currentLang==='ar';const all
 allTranslatableElements.forEach(element=>{let newContent=null;const translateIdKey=element.getAttribute('data-translate-id');const translateKey=element.getAttribute('data-translate');if(translateIdKey&&translations[currentLang]&&translations[currentLang][translateIdKey]!==undefined){newContent=translations[currentLang][translateIdKey]}else if(translateKey&&translations[currentLang]&&translations[currentLang][translateKey]!==undefined){newContent=translations[currentLang][translateKey]}else{const textKeyAttr=isArabic?element.getAttribute('data-ar'):element.getAttribute('data-en');if(textKeyAttr){if(translations[currentLang]&&translations[currentLang][textKeyAttr]!==undefined){newContent=translations[currentLang][textKeyAttr]}else{newContent=textKeyAttr}}}
 if(newContent!==null){if(Array.isArray(newContent)&&element.tagName==='UL'){let listHtml='';newContent.forEach(itemHtml=>{listHtml+=`<li>${itemHtml}</li>`});element.innerHTML=listHtml}else if(typeof newContent==='string'){const containsHtml=/<[a-z][\s\S]*>/i.test(newContent);if(containsHtml){element.innerHTML=newContent}else{if(element.tagName!=='IMG'&&element.tagName!=='INPUT'&&element.tagName!=='TEXTAREA'){element.textContent=newContent}}}}});const placeholderElements=document.querySelectorAll('[data-en-placeholder], [data-ar-placeholder]');placeholderElements.forEach(element=>{const placeholderKey=isArabic?element.getAttribute('data-ar-placeholder'):element.getAttribute('data-en-placeholder');if(placeholderKey&&translations[currentLang]&&translations[currentLang][placeholderKey]!==undefined){element.placeholder=translations[currentLang][placeholderKey]}else if(placeholderKey){element.placeholder=placeholderKey}});const altElements=document.querySelectorAll('[data-en-alt], [data-ar-alt]');altElements.forEach(element=>{if(element.tagName==='IMG'){const altKey=isArabic?element.getAttribute('data-ar-alt'):element.getAttribute('data-en-alt');if(altKey&&translations[currentLang]&&translations[currentLang][altKey]!==undefined){element.alt=translations[currentLang][altKey]}else if(altKey){element.alt=altKey}}});const footerLinks=document.querySelectorAll('footer .list-inline-item a');footerLinks.forEach(link=>{const key=link.getAttribute('data-translate');if(key&&translations[currentLang]&&translations[currentLang][key]!==undefined){link.textContent=translations[currentLang][key]}});const contactEmailLinks=document.querySelectorAll('#contact p strong a, #terms-of-service-page a[href^="mailto:"], #refund-policy a[href^="mailto:"], #privacy-policy a[href^="mailto:"]');contactEmailLinks.forEach(link=>{let key;if(link.closest('#contact')){key='email-address-contact'}else if(link.closest('#terms-of-service-page')){key='terms-of-service-email-contact'}else if(link.closest('#refund-policy')){key='refund-policy-email-contact'}else if(link.closest('#privacy-policy')){key='privacy-policy-email-contact'}
 if(key&&translations[currentLang]&&translations[currentLang][key]!==undefined){link.textContent=translations[currentLang][key]}});if(document.getElementById('payment-options-page')?.classList.contains('active-page')){updateAllPriceDisplays()}}
-function collectCvData(){const cvData={name:document.getElementById('name-input')?.value.trim(),jobTitle:document.getElementById('title-input')?.value.trim(),email:document.getElementById('email-input')?.value.trim(),phone:document.getElementById('phone-input')?.value.trim(),website:document.getElementById('website-input')?.value.trim(),profilePicDataUrl:profilePicDataUrl,objective:document.getElementById('objective-input')?.value.trim(),experiences:getExperiencesData(),educations:getEducationsData(),skills:getSkillsData(),languages:getLanguagesData(),references:getReferencesData(),templateCategory:selectedTemplateCategory,templateNumber:selectedTemplate,language:currentLang,templateCss:getSelectedTemplateCss()};return cvData}
-// ▼▼▼ استبدل دالة handleLemonSqueezyPurchase القديمة بهذه النسخة المحدثة ▼▼▼
+// في ملف script (5).js
+// ▼▼▼ استبدل دالة collectCvData القديمة بهذه النسخة المصححة ▼▼▼
+
+function collectCvData() {
+    // جمع كل البيانات كما في السابق
+    const name = document.getElementById('name-input')?.value.trim();
+    const jobTitle = document.getElementById('title-input')?.value.trim();
+    const email = document.getElementById('email-input')?.value.trim() || ''; // <-- هذا السطر موجود لديك
+    const phone = document.getElementById('phone-input')?.value.trim();
+    const website = document.getElementById('website-input')?.value.trim();
+    const objective = document.getElementById('objective-input')?.value.trim();
+    const experiences = getExperiencesData();
+    const educations = getEducationsData();
+    const skills = getSkillsData();
+    const languages = getLanguagesData();
+    const references = getReferencesData();
+    const customSections = getCustomSectionsData();
+
+    // بناء كائن البيانات
+    const cvData = {
+        name: name,
+        jobTitle: jobTitle,
+        // ▼▼▼  هذا هو السطر الحاسم الذي كان مفقودًا ▼▼▼
+        email: email, 
+        // ▲▲▲ نهاية السطر الحاسم ▲▲▲
+        phone: phone,
+        website: website,
+        objective: objective,
+        experiences: experiences,
+        educations: educations,
+        skills: skills,
+        languages: languages,
+        references: references,
+        customSections: customSections,
+        templateCategory: selectedTemplateCategory,
+        templateNumber: selectedTemplate,
+        language: currentLang,
+        profilePicDataUrl: profilePicDataUrl
+    };
+    
+    // إرجاع الكائن الكامل
+    return cvData;
+}
 
 async function handleLemonSqueezyPurchase() {
     toggleLoadingOverlay(true, 'preparing_secure_payment');
@@ -1947,6 +1988,7 @@ function loadFontCss(fontFileName) {
         console.log(`Loading ${fontFileName} font...`);
     }
 }
+
 
 
 
