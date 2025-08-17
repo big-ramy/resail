@@ -1975,20 +1975,7 @@ function handleAiError(error) {
     // عرض الرسالة المترجمة للمستخدم
     alert(translations[currentLang][messageKey]);
 }
-// افترض أن لديك قائمة منسدلة (select) لاختيار الخطوط بهذا الـ id
-const fontSelector = document.getElementById('font-selector');
-const cvPreview = document.getElementById('cv-preview-area'); // هذا هو العنصر الذي تريد تغيير خطه
 
-fontSelector.addEventListener('change', function() {
-    const selectedFont = this.value; // مثلاً: 'Cairo' أو 'Amiri'
-    const fontFileName = selectedFont.toLowerCase().replace(' ', '-'); // يحول 'Markazi Text' إلى 'markazi-text'
-
-    // 1. تحميل ملف الـ CSS الخاص بالخط الجديد
-    loadFontCss(fontFileName);
-
-    // 2. تطبيق الخط على منطقة المعاينة
-    cvPreview.style.fontFamily = selectedFont;
-});
 
 function loadFontCss(fontFileName) {
     const cssFileUrl = `font-styles/${fontFileName}.css`;
@@ -2002,7 +1989,6 @@ function loadFontCss(fontFileName) {
         console.log(`Loading ${fontFileName} font...`);
     }
 }
-
 
 
 
