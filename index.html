@@ -552,10 +552,13 @@
                             <div class="progress-bar" id="progressBar"></div>
                         </div>
                     </div>
-                    <div class="footer-buttons">
-                        <button class="btn btn-secondary btn-lg" onclick="showPage('landing-page')" data-ar="العودة للرئيسية" data-en="Back to Home">العودة للرئيسية</button>
-                        <button class="btn btn-primary btn-lg ms-3" onclick="validateAndShowTemplatePage()" data-ar="التالي: اختر قالب" data-en="Next: Choose Template">التالي: اختر قالب</button>
-                    </div>
+                        <div class="footer-buttons">
+                            <button class="btn btn-secondary btn-lg" onclick="showPage('landing-page')" data-ar="العودة" data-en="Back">العودة</button>
+                            <button class="btn btn-info btn-lg" id="improve-cv-ai-btn">
+                                <i class="fas fa-magic"></i> <span data-ar="تحسين البيانات" data-en="Improve with AI">تحسين البيانات</span>
+                            </button>
+                            <button class="btn btn-primary btn-lg" onclick="validateAndShowTemplatePage()" data-ar="التالي" data-en="Next">التالي</button>
+                        </div>
                 </div>
             </div>
         </div>
@@ -1138,5 +1141,6 @@
         </div>
 </body>
 </html>
+
 
 
