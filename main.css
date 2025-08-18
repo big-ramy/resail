@@ -759,3 +759,7 @@ html[dir="ltr"] #save-notification {
     display: block; /* التأكد من ظهور الزر */
     width: auto; /* جعل عرضه يتناسب مع المحتوى */
 }
+#payment-options-page .page-actions-footer {
+    flex-direction: row;
+    justify-content: center;
+}
