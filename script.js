@@ -165,50 +165,68 @@ function showPage(pageId) {
         const aiDataString = sessionStorage.getItem('aiCvData');
         
         // --- التحقق من وجود بيانات مُولَّدة من الذكاء الاصطناعي ---
-if (pageId === 'cv-data-entry-page') {
-    const aiDataString = sessionStorage.getItem('aiCvData');
-    
-    if (aiDataString) {
-        // إذا كانت هناك بيانات جديدة من الذكاء الاصطناعي، قم بتعبئة النموذج بها
-        const aiData = JSON.parse(aiDataString);
-        const aiName = sessionStorage.getItem('aiCvUserName');
-        const aiTitle = sessionStorage.getItem('aiCvUserTitle');
-        const extracted = aiData.extractedInfo || {};
-        
-        clearAllCvFields(); 
+        if (aiDataString) {
+            // إذا وجدت بيانات، قم بتعبئة النموذج بها
+            const aiData = JSON.parse(aiDataString);
+            const aiName = sessionStorage.getItem('aiCvUserName');
+            const aiTitle = sessionStorage.getItem('aiCvUserTitle');
+            const extracted = aiData.extractedInfo || {};
+            
+            clearAllCvFields(); // مسح أي بيانات قديمة في الحقول
 
-        document.getElementById('name-input').value = aiName || '';
-        document.getElementById('title-input').value = aiTitle || '';
-        document.getElementById('email-input').value = extracted.email || '';
-        document.getElementById('phone-input').value = extracted.phone || '';
-        document.getElementById('website-input').value = extracted.city || '';
-        document.getElementById('objective-input').value = aiData.objective || '';
+            // ملء الحقول بالبيانات الجديدة
+            // ملء الحقول الشخصية بنصوص توجيهية
+            document.getElementById('name-input').value = aiName || '';
+            document.getElementById('title-input').value = aiTitle || '';
+            document.getElementById('email-input').value = extracted.email || `[${translations[currentLang]['Email'] || 'Email Address'}]`;
+            document.getElementById('phone-input').value = extracted.phone || `[${translations[currentLang]['Phone'] || 'Phone Number'}]`;
+            document.getElementById('website-input').value = extracted.city || `[${translations[currentLang]['Your City'] || 'Your City'}]`;
+            // ملء باقي البيانات من الذكاء الاصطناعي
+            document.getElementById('objective-input').value = aiData.objective || '';
 
-        aiData.experiences?.forEach(exp => addExperienceField(exp));
-        aiData.education?.forEach(edu => addEducationField(edu));
-        aiData.skills?.forEach(skill => addSkillField(skill));
-        aiData.languages?.forEach(lang => addLanguageField(lang));
-        aiData.customSections?.forEach(section => addCustomSectionFromAI(section));
-        aiData.references?.forEach(ref => addReferenceField(ref));
+            if (aiData.experiences && Array.isArray(aiData.experiences)) {
+                aiData.experiences.forEach(exp => addExperienceField(exp));
+            }
 
-        // *** الخطوة الحاسمة: حفظ البيانات في الذاكرة الدائمة فوراً ***
-        saveCvDataToLocalStorage(); 
-        
-        // مسح البيانات المؤقتة بعد استخدامها وحفظها
-        sessionStorage.removeItem('aiCvData');
-        sessionStorage.removeItem('aiCvUserName');
-        sessionStorage.removeItem('aiCvUserTitle');
+            // ▼▼▼ إضافة الأقسام الجديدة ▼▼▼
+            if (aiData.education && Array.isArray(aiData.education)) {
+                aiData.education.forEach(edu => addEducationField(edu));
+            }
 
-    } else {
-        // إذا لم تكن هناك بيانات جديدة، قم بتحميل البيانات المحفوظة كالمعتاد
-        const dataWasLoaded = loadCvDataFromLocalStorage();
-        if (!dataWasLoaded) {
-            populateWithTestData();
+            if (aiData.skills && Array.isArray(aiData.skills)) {
+                aiData.skills.forEach(skill => addSkillField(skill)); 
+            }
+
+            if (aiData.languages && Array.isArray(aiData.languages)) {
+                aiData.languages.forEach(lang => addLanguageField(lang));
+            }
+
+            // ▼▼▼ أضف هذا الجزء الجديد هنا ▼▼▼
+            if (aiData.customSections && Array.isArray(aiData.customSections)) {
+                aiData.customSections.forEach(section => addCustomSectionFromAI(section));
+            }
+
+            if (aiData.references && Array.isArray(aiData.references)) {
+                aiData.references.forEach(ref => addReferenceField(ref));
+            }
+
+            // مسح البيانات المؤقتة بعد استخدامها لمنع إعادة التعبئة عند تحديث الصفحة
+            sessionStorage.removeItem('aiCvData');
+            sessionStorage.removeItem('aiCvUserName');
+            sessionStorage.removeItem('aiCvUserTitle');
+
+        } else {
+            // --- في حال عدم وجود بيانات من الذكاء الاصطناعي، اتبع المنطق القديم ---
+            const dataWasLoaded = loadCvDataFromLocalStorage();
+            if (!dataWasLoaded) {
+                populateWithTestData(); // تعبئة بيانات تجريبية إذا كانت الذاكرة فارغة
+            }
         }
+        
+        // 5. تحديث عرض السيرة الذاتية وشريط التقدم بعد تعبئة البيانات
+        generateCV(cvContainer);
+        updateProgress();
     }
-    
-    generateCV(cvContainer);
-    updateProgress();
 }
 
 
@@ -549,8 +567,6 @@ async function submitPaymentProof(event) {
         console.error("Error in submitPaymentProof:", err);
         qrPaymentResultDiv.style.color = "red";
         qrPaymentResultDiv.textContent = err.message;
-        submitButton.disabled = false;
-        submitButton.innerHTML = translations[currentLang].submit || 'Submit'
     } finally {
         toggleLoadingOverlay(false);
         // إعادة الزر لحالته الطبيعية فقط في حال حدوث خطأ
@@ -1733,8 +1749,7 @@ function showSaveNotification() {
  * @param {string} title - المسمى الوظيفي
  * @param {string} summary - نبذة المستخدم
  */
-// استبدل الدالة القديمة بهذه النسخة الجديدة
-async function triggerAiGeneration(name, title, summary, requestType = 'initial', existingDataJSON = '') {
+async function triggerAiGeneration(name, title, summary) {
     if (!name || !title) {
         alert(translations[currentLang]['error_name_title_required']);
         return;
@@ -1749,10 +1764,6 @@ async function triggerAiGeneration(name, title, summary, requestType = 'initial'
         formData.append('jobTitle', title);
         formData.append('summary', summary);
         formData.append('language', currentLang);
-        formData.append('requestType', requestType); // <-- إرسال نوع الطلب
-        if (requestType === 'refinement') {
-            formData.append('existingData', existingDataJSON); // <-- إرسال البيانات الحالية
-        }
 
         const response = await fetch(GOOGLE_APPS_SCRIPT_WEB_APP_URL_PAYMENT_PROCESSOR, {
             method: 'POST',
@@ -1782,46 +1793,95 @@ async function triggerAiGeneration(name, title, summary, requestType = 'initial'
         showPage('cv-data-entry-page');
 
     } catch (error) {
-        console.error(`ERROR in triggerAiGeneration (${requestType}):`, error);
+        console.error("❌ ERROR in triggerAiGeneration:", error);
         handleAiError(error);
     } finally {
         toggleLoadingOverlay(false);
     }
 }
-// دالة مركزية ومعدلة لمعالجة جميع طلبات الذكاء الاصطناعي
-// استبدل الدالة القديمة بهذه النسخة الجديدة
+
 function setupAiButtonListener() {
     const aiButton = document.getElementById('create-cv-button');
-    const improveButton = document.getElementById('improve-cv-ai-btn'); // الزر الجديد
+    if (!aiButton) return;
 
-    // ربط الحدث بالزر الرئيسي "ابدأ الآن"
-    if (aiButton) {
-        aiButton.addEventListener('click', () => {
-            const savedData = localStorage.getItem('resailCvData_' + currentLang);
-            // تحقق إذا كانت هناك بيانات محفوظة
-            if (savedData && Object.keys(JSON.parse(savedData)).length > 0) {
-                showPage('cv-data-entry-page'); // اذهب مباشرة لصفحة البيانات
-            } else {
-                // إذا لا توجد بيانات، شغل الذكاء الاصطناعي لأول مرة
-                const name = document.getElementById('hero-name-input').value.trim();
-                const title = document.getElementById('hero-title-input').value.trim();
-                const summary = document.getElementById('hero-summary-input').value.trim();
-                triggerAiGeneration(name, title, summary, 'initial'); // استدعاء الدالة المحورية
-            }
-        });
+    aiButton.addEventListener('click', async () => {
+        const name = document.getElementById('hero-name-input').value.trim();
+        const title = document.getElementById('hero-title-input').value.trim();
+        const summary = document.getElementById('hero-summary-input').value.trim(); 
+
+
+        if (!name || !title) {
+            alert(translations[currentLang]['error_name_title_required']);
+            return;
+        }
+
+        toggleLoadingOverlay(true, 'ai_generating_cv');
+
+try {
+    // ... (formData preparation remains the same)
+    const formData = new URLSearchParams();
+    formData.append('action', 'generateAiCv');
+    formData.append('name', name);
+    formData.append('jobTitle', title);
+    formData.append('summary', summary);
+    formData.append('language', currentLang);
+
+    const response = await fetch(GOOGLE_APPS_SCRIPT_WEB_APP_URL_PAYMENT_PROCESSOR, {
+        method: 'POST',
+        body: formData
+    });
+
+    console.log("--- AI DEBUG REPORT ---");
+    console.log("Step 1: Fetch request completed. Response OK:", response.ok, "Status:", response.status);
+
+    const rawText = await response.text();
+    console.log("Step 2: Raw text received from server:", rawText);
+
+    if (!response.ok) {
+        // نحاول قراءة رسالة الخطأ من الخادم إذا كانت موجودة
+        let serverError = rawText;
+        try {
+            const errorJson = JSON.parse(rawText);
+            serverError = errorJson.error || errorJson.message || rawText;
+        } catch (e) { /* تجاهل الخطأ إذا لم يكن الرد JSON */ }
+        throw new Error(`Server returned an error: ${response.status} - ${serverError}`);
     }
 
-    // ربط الحدث بالزر الجديد "تحسين بالذكاء الاصطناعي"
-    if (improveButton) {
-        improveButton.addEventListener('click', () => {
-            const currentData = collectCvData(); // جمع البيانات الحالية من النموذج
-            const currentDataJson = JSON.stringify(currentData);
-            triggerAiGeneration(currentData.name, currentData.jobTitle, currentData.objective, 'refinement', currentDataJson);
-        });
+    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error("Could not find a valid JSON object in the server response.");
+    console.log("Step 3: JSON-like text extracted from raw text.");
+
+    const aiData = JSON.parse(jsonMatch[0]);
+    console.log("Step 4: Successfully parsed the main JSON object from server.");
+
+    if (!aiData.candidates || !aiData.candidates[0]?.content?.parts[0]?.text) {
+        throw new Error("The AI response format is unexpected and missing the main content.");
     }
+    console.log("Step 5: Main content structure is valid. Parsing inner CV content...");
+
+    const parsedContent = JSON.parse(aiData.candidates[0].content.parts[0].text);
+    console.log("Step 6: Successfully parsed the inner CV content JSON:", parsedContent);
+
+    sessionStorage.setItem('aiCvData', JSON.stringify(parsedContent));
+    sessionStorage.setItem('aiCvUserName', name);
+    sessionStorage.setItem('aiCvUserTitle', title);
+    console.log("Step 7: CV data saved to sessionStorage successfully.");
+    
+    console.log("Step 8: Calling showPage to navigate...");
+    showPage('cv-data-entry-page');
+    console.log("Step 9: showPage function was called.");
+
+} catch (error) {
+    // الآن، هذا القسم سيلتقط أي خطأ من الخطوات أعلاه ويعرض رسالة واضحة
+    console.error("❌ ERROR caught in AI button listener:", error);
+    handleAiError(error); // استدعاء دالة معالجة الأخطاء الجديدة
+} finally {
+    toggleLoadingOverlay(false);
+}
+    
+    });
 }
 
-// استبدل الدالة القديمة بهذه النسخة المعدلة
 function setupModalButtonListener() {
     const modalGenerateBtn = document.getElementById('modal-generate-btn');
     if (!modalGenerateBtn) return;
@@ -1831,14 +1891,14 @@ function setupModalButtonListener() {
         const title = document.getElementById('modal-title-input').value.trim();
         const summary = document.getElementById('modal-summary-input').value.trim();
 
+        // إخفاء النافذة المنبثقة قبل بدء التحميل
         const modalElement = document.getElementById('ai-prompt-modal');
         const modalInstance = bootstrap.Modal.getInstance(modalElement);
         if(modalInstance) {
             modalInstance.hide();
         }
 
-        // استدعاء الدالة المحورية مع تحديد نوع الطلب "initial"
-        triggerAiGeneration(name, title, summary, 'initial');
+        triggerAiGeneration(name, title, summary); // استدعاء نفس الدالة المركزية
     });
 }
 
@@ -1965,7 +2025,6 @@ function loadFontCss(fontFileName) {
         console.log(`Loading ${fontFileName} font...`);
     }
 }
-
 
 
 
