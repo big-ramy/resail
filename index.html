@@ -212,9 +212,9 @@
             </div>
             <div class="row justify-content-center g-2 mb-3" style="max-width: 700px; width: 100%;">
                 <div class="col-12">
-                    <textarea id="hero-summary-input" class="form-control" rows="5" 
-                    data-ar-placeholder="أخبرالذكاء الاصطناعي عنك وعن خبراتك ومهاراتك وهو سيقوم بتعبئة البيانات عنك... كلما زادت التفاصيل، كانت النتيجة افضل. (اختياري)"                            
-                    data-en-placeholder="Tell the AI about you, your experiences, and your skills, and it will fill in the data about you... the more details, the better the result. (Optional)"></textarea>
+                        <textarea id="hero-summary-input" class="form-control" rows="5" 
+                            data-ar-placeholder="ادخل بريدك الالكتروني , واخياريا اكتب تفاصيل عند مثل خبراتك ومهارات ليقوم الذكاء الاصطناعي بمعالجة بياناتك الحقيقية ...."                            
+                            data-en-placeholder="Enter your email address and optionally provide details such as your experience and skills so that the artificial intelligence can process your real data...."></textarea>
                 </div>
             </div>
             <button class="btn btn-primary btn-lg mt-3" id="create-cv-button"  data-ar="ابدأ في إنشاء سيرتك الذاتية الآن" data-en="Create Your CV Now">ابدأ في إنشاء سيرتك الذاتية الآن</button>
@@ -554,6 +554,10 @@
                     </div>
                         <div class="footer-buttons">
                             <button class="btn btn-secondary btn-lg" onclick="showPage('landing-page')" data-ar="العودة" data-en="Back">العودة</button>
+                            
+                            <button class="btn btn-danger btn-lg" id="start-over-btn">
+                                <i class="fas fa-trash-alt"></i> <span data-ar="البدء من جديد" data-en="Start Over">البدء من جديد</span>
+                            </button>
                             <button class="btn btn-info btn-lg" id="improve-cv-ai-btn">
                                 <i class="fas fa-magic"></i> <span data-ar="تحسين البيانات" data-en="Improve with AI">تحسين البيانات</span>
                             </button>
@@ -1128,8 +1132,12 @@
                 <input type="text" id="modal-title-input" class="form-control" data-ar-placeholder="مثال: مدير مبيعات" data-en-placeholder="e.g., Sales Manager">
                 </div>
                 <div class="mb-3">
-                <label for="modal-summary-input" class="form-label" data-ar="نبذة سريعة (اختياري)" data-en="Quick Summary (Optional)">نبذة سريعة (اختياري)</label>
-                <textarea id="modal-summary-input" class="form-control" rows="4" data-ar-placeholder="أخبرنا المزيد عن خبراتك..." data-en-placeholder="Tell us more about your experience..."></textarea>
+                    <label for="modal-summary-input" class="form-label">
+                        <span data-ar="نبذة سريعة (إجباري)" data-en="Quick Summary (Required)">نبذة سريعة (إجباري)</span>
+                    </label>
+                    <textarea id="modal-summary-input" class="form-control" rows="4" 
+                        data-ar-placeholder="اكتب نبذة مختصرة مع تضمين بريدك الإلكتروني..." 
+                        data-en-placeholder="Write a brief summary including your email address..."></textarea>
                 </div>
             </div>
             <div class="modal-footer">
@@ -1141,6 +1149,7 @@
         </div>
 </body>
 </html>
+
 
 
 
