@@ -1842,7 +1842,7 @@ try {
 } finally {
     toggleLoadingOverlay(false);
 }
-    triggerAiGeneration(name, title, summary);
+    
     });
 }
 
@@ -1989,6 +1989,7 @@ function loadFontCss(fontFileName) {
         console.log(`Loading ${fontFileName} font...`);
     }
 }
+
 
 
 
