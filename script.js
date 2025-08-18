@@ -307,46 +307,83 @@ async function handleLemonSqueezyPurchase() {
     toggleLoadingOverlay(true, 'preparing_secure_payment');
     try {
         const cvData = collectCvData();
-        if (!cvData.email) {
-            cvData.email = document.getElementById('email-input')?.value || '';
-        }
-
-        // --- بداية الحل: تجميع كل الأنماط الديناميكية ---
         const cvPreviewElement = document.getElementById('cv-container');
         if (!cvPreviewElement) throw new Error("CV container not found.");
 
-        // 1. جلب ملفات CSS الأساسية
+        // --- بداية الحل الشامل لتجميع كل الأنماط ---
+
+        // 1. جلب ملفات CSS الأساسية من الموقع
         const fetchCss = async (url) => {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`Failed to fetch ${url}`);
-            return response.text();
+            try {
+                const response = await fetch(url);
+                if (!response.ok) return ''; // تجاهل الملف إذا فشل تحميله
+                return response.text();
+            } catch (e) { return ''; }
         };
         const [mainCss, templatesCss, responsiveCss] = await Promise.all([
-            fetchCss('style.css'),
-            fetchCss('templates.css'),
-            fetchCss('responsive.css')
+            fetchCss('style.css'), fetchCss('templates.css'), fetchCss('responsive.css')
         ]);
         const staticCssText = mainCss + templatesCss + responsiveCss;
 
-        // 2. جلب الأنماط الديناميكية من أدوات التحكم (الألوان، الأحجام، الخطوط)
+        // 2. دالة جديدة لتجميع أنماط الخطوط والأحجام الديناميكية
+        const getDynamicStylesAsCssText = () => {
+            let styles = '';
+            const isMobileView = window.innerWidth <= 992;
+            const isZoomedIn = cvPreviewElement.classList.contains('zoomed-in');
+            const isScaledDown = isMobileView && !isZoomedIn;
+            const visualMultiplier = 3.5; // نفس القيمة المستخدمة في المعاينة
+
+            const calculateFinalValue = (sliderId, baseValue) => {
+                const slider = document.getElementById(sliderId);
+                if (!slider) return baseValue;
+                const currentValue = parseFloat(slider.value);
+                if (isScaledDown) {
+                    const difference = currentValue - baseValue;
+                    return baseValue + (difference * visualMultiplier);
+                }
+                return currentValue;
+            };
+
+            // جلب قيم الخطوط
+            const nameFont = document.getElementById('font-selector-name')?.value || "'Playfair Display', serif";
+            const headingsFont = document.getElementById('font-selector-headings')?.value || "'Montserrat', sans-serif";
+            const bodyFont = document.getElementById('font-selector-body')?.value || "'Roboto', sans-serif";
+
+            styles += `#cv-container, #cv-container .cv-contact-item p { font-family: ${bodyFont} !important; }`;
+            styles += `#cv-container .cv-name, #cv-container .cv-title { font-family: ${nameFont} !important; }`;
+            styles += `#cv-container .cv-section-title { font-family: ${headingsFont} !important; }`;
+
+            // جلب قيم الأحجام
+            styles += `.cv-name { font-size: ${calculateFinalValue('name-size-slider', 2.5)}em !important; }`;
+            styles += `.cv-title { font-size: ${calculateFinalValue('title-size-slider', 1.3)}em !important; }`;
+            styles += `.cv-contact-item, .cv-contact-item p { font-size: ${calculateFinalValue('contact-size-slider', 0.95)}em !important; }`;
+            styles += `.cv-section-title { font-size: ${calculateFinalValue('section-title-size-slider', 1.2)}em !important; }`;
+            
+            const subsectionSelectors = ['.cv-job-title', '.cv-degree', '.custom-subsection-title', '.cv-reference-item h4'].join(', ');
+            styles += `${subsectionSelectors} { font-size: ${calculateFinalValue('subsection-title-size-slider', 1.05)}em !important; }`;
+            
+            const bodySelectors = ['#objective p', '.cv-experience-item p', '.cv-company', '.cv-institution', '.cv-duration', '.skill-name', '.cv-language-list li', '.cv-reference-item p', '.custom-subsection-description'].join(', ');
+            styles += `${bodySelectors} { font-size: ${calculateFinalValue('body-text-size-slider', 0.9)}em !important; }`;
+
+            return styles;
+        };
+
         const colorVariablesCSS = getColorVariablesAsCssText();
-        const dynamicStylesFromElement = cvPreviewElement.style.cssText;
-        const dynamicStyleRule = `#cv-container { ${dynamicStylesFromElement} }`;
-        const isArabic = currentLang === 'ar';
-        const nameFont = document.getElementById('font-selector-name')?.value || (isArabic ? "'Cairo', sans-serif" : "'Playfair Display', serif");
-        const headingsFont = document.getElementById('font-selector-headings')?.value || (isArabic ? "'Tajawal', sans-serif" : "'Montserrat', sans-serif");
-        const bodyFont = document.getElementById('font-selector-body')?.value || (isArabic ? "'Almarai', sans-serif" : "'Roboto', sans-serif");
+        const dynamicSizeAndFontCSS = getDynamicStylesAsCssText();
+        const imageSize = document.getElementById('image-size-slider')?.value || 120;
+        const imageRadius = document.getElementById('image-radius-slider')?.value || 50;
 
         const dynamicCssOverrides = `
             ${colorVariablesCSS}
-            ${dynamicStyleRule}
-            #cv-container { font-family: ${bodyFont} !important; }
-            #cv-container .cv-name, #cv-container .cv-title { font-family: ${nameFont} !important; }
-            #cv-container .cv-section-title { font-family: ${headingsFont} !important; }
+            #cv-container {
+                --image-size: ${imageSize}px;
+                --image-radius: ${imageRadius}%;
+            }
+            ${dynamicSizeAndFontCSS}
         `;
-        // --- نهاية الحل ---
+        // --- نهاية الحل الشامل ---
 
-        // 3. بناء الـ HTML النهائي مع جميع الأنماط
+        // 3. بناء الـ HTML النهائي
         const tempContainer = document.createElement('div');
         generateCV(tempContainer);
         const finalHtmlContent = tempContainer.innerHTML;
@@ -357,16 +394,12 @@ async function handleLemonSqueezyPurchase() {
             <!DOCTYPE html>
             <html lang="${cvData.language}" dir="${direction}">
             <head>
-                <meta charset="UTF-8">
-                <title>CV</title>
+                <meta charset="UTF-8"><title>CV</title>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
                 <link rel="preconnect" href="https://fonts.googleapis.com">
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-                <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Cairo:wght@400;700&family=Tajawal:wght@400;700&family=Amiri:wght@400;700&family=Lalezar&family=Markazi+Text:wght@400;700&family=Roboto:wght@400;700&family=Lato:wght@400;700&family=Montserrat:wght@400;700&family=Open+Sans:wght@400;700&family=PT+Sans:wght@400;700&family=Playfair+Display:wght@400;700&family=Noto+Serif:wght@400;700&display=swap" rel="stylesheet">
-                <style>
-                    ${staticCssText}
-                    ${dynamicCssOverrides}
-                </style>
+                <link href="https://fonts.googleapis.com/css2?family=Almarai&family=Amiri&family=Cairo&family=Lalezar&family=Lato&family=Markazi+Text&family=Montserrat&family=Noto+Serif&family=Open+Sans&family=PT+Sans&family=Playfair+Display&family=Quicksand&family=Roboto&family=Tajawal&family=Ubuntu&display=swap" rel="stylesheet">
+                <style>${staticCssText} ${dynamicCssOverrides}</style>
             </head>
             <body>
                  <div id="cv-container" class="${cvData.templateCategory}-layout template${cvData.templateNumber}" dir="${direction}">
@@ -378,32 +411,23 @@ async function handleLemonSqueezyPurchase() {
 
         cvData.fullHtml = fullPageHtml;
 
-        // 4. إرسال البيانات الكاملة إلى الخادم
+        // 4. إرسال البيانات إلى الخادم (يبقى كما هو)
         const prepareResponse = await fetch(`${NODE_SERVER_URL}/api/prepare-checkout`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(cvData)
         });
 
-        if (!prepareResponse.ok) {
-            throw new Error(await prepareResponse.text());
-        }
+        if (!prepareResponse.ok) throw new Error(await prepareResponse.text());
 
         const { sessionId } = await prepareResponse.json();
-        if (!sessionId) {
-            throw new Error('Could not retrieve session ID.');
-        }
+        if (!sessionId) throw new Error('Could not retrieve session ID.');
         
         const checkoutConfig = CHECKOUT_CONFIG[selectedTemplateCategory];
         let finalUrl = new URL(checkoutConfig.link);
         finalUrl.searchParams.set('checkout[custom][session_id]', sessionId);
-        
-        if (cvData.email) {
-            finalUrl.searchParams.set('checkout[email]', cvData.email);
-        }
-        if (cvData.name) {
-            finalUrl.searchParams.set('checkout[name]', cvData.name);
-        }
+        if (cvData.email) finalUrl.searchParams.set('checkout[email]', cvData.email);
+        if (cvData.name) finalUrl.searchParams.set('checkout[name]', cvData.name);
         
         window.location.href = finalUrl.toString();
 
@@ -2001,6 +2025,7 @@ function loadFontCss(fontFileName) {
         console.log(`Loading ${fontFileName} font...`);
     }
 }
+
 
 
 
