@@ -302,45 +302,57 @@ function collectCvData() {
     return cvData;
 }
 
+// استبدل هذه الدالة بالكامل في ملف script.js
 async function handleLemonSqueezyPurchase() {
     toggleLoadingOverlay(true, 'preparing_secure_payment');
     try {
-        // 1. نقوم بجمع كل بيانات السيرة الذاتية الخام
         const cvData = collectCvData();
-
-        // ▼▼▼  هذا هو التعديل الوحيد والمهم ▼▼▼
-        // نتأكد من أن الإيميل موجود في البيانات التي سنرسلها للسيرفر
-        // الدالة collectCvData() تقوم بجمعه بالفعل، وهذا السطر للتأكيد
         if (!cvData.email) {
-             cvData.email = document.getElementById('email-input')?.value || '';
+            cvData.email = document.getElementById('email-input')?.value || '';
         }
-        // ▲▲▲ نهاية التعديل ▲▲▲
 
-
-        // 2. نقوم ببناء كود الـ HTML الكامل
+        // --- بداية الحل: تجميع كل الأنماط الديناميكية ---
         const cvPreviewElement = document.getElementById('cv-container');
         if (!cvPreviewElement) throw new Error("CV container not found.");
 
+        // 1. جلب ملفات CSS الأساسية
         const fetchCss = async (url) => {
             const response = await fetch(url);
             if (!response.ok) throw new Error(`Failed to fetch ${url}`);
             return response.text();
         };
-
         const [mainCss, templatesCss, responsiveCss] = await Promise.all([
             fetchCss('style.css'),
             fetchCss('templates.css'),
             fetchCss('responsive.css')
         ]);
-        const fullCssText = mainCss + templatesCss + responsiveCss;
+        const staticCssText = mainCss + templatesCss + responsiveCss;
 
+        // 2. جلب الأنماط الديناميكية من أدوات التحكم (الألوان، الأحجام، الخطوط)
+        const colorVariablesCSS = getColorVariablesAsCssText();
+        const dynamicStylesFromElement = cvPreviewElement.style.cssText;
+        const dynamicStyleRule = `#cv-container { ${dynamicStylesFromElement} }`;
+        const isArabic = currentLang === 'ar';
+        const nameFont = document.getElementById('font-selector-name')?.value || (isArabic ? "'Cairo', sans-serif" : "'Playfair Display', serif");
+        const headingsFont = document.getElementById('font-selector-headings')?.value || (isArabic ? "'Tajawal', sans-serif" : "'Montserrat', sans-serif");
+        const bodyFont = document.getElementById('font-selector-body')?.value || (isArabic ? "'Almarai', sans-serif" : "'Roboto', sans-serif");
+
+        const dynamicCssOverrides = `
+            ${colorVariablesCSS}
+            ${dynamicStyleRule}
+            #cv-container { font-family: ${bodyFont} !important; }
+            #cv-container .cv-name, #cv-container .cv-title { font-family: ${nameFont} !important; }
+            #cv-container .cv-section-title { font-family: ${headingsFont} !important; }
+        `;
+        // --- نهاية الحل ---
+
+        // 3. بناء الـ HTML النهائي مع جميع الأنماط
         const tempContainer = document.createElement('div');
         generateCV(tempContainer);
         const finalHtmlContent = tempContainer.innerHTML;
         tempContainer.remove();
-
-        const direction = cvData.language === 'ar' ? 'rtl' : 'ltr';
         
+        const direction = cvData.language === 'ar' ? 'rtl' : 'ltr';
         const fullPageHtml = `
             <!DOCTYPE html>
             <html lang="${cvData.language}" dir="${direction}">
@@ -350,8 +362,11 @@ async function handleLemonSqueezyPurchase() {
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
                 <link rel="preconnect" href="https://fonts.googleapis.com">
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-                <link href="https://fonts.googleapis.com/css2?family=Almarai&family=Cairo&family=Tajawal&family=Amiri&family=Lalezar&family=Markazi+Text&family=Roboto&family=Lato&family=Montserrat&family=Open+Sans&family=PT+Sans&family=Playfair+Display&family=Noto+Serif&display=swap" rel="stylesheet">
-                <style>${fullCssText}</style>
+                <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Cairo:wght@400;700&family=Tajawal:wght@400;700&family=Amiri:wght@400;700&family=Lalezar&family=Markazi+Text:wght@400;700&family=Roboto:wght@400;700&family=Lato:wght@400;700&family=Montserrat:wght@400;700&family=Open+Sans:wght@400;700&family=PT+Sans:wght@400;700&family=Playfair+Display:wght@400;700&family=Noto+Serif:wght@400;700&display=swap" rel="stylesheet">
+                <style>
+                    ${staticCssText}
+                    ${dynamicCssOverrides}
+                </style>
             </head>
             <body>
                  <div id="cv-container" class="${cvData.templateCategory}-layout template${cvData.templateNumber}" dir="${direction}">
@@ -361,10 +376,9 @@ async function handleLemonSqueezyPurchase() {
             </html>
         `;
 
-        // 3. نضيف الـ HTML الجاهز إلى البيانات التي سيتم إرسالها للسيرفر
         cvData.fullHtml = fullPageHtml;
 
-        // 4. نرسل كل شيء (بما في ذلك الإيميل المؤكد) إلى السيرفر
+        // 4. إرسال البيانات الكاملة إلى الخادم
         const prepareResponse = await fetch(`${NODE_SERVER_URL}/api/prepare-checkout`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -379,13 +393,11 @@ async function handleLemonSqueezyPurchase() {
         if (!sessionId) {
             throw new Error('Could not retrieve session ID.');
         }
-
-        // ... باقي الكود للانتقال إلى Lemon Squeezy يبقى كما هو ...
+        
         const checkoutConfig = CHECKOUT_CONFIG[selectedTemplateCategory];
         let finalUrl = new URL(checkoutConfig.link);
         finalUrl.searchParams.set('checkout[custom][session_id]', sessionId);
         
-        // إعادة إضافة منطق إرسال بيانات المستخدم إلى رابط الدفع
         if (cvData.email) {
             finalUrl.searchParams.set('checkout[email]', cvData.email);
         }
@@ -1989,6 +2001,7 @@ function loadFontCss(fontFileName) {
         console.log(`Loading ${fontFileName} font...`);
     }
 }
+
 
 
 
