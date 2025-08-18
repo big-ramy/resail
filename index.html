@@ -951,7 +951,7 @@
                     </div>
 
                 </div>
-                <div class="d-flex justify-content-center mt-4 page-actions-footer">
+                <div class="d-flex justify-content-center mt-3 page-actions-footer">
                     <button class="btn btn-secondary btn-lg ms-3" onclick="showPage('cv-template-selection-page')" data-ar="العودة للنماذج" data-en="Back to Templates">العودة للنماذج</button>
                     <button class="btn btn-secondary btn-lg" onclick="showPage('cv-preview-page')" data-ar="العودة للمعاينة" data-en="Back to Review">العودة للمعاينة/button>
                 </div>
@@ -975,12 +975,14 @@
                     <label data-ar="أرفق إيصال الدفع (صورة / PDF):" data-en="Attach Payment Receipt (Image / PDF):">أرفق إيصال الدفع (صورة / PDF):</label>
                     <input type="file" id="payment-file" accept="image/*,application/pdf" class="form-control mb-3" />
                 </div>
-                <button class="btn btn-primary w-100" id="submit-payment-proof" style="display:none;" onclick="submitPaymentProof(event)">
-                    <span data-ar="إرسال" data-en="Submit">إرسال</span>
-                </button>
                 <div id="qr-payment-result" style="margin-top:10px; color:green;"></div>
                 <div class="d-flex justify-content-center mt-4 page-actions-footer">
-                    <button class="btn btn-secondary btn-lg" onclick="showPage('payment-options-page')" data-ar="العودة لخيارات الدفع" data-en="Back to Payment Options">العودة لخيارات الدفع</button>
+                    <div class="footer-buttons">
+                        <button class="btn btn-secondary btn-lg" onclick="showPage('payment-options-page')" data-ar="العودة لخيارات الدفع" data-en="Back to Payment Options">العودة لخيارات الدفع</button>
+                        <button class="btn btn-primary" id="submit-payment-proof" style="display:none;" onclick="submitPaymentProof(event)">
+                            <span data-ar="إرسال" data-en="Submit">إرسال</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1134,3 +1136,4 @@
         </div>
 </body>
 </html>
+
