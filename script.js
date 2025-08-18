@@ -195,7 +195,7 @@ function showPage(pageId) {
             // --- 2. إذا لم تكن هناك بيانات جديدة، قم بتحميل البيانات المحفوظة كالمعتاد ---
             const dataWasLoaded = loadCvDataFromLocalStorage();
             if (!dataWasLoaded) {
-                populateWithTestData(); // تعبئة بيانات تجريبية إذا كانت الذاكرة فارغة
+                 // تعبئة بيانات تجريبية إذا كانت الذاكرة فارغة
             }
         }
         
@@ -1463,31 +1463,7 @@ function updateProgress() {
     else progressBar.style.backgroundColor = '#28a745';
 }
 
-function populateWithTestData() {
-    const nameInput = document.getElementById('name-input');
-    const titleInput = document.getElementById('title-input');
-    const emailInput = document.getElementById('email-input');
-    const phoneInput = document.getElementById('phone-input');
-    const websiteInput = document.getElementById('website-input');
-    const objectiveInput = document.getElementById('objective-input');
-    
-    if(nameInput) nameInput.value = currentLang === 'ar' ? 'أحمد محمد السيد' : 'Ahmed Mohamed Elsayed';
-    if(titleInput) titleInput.value = currentLang === 'ar' ? 'مهندس برمجيات' : 'Software Engineer';
-    if(emailInput) emailInput.value = 'ahmed.elsayed@example.com';
-    if(phoneInput) phoneInput.value = '0501234567';
-    if(websiteInput) websiteInput.value = currentLang === 'ar' ? 'المدينة المنورة' : 'Saudi Arabia';
-    if(objectiveInput) objectiveInput.value = currentLang === 'ar' ? 
-        'مهندس برمجيات ذو خبرة عالية في تطوير تطبيقات الويب والجوال، أبحث عن فرصة للانضمام إلى فريق ديناميكي للمساهمة في بناء حلول تقنية مبتكرة وذات جودة عالية.' :
-        'Highly experienced software engineer in web and mobile application development, seeking an opportunity to join a dynamic team to contribute to building innovative and high-quality technical solutions.';
 
-    // === بداية التعديل المهم هنا ===
-    ['experience', 'education', 'skills', 'languages', 'references'].forEach(type => {
-        const container = document.getElementById(`${type}-input`);if(container){while(container.firstChild){container.removeChild(container.firstChild)}
-if(type==='experience'){addExperienceField();addExperienceField()}else if(type==='education'){addEducationField()}else if(type==='skills'){addSkillField();addSkillField();addSkillField();addSkillField();addSkillField()}else if(type==='languages'){addLanguageField()}else if(type==='references'){addReferenceField()}}});const expEntries=document.querySelectorAll('#experience-input .experience-entry');if(expEntries[0]){expEntries[0].querySelector('.experience-title').value=currentLang==='ar'?'مهندس برمجيات أول':'Senior Software Engineer';expEntries[0].querySelector('.experience-company').value=currentLang==='ar'?'شركة الحلول المبتكرة':'Innovative Solutions Inc.';expEntries[0].querySelector('.experience-duration').value=currentLang==='ar'?'2020 - حتى الآن':'2020 - Present';expEntries[0].querySelector('.experience-description').value=currentLang==='ar'?'قيادة فرق التطوير، تصميم وتنفيذ معماريات البرمجيات، تحسين أداء التطبيقات وتأمينها.':'Leading development teams, designing and implementing software architectures, optimizing application performance and security.'}
-if(expEntries[1]){expEntries[1].querySelector('.experience-title').value=currentLang==='ar'?'مهندس برمجيات':'Software Engineer';expEntries[1].querySelector('.experience-company').value=currentLang==='ar'?'شركة التقنية الرائدة':'Leading Tech Co.';expEntries[1].querySelector('.experience-duration').value=currentLang==='ar'?'2017 - 2020':'2017 - 2020';expEntries[1].querySelector('.experience-description').value=currentLang==='ar'?'تطوير وصيانة تطبيقات الويب باستخدام Node.js و React، التعاون مع فريق المنتج لتحسين تجربة المستخدم.':'Developed and maintained web applications using Node.js and React, collaborated with the product team to improve user experience.'}
-const eduEntries=document.querySelectorAll('#education-input .education-entry');if(eduEntries[0]){eduEntries[0].querySelector('.education-degree').value=currentLang==='ar'?'بكالوريوس علوم حاسوب':'B.Sc. Computer Science';eduEntries[0].querySelector('.education-institution').value=currentLang==='ar'?'جامعة الملك فهد للبترول والمعادن':'King Fahd University of Petroleum & Minerals';eduEntries[0].querySelector('.education-duration').value=currentLang==='ar'?'2012 - 2017':'2012 - 2017'}
-const skillInputsTest=document.querySelectorAll('#skills-input .skill-item-input');if(skillInputsTest[0])skillInputsTest[0].value='JavaScript';if(skillInputsTest[1])skillInputsTest[1].value='React';if(skillInputsTest[2])skillInputsTest[2].value='Node.js';if(skillInputsTest[3])skillInputsTest[3].value='SQL';if(skillInputsTest[4])skillInputsTest[4].value=currentLang==='ar'?'منهجيات أجايل':'Agile Methodologies';const langInputsTest=document.querySelectorAll('#languages-input .language-item-input');if(langInputsTest[0])langInputsTest[0].value=currentLang==='ar'?'العربية (لغة أم)':'Arabic (Native)';const refEntries=document.querySelectorAll('#references-input .reference-entry');if(refEntries[0]){refEntries[0].querySelector('.reference-name').value=currentLang==='ar'?'الدكتور علي أحمد':'Dr. Ali Ahmed';refEntries[0].querySelector('.reference-position').value=currentLang==='ar'?'أستاذ مساعد، جامعة الملك فهد':'Assistant Professor, KFUPM';refEntries[0].querySelector('.reference-phone').value='0551234567';refEntries[0].querySelector('.reference-email').value='ali.ahmed@example.com'}
-generateCV(cvContainer);updateProgress()}
 
 // 1. الدالة النهائية للتحكم بالتنزيل المجاني
 async function handleFreeCvDownload() {
@@ -2038,7 +2014,7 @@ function handleStartOver() {
         clearAllCvFields();
         
         // 3. (اختياري لكن موصى به) تعبئة النموذج ببيانات تجريبية جديدة
-        populateWithTestData();
+
         
         // 4. تحديث المعاينة وشريط التقدم
         generateCV(document.getElementById('cv-container'));
@@ -2056,6 +2032,7 @@ function validateSummaryContainsEmail(text) {
     const emailRegex = /[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}/;
     return emailRegex.test(text);
 }
+
 
 
 
