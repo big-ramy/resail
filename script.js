@@ -1971,6 +1971,4 @@ function loadFontCss(fontFileName) {
 
 
 
-});
-
 
