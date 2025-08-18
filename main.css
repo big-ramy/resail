@@ -665,3 +665,97 @@ html[dir="ltr"] #save-notification {
     color: #fff;
 }
 
+/* ============================================= */
+/* ==   تعديلات عرض الجوال المطلوبة             == */
+/* ============================================= */
+
+/* 1. تصغير بطاقات الخصم في صفحة الدفع على الجوال */
+@media (max-width: 768px) {
+    #payment-options-page .discount-card {
+        min-width: 150px; /* تصغير العرض الأدنى للبطاقة */
+        padding: 5px 8px;   /* تصغير الحشوة الداخلية */
+        flex-direction: column; /* جعل المحتوى يترتب عمودياً داخل البطاقة */
+        gap: 4px;           /* تقليل المسافة بين العناصر الداخلية */
+    }
+
+    #payment-options-page .discount-tag {
+        font-size: 0.9em; /* تصغير خط الوسم */
+        padding: 5px;     /* تصغير حشوة الوسم */
+        margin-left: 0;   /* إزالة الهامش الجانبي */
+        margin-right: 0;
+        margin-bottom: 5px; /* إضافة هامش سفلي صغير */
+    }
+
+    #payment-options-page .discount-info .code-text {
+        font-size: 0.85em; /* تصغير خط كود الخصم */
+    }
+
+    #payment-options-page .discount-info small {
+        font-size: 0.7em; /* تصغير الخط الصغير */
+    }
+}
+
+
+/* 2. جعل الأزرار السفلية عائمة ومتجاورة */
+.page-actions-footer {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    flex-direction: column; /* ترتيب العناصر عمودياً (شريط التقدم فوق الأزرار) */
+    align-items: center;    /* توسيط المحتوى أفقياً */
+    gap: 15px;              /* مسافة بين شريط التقدم وحاوية الأزرار */
+    background-color: rgba(27, 22, 34, 0.9); /* خلفية داكنة مع شفافية */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 15px;
+    margin-top: auto; /* هذا مهم لدفع الشريط لأسفل الصفحة */
+    border-top: 1px solid #4a3a69;
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+}
+
+/* حاوية الأزرار نفسها لجعلها أفقية */
+.footer-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 1rem; /* مسافة بين الأزرار */
+}
+
+/* ضمان أن الحاوية الرئيسية للصفحة تمتد لملء الشاشة */
+#cv-data-entry-page > .container,
+#cv-template-selection-page > .container,
+#cv-preview-page > .container,
+#payment-options-page > .container,
+#qr-manual-payment-page > .container {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 120px); /* 120px هو ارتفاع تقريبي للـ navbar + footer */
+}
+
+/* إزالة أي هوامش سفلية غير مرغوب فيها من الأزرار داخل الشريط العائم */
+.page-actions-footer .btn {
+    margin-bottom: 0 !important;
+}
+
+/* إعدادات شريط التقدم داخل الشريط العائم */
+.page-actions-footer .form-group {
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 0;
+}
+.page-actions-footer .form-group label {
+    font-size: 0.8em;
+    margin-bottom: 5px;
+}
+
+/* 3. تعديل زر الإرسال في صفحة الدفع اليدوي */
+#qr-manual-payment-page .page-actions-footer .footer-buttons {
+    width: 100%;
+    justify-content: space-between; /* توزيع المسافة بين الزرين */
+}
+
+#qr-manual-payment-page #submit-payment-proof {
+    display: block; /* التأكد من ظهور الزر */
+    width: auto; /* جعل عرضه يتناسب مع المحتوى */
+}
