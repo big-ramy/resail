@@ -100,7 +100,10 @@ function setupColorControls(){document.querySelectorAll('.color-control-componen
 component.querySelectorAll('input[type="color"], select').forEach(input=>{input.addEventListener('input',applySelectedColors)})});document.getElementById('color-picker-header-text').addEventListener('input',applySelectedColors);document.getElementById('color-picker-title-text').addEventListener('input',applySelectedColors);document.getElementById('color-picker-body-text').addEventListener('input',applySelectedColors);document.getElementById('color-picker-subtle-text').addEventListener('input',applySelectedColors)}
 function updateColorControlVisibility(){const allowedControls=CONTROL_VISIBILITY_CONFIG[selectedTemplateCategory]||[];document.querySelectorAll('#color-picker-container [data-control-for]').forEach(control=>{control.style.display='none'});allowedControls.forEach(controlName=>{const controlElement=document.querySelector(`#color-picker-container [data-control-for="${controlName}"]`);if(controlElement){controlElement.style.display='block'}})}
 function updateControlsForCategory(){const cvContainer=document.getElementById('cv-container');if(!cvContainer)return;const isAdvancedCategory=cvContainer.classList.contains('professional-layout')||cvContainer.classList.contains('ast-layout')||cvContainer.classList.contains('creative-layout');document.querySelectorAll('.gradient-toggle-wrapper').forEach(wrapper=>{wrapper.style.display=isAdvancedCategory?'flex':'none';if(!isAdvancedCategory){const toggle=wrapper.querySelector('.gradient-toggle');if(toggle.checked){toggle.checked=!1;toggle.dispatchEvent(new Event('change'))}}})}
-document.addEventListener('DOMContentLoaded',()=>{loadingOverlayGlobal=document.getElementById('loading-overlay');loadingTextGlobal=document.querySelector('#loading-overlay p');createPaletteControls();loadCvDataFromLocalStorage();updateControlsForCategory();applySelectedColors();setupColorControls();setupDynamicControlListeners();setupZoomControls();setupAiButtonListener();setupModalButtonListener();window.addEventListener('scroll', handleFloatingButtonVisibility);document.getElementById('color-picker-header-text').addEventListener('input',applySelectedColors);document.getElementById('color-picker-title-text').addEventListener('input',applySelectedColors);document.getElementById('color-picker-body-text').addEventListener('input',applySelectedColors);document.getElementById('color-picker-subtle-text').addEventListener('input',applySelectedColors);const nameFontSelector=document.getElementById('font-selector-name');const headingsFontSelector=document.getElementById('font-selector-headings');const bodyFontSelector=document.getElementById('font-selector-body');if(nameFontSelector)nameFontSelector.addEventListener('change',applySelectedFonts);if(headingsFontSelector)headingsFontSelector.addEventListener('change',applySelectedFonts);if(bodyFontSelector)bodyFontSelector.addEventListener('change',applySelectedFonts);document.addEventListener('keydown',function(event){if((event.ctrlKey||event.metaKey)&&event.key==='p'){event.preventDefault();console.log("Ctrl+P pressed. Triggering custom print dialog.");window.print()}});const promoBar=document.getElementById('promo-bar');if(promoBar){const promoBarHeight=promoBar.offsetHeight;document.body.style.paddingTop=`${promoBarHeight}px`}
+document.addEventListener('DOMContentLoaded',()=>{loadingOverlayGlobal=document.getElementById('loading-overlay');loadingTextGlobal=document.querySelector('#loading-overlay p');    const startOverButton = document.getElementById('start-over-btn');
+    if (startOverButton) {
+        startOverButton.addEventListener('click', handleStartOver);
+    }setInitialLanguage();createPaletteControls();loadCvDataFromLocalStorage();updateControlsForCategory();applySelectedColors();setupColorControls();setupDynamicControlListeners();setupZoomControls();setupAiButtonListener();setupModalButtonListener();window.addEventListener('scroll', handleFloatingButtonVisibility);document.getElementById('color-picker-header-text').addEventListener('input',applySelectedColors);document.getElementById('color-picker-title-text').addEventListener('input',applySelectedColors);document.getElementById('color-picker-body-text').addEventListener('input',applySelectedColors);document.getElementById('color-picker-subtle-text').addEventListener('input',applySelectedColors);const nameFontSelector=document.getElementById('font-selector-name');const headingsFontSelector=document.getElementById('font-selector-headings');const bodyFontSelector=document.getElementById('font-selector-body');if(nameFontSelector)nameFontSelector.addEventListener('change',applySelectedFonts);if(headingsFontSelector)headingsFontSelector.addEventListener('change',applySelectedFonts);if(bodyFontSelector)bodyFontSelector.addEventListener('change',applySelectedFonts);document.addEventListener('keydown',function(event){if((event.ctrlKey||event.metaKey)&&event.key==='p'){event.preventDefault();console.log("Ctrl+P pressed. Triggering custom print dialog.");window.print()}});const promoBar=document.getElementById('promo-bar');if(promoBar){const promoBarHeight=promoBar.offsetHeight;document.body.style.paddingTop=`${promoBarHeight}px`}
 siteHeaderGlobal=document.querySelector('.site-header');cvContainer=document.getElementById('cv-container');paymentNameInput=document.getElementById("payment-name");paymentEmailInput=document.getElementById("payment-email");paymentPhoneInput=document.getElementById("payment-phone");paymentMessagesInput=document.getElementById("payment-messages");paymentFileInput=document.getElementById("payment-file");qrPaymentResultDiv=document.getElementById("qr-payment-result");submitPaymentProofButton=document.getElementById("submit-payment-proof");const lemonSqueezyButton = document.getElementById('lemon-squeezy-btn'); if (lemonSqueezyButton) {lemonSqueezyButton.addEventListener('click', handleLemonSqueezyPurchase); }document.getElementById('remove-discount-btn').addEventListener('click',(e)=>{e.preventDefault();removeDiscount()});if(submitPaymentProofButton){submitPaymentProofButton.addEventListener('click',submitPaymentProof)}
 const cvDataEntryPage = document.getElementById('cv-data-entry-page');
 if (cvDataEntryPage) {
@@ -136,94 +139,66 @@ function removeDiscount(){discountApplied=0;appliedCode="";const codeInput=docum
  * @param {string} pageId The ID of the page section to display.
  */
 function showPage(pageId) {
-    // 1. إخفاء جميع أقسام الصفحات
     const pages = document.querySelectorAll('.page-section');
-    pages.forEach(page => {
-        page.classList.remove('active-page');
-    });
+    pages.forEach(page => page.classList.remove('active-page'));
 
-    // 2. إظهار الصفحة المستهدفة
     const targetPage = document.getElementById(pageId);
     if (targetPage) {
         targetPage.classList.add('active-page');
-        window.scrollTo(0, 0); // الانتقال لأعلى الصفحة
-        
-        // 3. استدعاء الدوال المساعدة من نسختك القديمة
+        window.scrollTo(0, 0);
         toggleSiteHeader(pageId === 'landing-page');
         updatePageContentLanguage();
-        handleFloatingButtonVisibility(); // للتحكم في الزر العائم
-
+        handleFloatingButtonVisibility();
     } else {
-        // في حال عدم العثور على الصفحة، يتم عرض الصفحة الرئيسية كبديل آمن
         console.error(`Page with ID "${pageId}" not found. Showing landing page.`);
         document.getElementById('landing-page').classList.add('active-page');
         return; 
     }
 
-    // 4. *** المنطق الجديد والمهم عند عرض صفحة إدخال البيانات ***
+    // ▼▼▼ المنطق الحاسم عند عرض صفحة إدخال البيانات ▼▼▼
     if (pageId === 'cv-data-entry-page') {
         const aiDataString = sessionStorage.getItem('aiCvData');
         
-        // --- التحقق من وجود بيانات مُولَّدة من الذكاء الاصطناعي ---
+        // --- 1. التحقق من وجود بيانات جديدة من الذكاء الاصطناعي ---
         if (aiDataString) {
-            // إذا وجدت بيانات، قم بتعبئة النموذج بها
             const aiData = JSON.parse(aiDataString);
             const aiName = sessionStorage.getItem('aiCvUserName');
             const aiTitle = sessionStorage.getItem('aiCvUserTitle');
             const extracted = aiData.extractedInfo || {};
             
-            clearAllCvFields(); // مسح أي بيانات قديمة في الحقول
+            clearAllCvFields(); // مسح أي بيانات قديمة
 
-            // ملء الحقول بالبيانات الجديدة
-            // ملء الحقول الشخصية بنصوص توجيهية
+            // تعبئة النموذج بالبيانات الجديدة
             document.getElementById('name-input').value = aiName || '';
             document.getElementById('title-input').value = aiTitle || '';
-            document.getElementById('email-input').value = extracted.email || `[${translations[currentLang]['Email'] || 'Email Address'}]`;
-            document.getElementById('phone-input').value = extracted.phone || `[${translations[currentLang]['Phone'] || 'Phone Number'}]`;
-            document.getElementById('website-input').value = extracted.city || `[${translations[currentLang]['Your City'] || 'Your City'}]`;
-            // ملء باقي البيانات من الذكاء الاصطناعي
+            document.getElementById('email-input').value = extracted.email || '';
+            document.getElementById('phone-input').value = extracted.phone || '';
+            document.getElementById('website-input').value = extracted.city || '';
             document.getElementById('objective-input').value = aiData.objective || '';
 
-            if (aiData.experiences && Array.isArray(aiData.experiences)) {
-                aiData.experiences.forEach(exp => addExperienceField(exp));
-            }
+            aiData.experiences?.forEach(exp => addExperienceField(exp));
+            aiData.education?.forEach(edu => addEducationField(edu));
+            aiData.skills?.forEach(skill => addSkillField(skill));
+            aiData.languages?.forEach(lang => addLanguageField(lang));
+            aiData.customSections?.forEach(section => addCustomSectionFromAI(section));
+            aiData.references?.forEach(ref => addReferenceField(ref));
 
-            // ▼▼▼ إضافة الأقسام الجديدة ▼▼▼
-            if (aiData.education && Array.isArray(aiData.education)) {
-                aiData.education.forEach(edu => addEducationField(edu));
-            }
-
-            if (aiData.skills && Array.isArray(aiData.skills)) {
-                aiData.skills.forEach(skill => addSkillField(skill)); 
-            }
-
-            if (aiData.languages && Array.isArray(aiData.languages)) {
-                aiData.languages.forEach(lang => addLanguageField(lang));
-            }
-
-            // ▼▼▼ أضف هذا الجزء الجديد هنا ▼▼▼
-            if (aiData.customSections && Array.isArray(aiData.customSections)) {
-                aiData.customSections.forEach(section => addCustomSectionFromAI(section));
-            }
-
-            if (aiData.references && Array.isArray(aiData.references)) {
-                aiData.references.forEach(ref => addReferenceField(ref));
-            }
-
-            // مسح البيانات المؤقتة بعد استخدامها لمنع إعادة التعبئة عند تحديث الصفحة
+            // *** الخطوة الحاسمة: حفظ البيانات في الذاكرة الدائمة فوراً ***
+            saveCvDataToLocalStorage(); 
+            
+            // مسح البيانات المؤقتة بعد استخدامها وحفظها
             sessionStorage.removeItem('aiCvData');
             sessionStorage.removeItem('aiCvUserName');
             sessionStorage.removeItem('aiCvUserTitle');
 
         } else {
-            // --- في حال عدم وجود بيانات من الذكاء الاصطناعي، اتبع المنطق القديم ---
+            // --- 2. إذا لم تكن هناك بيانات جديدة، قم بتحميل البيانات المحفوظة كالمعتاد ---
             const dataWasLoaded = loadCvDataFromLocalStorage();
             if (!dataWasLoaded) {
                 populateWithTestData(); // تعبئة بيانات تجريبية إذا كانت الذاكرة فارغة
             }
         }
         
-        // 5. تحديث عرض السيرة الذاتية وشريط التقدم بعد تعبئة البيانات
         generateCV(cvContainer);
         updateProgress();
     }
@@ -567,6 +542,9 @@ async function submitPaymentProof(event) {
         console.error("Error in submitPaymentProof:", err);
         qrPaymentResultDiv.style.color = "red";
         qrPaymentResultDiv.textContent = err.message;
+        // إعادة تفعيل الزر في حالة حدوث أي خطأ
+        submitButton.disabled = false;
+        submitButton.innerHTML = translations[currentLang].Submit || 'Submit';
     } finally {
         toggleLoadingOverlay(false);
         // إعادة الزر لحالته الطبيعية فقط في حال حدوث خطأ
@@ -1748,8 +1726,10 @@ function showSaveNotification() {
  * @param {string} name - اسم المستخدم
  * @param {string} title - المسمى الوظيفي
  * @param {string} summary - نبذة المستخدم
+ * @param {string} requestType - نوع الطلب ('initial' أو 'refinement')
+ * @param {string} existingDataJSON - البيانات الحالية للمستخدم (في حالة التحسين)
  */
-async function triggerAiGeneration(name, title, summary) {
+async function triggerAiGeneration(name, title, summary, requestType = 'initial', existingDataJSON = '') {
     if (!name || !title) {
         alert(translations[currentLang]['error_name_title_required']);
         return;
@@ -1764,6 +1744,10 @@ async function triggerAiGeneration(name, title, summary) {
         formData.append('jobTitle', title);
         formData.append('summary', summary);
         formData.append('language', currentLang);
+        formData.append('requestType', requestType); // إرسال نوع الطلب
+        if (requestType === 'refinement') {
+            formData.append('existingData', existingDataJSON); // إرسال البيانات الحالية
+        }
 
         const response = await fetch(GOOGLE_APPS_SCRIPT_WEB_APP_URL_PAYMENT_PROCESSOR, {
             method: 'POST',
@@ -1786,14 +1770,17 @@ async function triggerAiGeneration(name, title, summary) {
         if (!aiData.candidates) throw new Error("AI response format is unexpected.");
 
         const parsedContent = JSON.parse(aiData.candidates[0].content.parts[0].text);
+        
+        // استخدام sessionStorage للتخزين المؤقت
         sessionStorage.setItem('aiCvData', JSON.stringify(parsedContent));
         sessionStorage.setItem('aiCvUserName', name);
         sessionStorage.setItem('aiCvUserTitle', title);
 
+        // الانتقال لصفحة التعبئة
         showPage('cv-data-entry-page');
 
     } catch (error) {
-        console.error("❌ ERROR in triggerAiGeneration:", error);
+        console.error(`ERROR in triggerAiGeneration (${requestType}):`, error);
         handleAiError(error);
     } finally {
         toggleLoadingOverlay(false);
@@ -1802,81 +1789,34 @@ async function triggerAiGeneration(name, title, summary) {
 
 function setupAiButtonListener() {
     const aiButton = document.getElementById('create-cv-button');
-    if (!aiButton) return;
+    const improveButton = document.getElementById('improve-cv-ai-btn'); // زر التحسين
 
-    aiButton.addEventListener('click', async () => {
-        const name = document.getElementById('hero-name-input').value.trim();
-        const title = document.getElementById('hero-title-input').value.trim();
-        const summary = document.getElementById('hero-summary-input').value.trim(); 
-
-
-        if (!name || !title) {
-            alert(translations[currentLang]['error_name_title_required']);
-            return;
-        }
-
-        toggleLoadingOverlay(true, 'ai_generating_cv');
-
-try {
-    // ... (formData preparation remains the same)
-    const formData = new URLSearchParams();
-    formData.append('action', 'generateAiCv');
-    formData.append('name', name);
-    formData.append('jobTitle', title);
-    formData.append('summary', summary);
-    formData.append('language', currentLang);
-
-    const response = await fetch(GOOGLE_APPS_SCRIPT_WEB_APP_URL_PAYMENT_PROCESSOR, {
-        method: 'POST',
-        body: formData
-    });
-
-    console.log("--- AI DEBUG REPORT ---");
-    console.log("Step 1: Fetch request completed. Response OK:", response.ok, "Status:", response.status);
-
-    const rawText = await response.text();
-    console.log("Step 2: Raw text received from server:", rawText);
-
-    if (!response.ok) {
-        // نحاول قراءة رسالة الخطأ من الخادم إذا كانت موجودة
-        let serverError = rawText;
-        try {
-            const errorJson = JSON.parse(rawText);
-            serverError = errorJson.error || errorJson.message || rawText;
-        } catch (e) { /* تجاهل الخطأ إذا لم يكن الرد JSON */ }
-        throw new Error(`Server returned an error: ${response.status} - ${serverError}`);
+    // الزر الرئيسي في الصفحة الرئيسية
+    if (aiButton) {
+        aiButton.addEventListener('click', () => {
+            const savedData = localStorage.getItem('resailCvData_' + currentLang);
+            // إذا كان لدى المستخدم بيانات محفوظة، انقله مباشرة إلى المحرر
+            if (savedData && Object.keys(JSON.parse(savedData)).length > 2) { // التحقق من وجود بيانات فعلية
+                showPage('cv-data-entry-page');
+            } else {
+                // إذا لم تكن هناك بيانات، شغل الذكاء الاصطناعي لأول مرة
+                const name = document.getElementById('hero-name-input').value.trim();
+                const title = document.getElementById('hero-title-input').value.trim();
+                const summary = document.getElementById('hero-summary-input').value.trim();
+                triggerAiGeneration(name, title, summary, 'initial');
+            }
+        });
     }
 
-    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error("Could not find a valid JSON object in the server response.");
-    console.log("Step 3: JSON-like text extracted from raw text.");
-
-    const aiData = JSON.parse(jsonMatch[0]);
-    console.log("Step 4: Successfully parsed the main JSON object from server.");
-
-    if (!aiData.candidates || !aiData.candidates[0]?.content?.parts[0]?.text) {
-        throw new Error("The AI response format is unexpected and missing the main content.");
+    // زر "تحسين بالذكاء الاصطناعي" داخل النموذج
+    if (improveButton) {
+        improveButton.addEventListener('click', () => {
+            const currentData = collectCvData(); // جمع البيانات الحالية
+            const currentDataJson = JSON.stringify(currentData);
+            // شغل الذكاء الاصطناعي مع إرسال البيانات الحالية للتحسين
+            triggerAiGeneration(currentData.name, currentData.jobTitle, currentData.objective, 'refinement', currentDataJson);
+        });
     }
-    console.log("Step 5: Main content structure is valid. Parsing inner CV content...");
-
-    const parsedContent = JSON.parse(aiData.candidates[0].content.parts[0].text);
-    console.log("Step 6: Successfully parsed the inner CV content JSON:", parsedContent);
-
-    sessionStorage.setItem('aiCvData', JSON.stringify(parsedContent));
-    sessionStorage.setItem('aiCvUserName', name);
-    sessionStorage.setItem('aiCvUserTitle', title);
-    console.log("Step 7: CV data saved to sessionStorage successfully.");
-    
-    console.log("Step 8: Calling showPage to navigate...");
-    showPage('cv-data-entry-page');
-    console.log("Step 9: showPage function was called.");
-
-} catch (error) {
-    // الآن، هذا القسم سيلتقط أي خطأ من الخطوات أعلاه ويعرض رسالة واضحة
-    console.error("❌ ERROR caught in AI button listener:", error);
-    handleAiError(error); // استدعاء دالة معالجة الأخطاء الجديدة
-} finally {
-    toggleLoadingOverlay(false);
 }
     
     });
@@ -2025,6 +1965,58 @@ function loadFontCss(fontFileName) {
         console.log(`Loading ${fontFileName} font...`);
     }
 }
+/**
+ * دالة مساعدة لمسح جميع حقول النموذج والبيانات.
+ */
+function clearAllCvFields() {
+    // مسح حقول الإدخال الأساسية
+    document.getElementById('name-input').value = '';
+    document.getElementById('title-input').value = '';
+    document.getElementById('email-input').value = '';
+    document.getElementById('phone-input').value = '';
+    document.getElementById('website-input').value = '';
+    document.getElementById('objective-input').value = '';
+    profilePicDataUrl = null; // مسح الصورة
+    document.getElementById('profile-pic-preview').style.display = 'none';
+    document.getElementById('file-name-display').textContent = '';
+
+    // مسح الحقول الديناميكية (الخبرات، التعليم، إلخ)
+    ['experience-input', 'education-input', 'skills-input', 'languages-input', 'references-input'].forEach(id => {
+        const container = document.getElementById(id);
+        if (container) container.innerHTML = '';
+    });
+    
+    // مسح الأقسام المخصصة
+    const customContainer = document.getElementById('custom-sections-container');
+    if (customContainer) customContainer.remove();
+}
+
+/**
+ * دالة "البدء من جديد" التي سيتم ربطها بالزر الجديد.
+ */
+function handleStartOver() {
+    const confirmationMessage = currentLang === 'ar' 
+        ? 'هل أنت متأكد أنك تريد حذف جميع البيانات والبدء من جديد؟ لا يمكن التراجع عن هذا الإجراء.'
+        : 'Are you sure you want to delete all data and start over? This action cannot be undone.';
+    
+    if (confirm(confirmationMessage)) {
+        // 1. مسح البيانات الدائمة من الذاكرة
+        localStorage.removeItem('resailCvData_' + currentLang);
+        
+        // 2. مسح الحقول في الواجهة الأمامية
+        clearAllCvFields();
+        
+        // 3. (اختياري لكن موصى به) تعبئة النموذج ببيانات تجريبية جديدة
+        populateWithTestData();
+        
+        // 4. تحديث المعاينة وشريط التقدم
+        generateCV(document.getElementById('cv-container'));
+        updateProgress();
+
+        alert(currentLang === 'ar' ? 'تم مسح البيانات. يمكنك الآن البدء من جديد.' : 'Data cleared. You can now start over.');
+    }
+}
+
 
 
 
