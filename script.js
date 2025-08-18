@@ -386,11 +386,18 @@ async function handleLemonSqueezyPurchase() {
 
         cvData.fullHtml = fullPageHtml;
 
+        // نضيف بيانات المطابقة إلى نفس الكائن الذي سيتم إرساله إلى سيرفرك
+        cvData.userAgent = navigator.userAgent;
+        const fbp = getCookie('_fbp');
+        if (fbp) cvData.fbp = fbp;
+        const fbc = getCookie('_fbc');
+        if (fbc) cvData.fbc = fbc;
+      
         // 4. إرسال البيانات إلى الخادم (يبقى كما هو)
-        const prepareResponse = await fetch(`${NODE_SERVER_URL}/api/prepare-checkout`, {
+                const prepareResponse = await fetch(`${NODE_SERVER_URL}/api/prepare-checkout`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(cvData)
+            body: JSON.stringify(cvData) // الآن cvData يحتوي على كل شيء
         });
 
         if (!prepareResponse.ok) throw new Error(await prepareResponse.text());
@@ -2042,6 +2049,7 @@ function getCookie(name) {
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
+
 
 
 
