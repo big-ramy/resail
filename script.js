@@ -467,12 +467,11 @@ if(method.toLowerCase()==="stc pay"||method.toLowerCase()==="rajhi"){if(qrPaymen
 if(manualPaymentForm)manualPaymentForm.style.display="block";if(submitBtn)submitBtn.style.display="block"}
 showPage('qr-manual-payment-page')}
 function isMobileDevice(){return/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)}
+// استبدل هذه الدالة بالكامل في ملف الواجهة الأمامية script.js
 async function submitPaymentProof(event) {
     event.preventDefault();
     const submitButton = document.getElementById("submit-payment-proof");
-    if (submitButton.disabled) {
-        return;
-    }
+    if (submitButton.disabled) return;
 
     submitButton.disabled = true;
     submitButton.innerHTML = `<span class="spinner-border spinner-border-sm"></span> ${translations[currentLang]['Submitting...'] || 'Submitting...'}`;
@@ -480,8 +479,6 @@ async function submitPaymentProof(event) {
     qrPaymentResultDiv.textContent = '';
 
     try {
-        // ... (نفس كود التحقق من البيانات وملف الـ PDF) ...
-        // [الكود من ملفك الأصلي يبقى هنا بدون تغيير]
         const name = paymentNameInput.value.trim();
         const email = paymentEmailInput.value.trim();
         const phoneNumber = paymentPhoneInput.value.trim();
@@ -491,7 +488,8 @@ async function submitPaymentProof(event) {
         const cvTemplateCategory = qrManualPaymentPage.getAttribute("data-cv-template-category");
         const pricePaid = qrManualPaymentPage.getAttribute("data-price-paid");
         const actualDiscountCodeStr = qrManualPaymentPage.getAttribute("data-discount-code") || 'N/A';
-        if (!name || !email || !phoneNumber) {
+        
+        if (!name || !email) { // يكفي الاسم والإيميل كحد أدنى
             throw new Error(translations[currentLang]['Please fill in all fields.'] || 'Please fill in all required fields.');
         }
         if (!validateEmail(email)) {
@@ -501,14 +499,13 @@ async function submitPaymentProof(event) {
         toggleLoadingOverlay(true, 'payment_processing');
         
         const fileBase64 = file ? await fileToBase64(file) : null;
-        const pdfData = await generatePdfFromNode(true); // isPaid: true
+        const pdfData = await generatePdfFromNode(true); 
         
         if (!pdfData || !pdfData.base64Pdf) {
             throw new Error('Failed to generate CV PDF for submission.');
         }
         
         const formData = new URLSearchParams();
-        // ... (نفس كود تعبئة formData) ...
         formData.append('name', name);
         formData.append('email', email);
         formData.append('phoneNumber', phoneNumber);
@@ -517,13 +514,19 @@ async function submitPaymentProof(event) {
         formData.append('cvTemplateCategory', cvTemplateCategory);
         formData.append('discountCode', actualDiscountCodeStr);
         formData.append('language', currentLang);
-        const website = document.getElementById('website-input')?.value.trim();
-        formData.append('website', website || '');
+        formData.append('website', document.getElementById('website-input')?.value.trim() || '');
         formData.append('paymentFileBase64', fileBase64 || '');
         formData.append('paymentFileType', file?.type || '');
         formData.append('cvPdfFileBase64', pdfData.base64Pdf);
         formData.append('cvPdfFileName', `CV_Preview_${name.replace(/\s/g, '_')}.pdf`);
 
+        // ▼▼▼ الجزء الجديد والمهم لرفع جودة المطابقة ▼▼▼
+        formData.append('userAgent', navigator.userAgent); // 1. إرسال معلومات المتصفح
+        const fbp = getCookie('_fbp'); // 2. قراءة كوكي المتصفح
+        if (fbp) formData.append('fbp', fbp);
+        const fbc = getCookie('_fbc'); // 3. قراءة كوكي النقرة (إن وجد)
+        if (fbc) formData.append('fbc', fbc);
+        // ▲▲▲ نهاية الجزء الجديد ▲▲▲
 
         const response = await fetch(GOOGLE_APPS_SCRIPT_WEB_APP_URL_PAYMENT_PROCESSOR, {
             method: 'POST',
@@ -532,8 +535,7 @@ async function submitPaymentProof(event) {
         const data = await response.json();
 
         if (data.status === 'success') {
-            // *** التعديل هنا: عرض صفحة الشكر بدلاً من رسالة نصية ***
-            localStorage.removeItem('resailCvData_' + currentLang); // مسح البيانات
+            localStorage.removeItem('resailCvData_' + currentLang);
             showPage('thank-you-page');
         } else {
             throw new Error(data.error || 'An unknown error occurred on the server.');
@@ -542,13 +544,9 @@ async function submitPaymentProof(event) {
         console.error("Error in submitPaymentProof:", err);
         qrPaymentResultDiv.style.color = "red";
         qrPaymentResultDiv.textContent = err.message;
-        // إعادة تفعيل الزر في حالة حدوث أي خطأ
-        submitButton.disabled = false;
-        submitButton.innerHTML = translations[currentLang].Submit || 'Submit';
     } finally {
         toggleLoadingOverlay(false);
-        // إعادة الزر لحالته الطبيعية فقط في حال حدوث خطأ
-        if (qrPaymentResultDiv.textContent.includes("Error") || qrPaymentResultDiv.textContent.includes("خطأ")) {
+        if (qrPaymentResultDiv.textContent) {
            submitButton.disabled = false;
            submitButton.innerHTML = translations[currentLang].submit || 'Submit';
         }
@@ -2034,6 +2032,16 @@ function validateSummaryContainsEmail(text) {
 }
 
 
+/**
+ * دالة مساعدة لقراءة قيمة كوكي معين بالاسم.
+ * @param {string} name - اسم الكوكي (مثل '_fbp' أو '_fbc').
+ * @returns {string|undefined} - قيمة الكوكي أو undefined إذا لم يتم العثور عليه.
+ */
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
 
 
 
