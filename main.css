@@ -669,29 +669,42 @@ html[dir="ltr"] #save-notification {
 /* ==   تعديلات عرض الجوال المطلوبة             == */
 /* ============================================= */
 
-/* 1. تصغير بطاقات الخصم في صفحة الدفع على الجوال */
-@media (max-width: 768px) {
-    #payment-options-page .discount-card {
-        min-width: 150px; /* تصغير العرض الأدنى للبطاقة */
-        padding: 5px 8px;   /* تصغير الحشوة الداخلية */
-        flex-direction: column; /* جعل المحتوى يترتب عمودياً داخل البطاقة */
-        gap: 4px;           /* تقليل المسافة بين العناصر الداخلية */
+/* استهداف شاشات الجوال والأجهزة اللوحية الصغيرة */
+@media (max-width: 767.98px) {
+
+    /* استهداف الحاوية الرئيسية للبطاقات لجعلها مرنة */
+    #payment-options-page .d-flex.justify-content-center.gap-3.flex-wrap {
+        gap: 10px !important; /* تقليل المسافة بين البطاقات */
     }
 
+    /* القاعدة الأساسية للبطاقة */
+    #payment-options-page .discount-card {
+        flex-direction: column !important; /* ترتيب المحتوى عمودياً */
+        min-width: 150px !important;       /* تحديد أصغر عرض ممكن للبطاقة */
+        max-width: 160px;                  /* تحديد أكبر عرض ممكن لمنعها من التمدد الزائد */
+        padding: 8px !important;           /* تصغير الحشوة الداخلية */
+        gap: 5px !important;               /* تقليل المسافة بين العناصر الداخلية */
+    }
+
+    /* تنسيق وسم الخصم */
     #payment-options-page .discount-tag {
-        font-size: 0.9em; /* تصغير خط الوسم */
-        padding: 5px;     /* تصغير حشوة الوسم */
-        margin-left: 0;   /* إزالة الهامش الجانبي */
-        margin-right: 0;
-        margin-bottom: 5px; /* إضافة هامش سفلي صغير */
+        font-size: 0.9em !important;      /* تصغير الخط */
+        padding: 5px 10px !important;     /* تصغير الحشوة */
+        margin: 0 0 5px 0 !important;     /* إزالة الهوامش الجانبية وإضافة هامش سفلي */
+    }
+
+    /* تنسيق معلومات الخصم (الكود والوصف) */
+    #payment-options-page .discount-info {
+        align-items: center !important; /* توسيط النصوص الداخلية */
     }
 
     #payment-options-page .discount-info .code-text {
-        font-size: 0.85em; /* تصغير خط كود الخصم */
+        font-size: 0.9em !important; /* تصغير خط الكود */
     }
 
     #payment-options-page .discount-info small {
-        font-size: 0.7em; /* تصغير الخط الصغير */
+        font-size: 0.75em !important; /* تصغير الخط الصغير */
+        white-space: nowrap;          /* منع الوصف من الالتفاف لسطر جديد */
     }
 }
 
