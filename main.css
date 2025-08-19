@@ -803,3 +803,28 @@ html[dir="ltr"] #save-notification {
     border-top: none;
     padding-top: 0;
 }
+/* موجود في ملف main.css */
+.header-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* ▼▼ هذا هو الكود الصحيح للخلفية المتحركة ▼▼ */
+  background: linear-gradient(135deg, 
+    #ff6ec4,  
+    #7873f5,  
+    #4ed6ff,
+    #ff6ec4
+  ) !important;
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  filter: brightness(0.9);
+  z-index: 1;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
