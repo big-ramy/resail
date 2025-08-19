@@ -1768,10 +1768,9 @@ async function triggerAiGeneration(name, title, summary, requestType = 'initial'
     }
 }
 
-// استبدل الدالة بالكامل بهذه النسخة
 function setupAiButtonListener() {
     const aiButton = document.getElementById('create-cv-button');
-    const improveButton = document.getElementById('improve-cv-ai-btn'); 
+    const improveButton = document.getElementById('improve-cv-ai-btn'); // ✅ التعريف
 
     if (aiButton) {
         aiButton.addEventListener('click', () => {
@@ -1783,19 +1782,17 @@ function setupAiButtonListener() {
                 const title = document.getElementById('hero-title-input').value.trim();
                 const summary = document.getElementById('hero-summary-input').value.trim();
 
-                // ▼▼▼ شرط التحقق الجديد ▼▼▼
                 if (!validateSummaryContainsEmail(summary)) {
                     alert(translations[currentLang]['summary_email_required']);
-                    return; // إيقاف التنفيذ إذا لم يتم العثور على بريد إلكتروني
+                    return; 
                 }
-                // ▲▲▲ نهاية شرط التحقق ▲▲▲
-
                 triggerAiGeneration(name, title, summary, 'initial');
             }
         });
     }
 
-    if (improveButton) {
+    // ✅ تم نقل هذا الجزء إلى الداخل
+    if (improveButton) { 
         improveButton.addEventListener('click', () => {
             const currentData = collectCvData(); 
             const currentDataJson = JSON.stringify(currentData);
@@ -1803,17 +1800,6 @@ function setupAiButtonListener() {
         });
     }
 }
-
-    // زر "تحسين بالذكاء الاصطناعي" داخل النموذج
-    if (improveButton) {
-        improveButton.addEventListener('click', () => {
-            const currentData = collectCvData(); // جمع البيانات الحالية
-            const currentDataJson = JSON.stringify(currentData);
-            // شغل الذكاء الاصطناعي مع إرسال البيانات الحالية للتحسين
-            triggerAiGeneration(currentData.name, currentData.jobTitle, currentData.objective, 'refinement', currentDataJson);
-        });
-    }
-
     
 
 
@@ -2049,6 +2035,7 @@ function getCookie(name) {
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
+
 
 
 
