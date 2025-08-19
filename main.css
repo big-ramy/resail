@@ -776,3 +776,30 @@ html[dir="ltr"] #save-notification {
     flex-direction: row;
     justify-content: center;
 }
+/* في نهاية ملف main (4).css */
+
+/* تحسينات على المودال ليبدو أكثر احترافية */
+#ai-prompt-modal .modal-content {
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+#ai-prompt-modal .modal-header {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+#ai-prompt-modal .modal-title {
+    font-size: 1.5em; /* تكبير الخط قليلاً */
+    font-weight: 700;
+}
+
+#ai-prompt-modal .modal-body p.text-muted {
+    font-size: 1.05em; /* تكبير الخط التعريفي */
+    margin-bottom: 1.5rem;
+}
+
+#ai-prompt-modal .modal-footer {
+    border-top: none;
+    padding-top: 0;
+}
