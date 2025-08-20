@@ -210,6 +210,28 @@ textarea.form-control{min-height:calc(1.5em + .75rem + 2px)}
 .fa-envelope::before { content: "\f0e0"; }
 .fa-phone::before { content: "\f095"; }
 .fa-map-marker-alt::before { content: "\f3c5"; }
+
+/* --- أيقونات قسم المميزات (Why Resail?) --- */
+.feature-icon-new {
+  font-size: 50px; /* حجم الأيقونة */
+  margin-bottom: 20px;
+  color: #d1aaff; /* لون بنفسجي فاتح يتماشى مع تصميمك */
+  text-shadow: 0 0 15px rgba(209, 170, 255, 0.5);
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover .feature-icon-new {
+  transform: scale(1.1); /* تأثير بسيط عند مرور الماوس */
+  color: #fff;
+}
+
+/* -- تعريف أشكال الأيقونات الجديدة -- */
+.fa-keyboard::before { content: "\f11c"; }
+.fa-palette::before { content: "\f53f"; }
+.fa-language::before { content: "\f1ab"; }
+.fa-eye::before { content: "\f06e"; }
+.fa-file-pdf::before { content: "\f1c4"; }
+.fa-shield-alt::before { content: "\f3ed"; }
 </style>
 <link rel="alternate" hreflang="ar" href="https://big-ramy.github.io/resail/index.html" />
 <link rel="alternate" hreflang="en" href="https://big-ramy.github.io/resail/en.html" />
@@ -357,42 +379,42 @@ textarea.form-control{min-height:calc(1.5em + .75rem + 2px)}
                     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                         <div class="col">
                             <div class="feature-card">
-                                <img src="Easy_Data_Entry.webp" alt="Easy Data Entry" class="feature-icon mb-3" loading="lazy" width="200" height="200">
+                                <i class="fas fa-keyboard feature-icon-new"></i>
                                 <h3 data-ar="سهولة إدخال البيانات" data-en="Easy Data Entry">سهولة إدخال البيانات</h3>
                                 <p data-ar="نماذج سهلة وبديهية لملء جميع بياناتك بسرعة ويسر." data-en="Intuitive forms to quickly fill in all your information.">نماذج سهلة وبديهية لملء جميع بياناتك بسرعة ويسر.</p>
                             </div>
                         </div>
                         <div class="col">
                             <div class="feature-card">
-                                <img src="Professional_Templates.webp" alt="Professional Templates" class="feature-icon mb-3" loading="lazy" width="200" height="200">
+                                <i class="fas fa-palette feature-icon-new"></i>
                                 <h3 data-ar="قوالب متنوعة واحترافية" data-en="Diverse and Professional Templates">قوالب متنوعة واحترافية</h3>
                                 <p data-ar="اختر من بين العديد من التصميمات العصرية والجذابة لتناسب ذوقك ومجالك." data-en="Choose from many modern and attractive designs to suit your style and field.">اختر من بين العديد من التصميمات العصرية والجذابة لتناسب ذوقك ومجالك.</p>
                             </div>
                         </div>
                         <div class="col">
                             <div class="feature-card">
-                                <img src="Arabic_and_English.webp" alt="Arabic/English Support" class="feature-icon mb-3" loading="lazy" width="200" height="200">
+                                <i class="fas fa-language feature-icon-new"></i>
                                 <h3 data-ar="دعم كامل للغة العربية والإنجليزية" data-en="Full Arabic and English Support">دعم كامل للغة العربية والإنجليزية</h3>
                                 <p data-ar="أنشئ سيرتك الذاتية بلغتك المفضلة مع ضمان التنسيق الصحيح لكلا الاتجاهين." data-en="Create your CV in your preferred language with guaranteed correct formatting for both directions.">أنشئ سيرتك الذاتية بلغتك المفضلة مع ضمان التنسيق الصحيح لكلا الاتجاهين.</p>
                             </div>
                         </div>
                         <div class="col">
                             <div class="feature-card">
-                                <img src="Instant_Preview.webp" alt="Instant Preview" class="feature-icon mb-3" loading="lazy" width="200" height="200">
+                                <i class="fas fa-eye feature-icon-new"></i>
                                 <h3 data-ar="معاينة فورية" data-en="Instant Preview">معاينة فورية</h3>
                                 <p data-ar="شاهد شكل سيرتك الذاتية فور إدخال البيانات أو اختيار القالب لتضمن المظهر المثالي." data-en="Instantly see how your CV looks as you enter data or choose a template to ensure the perfect appearance.">شاهد شكل سيرتك الذاتية فور إدخال البيانات أو اختيار القالب لتضمن المظهر المثالي.</p>
                             </div>
                         </div>
                         <div class="col">
                             <div class="feature-card">
-                                <img src="High-Quality_PDF.webp" alt="Professional PDF Export" class="feature-icon mb-3" loading="lazy" width="200" height="200">
+                                <i class="fas fa-file-pdf feature-icon-new"></i>
                                 <h3 data-ar="تصدير بصيغة PDF عالية الجودة" data-en="High-Quality PDF Export">تصدير بصيغة PDF عالية الجودة</h3>
                                 <p data-ar="احصل على سيرتك الذاتية النهائية كملف PDF احترافي جاهز للطباعة أو المشاركة عبر الإنترنت." data-en="Get your final CV as a professional PDF file, ready for printing or online sharing.">احصل على سيرتك الذاتية النهائية كملف PDF احترافي جاهز للطباعة أو المشاركة عبر الإنترنت.</p>
                             </div>
                         </div>
                         <div class="col">
                             <div class="feature-card">
-                                <img src="Secure_Payment.webp" alt="Flexible Payment Options" class="feature-icon mb-3" loading="lazy" width="200" height="200">
+                                <i class="fas fa-shield-alt feature-icon-new"></i>
                                 <h3 data-ar="خيارات دفع متنوعة وآمنة" data-en="Various and Secure Payment Options">خيارات دفع متنوعة وآمنة</h3>
                                 <p data-ar="وسائل دفع متعددة تشمل PayPal وخيارات محلية لتسهيل عملية الحصول على سيرتك الذاتية." data-en="Multiple payment methods including PayPal and local options to facilitate getting your CV.">وسائل دفع متعددة تشمل PayPal وخيارات محلية لتسهيل عملية الحصول على سيرتك الذاتية.</p>
                             </div>
