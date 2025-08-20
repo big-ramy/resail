@@ -2,7 +2,6 @@
 
 <html lang="en" dir="ltr">
     <head>
-    <script src="script.js" defer></script>
     <meta charset="UTF-8">
     <meta name="referrer" content="no-referrer">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,6 +25,22 @@
 <title>Resail | Free Professional CV Maker & Resume Builder</title>
 <meta name="google-site-verification" content="75q6Tjfrizavn01d0DIInOza03LJD3i2cj8XfD_yApk" />
 
+<script>
+// --- Critical JavaScript for Initial Page Load ---
+document.addEventListener('DOMContentLoaded', () => {
+    // هذه هي الدوال الأساسية التي يجب أن تعمل فوراً
+    // لجعل الصفحة الرئيسية تبدو تفاعلية ومكتملة
+    if (typeof setInitialLanguage === 'function') setInitialLanguage();
+    if (typeof updateCounters === 'function') updateCounters();
+    if (typeof startSalesNotifications === 'function') startSalesNotifications();
+    if (typeof initializeCountdown === 'function') initializeCountdown();
+    if (typeof lazyLoadImages === 'function') lazyLoadImages();
+    if (typeof handleFloatingButtonVisibility === 'function') {
+        handleFloatingButtonVisibility();
+        window.addEventListener('scroll', handleFloatingButtonVisibility);
+    }
+});
+</script>
 
     <script type="application/ld+json">
 {
@@ -1155,5 +1170,6 @@ textarea.form-control{min-height:calc(1.5em + .75rem + 2px)}
             </div>
         </div>
         </div>
+<script src="script.js" defer></script>
 </body>
 </html>

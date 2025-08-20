@@ -42,9 +42,87 @@ function setupColorControls(){document.querySelectorAll('.color-control-componen
 component.querySelectorAll('input[type="color"], select').forEach(input=>{input.addEventListener('input',applySelectedColors)})});document.getElementById('color-picker-header-text').addEventListener('input',applySelectedColors);document.getElementById('color-picker-title-text').addEventListener('input',applySelectedColors);document.getElementById('color-picker-body-text').addEventListener('input',applySelectedColors);document.getElementById('color-picker-subtle-text').addEventListener('input',applySelectedColors)}
 function updateColorControlVisibility(){const allowedControls=CONTROL_VISIBILITY_CONFIG[selectedTemplateCategory]||[];document.querySelectorAll('#color-picker-container [data-control-for]').forEach(control=>{control.style.display='none'});allowedControls.forEach(controlName=>{const controlElement=document.querySelector(`#color-picker-container [data-control-for="${controlName}"]`);if(controlElement){controlElement.style.display='block'}})}
 function updateControlsForCategory(){const cvContainer=document.getElementById('cv-container');if(!cvContainer)return;const isAdvancedCategory=cvContainer.classList.contains('professional-layout')||cvContainer.classList.contains('ast-layout')||cvContainer.classList.contains('creative-layout');document.querySelectorAll('.gradient-toggle-wrapper').forEach(wrapper=>{wrapper.style.display=isAdvancedCategory?'flex':'none';if(!isAdvancedCategory){const toggle=wrapper.querySelector('.gradient-toggle');if(toggle.checked){toggle.checked=!1;toggle.dispatchEvent(new Event('change'))}}})}
-document.addEventListener('DOMContentLoaded',()=>{loadingOverlayGlobal=document.getElementById('loading-overlay');loadingTextGlobal=document.querySelector('#loading-overlay p');cvContainer=document.getElementById('cv-container');siteHeaderGlobal=document.querySelector('.site-header');paymentNameInput=document.getElementById("payment-name");paymentEmailInput=document.getElementById("payment-email");paymentPhoneInput=document.getElementById("payment-phone");paymentMessagesInput=document.getElementById("payment-messages");paymentFileInput=document.getElementById("payment-file");qrPaymentResultDiv=document.getElementById("qr-payment-result");submitPaymentProofButton=document.getElementById("submit-payment-proof");const startOverButton=document.getElementById('start-over-btn');const dataEntryPage=document.getElementById('cv-data-entry-page');const lemonSqueezyButton=document.getElementById('lemon-squeezy-btn');const debouncedGenerateCV=debounce(()=>generateCV(cvContainer));const debouncedSaveAndProgress=debounce(()=>{saveCvDataToLocalStorage();updateProgress();showSaveNotification()});if(dataEntryPage){dataEntryPage.addEventListener('input',()=>{debouncedGenerateCV();debouncedSaveAndProgress()})}
-const navLinks=document.querySelectorAll('#navbarNav .nav-link');const navCollapse=document.getElementById('navbarNav');if(navCollapse){const bsCollapse=new bootstrap.Collapse(navCollapse,{toggle:!1});navLinks.forEach(link=>{link.addEventListener('click',()=>{if(navCollapse.classList.contains('show'))bsCollapse.hide();})});document.addEventListener('click',(event)=>{const isClickInsideNav=navCollapse.contains(event.target);const isToggler=event.target.closest('.navbar-toggler');if(navCollapse.classList.contains('show')&&!isClickInsideNav&&!isToggler){bsCollapse.hide()}})}
-if(startOverButton)startOverButton.addEventListener('click',handleStartOver);if(lemonSqueezyButton)lemonSqueezyButton.addEventListener('click',handleLemonSqueezyPurchase);if(submitPaymentProofButton)submitPaymentProofButton.addEventListener('click',submitPaymentProof);document.getElementById('remove-discount-btn')?.addEventListener('click',(e)=>{e.preventDefault();removeDiscount()});setInitialLanguage();createPaletteControls();loadCvDataFromLocalStorage();updateControlsForCategory();applySelectedColors();setupColorControls();setupDynamicControlListeners();setupZoomControls();setupAiButtonListener();setupModalButtonListener();window.addEventListener('scroll',handleFloatingButtonVisibility);initializeDiscountCards();populateFontSelectors();startSalesNotifications();updateCounters();initializeCountdown();updateLanguage();showPage('landing-page');lazyLoadImages()});function addCustomSection(){let customSectionsContainer=document.getElementById('custom-sections-container');if(!customSectionsContainer){customSectionsContainer=document.createElement('div');customSectionsContainer.id='custom-sections-container';const formNavigationButtons=document.getElementById('form-navigation-buttons');formNavigationButtons.parentNode.insertBefore(customSectionsContainer,formNavigationButtons)}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadingOverlayGlobal = document.getElementById('loading-overlay');
+    loadingTextGlobal = document.querySelector('#loading-overlay p');
+    cvContainer = document.getElementById('cv-container');
+    siteHeaderGlobal = document.querySelector('.site-header');
+    paymentNameInput = document.getElementById("payment-name");
+    paymentEmailInput = document.getElementById("payment-email");
+    paymentPhoneInput = document.getElementById("payment-phone");
+    paymentMessagesInput = document.getElementById("payment-messages");
+    paymentFileInput = document.getElementById("payment-file");
+    qrPaymentResultDiv = document.getElementById("qr-payment-result");
+    submitPaymentProofButton = document.getElementById("submit-payment-proof");
+
+    const startOverButton = document.getElementById('start-over-btn');
+    const dataEntryPage = document.getElementById('cv-data-entry-page');
+    const lemonSqueezyButton = document.getElementById('lemon-squeezy-btn');
+    const debouncedGenerateCV = debounce(() => generateCV(cvContainer));
+    const debouncedSaveAndProgress = debounce(() => {
+        saveCvDataToLocalStorage();
+        updateProgress();
+        showSaveNotification()
+    });
+
+    if (dataEntryPage) {
+        dataEntryPage.addEventListener('input', () => {
+            debouncedGenerateCV();
+            debouncedSaveAndProgress()
+        })
+    }
+    const navLinks = document.querySelectorAll('#navbarNav .nav-link');
+    const navCollapse = document.getElementById('navbarNav');
+    if (navCollapse) {
+        const bsCollapse = new bootstrap.Collapse(navCollapse, {
+            toggle: !1
+        });
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (navCollapse.classList.contains('show')) bsCollapse.hide();
+            })
+        });
+        document.addEventListener('click', (event) => {
+            const isClickInsideNav = navCollapse.contains(event.target);
+            const isToggler = event.target.closest('.navbar-toggler');
+            if (navCollapse.classList.contains('show') && !isClickInsideNav && !isToggler) {
+                bsCollapse.hide()
+            }
+        })
+    }
+    if (startOverButton) startOverButton.addEventListener('click', handleStartOver);
+    if (lemonSqueezyButton) lemonSqueezyButton.addEventListener('click', handleLemonSqueezyPurchase);
+    if (submitPaymentProofButton) submitPaymentProofButton.addEventListener('click', submitPaymentProof);
+    document.getElementById('remove-discount-btn')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        removeDiscount()
+    });
+
+    // --- الدوال التي لم نعد نستدعيها هنا لأنها تعمل من HTML مباشرة ---
+    // setInitialLanguage(); <-- تمت إزالتها
+    // startSalesNotifications(); <-- تمت إزالتها
+    // updateCounters(); <-- تمت إزالتها
+    // initializeCountdown(); <-- تمت إزالتها
+    // lazyLoadImages(); <-- تمت إزالتها
+    // window.addEventListener('scroll', handleFloatingButtonVisibility); <-- تمت إزالتها
+
+    // --- الدوال المتبقية مهمة لعمل التطبيق بعد التحميل ---
+    createPaletteControls();
+    loadCvDataFromLocalStorage();
+    updateControlsForCategory();
+    applySelectedColors();
+    setupColorControls();
+    setupDynamicControlListeners();
+    setupZoomControls();
+    setupAiButtonListener();
+    setupModalButtonListener();
+    initializeDiscountCards();
+    populateFontSelectors();
+    updateLanguage(); // مهمة لإكمال عملية الترجمة بعد تحديد اللغة
+    showPage('landing-page');
+});
+function addCustomSection(){let customSectionsContainer=document.getElementById('custom-sections-container');if(!customSectionsContainer){customSectionsContainer=document.createElement('div');customSectionsContainer.id='custom-sections-container';const formNavigationButtons=document.getElementById('form-navigation-buttons');formNavigationButtons.parentNode.insertBefore(customSectionsContainer,formNavigationButtons)}
 const sectionWrapper=document.createElement('div');sectionWrapper.className='custom-section-wrapper mb-3 p-3 border rounded';const titleInput=document.createElement('input');titleInput.type='text';titleInput.placeholder=translations[currentLang].custom_section_placeholder;titleInput.className='form-control form-control-lg mb-2 custom-section-title';titleInput.oninput=()=>generateCV(document.getElementById('cv-container'));const subSectionsContainer=document.createElement('div');subSectionsContainer.className='sub-sections-container';const buttonContainer=document.createElement('div');buttonContainer.className='mt-2';const addSubSectionButton=document.createElement('button');addSubSectionButton.type='button';addSubSectionButton.className='btn btn-sm btn-outline-primary me-2';addSubSectionButton.innerHTML=translations[currentLang].add_subsection_btn;addSubSectionButton.onclick=function(){const subSectionEntry=document.createElement('div');subSectionEntry.className='custom-subsection-entry border p-2 mb-2 rounded position-relative';const removeSubButton=document.createElement('button');removeSubButton.type='button';removeSubButton.className='remove-field';removeSubButton.innerHTML='&times;';removeSubButton.title=translations[currentLang].remove_subsection_title;removeSubButton.onclick=()=>{subSectionEntry.remove();generateCV(document.getElementById('cv-container'))};const subTitleInput=document.createElement('input');subTitleInput.type='text';subTitleInput.className='form-control mb-2 custom-subsection-title';subTitleInput.placeholder=translations[currentLang].subsection_title_placeholder;subTitleInput.oninput=()=>generateCV(document.getElementById('cv-container'));const subDescriptionTextarea=document.createElement('textarea');subDescriptionTextarea.className='form-control custom-subsection-description';subDescriptionTextarea.placeholder=translations[currentLang].subsection_desc_placeholder;subDescriptionTextarea.rows=3;subDescriptionTextarea.oninput=()=>generateCV(document.getElementById('cv-container'));subSectionEntry.appendChild(removeSubButton);subSectionEntry.appendChild(subTitleInput);subSectionEntry.appendChild(subDescriptionTextarea);subSectionsContainer.appendChild(subSectionEntry)};const removeSectionButton=document.createElement('button');removeSectionButton.type='button';removeSectionButton.className='btn btn-sm btn-danger';removeSectionButton.textContent=translations[currentLang].remove_section_btn;removeSectionButton.onclick=function(){if(confirm(translations[currentLang].confirm_delete_section)){sectionWrapper.remove();generateCV(document.getElementById('cv-container'))}};buttonContainer.appendChild(addSubSectionButton);buttonContainer.appendChild(removeSectionButton);sectionWrapper.appendChild(titleInput);sectionWrapper.appendChild(subSectionsContainer);sectionWrapper.appendChild(buttonContainer);customSectionsContainer.appendChild(sectionWrapper);addSubSectionButton.click();sectionWrapper.scrollIntoView({behavior:'smooth',block:'center'})}
 function updateTemplateImageSources(){const templateImages=document.querySelectorAll('.template-preview');console.log("Updating template image sources for language:",currentLang);templateImages.forEach(img=>{const templateId=parseInt(img.getAttribute('data-template-id'));const templateCategory=img.getAttribute('data-template-category');if(!isNaN(templateId)&&translations[currentLang]["image-paths"][templateCategory]){const newSrc=translations[currentLang]["image-paths"][templateCategory](templateId);img.src=newSrc;console.log(`Setting image src for id ${templateId} (${templateCategory}) to: ${newSrc}`)}else{console.warn(`Could not set src for image. templateId: ${templateId}, category: ${templateCategory}, lang: ${currentLang}`)}})}
 function setInitialLanguage(){const userChosenLang=sessionStorage.getItem('userLang');const path=window.location.pathname;if(userChosenLang){currentLang=userChosenLang;return}
@@ -1012,38 +1090,6 @@ function handleFloatingButtonVisibility() {
         floatingBtn.classList.remove('show');
     }
 }
-
-/* ============================================= */
-/* == كود إغلاق قائمة النافبار تلقائياً (في الجوال) == */
-/* ============================================= */
-document.addEventListener('DOMContentLoaded', () => {
-    const navLinks = document.querySelectorAll('#navbarNav .nav-link');
-    const navCollapse = document.getElementById('navbarNav');
-    const bsCollapse = new bootstrap.Collapse(navCollapse, {
-      toggle: false // مهم: لا تقم بتبديل الحالة عند الإنشاء
-    });
-
-    // 1. الإغلاق عند الضغط على أحد الروابط
-    navLinks.forEach((link) => {
-        link.addEventListener('click', () => {
-            // تحقق مما إذا كانت القائمة مفتوحة (مرئية)
-            if (navCollapse.classList.contains('show')) {
-                bsCollapse.hide();
-            }
-        });
-    });
-
-    // 2. الإغلاق عند الضغط خارج القائمة
-    document.addEventListener('click', (event) => {
-        const isClickInsideNav = navCollapse.contains(event.target);
-        const isToggler = event.target.closest('.navbar-toggler');
-
-        // إذا كانت القائمة مفتوحة، والضغط كان خارجها، ولم يكن على زر الفتح/الإغلاق
-        if (navCollapse.classList.contains('show') && !isClickInsideNav && !isToggler) {
-            bsCollapse.hide();
-        }
-    });
-});
 
 function setupZoomControls() {
     const zoomBtn = document.getElementById('zoom-btn');
