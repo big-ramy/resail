@@ -169,10 +169,10 @@ textarea.form-control{min-height:calc(1.5em + .75rem + 2px)}
 @media (max-width:767px){#hero-offers-container{padding:12px 15px;margin-bottom:20px;gap:12px}#countdown-timer-wrapper{font-size:.95em;padding-bottom:8px}#discount-codes-list{gap:10px}.offer-item{gap:8px}.offer-item .offer-code{font-size:.85em;padding:3px 10px}.offer-item .offer-description{font-size:.8em}}
 /* 1. استدعاء ملف الخط الأساسي من السيرفر الرسمي (يحتوي على أشكال الأيقونات) */
 @font-face {
+  font-display: swap; /* مهم جداً للأداء ومنع تغير الأشكال */
   font-family: 'Font Awesome 6 Free';
   font-style: normal;
   font-weight: 900; /* Solid Style */
-  font-display: block; /* مهم جداً للأداء ومنع تغير الأشكال */
   src: url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/webfonts/fa-solid-900.woff2") format("woff2");
 }
 
