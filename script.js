@@ -1,3 +1,12 @@
+function debounce(func, delay = 500) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            func.apply(this, args);
+        }, delay);
+    };
+}
 const translations={"ar":{"summary_email_required": "الرجاء إدخال بريدك الإلكتروني في حقل النبذة للمتابعة.","image-paths":{"normal":(id)=>`CV templates_ar/${id}.webp`,"standard":(id)=>`CV templates_ar/${id}.webp`,"professional":(id)=>`CV templates_ar/${id}.webp`,"ast":(id)=>`CV templates_ar/${id}.webp`},"Please fill in all fields.":"الرجاء ملء جميع الحقول المطلوبة.","Please enter a valid email.":"الرجاء إدخال عنوان بريد إلكتروني صالح.","File size exceeds the limit (3MB).":"حجم الملف يتجاوز الحد المسموح به (3 ميجابايت).","Please attach only image or PDF files.":"الرجاء إرفاق ملفات صور أو PDF فقط.","An error occurred while preparing your payment. Please try again or contact support.":"حدث خطأ أثناء تحضير عملية الدفع. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.","Error, price for this category is undefined.":"حدث خطأ، السعر لهذه الفئة غير محدد.","Please select a valid image file.":"الرجاء اختيار ملف صورة صالح.","Image size is too large. Please select an image smaller than {size} megabytes.":"حجم الصورة كبير جداً. الرجاء اختيار صورة أصغر من {size} ميغابايت.","You must have at least one field in this section.":"يجب أن يكون لديك حقل واحد على الأقل في هذا القسم.","payment-success":"تم استلام طلبك بنجاح! سيتم إرسال السيرة الذاتية إلى بريدك الإلكتروني قريباً.","Error processing file.":"حدث خطأ أثناء معالجة الملف.","CV downloaded successfully!":"تم تنزيل السيرة الذاتية بنجاح!","Submitting...":"جاري الإرسال...","please_wait_and_do_not_refresh":"الرجاء عدم إغلاق أو تحديث الصفحة...","loading-cv-text":"جاري إنشاء السيرة الذاتية، يرجى الانتظار...","payment_processing":"جاري معالجة الدفع، يرجى الانتظار...","pdf_generation_in_progress":"جاري تحضير ملف الـ PDF...","preparing_secure_payment":"جاري تحضير عملية الدفع الآمنة...","from-city":"من","notification-action":"يقوم الان بإنشاء سيرته الذاتية!","Career Objective":"الهدف الوظيفي","Work Experience":"الخبرة العملية","Education":"المؤهلات العلمية","Skills":"المهارات","Languages":"اللغات","References":"المراجع","Job Title_placeholder":"المسمى الوظيفي","Company":"الشركة","Duration":"المدة","Description":"الوصف","Degree":"الشهادة","University/Institution":"الجامعة/المعهد","Enter a skill":"أدخل مهارة","Select Level":"اختر المستوى","Beginner":"مبتدئ","Intermediate":"متوسط","Advanced":"متقدم","Expert":"خبير","Enter a language":"أدخل لغة","Name":"الاسم","Position":"الموقع","Phone":"الهاتف","Email":"البريد","custom_section_placeholder":"عنوان القسم الجديد (مثال: المشاريع أو الدورات)","add_subsection_btn":"<i class=\"fas fa-plus\"></i> إضافة عنوان فرعي","remove_subsection_title":"حذف العنوان الفرعي","subsection_title_placeholder":"العنوان الفرعي (مثال: شهادة PMP)","subsection_desc_placeholder":"الوصف أو التفاصيل المتعلقة بالعنوان الفرعي...","remove_section_btn":"حذف القسم بالكامل","confirm_delete_section":"هل أنت متأكد من حذف هذا القسم بالكامل؟","accordion_image_controls":"🖼️ التحكم بالصورة الشخصية","image_size_label":"حجم الصورة","image_radius_label":"شكل الإطار (Radius)","accordion_font_controls":"✒️ التحكم بالخطوط","select_name_font_label":"خط الاسم الرئيسي:","select_headings_font_label":"خط العناوين:","select_body_font_label":"خط النص الأساسي:","accordion_size_controls":"📏 التحكم بأحجام النصوص","name_size_label":"حجم الاسم","title_size_label":"حجم المسمى الوظيفي","contact_size_label":"حجم معلومات الاتصال","section_title_size_label":"حجم عناوين الأقسام","subsection_title_size_label":"حجم العناوين الفرعية","body_text_size_label":"حجم النص الأساسي","accordion_color_controls":"🎨 التحكم بالألوان","color_presets_titl":"إعدادات الألوان المسبقة","color_customization_title":"تخصيص ألوان القالب","background_colors_title":"ألوان الخلفيات","primary_bg_label":"الخلفية الأساسية / الرأس","sidebar_bg_label":"خلفية العامود الجانبي","accent_bg_label":"خلفية مميزة / للمهارات","gradient_label":"متدرج","text_colors_title":"ألوان النصوص والأيقونات","header_text_label":"نص الرأس","title_text_label":"نص العناوين","body_text_label":"نص المحتوى","subtle_text_label":"نص فرعي","gradient_horizontal":"أفقي","gradient_vertical":"عمودي","gradient_diagonal":"قطري","ai_generating_cv": "جاري إنشاء السيرة الذاتية بالذكاء الاصطناعي...","error_name_title_required": "الرجاء إدخال اسم وعنوان الوظيفة للبدء.","ai_error_network": "تعذر الاتصال بالخادم. الرجاء التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.","ai_error_ratelimit": "هناك ضغط كبير على الخدمة حالياً. الرجاء الانتظار لمدة دقيقة ثم المحاولة مرة أخرى.","ai_error_parsing": "حدث خطأ أثناء معالجة رد الذكاء الاصطناعي. قد يكون الرد غير مكتمل. يرجى المحاولة مجدداً.","ai_error_generic": "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى أو التواصل مع الدعم الفني.",},"en":{"summary_email_required": "Please enter your email address in the summary field to continue.","image-paths":{"normal":(id)=>`CV templates_en/${id}.webp`,"standard":(id)=>`CV templates_en/${id}.webp`,"professional":(id)=>`CV templates_en/${id}.webp`,"ast":(id)=>`CV templates_en/${id}.webp`},"Please fill in all fields.":"Please fill in all required fields.","Please enter a valid email.":"Please enter a valid email address.","File size exceeds the limit (3MB).":"File size exceeds the 3MB limit.","Please attach only image or PDF files.":"Please attach only image or PDF files.","An error occurred while preparing your payment. Please try again or contact support.":"An error occurred while preparing your payment. Please try again or contact support.","Error, price for this category is undefined.":"Error, price for this category is undefined.","Please select a valid image file.":"Please select a valid image file.","Image size is too large. Please select an image smaller than {size} megabytes.":"Image size is too large. Please select an image smaller than {size} megabytes.","You must have at least one field in this section.":"You must have at least one field in this section.","payment-success":"Your request has been successfully received! The CV will be sent to your email shortly.","Error processing file.":"Error processing file.","CV downloaded successfully!":"CV downloaded successfully!","Submitting...":"Submitting...","please_wait_and_do_not_refresh":"Please do not close or refresh the page...","loading-cv-text":"Generating CV, please wait...","payment_processing":"Processing payment, please wait...","pdf_generation_in_progress":"Preparing the PDF file...","preparing_secure_payment":"Preparing secure payment...","from-city":"from","notification-action":"is creating CV now!","Career Objective":"Career Objective","Work Experience":"Work Experience","Education":"Education","Skills":"Skills","Languages":"Languages","References":"References","Job Title_placeholder":"Job Title","Company":"Company","Duration":"Duration","Description":"Description","Degree":"Degree","University/Institution":"University/Institution","Enter a skill":"Enter a skill","Select Level":"Select Level","Beginner":"Beginner","Intermediate":"Intermediate","Advanced":"Advanced","Expert":"Expert","Enter a language":"Enter a language","Name":"Name","Position":"Position","Phone":"Phone","Email":"Email","custom_section_placeholder":"New Section Title (e.g., Projects or Courses)","add_subsection_btn":"<i class=\"fas fa-plus\"></i> Add Sub-heading","remove_subsection_title":"Remove Sub-heading","subsection_title_placeholder":"Sub-heading (e.g., PMP Certificate)","subsection_desc_placeholder":"Description or details related to the sub-heading...","remove_section_btn":"Delete Entire Section","confirm_delete_section":"Are you sure you want to delete this entire section?","accordion_image_controls":"🖼️ Profile Picture Controls","image_size_label":"Image Size","image_radius_label":"Frame Shape (Radius)","accordion_font_controls":"✒️ Font Controls","select_name_font_label":"Main Name Font:","select_headings_font_label":"Headings Font:","select_body_font_label":"Body Text Font:","accordion_size_controls":"📏 Text Size Controls","name_size_label":"Name Size","title_size_label":"Job Title Size","contact_size_label":"Contact Info Size","section_title_size_label":"Section Titles Size","subsection_title_size_label":"Subsection Titles Size","body_text_size_label":"Body Text Size","accordion_color_controls":"🎨 Color Controls","color_presets_titl":"Color Presets","color_customization_title":"Customize Template Colors","background_colors_title":"Background Colors","primary_bg_label":"Primary BG / Header","sidebar_bg_label":"Sidebar BG","accent_bg_label":"Accent / Skills BG","gradient_label":"Gradient","text_colors_title":"Text & Icon Colors","header_text_label":"Header Text","title_text_label":"Titles Text","body_text_label":"Body Text","subtle_text_label":"Subtle Text","gradient_horizontal":"Horizontal","gradient_vertical":"Vertical","gradient_diagonal":"Diagonal","ai_generating_cv": "Generating CV with AI...","error_name_title_required": "Please enter a name and job title to start.", "ai_error_network": "Could not connect to the server. Please check your internet connection and try again.","ai_error_ratelimit": "The service is currently under high load. Please wait a minute and try again.","ai_error_parsing": "An error occurred while processing the AI response. The response may be incomplete. Please try again.","ai_error_generic": "An unexpected error occurred. Please try again or contact support.",}};const CONTROL_VISIBILITY_CONFIG={'normal':['primary-bg','header-text','title-text','body-text','subtle-text','accent-bg'],'standard':['primary-bg','sidebar-bg','header-text','title-text','body-text','subtle-text','accent-bg'],'professional':['primary-bg','sidebar-bg','header-text','title-text','body-text','subtle-text','accent-bg'],'ast':['primary-bg','sidebar-bg','header-text','title-text','body-text','subtle-text','accent-bg'],'creative':['primary-bg','sidebar-bg','header-text','title-text','body-text','subtle-text','accent-bg']};const colorPalettes=[{name:'Ocean Blue',id:'palette-ocean',isGradient:!1,colors:{'--primary-bg':'#0d47a1','--secondary-bg':'#1976d2','--sidebar-bg':'#f4f6f8','--accent-bg':'#bbdefb','--header-text':'#ffffff','--title-text':'#0d47a1','--body-text':'#333333','--subtle-text':'#5f6368'}},{name:'Forest Green',id:'palette-forest',isGradient:!1,colors:{'--primary-bg':'#1b5e20','--secondary-bg':'#388e3c','--sidebar-bg':'#f5f5f5','--accent-bg':'#c8e6c9','--header-text':'#ffffff','--title-text':'#1b5e20','--body-text':'#212121','--subtle-text':'#616161'}},{name:'Graphite & Amber',id:'palette-graphite',isGradient:!1,colors:{'--primary-bg':'#263238','--secondary-bg':'#37474f','--sidebar-bg':'#f5f5f5','--accent-bg':'#ffecb3','--header-text':'#ffffff','--title-text':'#ffab00','--body-text':'#212121','--subtle-text':'#757575'}},{name:'Ruby Red',id:'palette-ruby',isGradient:!1,colors:{'--primary-bg':'#b71c1c','--secondary-bg':'#d32f2f','--sidebar-bg':'#fbe9e7','--accent-bg':'#ffcdd2','--header-text':'#ffffff','--title-text':'#b71c1c','--body-text':'#424242','--subtle-text':'#757575'}},{name:'Royal Purple',id:'palette-purple',isGradient:!1,colors:{'--primary-bg':'#4a148c','--secondary-bg':'#7b1fa2','--sidebar-bg':'#f3e5f5','--accent-bg':'#e1bee7','--header-text':'#ffffff','--title-text':'#4a148c','--body-text':'#311b92','--subtle-text':'#6a1b9a'}},{name:'Earth Tones',id:'palette-earth',isGradient:!1,colors:{'--primary-bg':'#4e342e','--secondary-bg':'#6d4c41','--sidebar-bg':'#efebe9','--accent-bg':'#d7ccc8','--header-text':'#ffffff','--title-text':'#4e342e','--body-text':'#3e2723','--subtle-text':'#5d4037'}},{name:'Slate Blue',id:'palette-slate',isGradient:!1,colors:{'--primary-bg':'#455a64','--secondary-bg':'#607d8b','--sidebar-bg':'#eceff1','--accent-bg':'#cfd8dc','--header-text':'#ffffff','--title-text':'#37474f','--body-text':'#263238','--subtle-text':'#546e7a'}},{name:'Teal',id:'palette-teal',isGradient:!1,colors:{'--primary-bg':'#00695c','--secondary-bg':'#00897b','--sidebar-bg':'#e0f2f1','--accent-bg':'#b2dfdb','--header-text':'#ffffff','--title-text':'#004d40','--body-text':'#004d40','--subtle-text':'#00796b'}},{name:'Maroon',id:'palette-maroon',isGradient:!1,colors:{'--primary-bg':'#880e4f','--secondary-bg':'#c2185b','--sidebar-bg':'#fce4ec','--accent-bg':'#f8bbd0','--header-text':'#ffffff','--title-text':'#880e4f','--body-text':'#560027','--subtle-text':'#ad1457'}},{name:'Sunset Fade',id:'palette-sunset',isGradient:!0,colors:{'--primary-bg':'linear-gradient(to right, #8e2de2, #4a00e0)','--secondary-bg':'#4a00e0','--sidebar-bg':'#f3e5f5','--accent-bg':'#d1c4e9','--header-text':'#ffffff','--title-text':'#4a00e0','--body-text':'#333333','--subtle-text':'#673ab7'}},{name:'Oceanic Deep',id:'palette-oceanic',isGradient:!0,colors:{'--primary-bg':'linear-gradient(to right, #005c97, #363795)','--secondary-bg':'#005c97','--sidebar-bg':'#e0f7fa','--accent-bg':'#b2ebf2','--header-text':'#ffffff','--title-text':'#005c97','--body-text':'#004d40','--subtle-text':'#00796b'}},{name:'Mint Fresh',id:'palette-mint',isGradient:!0,colors:{'--primary-bg':'linear-gradient(to right, #26d0ce, #1a2980)','--secondary-bg':'#26d0ce','--sidebar-bg':'#f1f8e9','--accent-bg':'#dcedc8','--header-text':'#ffffff','--title-text':'#1a2980','--body-text':'#33691e','--subtle-text':'#558b2f'}},{name:'Soft Peach',id:'palette-peach',isGradient:!0,colors:{'--primary-bg':'linear-gradient(to right, #ff9a9e, #fad0c4)','--secondary-bg':'#ff9a9e','--sidebar-bg':'#fff5f5','--accent-bg':'#ffcdd2','--header-text':'#ffffff','--title-text':'#e57373','--body-text':'#bf360c','--subtle-text':'#f44336'}},{name:'Lush Green',id:'palette-lush',isGradient:!0,colors:{'--primary-bg':'linear-gradient(to right, #2e7d32, #c8e6c9)','--secondary-bg':'#2e7d32','--sidebar-bg':'#f1f8e9','--accent-bg':'#a5d6a7','--header-text':'#ffffff','--title-text':'#1b5e20','--body-text':'#2e7d32','--subtle-text':'#66bb6a'}},{name:'Night Sky',id:'palette-night',isGradient:!0,colors:{'--primary-bg':'linear-gradient(to right, #2c3e50, #4c5a65)','--secondary-bg':'#2c3e50','--sidebar-bg':'#eceff1','--accent-bg':'#b0bec5','--header-text':'#ffffff','--title-text':'#2c3e50','--body-text':'#37474f','--subtle-text':'#546e7a'}}];const arabicFonts=[{name:'Tajawal (تجوال)',value:"'Tajawal', sans-serif"},{name:'Cairo (القاهرة)',value:"'Cairo', sans-serif"},{name:'Amiri (أميري - كلاسيكي)',value:"'Amiri', serif"},{name:'Almarai (المراعي)',value:"'Almarai', sans-serif"},{name:'Markazi Text (مركزي)',value:"'Markazi Text', serif"},{name:'Lalezar (لاله زار - للعناوين)',value:"'Lalezar', cursive"}];const englishFonts=[{name:'Roboto',value:"'Roboto', sans-serif"},{name:'Lato',value:"'Lato', sans-serif"},{name:'Montserrat',value:"'Montserrat', sans-serif"},{name:'Open Sans',value:"'Open Sans', sans-serif"},{name:'PT Sans',value:"'PT Sans', sans-serif"},{name:'Playfair Display (Serif)',value:"'Playfair Display', serif"},{name:'Noto Serif (Serif)',value:"'Noto Serif', serif"}];function populateFontSelectors(){const isArabic=currentLang==='ar';const fontList=isArabic?arabicFonts:englishFonts;const selectors={name:document.getElementById('font-selector-name'),headings:document.getElementById('font-selector-headings'),body:document.getElementById('font-selector-body')};for(const key in selectors){const selectElement=selectors[key];if(selectElement){selectElement.innerHTML='';fontList.forEach(font=>{const option=document.createElement('option');option.value=font.value;option.textContent=font.name;selectElement.appendChild(option)})}}
 if(selectors.name)selectors.name.value=isArabic?"'Cairo', sans-serif":"'Playfair Display', serif";if(selectors.headings)selectors.headings.value=isArabic?"'Tajawal', sans-serif":"'Montserrat', sans-serif";if(selectors.body)selectors.body.value=isArabic?"'Almarai', sans-serif":"'Roboto', sans-serif";applySelectedFonts()}
 function setupLanguageToggle(){const langToggleButton=document.getElementById('lang-toggle-btn');if(!langToggleButton)return;if(currentLang==='ar'){langToggleButton.textContent='English';langToggleButton.href='en.html';langToggleButton.onclick=()=>setUserLanguage('en')}else{langToggleButton.textContent='العربية';langToggleButton.href='index.html';langToggleButton.onclick=()=>setUserLanguage('ar')}}
@@ -100,20 +109,96 @@ function setupColorControls(){document.querySelectorAll('.color-control-componen
 component.querySelectorAll('input[type="color"], select').forEach(input=>{input.addEventListener('input',applySelectedColors)})});document.getElementById('color-picker-header-text').addEventListener('input',applySelectedColors);document.getElementById('color-picker-title-text').addEventListener('input',applySelectedColors);document.getElementById('color-picker-body-text').addEventListener('input',applySelectedColors);document.getElementById('color-picker-subtle-text').addEventListener('input',applySelectedColors)}
 function updateColorControlVisibility(){const allowedControls=CONTROL_VISIBILITY_CONFIG[selectedTemplateCategory]||[];document.querySelectorAll('#color-picker-container [data-control-for]').forEach(control=>{control.style.display='none'});allowedControls.forEach(controlName=>{const controlElement=document.querySelector(`#color-picker-container [data-control-for="${controlName}"]`);if(controlElement){controlElement.style.display='block'}})}
 function updateControlsForCategory(){const cvContainer=document.getElementById('cv-container');if(!cvContainer)return;const isAdvancedCategory=cvContainer.classList.contains('professional-layout')||cvContainer.classList.contains('ast-layout')||cvContainer.classList.contains('creative-layout');document.querySelectorAll('.gradient-toggle-wrapper').forEach(wrapper=>{wrapper.style.display=isAdvancedCategory?'flex':'none';if(!isAdvancedCategory){const toggle=wrapper.querySelector('.gradient-toggle');if(toggle.checked){toggle.checked=!1;toggle.dispatchEvent(new Event('change'))}}})}
-document.addEventListener('DOMContentLoaded',()=>{loadingOverlayGlobal=document.getElementById('loading-overlay');loadingTextGlobal=document.querySelector('#loading-overlay p');    const startOverButton = document.getElementById('start-over-btn');
+// big-ramy/resail/resail-226430b61c777c257bea99b1a15c0811d0aece5c/script.js
+
+document.addEventListener('DOMContentLoaded', () => {
+    // ==================================================================
+    // ==   الجزء الأول: تعريف المتغيرات وتحسين أداء إدخال البيانات   ==
+    // ==================================================================
+    
+    // ======== 1. تعريف المتغيرات الأساسية ========
+    loadingOverlayGlobal = document.getElementById('loading-overlay');
+    loadingTextGlobal = document.querySelector('#loading-overlay p');
+    cvContainer = document.getElementById('cv-container');
+    const startOverButton = document.getElementById('start-over-btn');
+    const dataEntryPage = document.getElementById('cv-data-entry-page');
+
+    // ======== 2. إنشاء الدوال المُحسّنة (Debounced) ========
+    const debouncedGenerateCV = debounce(() => generateCV(cvContainer));
+    const debouncedSaveAndProgress = debounce(() => {
+        saveCvDataToLocalStorage();
+        updateProgress();
+        showSaveNotification();
+    });
+
+    // ======== 3. مستمع الحدث المركزي والذكي لإدخال البيانات ========
+    if (dataEntryPage) {
+        dataEntryPage.addEventListener('input', () => {
+            debouncedGenerateCV();
+            debouncedSaveAndProgress();
+        });
+    }
+
+    // ==========================================================
+    // ==   الجزء الثاني: كود قائمة التنقل (Navbar) المدمج    ==
+    // ==========================================================
+    const navLinks = document.querySelectorAll('#navbarNav .nav-link');
+    const navCollapse = document.getElementById('navbarNav');
+    
+    if (navCollapse) {
+        const bsCollapse = new bootstrap.Collapse(navCollapse, {
+            toggle: false
+        });
+
+        // 1. الإغلاق عند الضغط على أحد الروابط
+        navLinks.forEach((link) => {
+            link.addEventListener('click', () => {
+                if (navCollapse.classList.contains('show')) {
+                    bsCollapse.hide();
+                }
+            });
+        });
+
+        // 2. الإغلاق عند الضغط خارج القائمة
+        document.addEventListener('click', (event) => {
+            const isClickInsideNav = navCollapse.contains(event.target);
+            const isToggler = event.target.closest('.navbar-toggler');
+            if (navCollapse.classList.contains('show') && !isClickInsideNav && !isToggler) {
+                bsCollapse.hide();
+            }
+        });
+    }
+
+    // ================================================================
+    // ==   الجزء الثالث: ربط باقي الأحداث واستدعاء الدوال الأولية   ==
+    // ================================================================
+    
     if (startOverButton) {
         startOverButton.addEventListener('click', handleStartOver);
-    }setInitialLanguage();createPaletteControls();loadCvDataFromLocalStorage();updateControlsForCategory();applySelectedColors();setupColorControls();setupDynamicControlListeners();setupZoomControls();setupAiButtonListener();setupModalButtonListener();window.addEventListener('scroll', handleFloatingButtonVisibility);document.getElementById('color-picker-header-text').addEventListener('input',applySelectedColors);document.getElementById('color-picker-title-text').addEventListener('input',applySelectedColors);document.getElementById('color-picker-body-text').addEventListener('input',applySelectedColors);document.getElementById('color-picker-subtle-text').addEventListener('input',applySelectedColors);const nameFontSelector=document.getElementById('font-selector-name');const headingsFontSelector=document.getElementById('font-selector-headings');const bodyFontSelector=document.getElementById('font-selector-body');if(nameFontSelector)nameFontSelector.addEventListener('change',applySelectedFonts);if(headingsFontSelector)headingsFontSelector.addEventListener('change',applySelectedFonts);if(bodyFontSelector)bodyFontSelector.addEventListener('change',applySelectedFonts);document.addEventListener('keydown',function(event){if((event.ctrlKey||event.metaKey)&&event.key==='p'){event.preventDefault();console.log("Ctrl+P pressed. Triggering custom print dialog.");window.print()}});const promoBar=document.getElementById('promo-bar');if(promoBar){const promoBarHeight=promoBar.offsetHeight;document.body.style.paddingTop=`${promoBarHeight}px`}
-siteHeaderGlobal=document.querySelector('.site-header');cvContainer=document.getElementById('cv-container');paymentNameInput=document.getElementById("payment-name");paymentEmailInput=document.getElementById("payment-email");paymentPhoneInput=document.getElementById("payment-phone");paymentMessagesInput=document.getElementById("payment-messages");paymentFileInput=document.getElementById("payment-file");qrPaymentResultDiv=document.getElementById("qr-payment-result");submitPaymentProofButton=document.getElementById("submit-payment-proof");const lemonSqueezyButton = document.getElementById('lemon-squeezy-btn'); if (lemonSqueezyButton) {lemonSqueezyButton.addEventListener('click', handleLemonSqueezyPurchase); }document.getElementById('remove-discount-btn').addEventListener('click',(e)=>{e.preventDefault();removeDiscount()});if(submitPaymentProofButton){submitPaymentProofButton.addEventListener('click',submitPaymentProof)}
-const cvDataEntryPage = document.getElementById('cv-data-entry-page');
-if (cvDataEntryPage) {
-    cvDataEntryPage.addEventListener('input', () => {
-        saveCvDataToLocalStorage();
-        showSaveNotification(); // <-- أضف هذا السطر
-    }, true);
-}
-setInitialLanguage();initializeDiscountCards();populateFontSelectors();startSalesNotifications();updateCounters();initializeCountdown();updateLanguage();showPage('landing-page');lazyLoadImages()});function addCustomSection(){let customSectionsContainer=document.getElementById('custom-sections-container');if(!customSectionsContainer){customSectionsContainer=document.createElement('div');customSectionsContainer.id='custom-sections-container';const formNavigationButtons=document.getElementById('form-navigation-buttons');formNavigationButtons.parentNode.insertBefore(customSectionsContainer,formNavigationButtons)}
-const sectionWrapper=document.createElement('div');sectionWrapper.className='custom-section-wrapper mb-3 p-3 border rounded';const titleInput=document.createElement('input');titleInput.type='text';titleInput.placeholder=translations[currentLang].custom_section_placeholder;titleInput.className='form-control form-control-lg mb-2 custom-section-title';titleInput.oninput=()=>generateCV(document.getElementById('cv-container'));const subSectionsContainer=document.createElement('div');subSectionsContainer.className='sub-sections-container';const buttonContainer=document.createElement('div');buttonContainer.className='mt-2';const addSubSectionButton=document.createElement('button');addSubSectionButton.type='button';addSubSectionButton.className='btn btn-sm btn-outline-primary me-2';addSubSectionButton.innerHTML=translations[currentLang].add_subsection_btn;addSubSectionButton.onclick=function(){const subSectionEntry=document.createElement('div');subSectionEntry.className='custom-subsection-entry border p-2 mb-2 rounded position-relative';const removeSubButton=document.createElement('button');removeSubButton.type='button';removeSubButton.className='remove-field';removeSubButton.innerHTML='&times;';removeSubButton.title=translations[currentLang].remove_subsection_title;removeSubButton.onclick=()=>{subSectionEntry.remove();generateCV(document.getElementById('cv-container'))};const subTitleInput=document.createElement('input');subTitleInput.type='text';subTitleInput.className='form-control mb-2 custom-subsection-title';subTitleInput.placeholder=translations[currentLang].subsection_title_placeholder;subTitleInput.oninput=()=>generateCV(document.getElementById('cv-container'));const subDescriptionTextarea=document.createElement('textarea');subDescriptionTextarea.className='form-control custom-subsection-description';subDescriptionTextarea.placeholder=translations[currentLang].subsection_desc_placeholder;subDescriptionTextarea.rows=3;subDescriptionTextarea.oninput=()=>generateCV(document.getElementById('cv-container'));subSectionEntry.appendChild(removeSubButton);subSectionEntry.appendChild(subTitleInput);subSectionEntry.appendChild(subDescriptionTextarea);subSectionsContainer.appendChild(subSectionEntry)};const removeSectionButton=document.createElement('button');removeSectionButton.type='button';removeSectionButton.className='btn btn-sm btn-danger';removeSectionButton.textContent=translations[currentLang].remove_section_btn;removeSectionButton.onclick=function(){if(confirm(translations[currentLang].confirm_delete_section)){sectionWrapper.remove();generateCV(document.getElementById('cv-container'))}};buttonContainer.appendChild(addSubSectionButton);buttonContainer.appendChild(removeSectionButton);sectionWrapper.appendChild(titleInput);sectionWrapper.appendChild(subSectionsContainer);sectionWrapper.appendChild(buttonContainer);customSectionsContainer.appendChild(sectionWrapper);addSubSectionButton.click();sectionWrapper.scrollIntoView({behavior:'smooth',block:'center'})}
+    }
+    
+    // استدعاءات الإعداد الأولية (يتم تشغيلها مرة واحدة فقط)
+    setInitialLanguage();
+    createPaletteControls();
+    loadCvDataFromLocalStorage();
+    updateControlsForCategory();
+    applySelectedColors();
+    setupColorControls();
+    setupDynamicControlListeners();
+    setupZoomControls();
+    setupAiButtonListener();
+    setupModalButtonListener();
+    window.addEventListener('scroll', handleFloatingButtonVisibility);
+    initializeDiscountCards();
+    populateFontSelectors();
+    startSalesNotifications();
+    updateCounters();
+    initializeCountdown();
+    updateLanguage();
+    showPage('landing-page');
+    lazyLoadImages();
+});
+
 function updateTemplateImageSources(){const templateImages=document.querySelectorAll('.template-preview');console.log("Updating template image sources for language:",currentLang);templateImages.forEach(img=>{const templateId=parseInt(img.getAttribute('data-template-id'));const templateCategory=img.getAttribute('data-template-category');if(!isNaN(templateId)&&translations[currentLang]["image-paths"][templateCategory]){const newSrc=translations[currentLang]["image-paths"][templateCategory](templateId);img.src=newSrc;console.log(`Setting image src for id ${templateId} (${templateCategory}) to: ${newSrc}`)}else{console.warn(`Could not set src for image. templateId: ${templateId}, category: ${templateCategory}, lang: ${currentLang}`)}})}
 function setInitialLanguage(){const userChosenLang=sessionStorage.getItem('userLang');const path=window.location.pathname;if(userChosenLang){currentLang=userChosenLang;return}
 if(path.endsWith('en.html')){currentLang='en'}else if(path.endsWith('index.html')||path.endsWith('/')){currentLang='ar'}else{currentLang='ar'}
@@ -747,14 +832,50 @@ cssRules.push(`
             .cv-experience-item, .cv-education-item, .cv-reference-item { page-break-inside: avoid !important; }
         }
     `);return cssRules.join('\n')}
-async function generatePdfFromNode(isPaid){toggleLoadingOverlay(!0,'pdf_generation_in_progress');try{const cvPreviewElement=document.getElementById('cv-container');if(!cvPreviewElement)throw new Error("CV container not found.");const fetchCss=async(url)=>{const response=await fetch(url);if(!response.ok)throw new Error(`Failed to fetch ${url}`);return response.text()};const[mainCss,templatesCss,responsiveCss]=await Promise.all([fetchCss('style.css'),fetchCss('templates.css'),fetchCss('responsive.css')]);const fullCssText=mainCss+templatesCss+responsiveCss;const tempContainer=document.createElement('div');generateCV(tempContainer);const finalHtml=tempContainer.innerHTML;tempContainer.remove();const cvData=collectCvData();const direction=cvData.language==='ar'?'rtl':'ltr';const colorVariablesCSS=getColorVariablesAsCssText();const dynamicStylesFromElement=cvPreviewElement.style.cssText;const dynamicStyleRule=`#cv-container { ${dynamicStylesFromElement} }`;const isArabic=currentLang==='ar';const nameFont=document.getElementById('font-selector-name')?.value||(isArabic?"'Cairo', sans-serif":"'Playfair Display', serif");const headingsFont=document.getElementById('font-selector-headings')?.value||(isArabic?"'Tajawal', sans-serif":"'Montserrat', sans-serif");const bodyFont=document.getElementById('font-selector-body')?.value||(isArabic?"'Almarai', sans-serif":"'Roboto', sans-serif");const printCssOverrides=`
+
+async function generatePdfFromNode(isPaid) {
+    toggleLoadingOverlay(true, 'pdf_generation_in_progress');
+    try {
+        const cvPreviewElement = document.getElementById('cv-container');
+        if (!cvPreviewElement) {
+            throw new Error("CV container not found.");
+        }
+
+        // --- التحسين الرئيسي ---
+        // تم التعديل ليقوم بتحميل ملف واحد فقط بدلاً من ثلاثة
+        const mainCssResponse = await fetch('main.css');
+        if (!mainCssResponse.ok) {
+            throw new Error(`Failed to fetch main.css`);
+        }
+        const fullCssText = await mainCssResponse.text();
+        // --- نهاية التحسين ---
+
+        const tempContainer = document.createElement('div');
+        generateCV(tempContainer);
+        const finalHtml = tempContainer.innerHTML;
+        tempContainer.remove();
+
+        const cvData = collectCvData();
+        const direction = cvData.language === 'ar' ? 'rtl' : 'ltr';
+        const colorVariablesCSS = getColorVariablesAsCssText();
+        const dynamicStylesFromElement = cvPreviewElement.style.cssText;
+        const dynamicStyleRule = `#cv-container { ${dynamicStylesFromElement} }`;
+        
+        const isArabic = currentLang === 'ar';
+        const nameFont = document.getElementById('font-selector-name')?.value || (isArabic ? "'Cairo', sans-serif" : "'Playfair Display', serif");
+        const headingsFont = document.getElementById('font-selector-headings')?.value || (isArabic ? "'Tajawal', sans-serif" : "'Montserrat', sans-serif");
+        const bodyFont = document.getElementById('font-selector-body')?.value || (isArabic ? "'Almarai', sans-serif" : "'Roboto', sans-serif");
+
+        const printCssOverrides = `
             body { padding-top: 0 !important; }
             ${colorVariablesCSS}
             ${dynamicStyleRule}
             #cv-container { font-family: ${bodyFont} !important; }
             #cv-container .cv-name, #cv-container .cv-title { font-family: ${nameFont} !important; }
             #cv-container .cv-section-title { font-family: ${headingsFont} !important; }
-        `;const fullPageHtml=`
+        `;
+
+        const fullPageHtml = `
             <!DOCTYPE html>
             <html lang="${cvData.language}" dir="${direction}">
             <head>
@@ -770,55 +891,47 @@ async function generatePdfFromNode(isPaid){toggleLoadingOverlay(!0,'pdf_generati
                 </style>
             </head>
             <body class="${direction}">
-                 <div id="cv-container" class="${isPaid ? '' : 'watermarked'} ${cvData.templateCategory}-layout template${cvData.templateNumber}" dir="${direction}">
+                <div id="cv-container" class="${isPaid ? '' : 'watermarked'} ${cvData.templateCategory}-layout template${cvData.templateNumber}" dir="${direction}">
                     ${finalHtml}
-                 </div>
+                </div>
             </body>
             </html>
         `;
+
         const requestBody = {
             fullHtml: fullPageHtml,
-            isWatermarked: !isPaid, // إذا لم تكن مدفوعة، فهي بعلامة مائية
-            // أرسل بيانات المستخدم فقط إذا كانت عينة (غير مدفوعة)
+            isWatermarked: !isPaid,
             userData: !isPaid ? {
                 email: cvData.email,
                 name: cvData.name,
                 lang: cvData.language
             } : null
         };
-const response=await fetch(`${NODE_SERVER_URL}/generate-cv`,{method:'POST',headers:{'Content-Type':'application/json'},body: JSON.stringify(requestBody),mode:'cors'});if(!response.ok)throw new Error(await response.text());const pdfData=await response.json();if(pdfData&&pdfData.status==='success'){return pdfData}else{throw new Error(pdfData.message||"Failed to generate PDF on server.")}}catch(error){console.error("Error in generatePdfFromNode:",error);alert('An error occurred while preparing the PDF: '+error.message);return null}finally{toggleLoadingOverlay(!1)}}
-async function sendFinalHtmlToServer(finalHtml,isPaid){const mainCssText=document.getElementById('main-stylesheet')?.textContent||'';if(!mainCssText){throw new Error("Critical: Main stylesheet could not be found in the DOM.")}
-const cvData=collectCvData();const direction=cvData.language==='ar'?'rtl':'ltr';const fullPageHtml=`
-        <!DOCTYPE html>
-        <html lang="${cvData.language}" dir="${direction}">
-        <head>
-            <meta charset="UTF-8">
-            <title>CV</title>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-            <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
-            <style>
-                ${mainCssText}
-            </style>
-        </head>
-        <body class="${direction}">
-             ${finalHtml.replace('class="', `class="${isPaid ? '' : 'watermarked'} `)}
-        </body>
-        </html>
-    `;
+        
+        const response = await fetch(`${NODE_SERVER_URL}/generate-cv`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestBody),
+            mode: 'cors'
+        });
 
-    const response = await fetch(`${NODE_SERVER_URL}/generate-cv`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fullHtml: fullPageHtml }),
-        mode: 'cors'
-    });
+        if (!response.ok) {
+            throw new Error(await response.text());
+        }
 
-    if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({ message: 'Server error' }));
-        throw new Error(`Node.js server error: ${response.status} - ${errorBody.message}`);
+        const pdfData = await response.json();
+        if (pdfData && pdfData.status === 'success') {
+            return pdfData;
+        } else {
+            throw new Error(pdfData.message || "Failed to generate PDF on server.");
+        }
+    } catch (error) {
+        console.error("Error in generatePdfFromNode:", error);
+        alert('An error occurred while preparing the PDF: ' + error.message);
+        return null;
+    } finally {
+        toggleLoadingOverlay(false);
     }
-
-    return await response.json();
 }
 /**
  * دالة مركزية لإرسال بيانات الدفع والـ PDF النهائي إلى Google Apps Script.
@@ -1633,40 +1746,7 @@ function handleFloatingButtonVisibility() {
         floatingBtn.classList.add('show');
     } else {
         floatingBtn.classList.remove('show');
-    }
-}
-
-/* ============================================= */
-/* == كود إغلاق قائمة النافبار تلقائياً (في الجوال) == */
-/* ============================================= */
-document.addEventListener('DOMContentLoaded', () => {
-    const navLinks = document.querySelectorAll('#navbarNav .nav-link');
-    const navCollapse = document.getElementById('navbarNav');
-    const bsCollapse = new bootstrap.Collapse(navCollapse, {
-      toggle: false // مهم: لا تقم بتبديل الحالة عند الإنشاء
-    });
-
-    // 1. الإغلاق عند الضغط على أحد الروابط
-    navLinks.forEach((link) => {
-        link.addEventListener('click', () => {
-            // تحقق مما إذا كانت القائمة مفتوحة (مرئية)
-            if (navCollapse.classList.contains('show')) {
-                bsCollapse.hide();
-            }
-        });
-    });
-
-    // 2. الإغلاق عند الضغط خارج القائمة
-    document.addEventListener('click', (event) => {
-        const isClickInsideNav = navCollapse.contains(event.target);
-        const isToggler = event.target.closest('.navbar-toggler');
-
-        // إذا كانت القائمة مفتوحة، والضغط كان خارجها، ولم يكن على زر الفتح/الإغلاق
-        if (navCollapse.classList.contains('show') && !isClickInsideNav && !isToggler) {
-            bsCollapse.hide();
-        }
-    });
-});
+    }}
 
 function setupZoomControls() {
     const zoomBtn = document.getElementById('zoom-btn');
