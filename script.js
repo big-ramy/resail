@@ -210,9 +210,187 @@ function getSkillsData(){const skills=[];document.querySelectorAll('#skills-inpu
 function getLanguagesData(){const languages=[];document.querySelectorAll('#languages-input .language-item-input').forEach(input=>{const lang=input.value.trim();if(lang){languages.push(lang)}});return languages}
 function getReferencesData(){const references=[];document.querySelectorAll('#references-input .reference-entry').forEach(entry=>{const name=entry.querySelector('.reference-name')?.value.trim();const position=entry.querySelector('.reference-position')?.value.trim();const phone=entry.querySelector('.reference-phone')?.value.trim();const email=entry.querySelector('.reference-email')?.value.trim();if(name||position||phone||email){references.push({name,position,phone,email})}});return references}
 function getCustomSectionsData(){const sections=[];document.querySelectorAll('#custom-sections-container .custom-section-wrapper').forEach(sectionWrapper=>{const sectionTitle=sectionWrapper.querySelector('.custom-section-title')?.value.trim();if(!sectionTitle)return;const subSections=[];sectionWrapper.querySelectorAll('.custom-subsection-entry').forEach(subSectionEntry=>{const subTitle=subSectionEntry.querySelector('.custom-subsection-title')?.value.trim();const description=subSectionEntry.querySelector('.custom-subsection-description')?.value.trim();if(subTitle||description){subSections.push({title:subTitle,description:description})}});if(subSections.length>0){sections.push({title:sectionTitle,subSections:subSections})}});return sections}
-async function generatePdfFromNode(isPaid){toggleLoadingOverlay(!0,'pdf_generation_in_progress');try{const cvPreviewElement=document.getElementById('cv-container');if(!cvPreviewElement){throw new Error("CV container not found.")}
-const mainCssResponse=await fetch('main.css');if(!mainCssResponse.ok){throw new Error(`Failed to fetch main.css`)}
-const fullCssText=await mainCssResponse.text();const tempContainer=document.createElement('div');generateCV(tempContainer);const finalHtml=tempContainer.innerHTML;tempContainer.remove();const cvData=collectCvData();const direction=cvData.language==='ar'?'rtl':'ltr';const colorVariablesCSS=getColorVariablesAsCssText();const dynamicStylesFromElement=cvPreviewElement.style.cssText;const dynamicStyleRule=`#cv-container { ${dynamicStylesFromElement} }`;const isArabic=currentLang==='ar';const nameFont=document.getElementById('font-selector-name')?.value||(isArabic?"'Cairo', sans-serif":"'Playfair Display', serif");const headingsFont=document.getElementById('font-selector-headings')?.value||(isArabic?"'Tajawal', sans-serif":"'Montserrat', sans-serif");const bodyFont=document.getElementById('font-selector-body')?.value||(isArabic?"'Almarai', sans-serif":"'Roboto', sans-serif");const printCssOverrides=`
+function getSelectedTemplateCss(){let cssRules=[];const stylesheets=document.styleSheets;const commonSelectors=['body','html','#cv-container','.cv-content','.cv-header','.cv-name','.cv-title','.cv-contact-info','.cv-contact-item','.cv-profile-pic','.cv-section','.cv-section-title','.cv-experience-item','.cv-education-item','.cv-job-title','.cv-degree','.cv-company','.cv-institution','.cv-duration','.cv-skill-list','.cv-skill-item','.cv-language-list','.cv-reference-item','.cv-table-row','.cv-two-column-layout','.cv-professional-layout','.ast-layout','.cv-sidebar','.cv-main-content','.cv-end-marker','.filler','h1','h2','h3','h4','h5','p','ul','li','img','a','div','span','.container','.row','.col-md-','.d-flex','.mb-','.mt-','.ms-','.me-','.rtl','.ltr','.remove-field',];const commonSelectorsRegex=new RegExp(`(^|\\b)(<span class="math-inline">\{commonSelectors\.map\(s \=\> s\.replace\('\.', '\\\\\.'\)\)\.join\('\|'\)\}\)\(\\\\b\|</span>)`);for(let i=0;i<stylesheets.length;i++){try{const rules=stylesheets[i].cssRules||stylesheets[i].rules;if(!rules)continue;for(let j=0;j<rules.length;j++){const rule=rules[j];let ruleText=rule.cssText;if(rule.type===CSSRule.FONT_FACE_RULE){cssRules.push(ruleText);continue}
+if(rule.type===CSSRule.MEDIA_RULE){if(rule.conditionText.includes('print')||rule.conditionText.includes('screen')||rule.conditionText.includes('(max-width:')){cssRules.push(ruleText)}
+continue}
+const selectorText=rule.selectorText;if(selectorText){const templateSpecificSelector=`.<span class="math-inline">\{selectedTemplateCategory\}\-layout\.template</span>{selectedTemplate}`;const isGeneral=commonSelectorsRegex.test(selectorText);const isTemplateSpecific=selectorText.includes(templateSpecificSelector);const isCvRelated=selectorText.includes('.cv-');const isFrontendUI=selectorText.includes('.navbar')||selectorText.includes('.site-header')||selectorText.includes('.page-section:not')||selectorText.includes('.progress-container')||selectorText.includes('.language-toggle');if((isGeneral||isTemplateSpecific||isCvRelated)&&!isFrontendUI){cssRules.push(ruleText)}}}}catch(e){console.warn(`Could not read CSS rules from stylesheet (possibly CORS issue): ${e.message}`)}}
+cssRules.push(`
+        /* 1. قواعد أساسية لـ HTML/BODY لتأكيد اتجاه الصفحة والهوامش */
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 210mm !important; /* عرض A4 */
+            min-height: 297mm !important; /* ارتفاع A4 */
+            background: white !important; /* خلفية بيضاء لضمان عدم ظهور خلفية العارض */
+            color: #212529 !important; /* لون نص افتراضي */
+            direction: ${currentLang === 'ar' ? 'rtl' : 'ltr'} !important;
+            text-align: ${currentLang === 'ar' ? 'right' : 'left'} !important;
+            box-sizing: border-box !important;
+            overflow: hidden !important; /* مهم جداً لمنع أي scrollbars في الـ PDF */
+        }
+        body.rtl { direction: rtl !important; text-align: right !important; }
+        body.ltr { direction: ltr !important; text-align: left !important; }
+
+        /* 2. إخفاء جميع عناصر الواجهة الأمامية غير المرغوبة (بشكل شامل) */
+        /* هذه المحددات يجب أن تستهدف عناصر واجهة المستخدم التي قد تظهر في الـ PDF */
+        .site-header, .navbar, .page-section:not(.active-page), .progress-container,
+        .language-toggle, .btn-info, .btn-success, #cv-preview-area,
+        .popup-box, .popup-close, .form-group, .remove-field,
+        .template-preview-container, .template-category, .template-previews,
+        /* أي عناصر أخرى من واجهة المستخدم لديك في الـ HTML لا تريد ظهورها */
+        .d-flex.justify-content-center.mt-4 { /* الأزرار في صفحة المعاينة */
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            max-height: 0 !important;
+            overflow: hidden !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        /* 3. تأكيد تنسيق الـ CV للحاوية الرئيسية */
+        #cv-container {
+            position: relative !important;
+            width: 210mm !important; /* عرض A4 */
+            min-height: 297mm !important; /* ارتفاع A4 */
+            height: auto !important; /* لتسمح بالنمو على عدة صفحات */
+            margin: 0 !important; /* لإزالة أي إزاحة غير مرغوبة */
+            padding: 0 !important; /* الحشوة تكون داخل الأقسام */
+            box-shadow: none !important; /* إزالة أي ظل لحاوية المعاينة */
+            border: none !important; /* إزالة أي حدود لحاوية المعاينة */
+            background: white !important; /* خلفية بيضاء للسيرة الذاتية */
+            color: #212529 !important; /* لون نص افتراضي */
+            overflow: visible !important; /* مهم جداً للسماح بالمحتوى على عدة صفحات */
+            direction: ${currentLang === 'ar' ? 'rtl' : 'ltr'} !important;
+            text-align: ${currentLang === 'ar' ? 'right' : 'left'} !important;
+            box-sizing: border-box !important;
+        }
+
+        /* 4. معالجة الخطوط (ضمان تطبيق Tajawal للعربية) */
+        body, p, span, div, h1, h2, h3, h4, h5, h6, li {
+            font-family: 'Tajawal', sans-serif !important;
+        }
+        /* قواعد الخطوط الخاصة بكل قالب (أضفها هنا أيضاً لتطغى) */
+        .normal-layout.template1 .cv-name, .normal-layout.template1 .cv-title, .normal-layout.template1 .cv-section-title { font-family: 'Roboto', sans-serif !important; }
+        .normal-layout.template2 .cv-name, .normal-layout.template2 .cv-title, .normal-layout.template2 .cv-section-title { font-family: 'Lato', sans-serif !important; }
+        /* ... كرر هذا لجميع القوالب والفئات التي تحدد الخطوط في style.css */
+
+        /* 5. معالجة تخطيط الأعمدة (Standard, Professional, AST) */
+        .cv-two-column-layout, .ast-layout {
+            display: flex !important; /* Use flex for print */
+            flex-direction: var(--print-flex-direction) !important; /* Apply correct flex direction from variable */
+            gap: 10mm !important;
+            page-break-inside: auto !important; /* Allow page breaks here */
+            flex-wrap: nowrap !important; /* Prevent wrapping to next line */
+        }
+        .cv-professional-layout {
+            display: grid !important;
+            grid-template-columns: var(--print-grid-columns) !important; /* Apply grid columns from variable */
+            grid-template-areas: var(--print-grid-areas) !important; /* Apply grid areas from variable */
+            gap: 10mm !important;
+            page-break-inside: auto !important; /* Allow page breaks here */
+        }
+        .cv-sidebar, .cv-main-content {
+            display: flex !important; /* Revert to flex for individual columns */
+            flex-direction: column !important; /* Ensure content stacks vertically within column */
+            vertical-align: top !important; /* Align to top */
+            padding: 8mm !important; /* Inner padding */
+            box-sizing: border-box !important;
+            height: auto !important; /* Allow height to adjust */
+            min-height: 1px !important; /* Smallest possible height */
+            page-break-inside: avoid !important; /* Crucial: prevent breaking content within individual columns */
+            text-align: ${currentLang === 'ar' ? 'right' : 'left'} !important; /* Text alignment within the column */
+        }
+
+        /* 5.1. تحديد عرض الأعمدة (إذا لم يكن في القالب الأصلي) */
+        .cv-two-column-layout .cv-sidebar, .ast-layout .cv-sidebar { width: 80mm !important; flex-shrink: 0 !important; } /* Make sidebar fixed width */
+        .cv-professional-layout .cv-sidebar { width: 80mm !important; flex-shrink: 0 !important; }
+        .cv-main-content { width: auto !important; flex-grow: 1 !important;} /* Main content takes remaining space */
+
+
+        /* 5.2. معالجة Professional Layout (حسب التغييرات في style.css الخاص بك) */
+        /* ملف style.css الخاص بك يحتوي على Professional Layout يجعل الشريط الجانبي على اليسار دائماً */
+        /* سنحافظ على هذا السلوك عند الطباعة */
+        .cv-professional-layout[dir="rtl"], .cv-professional-layout[dir="ltr"] {
+            /* These will be overridden by --print-grid-columns and --print-grid-areas */
+            /* grid-template-columns: 80mm 1fr !important; */
+            /* grid-template-areas: "sidebar main" !important; */
+        }
+        .cv-professional-layout .cv-sidebar { grid-area: sidebar !important; }
+        .cv-professional-layout .cv-main-content { grid-area: main !important; }
+        .cv-professional-layout .cv-header.professional-layout { grid-area: header !important; display: flex !important; flex-direction: column !important; } /* Use flex for header content within grid */
+
+
+        /* 6. تحسينات عامة على العناصر النصية والقوائم */
+        h1, h2, h3, h4, h5, h6, p, li {
+            word-break: break-word !important;
+            white-space: pre-wrap !important; /* للحفاظ على الأسطر الجديدة من textarea */
+            line-height: 1.6 !important;
+            margin: 0 !important; /* لإزالة أي هوامش افتراضية غير مرغوبة */
+            padding: 0 !important;
+        }
+        ul {
+            list-style: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            text-align: ${currentLang === 'ar' ? 'right' : 'left'} !important;
+        }
+        /* إذا كنت تستخدم نقاطاً للقوائم، يمكنك إعادتها يدوياً لـ RTL/LTR */
+        html[dir="rtl"] ul li::before {
+            content: "• " !important; /* نقطة القائمة */
+            color: inherit !important;
+            display: inline-block !important;
+            width: 1em !important;
+            margin-left: 0.5em !important;
+            text-align: left !important;
+        }
+        html[dir="ltr"] ul li::before {
+            content: "• " !important;
+            color: inherit !important;
+            display: inline-block !important;
+            width: 1em !important;
+            margin-right: 0.5em !important;
+            text-align: right !important;
+        }
+        .cv-skill-item, .cv-language-list li {
+            text-align: inherit !important;
+            padding-right: ${currentLang === 'ar' ? '0' : '15px'} !important;
+            padding-left: ${currentLang === 'ar' ? '15px' : '0'} !important;
+        }
+        .cv-contact-item i {
+            margin-left: ${currentLang === 'ar' ? '8px' : '0'} !important;
+            margin-right: ${currentLang === 'ar' ? '0' : '8px'} !important;
+        }
+
+        /* 7. قواعد للطباعة / التوليد التي يجب أن تطغى في سياق الطباعة (مكررة لكن مهمة) */
+        @media print {
+            html, body {
+                margin: 0 !important; padding: 0 !important;
+                width: 210mm !important;
+                min-height: 297mm !important;
+                background: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                direction: ${currentLang === 'ar' ? 'rtl' : 'ltr'} !important;
+                text-align: ${currentLang === 'ar' ? 'right' : 'left'} !important;
+            }
+            #cv-container {
+                box-shadow: none !important;
+                border: none !important;
+                min-height: 297mm !important;
+                height: auto !important;
+                overflow: visible !important;
+                page-break-before: auto !important;
+                page-break-after: auto !important;
+                page-break-inside: auto !important; /* Allow page breaks inside container */
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .cv-section { page-break-inside: avoid !important; }
+            .cv-experience-item, .cv-education-item, .cv-reference-item { page-break-inside: avoid !important; }
+        }
+    `);return cssRules.join('\n')}
+async function generatePdfFromNode(isPaid){toggleLoadingOverlay(!0,'pdf_generation_in_progress');try{const cvPreviewElement=document.getElementById('cv-container');if(!cvPreviewElement)throw new Error("CV container not found.");const fetchCss=async(url)=>{const response=await fetch(url);if(!response.ok)throw new Error(`Failed to fetch ${url}`);return response.text()};const[mainCss,templatesCss,responsiveCss]=await Promise.all([fetchCss('style.css'),fetchCss('templates.css'),fetchCss('responsive.css')]);const fullCssText=mainCss+templatesCss+responsiveCss;const tempContainer=document.createElement('div');generateCV(tempContainer);const finalHtml=tempContainer.innerHTML;tempContainer.remove();const cvData=collectCvData();const direction=cvData.language==='ar'?'rtl':'ltr';const colorVariablesCSS=getColorVariablesAsCssText();const dynamicStylesFromElement=cvPreviewElement.style.cssText;const dynamicStyleRule=`#cv-container { ${dynamicStylesFromElement} }`;const isArabic=currentLang==='ar';const nameFont=document.getElementById('font-selector-name')?.value||(isArabic?"'Cairo', sans-serif":"'Playfair Display', serif");const headingsFont=document.getElementById('font-selector-headings')?.value||(isArabic?"'Tajawal', sans-serif":"'Montserrat', sans-serif");const bodyFont=document.getElementById('font-selector-body')?.value||(isArabic?"'Almarai', sans-serif":"'Roboto', sans-serif");const printCssOverrides=`
             body { padding-top: 0 !important; }
             ${colorVariablesCSS}
             ${dynamicStyleRule}
@@ -235,13 +413,23 @@ const fullCssText=await mainCssResponse.text();const tempContainer=document.crea
                 </style>
             </head>
             <body class="${direction}">
-                <div id="cv-container" class="${isPaid ? '' : 'watermarked'} ${cvData.templateCategory}-layout template${cvData.templateNumber}" dir="${direction}">
+                 <div id="cv-container" class="${isPaid ? '' : 'watermarked'} ${cvData.templateCategory}-layout template${cvData.templateNumber}" dir="${direction}">
                     ${finalHtml}
-                </div>
+                 </div>
             </body>
             </html>
-        `;const requestBody={fullHtml:fullPageHtml,isWatermarked:!isPaid,userData:!isPaid?{email:cvData.email,name:cvData.name,lang:cvData.language}:null};const response=await fetch(`${NODE_SERVER_URL}/generate-cv`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(requestBody),mode:'cors'});if(!response.ok){throw new Error(await response.text())}
-const pdfData=await response.json();if(pdfData&&pdfData.status==='success'){return pdfData}else{throw new Error(pdfData.message||"Failed to generate PDF on server.")}}catch(error){console.error("Error in generatePdfFromNode:",error);alert('An error occurred while preparing the PDF: '+error.message);return null}finally{toggleLoadingOverlay(!1)}}
+        `;
+        const requestBody = {
+            fullHtml: fullPageHtml,
+            isWatermarked: !isPaid, // إذا لم تكن مدفوعة، فهي بعلامة مائية
+            // أرسل بيانات المستخدم فقط إذا كانت عينة (غير مدفوعة)
+            userData: !isPaid ? {
+                email: cvData.email,
+                name: cvData.name,
+                lang: cvData.language
+            } : null
+        };
+const response=await fetch(`${NODE_SERVER_URL}/generate-cv`,{method:'POST',headers:{'Content-Type':'application/json'},body: JSON.stringify(requestBody),mode:'cors'});if(!response.ok)throw new Error(await response.text());const pdfData=await response.json();if(pdfData&&pdfData.status==='success'){return pdfData}else{throw new Error(pdfData.message||"Failed to generate PDF on server.")}}catch(error){console.error("Error in generatePdfFromNode:",error);alert('An error occurred while preparing the PDF: '+error.message);return null}finally{toggleLoadingOverlay(!1)}}
 async function sendFinalHtmlToServer(finalHtml,isPaid){const mainCssText=document.getElementById('main-stylesheet')?.textContent||'';if(!mainCssText){throw new Error("Critical: Main stylesheet could not be found in the DOM.")}
 const cvData=collectCvData();const direction=cvData.language==='ar'?'rtl':'ltr';const fullPageHtml=`
         <!DOCTYPE html>
