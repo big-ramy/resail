@@ -13,62 +13,24 @@ function setupLanguageToggle(){const langToggleButton=document.getElementById('l
 function setUserLanguage(lang){if(lang===currentLang){return}
 currentLang=lang;sessionStorage.setItem('userLang',lang);window.location.href=lang==='ar'?'index.html':'en.html'}
 function saveCvDataToLocalStorage(){const cvData={name:document.getElementById('name-input')?.value,title:document.getElementById('title-input')?.value,email:document.getElementById('email-input')?.value,phone:document.getElementById('phone-input')?.value,website:document.getElementById('website-input')?.value,objective:document.getElementById('objective-input')?.value,profilePic:profilePicDataUrl,experiences:getExperiencesData(),educations:getEducationsData(),skills:getSkillsData(),languages:getLanguagesData(),references:getReferencesData(),customSections:getCustomSectionsData()};try{localStorage.setItem('resailCvData_'+currentLang,JSON.stringify(cvData))}catch(e){console.error("Error saving to localStorage",e)}}
-// script.js
-
-function loadCvDataFromLocalStorage() {
-    try {
-        const savedDataJSON = localStorage.getItem('resailCvData_' + currentLang);
-        if (!savedDataJSON) {
-            return false;
-        }
-        const savedData = JSON.parse(savedDataJSON);
-        
-        // ... (كل الكود الخاص بتعبئة الحقول الأساسية يبقى كما هو)
-        document.getElementById('name-input').value = savedData.name || '';
-        document.getElementById('title-input').value = savedData.title || '';
-        document.getElementById('email-input').value = savedData.email || '';
-        document.getElementById('phone-input').value = savedData.phone || '';
-        document.getElementById('website-input').value = savedData.website || '';
-        document.getElementById('objective-input').value = savedData.objective || '';
-        if (savedData.profilePic) {
-            profilePicDataUrl = savedData.profilePic;
-        }
-
-        // مسح الحقول الديناميكية قبل تعبئتها
-        document.getElementById('experience-input').innerHTML = '';
-        document.getElementById('education-input').innerHTML = '';
-        document.getElementById('skills-input').innerHTML = '';
-        document.getElementById('languages-input').innerHTML = '';
-        document.getElementById('references-input').innerHTML = '';
-        const oldCustomContainer = document.getElementById('custom-sections-container');
-        if (oldCustomContainer) {
-            oldCustomContainer.innerHTML = '';
-        }
-
-        // تعبئة البيانات
-        savedData.experiences?.forEach(data => addExperienceField(data));
-        savedData.educations?.forEach(data => addEducationField(data));
-        savedData.skills?.forEach(data => addSkillField(data));
-        savedData.languages?.forEach(data => addLanguageField(data));
-        savedData.references?.forEach(data => addReferenceField(data));
-
-        // ▼▼▼ هذا هو الجزء الذي تم إصلاحه ▼▼▼
-        // بدلاً من الكود القديم الذي يسبب الخطأ، نستخدم الآن دالة واحدة صحيحة
-        if (savedData.customSections && savedData.customSections.length > 0) {
-            savedData.customSections.forEach(sectionData => {
-                addCustomSectionFromAI(sectionData); // ✅ استدعاء الدالة الصحيحة وتمرير البيانات لها مباشرة
-            });
-        }
-        // ▲▲▲ نهاية الجزء الذي تم إصلاحه ▲▲▲
-
-        updatePageContentLanguage();
-        return true;
-    } catch (e) {
-        console.error("Error loading from localStorage", e);
-        localStorage.removeItem('resailCvData_' + currentLang);
-        return false;
-    }
-}
+function loadCvDataFromLocalStorage(){try{const savedDataJSON=localStorage.getItem('resailCvData_'+currentLang);if(!savedDataJSON){return!1}
+const savedData=JSON.parse(savedDataJSON);document.getElementById('name-input').value=savedData.name||'';document.getElementById('title-input').value=savedData.title||'';document.getElementById('email-input').value=savedData.email||'';document.getElementById('phone-input').value=savedData.phone||'';document.getElementById('website-input').value=savedData.website||'';document.getElementById('objective-input').value=savedData.objective||'';if(savedData.profilePic){profilePicDataUrl=savedData.profilePic}
+document.getElementById('experience-input').innerHTML='';document.getElementById('education-input').innerHTML='';document.getElementById('skills-input').innerHTML='';document.getElementById('languages-input').innerHTML='';document.getElementById('references-input').innerHTML='';const oldCustomContainer=document.getElementById('custom-sections-container');if(oldCustomContainer){oldCustomContainer.innerHTML=''}
+savedData.experiences?.forEach(data=>addExperienceField(data));savedData.educations?.forEach(data=>addEducationField(data));savedData.skills?.forEach(data=>addSkillField(data));savedData.languages?.forEach(data=>addLanguageField(data));savedData.references?.forEach(data=>addReferenceField(data));if(savedData.customSections&&savedData.customSections.length>0){savedData.customSections.forEach(sectionData=>{addCustomSection();const allCustomSections=document.querySelectorAll('#custom-sections-container .custom-section-wrapper');const newSection=allCustomSections[allCustomSections.length-1];if(newSection){newSection.querySelector('.custom-section-title').value=sectionData.title;const subSectionsContainer=newSection.querySelector('.sub-sections-container');subSectionsContainer.innerHTML='';sectionData.subSections.forEach(subData=>{const subSectionEntry=document.createElement('div');subSectionEntry.className='custom-subsection-entry border p-2 mb-2 rounded position-relative';subSectionEntry.innerHTML=`
+                            <button type="button" class="remove-field" onclick="this.parentElement.remove(); generateCV(document.getElementById('cv-container'));" title="${translations[currentLang]['remove_subsection_title']}">&times;</button>
+                            <input type="text" class="form-control mb-2 custom-subsection-title" placeholder="${translations[currentLang]['subsection_title_placeholder']}" value="${subData.title || ''}" oninput="generateCV(document.getElementById('cv-container'));">
+                            <textarea class="form-control custom-subsection-description" placeholder="${translations[currentLang]['subsection_desc_placeholder']}" rows="3" oninput="generateCV(document.getElementById('cv-container'));">${subData.description || ''}</textarea>
+                        `;subSectionsContainer.appendChild(subSectionEntry)})}})}
+updatePageContentLanguage();return!0}catch(e){console.error("Error loading from localStorage",e);localStorage.removeItem('resailCvData_'+currentLang);return!1}}
+let currentLang='ar';let selectedTemplate=1;let selectedTemplateCategory='normal';let profilePicDataUrl=null;let selectedPriceToPay=0;let discountApplied=0;const discountCodes={"SAVE10":10,"FIRSTBUY":25,"FREECV":100};const PRICES={local:{normal:19,standard:25,professional:29,ast:29,creative:33},lemonSqueezy:{normal:25,standard:33,professional:39,ast:39,creative:45},};const CHECKOUT_CONFIG={normal:{link:'https://resail-cvs.lemonsqueezy.com/buy/bbfff981-9bd9-495c-b1ac-40b013f5b598'},standard:{link:'https://resail-cvs.lemonsqueezy.com/buy/a00ef7a0-db54-47cf-9145-4b5c50892b84?enabled=865702'},professional:{link:'https://resail-cvs.lemonsqueezy.com/buy/fd9e9305-914a-4936-96ed-e308e9ea6460?enabled=865708'},ast:{link:'https://resail-cvs.lemonsqueezy.com/buy/38ead94f-86f2-4f7e-a6eb-e5887f5f0d47?enabled=865714'},creative:{link:'https://resail-cvs.lemonsqueezy.com/buy/c78cce0d-171e-49ff-86dd-5288509cdadc'}};let paymentNameInput,paymentEmailInput,paymentPhoneInput,paymentMessagesInput,paymentFileInput,qrPaymentResultDiv,submitPaymentProofButton,cvContainer,siteHeaderGlobal,loadingOverlayGlobal,loadingTextGlobal;const MAX_FILE_SIZE=3*1024*1024;const ALLOWED_FILE_TYPES=['image/jpeg','image/png','application/pdf'];const NODE_SERVER_URL='https://resail-cv-generator-f0jc.onrender.com';const GOOGLE_APPS_SCRIPT_WEB_APP_URL_PAYMENT_PROCESSOR='https://script.google.com/macros/s/AKfycbxxkX4jsV4zSz4vR7FcCOhYJmXXuOAt5WrJYgZmhTlmO7dzqXARLM6q_5QNo2KVs8bWww/exec';let salesQueue=[{name:"محمد",city:"الرياض"},{name:"سارة",city:"جدة"},{name:"عبدالرحمن",city:"الدمام"}];let finalPriceToPay=0;let appliedCode="";function applySelectedFonts(){const nameFont=document.getElementById('font-selector-name')?.value;const headingsFont=document.getElementById('font-selector-headings')?.value;const bodyFont=document.getElementById('font-selector-body')?.value;const cvContainer=document.getElementById('cv-container');if(!cvContainer||!nameFont||!headingsFont||!bodyFont)return;let livePreviewStyle=document.getElementById('live-font-styles');if(!livePreviewStyle){livePreviewStyle=document.createElement('style');livePreviewStyle.id='live-font-styles';document.head.appendChild(livePreviewStyle)}
+livePreviewStyle.textContent=`
+        /* تطبيق خط النص الأساسي على الحاوية وعناصر الاتصال */
+        #cv-container, #cv-container .cv-contact-item p { font-family: ${bodyFont}; }
+        /* تجاوز الخط لاسم الشخص وعنوانه الوظيفي */
+        #cv-container .cv-name, #cv-container .cv-title { font-family: ${nameFont}; }
+        /* تجاوز الخط لعناوين الأقسام */
+        #cv-container .cv-section-title { font-family: ${headingsFont}; }
+    `}
 function createPaletteControls(){const container=document.getElementById('palette-selector');if(!container)return;container.innerHTML='';const showGradientPalettes=!['normal','standard'].includes(selectedTemplateCategory);colorPalettes.forEach(palette=>{if(palette.isGradient&&!showGradientPalettes){return}
 const swatch=document.createElement('div');swatch.className='palette-swatch';swatch.dataset.paletteId=palette.id;const primaryCircle=`<span class="palette-color" style="background: ${palette.colors['--primary-bg']};"></span>`;const titleCircle=`<span class="palette-color" style="background: ${palette.colors['--title-text']};"></span>`;const accentCircle=`<span class="palette-color" style="background: ${palette.colors['--accent-bg']};"></span>`;swatch.innerHTML=`${primaryCircle}${titleCircle}${accentCircle}`;swatch.onclick=()=>applyPalette(palette.id);container.appendChild(swatch)})}
 function applyPalette(paletteId){const selectedPalette=colorPalettes.find(p=>p.id===paletteId);if(!selectedPalette)return;const colors=selectedPalette.colors;for(const[key,value]of Object.entries(colors)){const controlName=key.replace('--','');const component=document.querySelector(`.color-control-component[data-color-name="${controlName}"]`);if(component){const toggle=component.querySelector('.gradient-toggle');const solidPicker=component.querySelector(`#color-picker-${controlName}`);const startPicker=component.querySelector(`#color-picker-${controlName}-start`);const endPicker=component.querySelector(`#color-picker-${controlName}-end`);if(typeof value==='string'&&value.startsWith('linear-gradient')){if(!toggle.checked)toggle.click();const colorValues=value.match(/#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})/g);if(colorValues&&colorValues.length>=2){startPicker.value=colorValues[0];endPicker.value=colorValues[1]}}else{if(toggle.checked)toggle.click();solidPicker.value=value}}else{const textPicker=document.getElementById(`color-picker-${controlName}`);if(textPicker)textPicker.value=value}}
@@ -147,21 +109,25 @@ function setupColorControls(){document.querySelectorAll('.color-control-componen
 component.querySelectorAll('input[type="color"], select').forEach(input=>{input.addEventListener('input',applySelectedColors)})});document.getElementById('color-picker-header-text').addEventListener('input',applySelectedColors);document.getElementById('color-picker-title-text').addEventListener('input',applySelectedColors);document.getElementById('color-picker-body-text').addEventListener('input',applySelectedColors);document.getElementById('color-picker-subtle-text').addEventListener('input',applySelectedColors)}
 function updateColorControlVisibility(){const allowedControls=CONTROL_VISIBILITY_CONFIG[selectedTemplateCategory]||[];document.querySelectorAll('#color-picker-container [data-control-for]').forEach(control=>{control.style.display='none'});allowedControls.forEach(controlName=>{const controlElement=document.querySelector(`#color-picker-container [data-control-for="${controlName}"]`);if(controlElement){controlElement.style.display='block'}})}
 function updateControlsForCategory(){const cvContainer=document.getElementById('cv-container');if(!cvContainer)return;const isAdvancedCategory=cvContainer.classList.contains('professional-layout')||cvContainer.classList.contains('ast-layout')||cvContainer.classList.contains('creative-layout');document.querySelectorAll('.gradient-toggle-wrapper').forEach(wrapper=>{wrapper.style.display=isAdvancedCategory?'flex':'none';if(!isAdvancedCategory){const toggle=wrapper.querySelector('.gradient-toggle');if(toggle.checked){toggle.checked=!1;toggle.dispatchEvent(new Event('change'))}}})}
-// big-ramy/resail/resail-226430b61c777c257bea99b1a15c0811d0aece5c/script.js
-
 document.addEventListener('DOMContentLoaded', () => {
-    // ==================================================================
-    // ==   الجزء الأول: تعريف المتغيرات وتحسين أداء إدخال البيانات   ==
-    // ==================================================================
-    
     // ======== 1. تعريف المتغيرات الأساسية ========
     loadingOverlayGlobal = document.getElementById('loading-overlay');
     loadingTextGlobal = document.querySelector('#loading-overlay p');
     cvContainer = document.getElementById('cv-container');
+    siteHeaderGlobal = document.querySelector('.site-header');
+    paymentNameInput = document.getElementById("payment-name");
+    paymentEmailInput = document.getElementById("payment-email");
+    paymentPhoneInput = document.getElementById("payment-phone");
+    paymentMessagesInput = document.getElementById("payment-messages");
+    paymentFileInput = document.getElementById("payment-file");
+    qrPaymentResultDiv = document.getElementById("qr-payment-result");
+    submitPaymentProofButton = document.getElementById("submit-payment-proof");
+
     const startOverButton = document.getElementById('start-over-btn');
     const dataEntryPage = document.getElementById('cv-data-entry-page');
+    const lemonSqueezyButton = document.getElementById('lemon-squeezy-btn');
 
-    // ======== 2. إنشاء الدوال المُحسّنة (Debounced) ========
+    // ======== 2. إنشاء الدوال المُحسّنة (Debounced) للأداء العالي ========
     const debouncedGenerateCV = debounce(() => generateCV(cvContainer));
     const debouncedSaveAndProgress = debounce(() => {
         saveCvDataToLocalStorage();
@@ -177,27 +143,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ==========================================================
-    // ==   الجزء الثاني: كود قائمة التنقل (Navbar) المدمج    ==
-    // ==========================================================
+    // ======== 4. كود قائمة التنقل (Navbar) ========
     const navLinks = document.querySelectorAll('#navbarNav .nav-link');
     const navCollapse = document.getElementById('navbarNav');
-    
     if (navCollapse) {
-        const bsCollapse = new bootstrap.Collapse(navCollapse, {
-            toggle: false
-        });
-
-        // 1. الإغلاق عند الضغط على أحد الروابط
-        navLinks.forEach((link) => {
+        const bsCollapse = new bootstrap.Collapse(navCollapse, { toggle: false });
+        navLinks.forEach(link => {
             link.addEventListener('click', () => {
-                if (navCollapse.classList.contains('show')) {
-                    bsCollapse.hide();
-                }
+                if (navCollapse.classList.contains('show')) bsCollapse.hide();
             });
         });
-
-        // 2. الإغلاق عند الضغط خارج القائمة
         document.addEventListener('click', (event) => {
             const isClickInsideNav = navCollapse.contains(event.target);
             const isToggler = event.target.closest('.navbar-toggler');
@@ -207,15 +162,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ================================================================
-    // ==   الجزء الثالث: ربط باقي الأحداث واستدعاء الدوال الأولية   ==
-    // ================================================================
+    // ======== 5. ربط باقي الأحداث (بدون تكرار) ========
+    if (startOverButton) startOverButton.addEventListener('click', handleStartOver);
+    if (lemonSqueezyButton) lemonSqueezyButton.addEventListener('click', handleLemonSqueezyPurchase);
+    if (submitPaymentProofButton) submitPaymentProofButton.addEventListener('click', submitPaymentProof);
+    document.getElementById('remove-discount-btn')?.addEventListener('click', (e) => { e.preventDefault(); removeDiscount(); });
     
-    if (startOverButton) {
-        startOverButton.addEventListener('click', handleStartOver);
-    }
-    
-    // استدعاءات الإعداد الأولية (يتم تشغيلها مرة واحدة فقط)
+    // ======== 6. استدعاءات الإعداد الأولية (يتم تشغيلها مرة واحدة فقط) ========
     setInitialLanguage();
     createPaletteControls();
     loadCvDataFromLocalStorage();
@@ -236,7 +189,8 @@ document.addEventListener('DOMContentLoaded', () => {
     showPage('landing-page');
     lazyLoadImages();
 });
-
+function addCustomSection(){let customSectionsContainer=document.getElementById('custom-sections-container');if(!customSectionsContainer){customSectionsContainer=document.createElement('div');customSectionsContainer.id='custom-sections-container';const formNavigationButtons=document.getElementById('form-navigation-buttons');formNavigationButtons.parentNode.insertBefore(customSectionsContainer,formNavigationButtons)}
+const sectionWrapper=document.createElement('div');sectionWrapper.className='custom-section-wrapper mb-3 p-3 border rounded';const titleInput=document.createElement('input');titleInput.type='text';titleInput.placeholder=translations[currentLang].custom_section_placeholder;titleInput.className='form-control form-control-lg mb-2 custom-section-title';titleInput.oninput=()=>generateCV(document.getElementById('cv-container'));const subSectionsContainer=document.createElement('div');subSectionsContainer.className='sub-sections-container';const buttonContainer=document.createElement('div');buttonContainer.className='mt-2';const addSubSectionButton=document.createElement('button');addSubSectionButton.type='button';addSubSectionButton.className='btn btn-sm btn-outline-primary me-2';addSubSectionButton.innerHTML=translations[currentLang].add_subsection_btn;addSubSectionButton.onclick=function(){const subSectionEntry=document.createElement('div');subSectionEntry.className='custom-subsection-entry border p-2 mb-2 rounded position-relative';const removeSubButton=document.createElement('button');removeSubButton.type='button';removeSubButton.className='remove-field';removeSubButton.innerHTML='&times;';removeSubButton.title=translations[currentLang].remove_subsection_title;removeSubButton.onclick=()=>{subSectionEntry.remove();generateCV(document.getElementById('cv-container'))};const subTitleInput=document.createElement('input');subTitleInput.type='text';subTitleInput.className='form-control mb-2 custom-subsection-title';subTitleInput.placeholder=translations[currentLang].subsection_title_placeholder;subTitleInput.oninput=()=>generateCV(document.getElementById('cv-container'));const subDescriptionTextarea=document.createElement('textarea');subDescriptionTextarea.className='form-control custom-subsection-description';subDescriptionTextarea.placeholder=translations[currentLang].subsection_desc_placeholder;subDescriptionTextarea.rows=3;subDescriptionTextarea.oninput=()=>generateCV(document.getElementById('cv-container'));subSectionEntry.appendChild(removeSubButton);subSectionEntry.appendChild(subTitleInput);subSectionEntry.appendChild(subDescriptionTextarea);subSectionsContainer.appendChild(subSectionEntry)};const removeSectionButton=document.createElement('button');removeSectionButton.type='button';removeSectionButton.className='btn btn-sm btn-danger';removeSectionButton.textContent=translations[currentLang].remove_section_btn;removeSectionButton.onclick=function(){if(confirm(translations[currentLang].confirm_delete_section)){sectionWrapper.remove();generateCV(document.getElementById('cv-container'))}};buttonContainer.appendChild(addSubSectionButton);buttonContainer.appendChild(removeSectionButton);sectionWrapper.appendChild(titleInput);sectionWrapper.appendChild(subSectionsContainer);sectionWrapper.appendChild(buttonContainer);customSectionsContainer.appendChild(sectionWrapper);addSubSectionButton.click();sectionWrapper.scrollIntoView({behavior:'smooth',block:'center'})}
 function updateTemplateImageSources(){const templateImages=document.querySelectorAll('.template-preview');console.log("Updating template image sources for language:",currentLang);templateImages.forEach(img=>{const templateId=parseInt(img.getAttribute('data-template-id'));const templateCategory=img.getAttribute('data-template-category');if(!isNaN(templateId)&&translations[currentLang]["image-paths"][templateCategory]){const newSrc=translations[currentLang]["image-paths"][templateCategory](templateId);img.src=newSrc;console.log(`Setting image src for id ${templateId} (${templateCategory}) to: ${newSrc}`)}else{console.warn(`Could not set src for image. templateId: ${templateId}, category: ${templateCategory}, lang: ${currentLang}`)}})}
 function setInitialLanguage(){const userChosenLang=sessionStorage.getItem('userLang');const path=window.location.pathname;if(userChosenLang){currentLang=userChosenLang;return}
 if(path.endsWith('en.html')){currentLang='en'}else if(path.endsWith('index.html')||path.endsWith('/')){currentLang='ar'}else{currentLang='ar'}
@@ -278,20 +232,23 @@ function showPage(pageId) {
         return; 
     }
 
-    // ▼▼▼ المنطق الحاسم عند عرض صفحة إدخال البيانات ▼▼▼
+    // ▼▼▼ Logic for displaying the data entry page ▼▼▼
     if (pageId === 'cv-data-entry-page') {
         const aiDataString = sessionStorage.getItem('aiCvData');
         
-        // --- 1. التحقق من وجود بيانات جديدة من الذكاء الاصطناعي ---
+        // --- 1. Check for new data from AI ---
         if (aiDataString) {
+            // *** NEW: Save the original AI data for the 'Improve' feature ***
+            localStorage.setItem('resailInitialAiData_' + currentLang, aiDataString);
+
             const aiData = JSON.parse(aiDataString);
             const aiName = sessionStorage.getItem('aiCvUserName');
             const aiTitle = sessionStorage.getItem('aiCvUserTitle');
             const extracted = aiData.extractedInfo || {};
             
-            clearAllCvFields(); // مسح أي بيانات قديمة
+            clearAllCvFields(); // Clear any old data
 
-            // تعبئة النموذج بالبيانات الجديدة
+            // Populate the form with the new data
             document.getElementById('name-input').value = aiName || '';
             document.getElementById('title-input').value = aiTitle || '';
             document.getElementById('email-input').value = extracted.email || '';
@@ -306,19 +263,19 @@ function showPage(pageId) {
             aiData.customSections?.forEach(section => addCustomSectionFromAI(section));
             aiData.references?.forEach(ref => addReferenceField(ref));
 
-            // *** الخطوة الحاسمة: حفظ البيانات في الذاكرة الدائمة فوراً ***
+            // *** Save the populated data to persistent storage immediately ***
             saveCvDataToLocalStorage(); 
             
-            // مسح البيانات المؤقتة بعد استخدامها وحفظها
+            // Clear the temporary data after it has been used and saved
             sessionStorage.removeItem('aiCvData');
             sessionStorage.removeItem('aiCvUserName');
             sessionStorage.removeItem('aiCvUserTitle');
 
         } else {
-            // --- 2. إذا لم تكن هناك بيانات جديدة، قم بتحميل البيانات المحفوظة كالمعتاد ---
+            // --- 2. If no new data, load saved data as usual ---
             const dataWasLoaded = loadCvDataFromLocalStorage();
             if (!dataWasLoaded) {
-                 // تعبئة بيانات تجريبية إذا كانت الذاكرة فارغة
+                 // Fill with sample data if storage is empty
             }
         }
         
@@ -690,186 +647,6 @@ function getSkillsData(){const skills=[];document.querySelectorAll('#skills-inpu
 function getLanguagesData(){const languages=[];document.querySelectorAll('#languages-input .language-item-input').forEach(input=>{const lang=input.value.trim();if(lang){languages.push(lang)}});return languages}
 function getReferencesData(){const references=[];document.querySelectorAll('#references-input .reference-entry').forEach(entry=>{const name=entry.querySelector('.reference-name')?.value.trim();const position=entry.querySelector('.reference-position')?.value.trim();const phone=entry.querySelector('.reference-phone')?.value.trim();const email=entry.querySelector('.reference-email')?.value.trim();if(name||position||phone||email){references.push({name,position,phone,email})}});return references}
 function getCustomSectionsData(){const sections=[];document.querySelectorAll('#custom-sections-container .custom-section-wrapper').forEach(sectionWrapper=>{const sectionTitle=sectionWrapper.querySelector('.custom-section-title')?.value.trim();if(!sectionTitle)return;const subSections=[];sectionWrapper.querySelectorAll('.custom-subsection-entry').forEach(subSectionEntry=>{const subTitle=subSectionEntry.querySelector('.custom-subsection-title')?.value.trim();const description=subSectionEntry.querySelector('.custom-subsection-description')?.value.trim();if(subTitle||description){subSections.push({title:subTitle,description:description})}});if(subSections.length>0){sections.push({title:sectionTitle,subSections:subSections})}});return sections}
-function getSelectedTemplateCss(){let cssRules=[];const stylesheets=document.styleSheets;const commonSelectors=['body','html','#cv-container','.cv-content','.cv-header','.cv-name','.cv-title','.cv-contact-info','.cv-contact-item','.cv-profile-pic','.cv-section','.cv-section-title','.cv-experience-item','.cv-education-item','.cv-job-title','.cv-degree','.cv-company','.cv-institution','.cv-duration','.cv-skill-list','.cv-skill-item','.cv-language-list','.cv-reference-item','.cv-table-row','.cv-two-column-layout','.cv-professional-layout','.ast-layout','.cv-sidebar','.cv-main-content','.cv-end-marker','.filler','h1','h2','h3','h4','h5','p','ul','li','img','a','div','span','.container','.row','.col-md-','.d-flex','.mb-','.mt-','.ms-','.me-','.rtl','.ltr','.remove-field',];const commonSelectorsRegex=new RegExp(`(^|\\b)(<span class="math-inline">\{commonSelectors\.map\(s \=\> s\.replace\('\.', '\\\\\.'\)\)\.join\('\|'\)\}\)\(\\\\b\|</span>)`);for(let i=0;i<stylesheets.length;i++){try{const rules=stylesheets[i].cssRules||stylesheets[i].rules;if(!rules)continue;for(let j=0;j<rules.length;j++){const rule=rules[j];let ruleText=rule.cssText;if(rule.type===CSSRule.FONT_FACE_RULE){cssRules.push(ruleText);continue}
-if(rule.type===CSSRule.MEDIA_RULE){if(rule.conditionText.includes('print')||rule.conditionText.includes('screen')||rule.conditionText.includes('(max-width:')){cssRules.push(ruleText)}
-continue}
-const selectorText=rule.selectorText;if(selectorText){const templateSpecificSelector=`.<span class="math-inline">\{selectedTemplateCategory\}\-layout\.template</span>{selectedTemplate}`;const isGeneral=commonSelectorsRegex.test(selectorText);const isTemplateSpecific=selectorText.includes(templateSpecificSelector);const isCvRelated=selectorText.includes('.cv-');const isFrontendUI=selectorText.includes('.navbar')||selectorText.includes('.site-header')||selectorText.includes('.page-section:not')||selectorText.includes('.progress-container')||selectorText.includes('.language-toggle');if((isGeneral||isTemplateSpecific||isCvRelated)&&!isFrontendUI){cssRules.push(ruleText)}}}}catch(e){console.warn(`Could not read CSS rules from stylesheet (possibly CORS issue): ${e.message}`)}}
-cssRules.push(`
-        /* 1. قواعد أساسية لـ HTML/BODY لتأكيد اتجاه الصفحة والهوامش */
-        html, body {
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 210mm !important; /* عرض A4 */
-            min-height: 297mm !important; /* ارتفاع A4 */
-            background: white !important; /* خلفية بيضاء لضمان عدم ظهور خلفية العارض */
-            color: #212529 !important; /* لون نص افتراضي */
-            direction: ${currentLang === 'ar' ? 'rtl' : 'ltr'} !important;
-            text-align: ${currentLang === 'ar' ? 'right' : 'left'} !important;
-            box-sizing: border-box !important;
-            overflow: hidden !important; /* مهم جداً لمنع أي scrollbars في الـ PDF */
-        }
-        body.rtl { direction: rtl !important; text-align: right !important; }
-        body.ltr { direction: ltr !important; text-align: left !important; }
-
-        /* 2. إخفاء جميع عناصر الواجهة الأمامية غير المرغوبة (بشكل شامل) */
-        /* هذه المحددات يجب أن تستهدف عناصر واجهة المستخدم التي قد تظهر في الـ PDF */
-        .site-header, .navbar, .page-section:not(.active-page), .progress-container,
-        .language-toggle, .btn-info, .btn-success, #cv-preview-area,
-        .popup-box, .popup-close, .form-group, .remove-field,
-        .template-preview-container, .template-category, .template-previews,
-        /* أي عناصر أخرى من واجهة المستخدم لديك في الـ HTML لا تريد ظهورها */
-        .d-flex.justify-content-center.mt-4 { /* الأزرار في صفحة المعاينة */
-            display: none !important;
-            visibility: hidden !important;
-            height: 0 !important;
-            max-height: 0 !important;
-            overflow: hidden !important;
-            padding: 0 !important;
-            margin: 0 !important;
-        }
-
-        /* 3. تأكيد تنسيق الـ CV للحاوية الرئيسية */
-        #cv-container {
-            position: relative !important;
-            width: 210mm !important; /* عرض A4 */
-            min-height: 297mm !important; /* ارتفاع A4 */
-            height: auto !important; /* لتسمح بالنمو على عدة صفحات */
-            margin: 0 !important; /* لإزالة أي إزاحة غير مرغوبة */
-            padding: 0 !important; /* الحشوة تكون داخل الأقسام */
-            box-shadow: none !important; /* إزالة أي ظل لحاوية المعاينة */
-            border: none !important; /* إزالة أي حدود لحاوية المعاينة */
-            background: white !important; /* خلفية بيضاء للسيرة الذاتية */
-            color: #212529 !important; /* لون نص افتراضي */
-            overflow: visible !important; /* مهم جداً للسماح بالمحتوى على عدة صفحات */
-            direction: ${currentLang === 'ar' ? 'rtl' : 'ltr'} !important;
-            text-align: ${currentLang === 'ar' ? 'right' : 'left'} !important;
-            box-sizing: border-box !important;
-        }
-
-        /* 4. معالجة الخطوط (ضمان تطبيق Tajawal للعربية) */
-        body, p, span, div, h1, h2, h3, h4, h5, h6, li {
-            font-family: 'Tajawal', sans-serif !important;
-        }
-        /* قواعد الخطوط الخاصة بكل قالب (أضفها هنا أيضاً لتطغى) */
-        .normal-layout.template1 .cv-name, .normal-layout.template1 .cv-title, .normal-layout.template1 .cv-section-title { font-family: 'Roboto', sans-serif !important; }
-        .normal-layout.template2 .cv-name, .normal-layout.template2 .cv-title, .normal-layout.template2 .cv-section-title { font-family: 'Lato', sans-serif !important; }
-        /* ... كرر هذا لجميع القوالب والفئات التي تحدد الخطوط في style.css */
-
-        /* 5. معالجة تخطيط الأعمدة (Standard, Professional, AST) */
-        .cv-two-column-layout, .ast-layout {
-            display: flex !important; /* Use flex for print */
-            flex-direction: var(--print-flex-direction) !important; /* Apply correct flex direction from variable */
-            gap: 10mm !important;
-            page-break-inside: auto !important; /* Allow page breaks here */
-            flex-wrap: nowrap !important; /* Prevent wrapping to next line */
-        }
-        .cv-professional-layout {
-            display: grid !important;
-            grid-template-columns: var(--print-grid-columns) !important; /* Apply grid columns from variable */
-            grid-template-areas: var(--print-grid-areas) !important; /* Apply grid areas from variable */
-            gap: 10mm !important;
-            page-break-inside: auto !important; /* Allow page breaks here */
-        }
-        .cv-sidebar, .cv-main-content {
-            display: flex !important; /* Revert to flex for individual columns */
-            flex-direction: column !important; /* Ensure content stacks vertically within column */
-            vertical-align: top !important; /* Align to top */
-            padding: 8mm !important; /* Inner padding */
-            box-sizing: border-box !important;
-            height: auto !important; /* Allow height to adjust */
-            min-height: 1px !important; /* Smallest possible height */
-            page-break-inside: avoid !important; /* Crucial: prevent breaking content within individual columns */
-            text-align: ${currentLang === 'ar' ? 'right' : 'left'} !important; /* Text alignment within the column */
-        }
-
-        /* 5.1. تحديد عرض الأعمدة (إذا لم يكن في القالب الأصلي) */
-        .cv-two-column-layout .cv-sidebar, .ast-layout .cv-sidebar { width: 80mm !important; flex-shrink: 0 !important; } /* Make sidebar fixed width */
-        .cv-professional-layout .cv-sidebar { width: 80mm !important; flex-shrink: 0 !important; }
-        .cv-main-content { width: auto !important; flex-grow: 1 !important;} /* Main content takes remaining space */
-
-
-        /* 5.2. معالجة Professional Layout (حسب التغييرات في style.css الخاص بك) */
-        /* ملف style.css الخاص بك يحتوي على Professional Layout يجعل الشريط الجانبي على اليسار دائماً */
-        /* سنحافظ على هذا السلوك عند الطباعة */
-        .cv-professional-layout[dir="rtl"], .cv-professional-layout[dir="ltr"] {
-            /* These will be overridden by --print-grid-columns and --print-grid-areas */
-            /* grid-template-columns: 80mm 1fr !important; */
-            /* grid-template-areas: "sidebar main" !important; */
-        }
-        .cv-professional-layout .cv-sidebar { grid-area: sidebar !important; }
-        .cv-professional-layout .cv-main-content { grid-area: main !important; }
-        .cv-professional-layout .cv-header.professional-layout { grid-area: header !important; display: flex !important; flex-direction: column !important; } /* Use flex for header content within grid */
-
-
-        /* 6. تحسينات عامة على العناصر النصية والقوائم */
-        h1, h2, h3, h4, h5, h6, p, li {
-            word-break: break-word !important;
-            white-space: pre-wrap !important; /* للحفاظ على الأسطر الجديدة من textarea */
-            line-height: 1.6 !important;
-            margin: 0 !important; /* لإزالة أي هوامش افتراضية غير مرغوبة */
-            padding: 0 !important;
-        }
-        ul {
-            list-style: none !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            text-align: ${currentLang === 'ar' ? 'right' : 'left'} !important;
-        }
-        /* إذا كنت تستخدم نقاطاً للقوائم، يمكنك إعادتها يدوياً لـ RTL/LTR */
-        html[dir="rtl"] ul li::before {
-            content: "• " !important; /* نقطة القائمة */
-            color: inherit !important;
-            display: inline-block !important;
-            width: 1em !important;
-            margin-left: 0.5em !important;
-            text-align: left !important;
-        }
-        html[dir="ltr"] ul li::before {
-            content: "• " !important;
-            color: inherit !important;
-            display: inline-block !important;
-            width: 1em !important;
-            margin-right: 0.5em !important;
-            text-align: right !important;
-        }
-        .cv-skill-item, .cv-language-list li {
-            text-align: inherit !important;
-            padding-right: ${currentLang === 'ar' ? '0' : '15px'} !important;
-            padding-left: ${currentLang === 'ar' ? '15px' : '0'} !important;
-        }
-        .cv-contact-item i {
-            margin-left: ${currentLang === 'ar' ? '8px' : '0'} !important;
-            margin-right: ${currentLang === 'ar' ? '0' : '8px'} !important;
-        }
-
-        /* 7. قواعد للطباعة / التوليد التي يجب أن تطغى في سياق الطباعة (مكررة لكن مهمة) */
-        @media print {
-            html, body {
-                margin: 0 !important; padding: 0 !important;
-                width: 210mm !important;
-                min-height: 297mm !important;
-                background: white !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-                direction: ${currentLang === 'ar' ? 'rtl' : 'ltr'} !important;
-                text-align: ${currentLang === 'ar' ? 'right' : 'left'} !important;
-            }
-            #cv-container {
-                box-shadow: none !important;
-                border: none !important;
-                min-height: 297mm !important;
-                height: auto !important;
-                overflow: visible !important;
-                page-break-before: auto !important;
-                page-break-after: auto !important;
-                page-break-inside: auto !important; /* Allow page breaks inside container */
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-            .cv-section { page-break-inside: avoid !important; }
-            .cv-experience-item, .cv-education-item, .cv-reference-item { page-break-inside: avoid !important; }
-        }
-    `);return cssRules.join('\n')}
 
 async function generatePdfFromNode(isPaid) {
     toggleLoadingOverlay(true, 'pdf_generation_in_progress');
@@ -945,7 +722,7 @@ async function generatePdfFromNode(isPaid) {
                 lang: cvData.language
             } : null
         };
-        
+
         const response = await fetch(`${NODE_SERVER_URL}/generate-cv`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -970,6 +747,40 @@ async function generatePdfFromNode(isPaid) {
     } finally {
         toggleLoadingOverlay(false);
     }
+}
+
+async function sendFinalHtmlToServer(finalHtml,isPaid){const mainCssText=document.getElementById('main-stylesheet')?.textContent||'';if(!mainCssText){throw new Error("Critical: Main stylesheet could not be found in the DOM.")}
+const cvData=collectCvData();const direction=cvData.language==='ar'?'rtl':'ltr';const fullPageHtml=`
+        <!DOCTYPE html>
+        <html lang="${cvData.language}" dir="${direction}">
+        <head>
+            <meta charset="UTF-8">
+            <title>CV</title>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+            <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+            <style>
+                ${mainCssText}
+            </style>
+        </head>
+        <body class="${direction}">
+             ${finalHtml.replace('class="', `class="${isPaid ? '' : 'watermarked'} `)}
+        </body>
+        </html>
+    `;
+
+    const response = await fetch(`${NODE_SERVER_URL}/generate-cv`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fullHtml: fullPageHtml }),
+        mode: 'cors'
+    });
+
+    if (!response.ok) {
+        const errorBody = await response.json().catch(() => ({ message: 'Server error' }));
+        throw new Error(`Node.js server error: ${response.status} - ${errorBody.message}`);
+    }
+
+    return await response.json();
 }
 /**
  * دالة مركزية لإرسال بيانات الدفع والـ PDF النهائي إلى Google Apps Script.
@@ -1592,7 +1403,7 @@ function updateProgress() {
     const totalCoreFields = 7;
     const coreFieldsWeight = 6;
 
-    const sections = ['experience', 'education', 'skills', 'languages', 'references'];
+    const sections = ['experience', 'education', 'skills', 'languages' ];
     let filledSectionsCount = 0;
     sections.forEach(sectionId => {
         const sectionContainer = document.getElementById(`${sectionId}-input`);
@@ -1784,7 +1595,40 @@ function handleFloatingButtonVisibility() {
         floatingBtn.classList.add('show');
     } else {
         floatingBtn.classList.remove('show');
-    }}
+    }
+}
+
+/* ============================================= */
+/* == كود إغلاق قائمة النافبار تلقائياً (في الجوال) == */
+/* ============================================= */
+document.addEventListener('DOMContentLoaded', () => {
+    const navLinks = document.querySelectorAll('#navbarNav .nav-link');
+    const navCollapse = document.getElementById('navbarNav');
+    const bsCollapse = new bootstrap.Collapse(navCollapse, {
+      toggle: false // مهم: لا تقم بتبديل الحالة عند الإنشاء
+    });
+
+    // 1. الإغلاق عند الضغط على أحد الروابط
+    navLinks.forEach((link) => {
+        link.addEventListener('click', () => {
+            // تحقق مما إذا كانت القائمة مفتوحة (مرئية)
+            if (navCollapse.classList.contains('show')) {
+                bsCollapse.hide();
+            }
+        });
+    });
+
+    // 2. الإغلاق عند الضغط خارج القائمة
+    document.addEventListener('click', (event) => {
+        const isClickInsideNav = navCollapse.contains(event.target);
+        const isToggler = event.target.closest('.navbar-toggler');
+
+        // إذا كانت القائمة مفتوحة، والضغط كان خارجها، ولم يكن على زر الفتح/الإغلاق
+        if (navCollapse.classList.contains('show') && !isClickInsideNav && !isToggler) {
+            bsCollapse.hide();
+        }
+    });
+});
 
 function setupZoomControls() {
     const zoomBtn = document.getElementById('zoom-btn');
@@ -1886,9 +1730,10 @@ async function triggerAiGeneration(name, title, summary, requestType = 'initial'
     }
 }
 
+
 function setupAiButtonListener() {
     const aiButton = document.getElementById('create-cv-button');
-    const improveButton = document.getElementById('improve-cv-ai-btn'); // ✅ التعريف
+    const improveButton = document.getElementById('improve-cv-ai-btn');
 
     if (aiButton) {
         aiButton.addEventListener('click', () => {
@@ -1909,16 +1754,35 @@ function setupAiButtonListener() {
         });
     }
 
-    // ✅ تم نقل هذا الجزء إلى الداخل
     if (improveButton) { 
         improveButton.addEventListener('click', () => {
-            const currentData = collectCvData(); 
-            const currentDataJson = JSON.stringify(currentData);
-            triggerAiGeneration(currentData.name, currentData.jobTitle, currentData.objective, 'refinement', currentDataJson);
+            // Get the most up-to-date name, title, and objective from the form for AI context.
+            const name = document.getElementById('name-input')?.value.trim();
+            const title = document.getElementById('title-input')?.value.trim();
+            const objective = document.getElementById('objective-input')?.value.trim();
+
+            // Prioritize using the original AI-generated data for refinement if it exists.
+            let existingDataJSON = localStorage.getItem('resailInitialAiData_' + currentLang);
+
+            // If no initial AI data is stored (e.g., manual entry), fall back to the currently saved form data.
+            if (!existingDataJSON) {
+                console.log("No initial AI data found. Falling back to current form data for improvement.");
+                const currentData = collectCvData();
+                currentData.objective = objective; // Ensure the objective is the latest.
+                existingDataJSON = JSON.stringify(currentData);
+            }
+
+            // Check if there is any data to improve.
+            if (!existingDataJSON || existingDataJSON === '{}') {
+                alert(currentLang === 'ar' ? 'لا توجد بيانات لتحسينها. يرجى إنشاء سيرة ذاتية أولاً.' : 'No data to improve. Please generate a CV first.');
+                return;
+            }
+
+            // Trigger the AI with the data for refinement.
+            triggerAiGeneration(name, title, objective, 'refinement', existingDataJSON);
         });
     }
 }
-    
 
 
 
@@ -2116,17 +1980,25 @@ function handleStartOver() {
         : 'Are you sure you want to delete all data and start over? This action cannot be undone.';
     
     if (confirm(confirmationMessage)) {
-        // 1. مسح البيانات الدائمة من الذاكرة
+        // 1. Clear persistent data from localStorage
         localStorage.removeItem('resailCvData_' + currentLang);
-        
-        // 2. مسح الحقول في الواجهة الأمامية
+        localStorage.removeItem('resailInitialAiData_' + currentLang); // Also clear the initial AI data
+
+        // 2. Clear fields on the data entry form
         clearAllCvFields();
         
-        // 3. (اختياري لكن موصى به) تعبئة النموذج ببيانات تجريبية جديدة
+        // 3. Clear fields on the hero/landing page to reset the start button's context
+        const heroNameInput = document.getElementById('hero-name-input');
+        const heroTitleInput = document.getElementById('hero-title-input');
+        const heroSummaryInput = document.getElementById('hero-summary-input');
+        if (heroNameInput) heroNameInput.value = '';
+        if (heroTitleInput) heroTitleInput.value = '';
+        if (heroSummaryInput) heroSummaryInput.value = '';
 
+        // 4. Navigate back to the landing page to provide a fresh start
+        showPage('landing-page');
         
-        // 4. تحديث المعاينة وشريط التقدم
-        generateCV(document.getElementById('cv-container'));
+        // 5. Update the UI to reflect the cleared state
         updateProgress();
 
         alert(currentLang === 'ar' ? 'تم مسح البيانات. يمكنك الآن البدء من جديد.' : 'Data cleared. You can now start over.');
