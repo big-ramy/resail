@@ -167,6 +167,49 @@ textarea.form-control{min-height:calc(1.5em + .75rem + 2px)}
 @media (max-width:768px){.site-header{min-height:auto;padding:100px 0 40px 0}.site-header h1{font-size:2.5em;margin-top:0}.site-header p.lead{font-size:1.2em}.header-content{gap:15px}.site-header .col-md-5{flex:0 0 100%;width:100%}}
 @media (max-width:480px){.site-header h1{font-size:2em}.site-header p.lead{font-size:1em}#hero-offers-container{padding:10px}}
 @media (max-width:767px){#hero-offers-container{padding:12px 15px;margin-bottom:20px;gap:12px}#countdown-timer-wrapper{font-size:.95em;padding-bottom:8px}#discount-codes-list{gap:10px}.offer-item{gap:8px}.offer-item .offer-code{font-size:.85em;padding:3px 10px}.offer-item .offer-description{font-size:.8em}}
+/* 1. استدعاء ملف الخط الأساسي من السيرفر الرسمي (يحتوي على أشكال الأيقونات) */
+@font-face {
+  font-family: 'Font Awesome 6 Free';
+  font-style: normal;
+  font-weight: 900; /* Solid Style */
+  font-display: block; /* مهم جداً للأداء ومنع تغير الأشكال */
+  src: url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/webfonts/fa-solid-900.woff2") format("woff2");
+}
+
+/* 2. الأنماط الأساسية لتفعيل الأيقونات */
+.fas,
+.fa-solid {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  display: inline-block;
+  font-style: normal;
+  font-variant: normal;
+  text-rendering: auto;
+  line-height: 1;
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+}
+
+/* 3. تعريف الأيقونات المستخدمة في موقعك فقط (قائمة كاملة ومضمونة) */
+
+/* -- أيقونات صفحة تعبئة البيانات -- */
+.fa-upload::before { content: "\f093"; }
+.fa-times-circle::before { content: "\f057"; }
+.fa-plus-circle::before { content: "\f055"; }
+.fa-trash-alt::before { content: "\f2ed"; }
+.fa-magic::before { content: "\f0d0"; }
+
+/* -- أيقونات صفحة المعاينة وأدوات التخصيص -- */
+.fa-search-plus::before { content: "\f00e"; }
+.fa-sliders-h::before { content: "\f1de"; }
+.fa-undo::before { content: "\f0e2"; }
+.fa-eye::before { content: "\f06e"; }
+.fa-download::before { content: "\f019"; }
+
+/* -- أيقونات معلومات الاتصال داخل السيرة الذاتية -- */
+.fa-envelope::before { content: "\f0e0"; }
+.fa-phone::before { content: "\f095"; }
+.fa-map-marker-alt::before { content: "\f3c5"; }
 </style>
 <link rel="alternate" hreflang="ar" href="https://big-ramy.github.io/resail/index.html" />
 <link rel="alternate" hreflang="en" href="https://big-ramy.github.io/resail/en.html" />
@@ -174,10 +217,8 @@ textarea.form-control{min-height:calc(1.5em + .75rem + 2px)}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" as="style">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link rel="preload" href="main.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="main.css"></noscript>
+<link rel="stylesheet" href="icons.css">
+
 </head>
 <body>
 
@@ -443,6 +484,8 @@ textarea.form-control{min-height:calc(1.5em + .75rem + 2px)}
             </div>
         </div>
         <div id="cv-data-entry-page" class="page-section">
+            <link rel="preload" href="main.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+            <noscript><link rel="stylesheet" href="main.css"></noscript>
             <div class="container py-4">
                 <h2 class="mb-4 text-center" data-ar="أدخل بياناتك" data-en="Enter Your Information">أدخل بياناتك</h2>
                 <div class="row">
