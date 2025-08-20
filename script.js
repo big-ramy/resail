@@ -13,24 +13,62 @@ function setupLanguageToggle(){const langToggleButton=document.getElementById('l
 function setUserLanguage(lang){if(lang===currentLang){return}
 currentLang=lang;sessionStorage.setItem('userLang',lang);window.location.href=lang==='ar'?'index.html':'en.html'}
 function saveCvDataToLocalStorage(){const cvData={name:document.getElementById('name-input')?.value,title:document.getElementById('title-input')?.value,email:document.getElementById('email-input')?.value,phone:document.getElementById('phone-input')?.value,website:document.getElementById('website-input')?.value,objective:document.getElementById('objective-input')?.value,profilePic:profilePicDataUrl,experiences:getExperiencesData(),educations:getEducationsData(),skills:getSkillsData(),languages:getLanguagesData(),references:getReferencesData(),customSections:getCustomSectionsData()};try{localStorage.setItem('resailCvData_'+currentLang,JSON.stringify(cvData))}catch(e){console.error("Error saving to localStorage",e)}}
-function loadCvDataFromLocalStorage(){try{const savedDataJSON=localStorage.getItem('resailCvData_'+currentLang);if(!savedDataJSON){return!1}
-const savedData=JSON.parse(savedDataJSON);document.getElementById('name-input').value=savedData.name||'';document.getElementById('title-input').value=savedData.title||'';document.getElementById('email-input').value=savedData.email||'';document.getElementById('phone-input').value=savedData.phone||'';document.getElementById('website-input').value=savedData.website||'';document.getElementById('objective-input').value=savedData.objective||'';if(savedData.profilePic){profilePicDataUrl=savedData.profilePic}
-document.getElementById('experience-input').innerHTML='';document.getElementById('education-input').innerHTML='';document.getElementById('skills-input').innerHTML='';document.getElementById('languages-input').innerHTML='';document.getElementById('references-input').innerHTML='';const oldCustomContainer=document.getElementById('custom-sections-container');if(oldCustomContainer){oldCustomContainer.innerHTML=''}
-savedData.experiences?.forEach(data=>addExperienceField(data));savedData.educations?.forEach(data=>addEducationField(data));savedData.skills?.forEach(data=>addSkillField(data));savedData.languages?.forEach(data=>addLanguageField(data));savedData.references?.forEach(data=>addReferenceField(data));if(savedData.customSections&&savedData.customSections.length>0){savedData.customSections.forEach(sectionData=>{addCustomSection();const allCustomSections=document.querySelectorAll('#custom-sections-container .custom-section-wrapper');const newSection=allCustomSections[allCustomSections.length-1];if(newSection){newSection.querySelector('.custom-section-title').value=sectionData.title;const subSectionsContainer=newSection.querySelector('.sub-sections-container');subSectionsContainer.innerHTML='';sectionData.subSections.forEach(subData=>{const subSectionEntry=document.createElement('div');subSectionEntry.className='custom-subsection-entry border p-2 mb-2 rounded position-relative';subSectionEntry.innerHTML=`
-                            <button type="button" class="remove-field" onclick="this.parentElement.remove(); generateCV(document.getElementById('cv-container'));" title="${translations[currentLang]['remove_subsection_title']}">&times;</button>
-                            <input type="text" class="form-control mb-2 custom-subsection-title" placeholder="${translations[currentLang]['subsection_title_placeholder']}" value="${subData.title || ''}" oninput="generateCV(document.getElementById('cv-container'));">
-                            <textarea class="form-control custom-subsection-description" placeholder="${translations[currentLang]['subsection_desc_placeholder']}" rows="3" oninput="generateCV(document.getElementById('cv-container'));">${subData.description || ''}</textarea>
-                        `;subSectionsContainer.appendChild(subSectionEntry)})}})}
-updatePageContentLanguage();return!0}catch(e){console.error("Error loading from localStorage",e);localStorage.removeItem('resailCvData_'+currentLang);return!1}}
-let currentLang='ar';let selectedTemplate=1;let selectedTemplateCategory='normal';let profilePicDataUrl=null;let selectedPriceToPay=0;let discountApplied=0;const discountCodes={"SAVE10":10,"FIRSTBUY":25,"FREECV":100};const PRICES={local:{normal:19,standard:25,professional:29,ast:29,creative:33},lemonSqueezy:{normal:25,standard:33,professional:39,ast:39,creative:45},};const CHECKOUT_CONFIG={normal:{link:'https://resail-cvs.lemonsqueezy.com/buy/bbfff981-9bd9-495c-b1ac-40b013f5b598'},standard:{link:'https://resail-cvs.lemonsqueezy.com/buy/a00ef7a0-db54-47cf-9145-4b5c50892b84?enabled=865702'},professional:{link:'https://resail-cvs.lemonsqueezy.com/buy/fd9e9305-914a-4936-96ed-e308e9ea6460?enabled=865708'},ast:{link:'https://resail-cvs.lemonsqueezy.com/buy/38ead94f-86f2-4f7e-a6eb-e5887f5f0d47?enabled=865714'},creative:{link:'https://resail-cvs.lemonsqueezy.com/buy/c78cce0d-171e-49ff-86dd-5288509cdadc'}};let paymentNameInput,paymentEmailInput,paymentPhoneInput,paymentMessagesInput,paymentFileInput,qrPaymentResultDiv,submitPaymentProofButton,cvContainer,siteHeaderGlobal,loadingOverlayGlobal,loadingTextGlobal;const MAX_FILE_SIZE=3*1024*1024;const ALLOWED_FILE_TYPES=['image/jpeg','image/png','application/pdf'];const NODE_SERVER_URL='https://resail-cv-generator-f0jc.onrender.com';const GOOGLE_APPS_SCRIPT_WEB_APP_URL_PAYMENT_PROCESSOR='https://script.google.com/macros/s/AKfycbxxkX4jsV4zSz4vR7FcCOhYJmXXuOAt5WrJYgZmhTlmO7dzqXARLM6q_5QNo2KVs8bWww/exec';let salesQueue=[{name:"محمد",city:"الرياض"},{name:"سارة",city:"جدة"},{name:"عبدالرحمن",city:"الدمام"}];let finalPriceToPay=0;let appliedCode="";function applySelectedFonts(){const nameFont=document.getElementById('font-selector-name')?.value;const headingsFont=document.getElementById('font-selector-headings')?.value;const bodyFont=document.getElementById('font-selector-body')?.value;const cvContainer=document.getElementById('cv-container');if(!cvContainer||!nameFont||!headingsFont||!bodyFont)return;let livePreviewStyle=document.getElementById('live-font-styles');if(!livePreviewStyle){livePreviewStyle=document.createElement('style');livePreviewStyle.id='live-font-styles';document.head.appendChild(livePreviewStyle)}
-livePreviewStyle.textContent=`
-        /* تطبيق خط النص الأساسي على الحاوية وعناصر الاتصال */
-        #cv-container, #cv-container .cv-contact-item p { font-family: ${bodyFont}; }
-        /* تجاوز الخط لاسم الشخص وعنوانه الوظيفي */
-        #cv-container .cv-name, #cv-container .cv-title { font-family: ${nameFont}; }
-        /* تجاوز الخط لعناوين الأقسام */
-        #cv-container .cv-section-title { font-family: ${headingsFont}; }
-    `}
+// script.js
+
+function loadCvDataFromLocalStorage() {
+    try {
+        const savedDataJSON = localStorage.getItem('resailCvData_' + currentLang);
+        if (!savedDataJSON) {
+            return false;
+        }
+        const savedData = JSON.parse(savedDataJSON);
+        
+        // ... (كل الكود الخاص بتعبئة الحقول الأساسية يبقى كما هو)
+        document.getElementById('name-input').value = savedData.name || '';
+        document.getElementById('title-input').value = savedData.title || '';
+        document.getElementById('email-input').value = savedData.email || '';
+        document.getElementById('phone-input').value = savedData.phone || '';
+        document.getElementById('website-input').value = savedData.website || '';
+        document.getElementById('objective-input').value = savedData.objective || '';
+        if (savedData.profilePic) {
+            profilePicDataUrl = savedData.profilePic;
+        }
+
+        // مسح الحقول الديناميكية قبل تعبئتها
+        document.getElementById('experience-input').innerHTML = '';
+        document.getElementById('education-input').innerHTML = '';
+        document.getElementById('skills-input').innerHTML = '';
+        document.getElementById('languages-input').innerHTML = '';
+        document.getElementById('references-input').innerHTML = '';
+        const oldCustomContainer = document.getElementById('custom-sections-container');
+        if (oldCustomContainer) {
+            oldCustomContainer.innerHTML = '';
+        }
+
+        // تعبئة البيانات
+        savedData.experiences?.forEach(data => addExperienceField(data));
+        savedData.educations?.forEach(data => addEducationField(data));
+        savedData.skills?.forEach(data => addSkillField(data));
+        savedData.languages?.forEach(data => addLanguageField(data));
+        savedData.references?.forEach(data => addReferenceField(data));
+
+        // ▼▼▼ هذا هو الجزء الذي تم إصلاحه ▼▼▼
+        // بدلاً من الكود القديم الذي يسبب الخطأ، نستخدم الآن دالة واحدة صحيحة
+        if (savedData.customSections && savedData.customSections.length > 0) {
+            savedData.customSections.forEach(sectionData => {
+                addCustomSectionFromAI(sectionData); // ✅ استدعاء الدالة الصحيحة وتمرير البيانات لها مباشرة
+            });
+        }
+        // ▲▲▲ نهاية الجزء الذي تم إصلاحه ▲▲▲
+
+        updatePageContentLanguage();
+        return true;
+    } catch (e) {
+        console.error("Error loading from localStorage", e);
+        localStorage.removeItem('resailCvData_' + currentLang);
+        return false;
+    }
+}
 function createPaletteControls(){const container=document.getElementById('palette-selector');if(!container)return;container.innerHTML='';const showGradientPalettes=!['normal','standard'].includes(selectedTemplateCategory);colorPalettes.forEach(palette=>{if(palette.isGradient&&!showGradientPalettes){return}
 const swatch=document.createElement('div');swatch.className='palette-swatch';swatch.dataset.paletteId=palette.id;const primaryCircle=`<span class="palette-color" style="background: ${palette.colors['--primary-bg']};"></span>`;const titleCircle=`<span class="palette-color" style="background: ${palette.colors['--title-text']};"></span>`;const accentCircle=`<span class="palette-color" style="background: ${palette.colors['--accent-bg']};"></span>`;swatch.innerHTML=`${primaryCircle}${titleCircle}${accentCircle}`;swatch.onclick=()=>applyPalette(palette.id);container.appendChild(swatch)})}
 function applyPalette(paletteId){const selectedPalette=colorPalettes.find(p=>p.id===paletteId);if(!selectedPalette)return;const colors=selectedPalette.colors;for(const[key,value]of Object.entries(colors)){const controlName=key.replace('--','');const component=document.querySelector(`.color-control-component[data-color-name="${controlName}"]`);if(component){const toggle=component.querySelector('.gradient-toggle');const solidPicker=component.querySelector(`#color-picker-${controlName}`);const startPicker=component.querySelector(`#color-picker-${controlName}-start`);const endPicker=component.querySelector(`#color-picker-${controlName}-end`);if(typeof value==='string'&&value.startsWith('linear-gradient')){if(!toggle.checked)toggle.click();const colorValues=value.match(/#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})/g);if(colorValues&&colorValues.length>=2){startPicker.value=colorValues[0];endPicker.value=colorValues[1]}}else{if(toggle.checked)toggle.click();solidPicker.value=value}}else{const textPicker=document.getElementById(`color-picker-${controlName}`);if(textPicker)textPicker.value=value}}
