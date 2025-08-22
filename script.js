@@ -1145,12 +1145,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
   // --- الدوال التي لم نعد نستدعيها هنا لأنها تعمل من HTML مباشرة ---
-  // setInitialLanguage(); <-- تمت إزالتها
-  // startSalesNotifications(); <-- تمت إزالتها
-  // updateCounters(); <-- تمت إزالتها
-  // initializeCountdown(); <-- تمت إزالتها
-  // lazyLoadImages(); <-- تمت إزالتها
-  // window.addEventListener('scroll', handleFloatingButtonVisibility); <-- تمت إزالتها
+   setInitialLanguage(); 
+   startSalesNotifications();
+   updateCounters();
+   initializeCountdown();
+   lazyLoadImages();
+   window.addEventListener('scroll', handleFloatingButtonVisibility);
 
   // --- الدوال المتبقية مهمة لعمل التطبيق بعد التحميل ---
   createPaletteControls();
@@ -3426,6 +3426,8 @@ function generateCV(targetElement) {
       let headerHTML, sidebarHTML;
 
       // إذا كان القالب 1 أو 3
+// ...
+      // إذا كان القالب 1 أو 3
       if (selectedTemplate == 1 || selectedTemplate == 3) {
         // الصورة ومعلومات الاتصال تكون في الرأس
         const contactForHeader = contactInfoHTML
@@ -3434,7 +3436,23 @@ function generateCV(targetElement) {
             ""
           )
           .replace(/<\/div>$/, "");
-        headerHTML = `<div class="cv-details">${profilePicHTML}<h1 class="cv-name">${name}</h1><h2 class="cv-title">${title}</h2>${contactForHeader}</div>`;
+
+        // ▼▼▼ التعديل: تم تغليف الصورة والتفاصيل في حاوية واحدة ▼▼▼
+        headerHTML = `
+            <div class="professional-header-top">
+                <div class="professional-header-content">
+                    ${profilePicHTML}
+                    <div class="cv-details">
+                        <h1 class="cv-name">${name}</h1>
+                        <h2 class="cv-title">${title}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="professional-header-bottom">
+                ${contactForHeader}
+            </div>
+        `;
+        // ▲▲▲ نهاية التعديل ▲▲▲
         sidebarHTML = `${skillsHTMLWithLevels}${languagesHTML}${referencesHTML}${endMarkerHTML}`;
       }
       // إذا كان القالب 2
@@ -3539,6 +3557,46 @@ function updateProgress() {
   if (progress < 30) progressBar.style.backgroundColor = "#dc3545";
   else if (progress < 70) progressBar.style.backgroundColor = "#ffc107";
   else progressBar.style.backgroundColor = "#28a745";
+}
+
+/**
+ * =========================================================================
+ * == دالة جديدة: لمعالجة تنزيل عينة بعلامة مائية فقط ==
+ * =========================================================================
+ */
+async function handleSampleDownload() {
+    // إظهار رسالة التحميل
+    toggleLoadingOverlay(true, "pdf_generation_in_progress");
+    try {
+        //  استدعاء الدالة الرئيسية لتوليد PDF مع تمرير 'false' لـ isPaid لوضع العلامة المائية
+        const pdfData = await generatePdfFromNode(false); 
+
+        if (pdfData && pdfData.base64Pdf) {
+            const blob = base64toBlob(pdfData.base64Pdf, "application/pdf");
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `CV_Sample_${
+                document.getElementById("name-input")?.value.replace(/\s/g, "_") || "ResailCV"
+            }.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            // عرض رسالة نجاح التنزيل بدلاً من الانتقال لصفحة أخرى
+            alert(translations[currentLang]["CV downloaded successfully!"]);
+        } else {
+            // سيتم عرض رسالة الخطأ من داخل generatePdfFromNode
+            throw new Error("Failed to generate watermarked sample.");
+        }
+    } catch (error) {
+        console.error("Sample Download Error:", error);
+        // لا تعرض رسالة خطأ إضافية هنا لأنها موجودة بالفعل في generatePdfFromNode
+    } finally {
+        // إخفاء رسالة التحميل
+        toggleLoadingOverlay(false);
+    }
 }
 
 // 1. الدالة النهائية للتحكم بالتنزيل المجاني
